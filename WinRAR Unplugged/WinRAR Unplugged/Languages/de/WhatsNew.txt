@@ -1,0 +1,504 @@
+
+
+                WinRAR - Was neu ist in dieser Version
+
+
+   Version 3.91
+
+   1. Diese Version kann 7-Zip-Archive entpacken, die mit dem 
+      LZMA2-Algorithmus erstellt wurden.
+
+   2. Beim Entpacken von 7-Zip-Archiven mit verschlüsselten Dateinamen aus dem
+      Kontextmenü des Windows Explorers heraus wird nun nur noch einmal nach
+      dem Passwort gefragt. WinRAR 3.90 fragte zweimal nach dem Passwort.
+
+   3. Diese Version kann tar.bz2-Archive entpacken, die aus mehreren
+      zusammengeführten kleineren bz2-Datenströmen bestehen. Vorherige
+      Versionen entpackten nur den ersten verschachtelten bz2-Datenstrom
+      in solchen zusammengesetzten Archiven.
+
+   4. WinRAR zeigt nun für alle Dateien in normalen .gz-Archiven die CRC32-
+      Prüfsumme an (Gilt nicht für .tar.gz-Archive). In vorherige Versionen
+      war das Feld bei GZIP-Dateien leer.
+
+   5. Behobene Fehler:
+
+      a) WinRAR 3.90 zeigte im Dialog "Archiv auswählen" die Schaltfläche
+         "Speichern" an Stelle von "Öffnen" oder "OK" (Befehl "Archiv öffnen..."
+         im Menü "Datei" und Befehl "Suchen..." im Dialog "Archivname und 
+         Archivparameter einstellen");
+
+      b) Beim Durchsuchen des Inhalts eines ZIP-Archivs in einem ungültigen
+         Format konnte es passieren, dass WinRAR falsche Dateinamen anzeigte;
+
+      c) WinRAR 3.90 konnte LZH-Archive nicht entpacken, die mit dem "-lh7-"-
+         Algorithmus erstellt wurden;
+
+      d) Bei WinRAR 3.90 konnte es passieren, dass bei der Archivierungsoption
+         "Dateien nach dem Packen löschen" ein Teil der Dateien nicht gelöscht
+         wurde, wenn der Löschmodus "Dateien in den Papierkorb verschieben"
+         ausgewählt war. Dieser Fehler trat nur unter Windows XP auf, unter
+         Windows Vista und Windows 7 trat der Fehler nicht auf;
+
+      e) Beim Entpacken von ISO-Dateien mit Hilfe des Befehls "Dateien
+         entpacken..." im Kontextmenü des Windows-Explorers konnte es passieren,
+         dass WinRAR zweimal dieselben Dateien im Archiv entpackte. WinRAR
+         zeigte beim erneuten Entpacken derselben Dateien den Dialog "Ersetzen
+         von Dateien bestätigen" an;
+
+      f) Bei der hexadezimalen Suche in WinRAR 3.90 (Befehl "Dateien suchen...")
+         und beim Befehls "ih" in der Konsolenversion von RAR wurden nie Treffer
+         gefunden, wenn der ASCII-Code des ersten Bytes des Suchtextes größer
+         als 127 war.
+
+
+   Version 3.90
+
+   1. Eine WinRAR-Version für Windows x64 ist nun verfügbar. Falls Sie eine
+      64-Bit-Version von Windows einsetzen, wird dringend empfohlen, die 
+      64-Bit-Version von WinRAR zu installieren. Sie bietet eine höhere
+      Geschwindigkeit und eine bessere Integration in den Windows Explorer
+      als die 32-Bit-Version.  
+
+   2. Die RAR-Kompressionsgeschwindigkeit wurde bei Rechnern mit mehreren Kernen
+      bzw. mehreren Hauptprozessoren verbessert. Die Verbesserung ist besonders
+      unter den Betriebssystemen Windows Vista und Windows 7 wahrnehmbar.
+
+   3. Die Option "Doppelten Verzeichnisnamen am Ende des Zielverzeichnisses
+      entfernen" im Dialog "Einstellungen - Komprimierung" wurde durch die
+      allgemeinere Option "Überflüssige Verzeichnisnamen am Ende des
+      Zielverzeichnisses entfernen" ersetzt. Diese Option entfernt beim
+      Entpacken eines Archivs mit Hilfe des Kontextmenü-Befehls "Entpacken nach
+      <Verzeichnis\>" überflüssige Verzeichnisse mit dem Namen des Archivs aus
+      dem Zielverzeichnispfad, wenn sich im Wurzelverzeichnis des Archivs nur
+      ein Verzeichnis und keine Dateien befinden.
+
+   4. Änderungen im Dialog "Entpacken: Zielverzeichnis und Optionen":
+
+      a) Mit der Schaltfläche "Neues Verzeichnis" kann ein neues Verzeichnis
+         in dem derzeit ausgewählten Verzeichnis erstellt werden;
+
+      b) Mit der Taste F2 kann das gerade ausgewählte Verzeichnis im
+         Verzeichnisbaum umbenannt werden;
+
+      c) Die Taste F5 bewirkt eine Aktualisierung des Verzeichnisbaums;
+
+      d) Die Taste Entf löscht das ausgewählte Verzeichnis im Verzeichnisbaum.
+
+   5. Falls in der Spalte "Geändert am" in der Dateiliste der WinRAR-Oberfläche
+      die Sekunden angezeigt werden sollen, muss die Option "Sekunden anzeigen"
+      im Dialog "Einstellungen - Dateiliste" aktiviert werden.
+
+   6. Mit den Optionen der Gruppe "Erkennung von SFX-Archiven aktiv für"
+      im Dialog "Einstellungen/Integration/Kontextmenüeinträge" können Sie für
+      die Explorer-Kontextmenüs festlegen, auf welchen Datenträgern bzw.
+      Laufwerken .exe-Dateien untersucht werden, ob es sich um
+      selbstextrahierende (SFX-) Archive handelt.
+      Wenn Sie zum Beispiel sehr häufig mit der rechten Maustaste auf 
+      .exe-Dateien klicken, die sich auf langsamen Netzlaufwerken befinden,
+      können Sie die Option "Netzlaufwerke" deaktivieren, um die Wartezeit bis
+      zur Anzeige des Kontextmenüs zu verringern.
+
+   7. Bei der Sortierung von Dateien nach ihren Namen in der Dateiliste der
+      WinRAR-Oberfläche wird nun dieselbe neue logische Dateisortierung
+      angewendet wie im Windows Explorer, der bei Ziffern in Dateinamen annimmt,
+      dass es sich um numerische Werte handelt. Deshalb werden Dateien werden
+      nun so sortiert: 1.txt, 2.txt, 10.txt statt 1.txt, 10.txt, 2.txt.
+      Dieses neue Verhalten bei der Sortierung ist unter Windows XP
+      Service Pack 2 und neuer verfügbar. 
+   
+   8. Die Tastenkombination Strg+W schließt nun sowohl das Hauptfenster von 
+      WinRAR als auch das Betrachter-Fenster in WinRAR. Die Tastenkombination
+      für den Befehl "Als Windows-Text anzeigen" im WinRAR-Betrachter wurde
+      von Strg+W auf Strg+I geändert.
+   
+   9. Der neue Schalter -r- schaltet die Rekursion ab. Der Befehl
+      'rar a -r- archiv verzeichnisname' fügt nur das leere Verzeichnis mit
+      dem Namen "verzeichnisname" zum Archiv hinzu und ignoriert dessen Inhalt.
+      Enthält der Verzeichnisname keine Wildcards, fügt RAR standardmäßig nicht
+      nur das Verzeichnis sondern auch dessen Inhalt zum Archiv hinzu, obwohl
+      der Schalter -r nicht angegeben wurde.
+
+  10. Wird der neue Schalter -ai beim Entpacken verwendet, so ignoriert RAR die
+      im Archiv gespeicherten Dateiattribute. Stattdessen erhalten die
+      entpackten Dateien die Attribute, die standardmäßig durch das
+      Betriebsystem für neu erstellte Dateien vergeben werden.  
+
+  11. Wird der Dateiname beim Befehl "cw" nicht angegeben, schickt die
+      Konsolenversion von RAR die Archivkommentardaten an stdout. 
+
+  12. Beim Packen von Daten von stdin mit dem Schalter -si[Name] setzt RAR die
+      Zeit der letzten Änderung im dazugehörigen Archiveintrag nun auf die
+      aktuelle Systemzeit. Vorherige Versionen von RAR setzten dieses Feld
+      nicht, was unsinnige Werte für die Zeit der letzten Änderung beim Packen
+      von Daten von stdin zur Folge hatte.
+
+  13. Die Meldung beim Platzieren des Mauszeigers über dem WinRAR-Icon (Tooltip)
+      im Infobereich des Systems (Tray) enthält nun auch den Archivnamen. Vorher
+      wurde bei Archivierungsvorgängen nur die verbleibende Zeit und der
+      Gesamtfortschritt in Prozent angezeigt.
+
+  14. Mit Hilfe der neuen Variablen 'Shutdown' im Registrierungsschlüssel
+      'Software\WinRAR\Policy' kann aus Sicherheitsgründen die Option
+      "Nach dem Archivieren PC herunterfahren" deaktiviert werden.
+      Für weitere Informationen lesen Sie in der Hilfedatei den Abschnitt
+      "Konfigurationseinstellungen/Registry-Variablen".
+
+  15. Verbesserungen der Geschwindigkeit bei der Explorer-Erweiterung.
+      Das Kontextmenü von WinRAR erscheint auch bei der Arbeit mit Tausenden
+      ausgewählten Dateien sehr schnell und reagiert schneller auf
+      Benutzeraktionen.
+
+  16. Verbesserung der Kompatibilität bei der Einstellung von hohen DPI-Zahlen
+      in den Anzeige-Einstellungen unter Windows.
+
+  17. Behobene Fehler:
+
+      a) WinRAR konnte in manchen Fällen tar- or tar.gz-Archive nicht öffnen,
+         die eine Datei größer als 8 GB enthalten;  
+      
+      b) Das WinRAR-Kontextmenü funktionierte nicht richtig unter den
+         Beta-Versionen von Windows 7, wenn die Anzeige der Icons angeschaltet
+         war und eine Datei im Windows-7-Library-Ordner angeklickt wurde;
+  
+      c) In den vorherigen WinRAR-Versionen war es nicht möglich, Dateien
+         umzubenennen, die fünf oder mehr aufeinanderfolgende Leerzeichen im
+         Dateinamen enthielten. Aus Sicherheitsgründen werden diese Leerzeichen
+         in der WinRAR-Oberfläche nicht angezeigt, weil damit die wirkliche
+         Dateiendung verborgen werden kann. Diese Sicherheitsmaßnahme war
+         jedoch der Grund dafür, dass der Befehl zum Umbenennen nicht richtig 
+         funktionierte.
+
+
+   Version 3.80
+
+   1. Es werden nun ZIP-Archive unterstützt, die Unicode-Dateinamen
+      im UTF-8-Format enthalten. Beim Erstellen von ZIP-Archiven
+      speichert WinRAR Dateinamen nur dann in Unicode, wenn sie
+      mit dem aktuellen Zeichensatz nicht korrekt gespeichert 
+      werden können.
+   
+   2. Die mit WinZip erstellten AES verschlüsselten ZIP-Archive
+      können nun entpackt werden.
+
+   3. Verbesserte Unicode-Unterstützung für RAR- und ZIP-Archivnamen.
+
+   4. Neue Archivierungsmodi "Vor dem Überschreiben nachfragen" und 
+      "Vorhandene Dateien überspringen" im Dialog "Archivname und 
+      Archivparameter einstellen - Allgemein". Sie bestimmen das 
+      Verhalten von WinRAR beim Erneuern von bereits existierenden 
+      Dateien in einem Archiv. Im Gegensatz zu den vorhandenen Modi
+      "Nur im Archiv vorhandene Dateien erneuern" und "Dateien 
+      hinzufügen und erneuern" werden die Dateizeiten ignoriert 
+      und nur die Dateinamen verglichen.
+      
+      Die entsprechenden Schalter dafür in der Kommandozeile:
+
+      a) Schalter -o aktiviert den Archivierungsmodus 
+         "Vor dem Überschreiben nachfragen";
+
+      b) Schalter -o- aktiviert den Archivierungsmodus 
+         "Vorhandene Dateien überspringen";
+
+      c) Schalter -o+ aktiviert den Archivierungsmodus 
+         "Dateien hinzufügen und ersetzen" (Standardmodus beim Archivieren).
+
+   5. Neue Option "Zum Kontextmenü hinzufügen" im Dialog 
+      "Profileinstellungen".
+      Ist diese Option aktiviert, so wird der Name des Komprimierungs-
+      profils in den Kontextmenüs des Windows Explorers angezeigt. Dadurch
+      kann ein Profil über das Kontextmenü aktiviert werden.
+
+   6. Der neue Schalter -cp<Profilname> ermöglicht die Wahl eines
+      Komprimierungsprofils im Befehlszeilenmodus. Der Schalter wird 
+      nur durch die Version mit grafischer Benutzeroberfläche WinRAR.exe
+      unterstützt, nicht durch die Konsolenversion rar.exe.
+
+   7. Der neue Reiter "Optionen" im Dialog "Archivname und Parameter 
+      einstellen" enthält Einstellungen, die das Verhalten der 
+      Option "Dateien nach dem Packen löschen" im Reiter "Allgemein"
+      bestimmen:
+
+      a) Dateien löschen. Lösche Dateien so wie in vorherigen 
+         WinRAR-Versionen.
+
+      b) Dateien in den Papierkorb verschieben. Gelöschte Dateien 
+         werden in den Papierkorb verschoben.
+
+         Der entsprechende Kommandozeilenbefehl zu dieser Option 
+         ist der Schalter -dr.
+
+      c) Dateien sicher löschen. Vor dem Löschen werden die Dateien 
+         mit Null-Bytes überschrieben, sodass eine Wiederherstellung
+         der gelöschten Dateien verhindert werden kann.
+
+         Der entsprechende Kommandozeilenbefehl zu dieser Option 
+         ist der Schalter -dw.
+
+      Diese Optionen haben nur Auswirkungen, wenn die Option "Dateien 
+      nach dem Packen löschen" aktiviert wurde. Das Standardverhalten
+      der Option "Dateien nach dem Packen löschen" lässt sich durch
+      Auswahl einer dieser Optionen im Standard-Komprimierungsprofil
+      festlegen.
+
+   8. Der WinRAR-Dialog "Entpacken: Zielverzeichnis und Optionen" lässt 
+      sich nun in der Größe ändern.
+      Durch Ziehen mit der Maus an den Rändern kann der Dialog auf die
+      gewünschte Größe gebracht werden, um z. B. mehr Platz für den
+      Verzeichnisbaum zu schaffen. WinRAR speichert die Größe des Dialogs.
+
+   9. Neuer SFX-Skript-Befehl "Update" und entsprechende Optionen im
+      Reiter "Update" des Dialogs "Erweiterte SFX-Optionen". Der Befehl
+      und die Optionen ermöglichen eine Überprüfung der Dateizeiten beim
+      Entpacken und damit das Erneuern von Dateien anhand der Dateizeiten.
+      
+  10. Beim SFX-Skript-Befehl "Shortcut" und dem Befehl "Verknüpfung 
+      hinzufügen..." im Dialog "Erweiterte SFX-Optionen - Erweitert"
+      kann nun eine Icon-Datei angegeben werden, die das Icon enthält,
+      das für die Verknüpfung verwendet werden soll.
+
+  11. Die neue Option "Temporäre Dateien sicher löschen" im Dialog
+      "Einstellungen - Sicherheit" aktiviert eine sicherere aber 
+      langsamere Methode zum Löschen von temporären WinRAR-Dateien.
+
+  12. WinRAR und RAR zeigen nun beim Entpacken eines mehrteiligen 
+      Archivs den Gesamtfortschritt an, wenn sich die einzelnen 
+      Teilarchive (Volumen) im selben Ordner befinden.
+
+  13. WinRAR und RAR werten in Dateien, die eine Liste von Dateinamen
+      enthalten, die darin verwendeten Umgebungsvariablen aus. 
+      Zum Beispiel können in einer Listendatei folgende Zeilen
+      enthalten sein:
+
+        %windir%\*.exe
+        %USERPROFILE%\Desktop
+
+      Diese Funktionalität ist nur in der RAR-Version für Windows 
+      verfügbar.
+
+  14. Unterstützung für TAR-Archive mit Daten ungleich Null im 
+      "Extra Field" hinzugefügt.
+      
+  15. Unterstützung für TAR-Archive hinzugefügt, die den aus 
+      512 Null-Bytes bestehenden Eintrag für das Ende des Archivs
+      nicht enthalten.
+
+  16. Verbesserte Unicode-Unterstützung beim Drag & drop von Dateien 
+      aus dem WinRAR-Fenster.
+
+  17. Die Tastenkombination Umschalt+Tab kann im Hauptfenster von 
+      WinRAR für das Umschalten des Eingabefocus' zwischen den 
+      Oberflächenelementen (Dateien, Kommentar, Baum, Adresse) 
+      in umgekehrter Reihenfolge verwendet werden. In vorherigen 
+      Versionen wurde bei Umschalt+Tab die gleiche Reihenfolge wie 
+      bei Tab verwendet.
+
+  18. Ein möglicher Absturz von WinRAR beim Öffnen von abgeschnittenen 
+      UDF-ISO-Dateien wurde behoben.
+
+
+   Version 3.71
+
+   1. Archivnamen werden in der Datei für die Fehlerprotokollierung
+      rar.log nun mit vollem Pfadnamen aufgeführt.
+
+   2. Das Tray-Icon von WinRAR ist nun auch mit hohen dpi-Einstellungen
+      bei Bildschirmauflösungen kompatibel.
+
+   3. Wird eine Datei in einem verschlüsselten Archiv mit einem 
+      externen Editor geändert, fragt WinRAR bei der Nachfrage, ob 
+      die Datei im Archiv erneuert werden soll, nicht wieder nach dem
+      Archivpasswort. WinRAR verwendet das Passwort, welches beim 
+      Öffnen des Archivs eingegeben wurde.
+
+   4. Behobene Fehler:
+
+      a) Der Schalter -tl und die Option "Archivzeit setzen auf Zeit 
+         der neusten Datei" funktionierte teilweise nicht richtig.
+         Manchmal wurde die Archivzeit auf die aktuelle Systemzeit
+         gesetzt und nicht auf die Zeit der neusten Datei;
+
+      b) Wenn die Formatierungszeichenkette beim Schalter -ag die 
+         Zeichen für Archivnummer, Monat und Minuten enthielt, wurde
+         von WinRAR für alle Archivnummern größer als 1 das Zeichen 
+         'I' anstelle des Minutenwertes in den erzeugten Archivnamen 
+         eingesetzt;
+
+      c) Bei ISO-Dateien im Format "ISO-9660 ohne Joilet-Erweiterung"
+         wurden Namen, die hohe ASCII-Werte enthielten, falsch angezeigt;
+
+      d) Beim Entpacken von zerstörten RAR-Archiven konnte 
+         WinRAR abstürzen;
+
+      e) War die Option "Nach dem Archivieren PC herunterfahren" beim
+         Befehl "Archive konvertieren" gesetzt, wurde der PC bereits 
+         nach der Konvertierung des ersten Archivs heruntergefahren
+         anstatt nach der Konvertierung aller ausgewählten Archive;
+
+      f) Wenn ein Anwender ein nichtexistierendes Zielverzeichnis in 
+         einem selbstentpackenden Archiv angab, konnte es unter 
+         Windows Vista passieren, dass das SFX-Archiv beim Befehl 
+         "Erstelle neues SFX-Fenster" in einer Endlosschleife 
+         hängen blieb.
+
+      g) WinRAR konnte manchmal eine Datei in einem Unterverzeichnis 
+         eines ACE-Archives nicht entpacken, das per Drag&drop entpackt
+         werden sollte.
+
+
+   Version 3.70
+
+   1. Viele Veränderungen für die Kompatibilität mit Windows Vista:
+
+      a) Das Hilfeformat wurde vom alten HLP-Format zum neueren
+         HTML-basierten CHM-Format geändert;
+
+      b) Die selbstextrahierenden Module mit grafischer Benutzer-
+         oberfläche fragen nach Administratorrechten, falls sie mit
+         den Rechten des aktuellen Benutzerkontos das Zielverzeichnis
+         nicht erstellen können;
+
+      c) Die Protokolldatei rar.log und die Dateien der WinRAR-Themen
+         werden nun im Verzeichnis %APPDATA%\WinRAR statt im 
+         WinRAR-Installationsverzeichnis gespeichert.
+
+         Die Datei mit den exportierten WinRAR-Einstellungen
+         settings.reg wird nun auch standardmäßig im Verzeichnis
+         %APPDATA%\WinRAR gespeichert. In den Dialogen 
+         "WinRAR-Einstellungen laden aus" und "WinRAR-Einstellungen
+         speichern unter" ist es jedoch möglich, ein anderes
+         Verzeichnis auszuwählen.
+
+         WinRAR sucht nach dem Registrierungsschlüssel und der Datei
+         settings.reg sowohl im Installationsverzeichnis als auch im
+         Verzeichnis %APPDATA%\WinRAR;
+
+         Es ist möglich, in der Registry den Pfad %appdata%\WinRAR für
+         die Einstellungen von WinRAR zu ändern. Dazu setzt man den
+         Registry-Key "AppData" (String-Wert) unter 
+         HKEY_CURRENT_USER\Software\WinRAR\Paths, um den Standardpfad
+         zu überschreiben.
+
+         Wenn Sie zum Beispiel die Themen-Dateien im WinRAR-
+         Installationsverzeichnis speichern möchten, setzen Sie diesen
+         Wert auf "C:\Programme\WinRAR".
+
+      d) Veränderungen für die Kompatibilität mit Windows Vista
+         für die Integration von WinRAR in den Windows-Explorer;
+
+      e) Die neue Option "Administratorzugriff erfragen" im Reiter
+         "Erweitert" des Dialogs "Erweiterte SFX-Optionen" ermöglicht
+         die Erstellung von SFX-Archiven, die beim Start unter
+         Windows Vista nach einer Erlaubnis für den Administrator-
+         zugriff fragen.
+
+         Der entsprechende Kommandozeilenschalter lautet -iadm.
+
+   2. Unterstützung für das Dateiformat ISO 13346 (UDF) hinzugefügt.
+      Dieses Format wird häufig bei ISO-Abbildern von DVDs verwendet.
+
+   3. Unicode-Unterstützung für ISO-9660-Dateien hinzugefügt.
+      Damit sollte WinRAR nun besser mit nichtenglischen Dateinamen
+      in .iso Dateien umgehen können.
+
+   4. Das Fenster für die Fortschrittsanzeige beim Packen und
+      Entpacken wurde verändert:
+
+      a) Es steht nun mehr Platz für Dateinamen zur Verfügung,
+         sodass auch längere Dateinamen angezeigt werden können;
+
+      b) Es zeigt den aktuellen Archivnamen in einer eigenen
+         Zeile an, sodass viel längere Archivnamen angezeigt
+         werden können;
+
+      c) Beim Archivieren zeigt es die aktuelle Kompressionsrate
+         in einer eigenen Zeile an;
+
+      d) Es kann sowohl die Standardfortschrittsbalken von
+         Windows als auch die klassischen Fortschrittsbalken von
+         WinRAR verwenden.
+         Schalten Sie die Option "Windows-Fortschrittsbalken" im
+         Dialog "Einstellungen - Allgemein" ein, um die Windows-
+         Fortschrittsbalken zu verwenden. Standardmäßig ist diese
+         Option aktiviert, wenn einige Windows-Designs aktiv sind
+         und deaktiviert, wenn das klassische Windows-Design
+         ausgewählt ist.
+
+         Windows-Fortschrittsbalken sind nur zweifarbig, sie
+         zeigen daher nicht die aktuelle Kompressionsrate an.
+         Die Kompressionsrate wird allerdings in einer
+         zusätzlichen Zeile angezeigt;
+
+      e) Die Schaltfläche "Modus..." befindet sich nun am unteren
+         Rand des Fensters.
+
+   5. Die selbstextrahierenden Module (SFX-Module) mit grafischer
+      Benutzeroberfläche (GUI) unterstützen nun folgende Schalter
+      in der Kommandozeile: 
+
+      -d<Pfad>     Zielverzeichnis setzen
+      -p<Pwt>      Passwort angeben
+      -s           Ruhe-Modus (Silent mode). Alles verstecken
+      -s1          Dasselbe wie -s
+      -s2          Ruhe-Modus, Startdialog unterdrücken
+      -sp<Par>     Parameter für Setup-Programm angeben
+
+   6. Die selbstextrahierenden Module (SFX-Module) mit grafischer
+      Benutzeroberfläche (GUI) geben nun nicht mehr die gesamte
+      Kommandozeile an das Setup-Programm weiter, wie sie das in
+      den vorherigen Versionen getan haben. Benötigen Sie Zugang
+      zu der gesamten Kommandozeile des selbstextrahierenden
+      Archivs, parsen Sie die Umgebungsvariable sfxcmd, die
+      diese Kommandozeile enthält.
+
+   7. Der neue Schalter -sc<Zeichensatz>[Objekte] erlaubt die
+      Auswahl eines Zeichensatzes für Archivkommentare und Dateien
+      mit Dateilisten. Er ersetzt den in RAR 3.60 eingeführten
+      Schalter -fcu, der von der Liste der unterstützten Schalter
+      gestrichen wurde. Man muss jetzt -scuc an Stelle von -fcu
+      angeben, um Unicode-Kommentare zu verwenden. Im Gegensatz
+      zu -fcu unterstützt -sc den OEM- und ANSI-Zeichensatz.
+
+   8. Neuer Befehl "Kopie des Archivs speichern unter..." im
+      Menü "Datei". Dieser Befehl kann dann nützlich sein, wenn
+      man ein Archiv aus dem Internet direkt in WinRAR geöffnet
+      hat und man das Archiv anschließend auf die Festplatte
+      speichern möchte.
+
+   9. Der Befehl "Zeilenumbruch" wurde im internen Betrachter zum
+      Menü "Ansicht" hinzugefügt, sodass man den Umbruchmodus auch
+      in bereits geöffneten Betrachterfenstern ändern kann.
+
+      Der Zustand dieser Option wird zwischen den Aufrufen des
+      internen Betrachters nicht gespeichert. Wenn Sie den 
+      Standard-Umbruchmodus ändern möchten, benutzen Sie den
+      Dialog "Einstellungen - Betrachter".
+
+  10. Im Dialog "Profile verwalten" wurden die Schaltflächen
+      "Rauf" und "Runter" hinzugefügt. Damit kann man die Position
+      des ausgewählten Profils in der Liste ändern.
+
+  11. Die Fortschrittanzeige wird nun auch beim Hinzufügen von
+      Wiederherstellungsinformationen angezeigt.
+
+  12. Wird WinRAR in den Systemtray minimiert und fährt man
+      mit der Maus über das WinRAR-Icon, so zeigt WinRAR
+      Meldungen über die aktuelle Archivoperation. In vorherigen
+      Versionen wurde nur der Gesamtfortschritt in Form einer
+      Prozentzahl angezeigt, nun wird auch noch die
+      verbleibende Zeit angezeigt.
+
+  13. Die Konsolenversion von RAR zeigt beim Berechnen der CRC32-
+      Prüfsumme für neu erstellte RAR-Volumen eine entsprechende
+      Meldung: Berechne Prüfsumme. Vorherige Versionen berechneten
+      die Prüfsumme von Volumen ohne irgendeine Meldung.
+
+  14. Die Liste der zuletzt verwendeten Archive im Menü "Datei"
+      kann jetzt Unicode-Dateinamen enthalten. Damit ist die
+      Unterstützung von nichtenglischen Archivnamen zuverlässiger.
+
+  15. Eine Sicherheitslücke durch einen Stacküberlauf im Modul
+      für die Verarbeitung von Passwörtern in der Konsolenversion
+      von RAR und UnRAR wurde behoben. WinRAR ist von dieser
+      Sicherheitslücke nicht betroffen. Wir danken iDEFENSE LABS
+      für die Mitteilung dieses Fehlers.

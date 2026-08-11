@@ -1,0 +1,3 @@
+Der Quellcode für Unrar und die Bibliothek unrar.dll 
+sind auf der Seite "RAR Extras" auf der RAR-Homepage
+http://www.rarlab.com/ verfügbar.
