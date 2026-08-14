@@ -1,0 +1,39 @@
+name: Download Qwen Model
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Qwen3 4B Q4_K_M
+        run: |
+          wget -O Qwen3-4B-Q4_K_M.gguf \
+          "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf?download=true"
+
+      - name: Show downloaded file
+        run: |
+          ls -lh Qwen3-4B-Q4_K_M.gguf
+          sha256sum Qwen3-4B-Q4_K_M.gguf
+
+      - name: Split into 1 GB pieces
+        run: |
+          split -b 1000M -d -a 2 \
+          Qwen3-4B-Q4_K_M.gguf \
+          Qwen3-4B-Q4_K_M.gguf.part-
+
+          ls -lh Qwen3-4B-Q4_K_M.gguf.part-*
+
+      - name: Create GitHub Release and upload pieces
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create qwen3-4b-q4 \
+          Qwen3-4B-Q4_K_M.gguf.part-* \
+          --title "Qwen3 4B Q4_K_M" \
+          --notes "Qwen3 4B Q4_K_M GGUF split into 1 GB pieces."
