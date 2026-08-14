@@ -32,8 +32,10 @@ jobs:
       - name: Create GitHub Release and upload pieces
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           gh release create qwen3-4b-q4 \
           Qwen3-4B-Q4_K_M.gguf.part-* \
+          --repo "$GH_REPO" \
           --title "Qwen3 4B Q4_K_M" \
           --notes "Qwen3 4B Q4_K_M GGUF split into 1 GB pieces."
