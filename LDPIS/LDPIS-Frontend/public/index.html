@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.png" /> -->
+    <link
+      rel="shortcut icon"
+      type="image/ico"
+      href="https://www.tatasteel.com/images/favicon.ico"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1A73E8" />
+    <meta http-equiv="Content-Security-Policy" content="" />
+    <meta http-equiv="X-Frame-Options" content="sameorigin" />
+    <meta name="robots" content="noindex" />
+    <!-- <link rel="apple-touch-icon" sizes="76x76" href="%PUBLIC_URL%/apple-icon.png" /> -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script type="text/javascript" src="xlsx.full.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"
+    ></script>
+    <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
+
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script type="text/javascript" src="%PUBLIC_URL%/xlsx.full.min.js"></script>
+    <title>LDP-IS MES</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <!-- <link
+      href="%PUBLIC_URL%/font-awesome-4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    /> -->
+    <link href="%PUBLIC_URL%/fontawesome/css/all.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+
+    <script>
+      function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == " ") {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+        let expires = "expires=" + d.toUTCString();
+        document.cookie =
+          cname +
+          "=" +
+          cvalue +
+          ";secure;SameSite=Strict;" +
+          expires +
+          ";path=/";
+      }
+      window.addEventListener("beforeunload", async (event) => {
+        let data = JSON.parse(getCookie("openTabs") || "[]");
+        let varRoute = JSON.parse(getCookie("routes") || "[]");
+        data = data?.filter((item) => {
+          return item !== window.navigation.currentEntry.id;
+        });
+        if (
+          varRoute?.lastIndexOf(
+            window.location.href?.slice(window.location.href?.lastIndexOf("/"))
+          ) >= 0
+        ) {
+          varRoute = varRoute?.filter((item, i) => {
+            return (
+              i !==
+              varRoute?.lastIndexOf(
+                window.location.href?.slice(
+                  window.location.href?.lastIndexOf("/")
+                )
+              )
+            );
+          });
+        }
+        if (data?.length > 0) {
+          setCookie("openTabs", JSON.stringify(data));
+        }
+        setCookie("routes", JSON.stringify(varRoute));
+      });
+      window.addEventListener("load", async () => {
+        let data = JSON.parse(getCookie("openTabs") || "[]");
+        let varRoute = JSON.parse(getCookie("routes") || "[]");
+        if (
+          data?.length === 0 ||
+          (data?.length === 1 && data[0] === window.navigation.currentEntry.id)
+        ) {
+          //need to replace this with your code
+          if (
+            data?.length === 1 &&
+            data[0] === window.navigation.currentEntry.id
+          ) {
+            // localStorage.setItem("firstTimeLoad", "false");
+          } else {
+            // localStorage.setItem("firstTimeLoad", "true");
+            const tmm_sessionId = localStorage.getItem("tmm_sessionId");
+            localStorage.clear();
+            localStorage.setItem("tmm_sessionId", tmm_sessionId);
+            setCookie("routes", "", 0);
+            window.location = "/ldpis_mes/#/";
+          }
+          data = [];
+        } else {
+          //need to replace this with your code
+          // localStorage.setItem("firstTimeLoad", "false");
+        }
+        varRoute?.push(
+          window.location.href?.slice(window.location.href?.lastIndexOf("/"))
+        );
+        data?.push(window.navigation.currentEntry.id);
+        setCookie("openTabs", JSON.stringify(data));
+        setCookie("routes", JSON.stringify(varRoute));
+      });
+    </script>
+  </body>
+</html>

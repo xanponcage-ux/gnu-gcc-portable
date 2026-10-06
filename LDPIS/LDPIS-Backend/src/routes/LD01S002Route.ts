@@ -1,0 +1,144 @@
+import { Router } from "express";
+import * as controller from "../controllers/LD01S002Controller";
+import authenticationMiddleware from "../middlewares/authenticationMiddleware";
+
+const LD01S002Route = Router();
+
+LD01S002Route.route("/getGroupPlant").post(
+  authenticationMiddleware.bearer,
+  controller.getGroupPlant
+);
+LD01S002Route.route("/getProcessList").post(
+  authenticationMiddleware.bearer,
+  controller.getProcessList
+);
+LD01S002Route.route("/getSchedules").post(
+  authenticationMiddleware.bearer,
+  controller.getSchedules
+);
+LD01S002Route.route("/generateScheduleId").post(
+  authenticationMiddleware.bearer,
+  controller.generateScheduleId
+);
+LD01S002Route.route("/getOrders").post(
+  authenticationMiddleware.bearer,
+  controller.getOrders
+);
+LD01S002Route.route("/getOrdersNonBOM").post(
+  authenticationMiddleware.bearer,
+  controller.getOrdersNonBOM
+);
+LD01S002Route.route("/getScheduleData").post(
+  authenticationMiddleware.bearer,
+  controller.getScheduleData
+);
+LD01S002Route.route("/getCoils").post(
+  authenticationMiddleware.bearer,
+  controller.getCoils
+);
+LD01S002Route.route("/compute").post(
+  authenticationMiddleware.bearer,
+  controller.compute
+);
+LD01S002Route.route("/confirm").post(
+  authenticationMiddleware.bearer,
+  controller.confirm
+);
+LD01S002Route.route("/getOrdFilter").post(
+  authenticationMiddleware.bearer,
+  controller.GetOrdFilter
+);
+LD01S002Route.route("/getordtyp").post(
+  authenticationMiddleware.bearer,
+  controller.getOrdTyp
+);
+LD01S002Route.route("/getBatchDtl").post(
+  authenticationMiddleware.bearer,
+  controller.GetBatchDtl
+);
+LD01S002Route.route("/getPdiDtl").post(
+  authenticationMiddleware.bearer,
+  controller.GetPdiDtl
+);
+LD01S002Route.route("/insertSlitProd").post(
+  authenticationMiddleware.bearer,
+  controller.InsertSlitProd
+);
+LD01S002Route.route("/getMCoilList").post(
+  authenticationMiddleware.bearer,
+  controller.GetMCoilList
+);
+LD01S002Route.route("/getODIA").post(
+  authenticationMiddleware.bearer,
+  controller.GetODIA
+);
+LD01S002Route.route("/getShiftStatus").post(
+  authenticationMiddleware.bearer,
+  controller.getShiftStatus
+);
+LD01S002Route.route("/getProductionType").post(
+  authenticationMiddleware.bearer,
+  controller.getProductionType
+);
+LD01S002Route.route("/getBatchCount").post(
+  authenticationMiddleware.bearer,
+  controller.getBatchCount
+);
+LD01S002Route.route("/getWorkCenterDropdown").post(
+  authenticationMiddleware.bearer,
+  controller.getWorkCenterList
+);
+LD01S002Route.route("/getScrapProductionTable").post(
+  authenticationMiddleware.bearer,
+  controller.getScrapProductionTable
+);
+LD01S002Route.route("/getBatchDtlforLP").post(
+  authenticationMiddleware.bearer,
+  controller.GetBatchDtlforLP
+);
+LD01S002Route.route("/getRsnDetails").post(
+  authenticationMiddleware.bearer,
+  controller.getHoldRsnDetails
+);
+LD01S002Route.route("/getPdiDtlMultiLot").post(
+  authenticationMiddleware.bearer,
+  controller.GetPdiDtlMultiLot
+);
+LD01S002Route.route("/getCRTScheduleMerge").post(
+  authenticationMiddleware.bearer,
+  controller.CRTScheduleMerge
+);
+LD01S002Route.route("/getBatchId").post(
+  authenticationMiddleware.bearer,
+  controller.getBatchId
+);
+LD01S002Route.route("/getInqDetl").post(
+  authenticationMiddleware.bearer,
+  controller.GetInqDetl
+);
+LD01S002Route.route("/getScheduleDel").post(
+  authenticationMiddleware.bearer,
+  controller.ScheduleDel
+);
+LD01S002Route.route("/getScheduleDelMerge").post(
+  authenticationMiddleware.bearer,
+  controller.ScheduleDelMerge
+);
+LD01S002Route.route("/getWorkCenter").post(
+  authenticationMiddleware.bearer,
+  controller.getWorkCenter
+);
+LD01S002Route.route("/getMergeBatchDetails").post(
+  authenticationMiddleware.bearer,
+  controller.getMergeBatchDetails
+);
+LD01S002Route.route("/getStatusList").post(
+  authenticationMiddleware.bearer,
+  controller.getStatus
+);
+LD01S002Route.route("/getResqtyval").post(
+  authenticationMiddleware.bearer,
+  controller.getResqtyval
+);
+
+export default LD01S002Route;

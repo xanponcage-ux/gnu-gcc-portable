@@ -1,0 +1,91 @@
+{
+  "models": [
+    {
+      "id": "gpt-5-mini",
+      "name": "GPT 5 Mini",
+      "deployment_name": "gpt-5-mini",
+      "adapter": "openai",
+      "aliases": [
+        "GPT-5-Mini",
+        "GPT 5 Mini"
+      ],
+      "temperature_fixed": 0.4,
+      "output_tokens_min": 100,
+      "output_tokens_max": 128000,
+      "output_tokens_default": 16000,
+      "speed_note": "native fast path"
+    },
+    {
+      "id": "gpt-4o-mini",
+      "name": "GPT-4o-mini",
+      "deployment_name": "gpt-4o-mini",
+      "adapter": "openai",
+      "aliases": [
+        "GPT 4o mini",
+        "GPT-4o-mini"
+      ],
+      "temperature_min": 0.0,
+      "temperature_max": 1.0,
+      "temperature_step": 0.1,
+      "temperature_default": 0.2,
+      "output_tokens_min": 100,
+      "output_tokens_max": 4000,
+      "output_tokens_default": 4000,
+      "speed_note": "native fast path"
+    },
+    {
+      "id": "gemini-3-flash",
+      "name": "Gemini 3 Flash",
+      "deployment_name": "gemini-3-flash",
+      "adapter": "gemini",
+      "aliases": [
+        "Gemini 3 Flash",
+        "Gemini-3-Flash"
+      ],
+      "temperature_min": 0.0,
+      "temperature_max": 2.0,
+      "temperature_step": 0.1,
+      "temperature_default": 0.2,
+      "output_tokens_min": 100,
+      "output_tokens_max": 65535,
+      "output_tokens_default": 16000,
+      "speed_note": "light response adapter"
+    },
+    {
+      "id": "claude-4.5-sonnet",
+      "name": "Claude 4.5 Sonnet",
+      "deployment_name": "claude-4.5-sonnet",
+      "adapter": "claude",
+      "aliases": [
+        "Claude 4.5 Sonnet",
+        "Claude-4.5-Sonnet"
+      ],
+      "temperature_min": 0.0,
+      "temperature_max": 1.0,
+      "temperature_step": 0.1,
+      "temperature_default": 0.2,
+      "output_tokens_min": 100,
+      "output_tokens_max": 64000,
+      "output_tokens_default": 16000,
+      "speed_note": "compatibility path; slower agent turns"
+    },
+    {
+      "id": "claude-4.5-haiku",
+      "name": "Claude 4.5 Haiku",
+      "deployment_name": "claude-4.5-haiku",
+      "adapter": "claude",
+      "aliases": [
+        "Claude 4.5 Haiku",
+        "Claude-4.5-Haiku"
+      ],
+      "temperature_min": 0.0,
+      "temperature_max": 1.0,
+      "temperature_step": 0.1,
+      "temperature_default": 0.2,
+      "output_tokens_min": 100,
+      "output_tokens_max": 64000,
+      "output_tokens_default": 16000,
+      "speed_note": "compatibility path; slower agent turns"
+    }
+  ]
+}
