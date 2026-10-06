@@ -9,6 +9,10 @@ export default class LD01S010 {
   getRM(props: any) {
     return repository.getRM(props);
   }
+
+    getRMtab(props: any) {
+    return repository.getRMtab(props);
+  }
   populateForecast() {
 return repository.populateForecast();
 }

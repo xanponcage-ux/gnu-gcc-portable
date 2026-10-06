@@ -33,6 +33,7 @@ import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import SaveIcon from "@mui/icons-material/Save";
 import ReactSelect from "components/Select/ReactSelect";
 import MDButton from "components/MDButton";
+import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
 
 export default function LD01S010() {
   const [loading, setLoading] = useState(false);
@@ -51,6 +52,7 @@ export default function LD01S010() {
 
   // CRITICAL CHANGE 1: Add a useRef for the coilTable1 div
   const coilTable1Ref = useRef(null);
+  const coilTable1Instance = useRef(null);
 
   const [plant, setPlant] = useState([]);
   const [selectedPlant, setSelectedPlant] = React.useState([]);
@@ -67,9 +69,22 @@ export default function LD01S010() {
     thick: "",
   });
 
+  // NEW STATE FOR TAB MANAGEMENT
+  const [tabValue, setTabValue] = useState(0); // 0 for "Order Details", 1 for "New Tab"
+
+  // NEW STATE FOR THE SECOND TABLE (from getRMtab)
+  const [coilTable2, setCoilTable2] = useState(null);
+  const [coilTable2Data, setCoilTable2Data] = useState([]);
+  const coilTable2Ref = useRef(null); // Ref for the new table's div
+
   const handlePlantChange = (value) => {
     // handleClearAll();
     setSelectedPlant(value);
+  };
+
+  // Handler for tab change
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
   };
 
   //page load
@@ -82,7 +97,7 @@ export default function LD01S010() {
         validateUser(token);
         // No linking-specific page load functions needed
         Promise.all([
-          getGroupPlantId(token.accessToken),
+          getGroupPlantId(token?.accessToken),
           // GetreportTyp(token.accessToken),
         ]).finally(() => {
           setLoading(false);
@@ -92,10 +107,15 @@ export default function LD01S010() {
     fetchData();
   }, []);
 
-  const handleCloseRMDialog = () => {
-    setOpenRMDialog(false);
-    setCoilTable1Data([]);
-  };
+const handleCloseRMDialog = () => {
+  if (coilTable1Instance.current) {
+    coilTable1Instance.current.destroy();
+    coilTable1Instance.current = null;
+  }
+
+  setOpenRMDialog(false);
+  setCoilTable1Data([]);
+};
 
   const openRMDetails = async (rowData) => {
     console.log("2. openRMDetails called with rowData:", rowData); // Existing log//
@@ -278,10 +298,21 @@ export default function LD01S010() {
     });
 
   useEffect(() => {
-
     if (!coilTableData?.length) {
       console.log("coilTableData is empty, Tabulator not initialized.");
+      // Destroy existing table if it was initialized with data and now data is empty
+      if (coilTable) {
+        coilTable.destroy();
+        setCoilTable(null);
+      }
       return;
+    }
+
+    // Destroy existing Tabulator instance if it exists to prevent re-initialization issues
+    const element = document.getElementById("coilTable");
+    if (element && element.tabulator) {
+      console.log("Destroying existing coilTable instance.");
+      element.tabulator.destroy();
     }
 
     const table = new Tabulator("#coilTable", {
@@ -304,48 +335,100 @@ export default function LD01S010() {
     setCoilTable(table);
 
     return () => {
-      table.destroy();
+      if (table) {
+        table?.destroy();
+      }
     };
   }, [coilTableData]);
 
   useEffect(() => {
-    // CRITICAL CHA//NGE 2: Use the ref instead of document.getElementById
+  if (!openRMDialog) return;
+
+  const timer = setTimeout(() => {
     const element = coilTable1Ref.current;
 
-    // Ensure dialog is open, data exists, and the DOM element is available
-    if (!openRMDialog || !coilTable1Data?.length || !element) {
-      console.log("coilTable1 UEE: Conditions not met for initialization.", { openRMDialog, dataLength: coilTable1Data?.length, elementExists: !!element });
+    if (!element) {
+      console.log("coilTable1 element not found");
       return;
     }
 
-    console.log("coilTable1 UEE: Initializing Tabulator for coilTable1.");
+    if (!coilTable1Data || coilTable1Data.length === 0) {
+      console.log("No RM data available");
+      return;
+    }
+
+    // destroy previous instance
+    if (coilTable1Instance.current) {
+      coilTable1Instance.current.destroy();
+      coilTable1Instance.current = null;
+    }
+
+    console.log("Initializing RM Detail Tabulator");
+
+    coilTable1Instance.current = new Tabulator(element, {
+      data: coilTable1Data,
+      columns: coilTable1Col,
+      height: 400,
+      // layout: "fitColumns",
+    });
+  }, 200);
+
+  return () => {
+    clearTimeout(timer);
+  };
+}, [openRMDialog, coilTable1Data]);
+
+  // NEW useEffect for coilTable2 (the new tab's table)
+  useEffect(() => {
+    const element = coilTable2Ref.current;
+
+    // Only initialize if the tab is active (tabValue === 1), data exists, and the DOM element is available
+    if (tabValue !== 1 || !coilTable2Data?.length || !element) {
+      console.log(
+        "coilTable2 UEE: Conditions not met for initialization.",
+        {
+          tabValue,
+          dataLength: coilTable2Data?.length,
+          elementExists: !!element,
+        }
+      );
+      // Destroy existing table if it was initialized with data and now data is empty or tab is not active
+      if (element && element.tabulator) {
+        element.tabulator.destroy();
+      }
+      return;
+    }
+
+    console.log("coilTable2 UEE: Initializing Tabulator for coilTable2.");
 
     // Destroy existing Tabulator instance if it exists to prevent re-initialization issues
     if (element.tabulator) {
-      console.log("coilTable1 UEE: Destroying existing Tabulator instance.");
+      console.log("coilTable2 UEE: Destroying existing Tabulator instance.");
       element.tabulator.destroy();
     }
 
     const table = new Tabulator(element, {
-      data: coilTable1Data,
-      columns: coilTable1Col, // Uses the column definition for the popup table
-      height: 400,
-      layout: "fitDataFill",
+      data: coilTable2Data,
+      columns: coilTable2Col, // Uses the column definition for the new tab's table
+      height: 380,
+      // layout: "fitDataFill",
     });
 
+    setCoilTable2(table);
+
     return () => {
-      console.log("coilTable1 UEE cleanup: Destroying Tabulator instance.");
-      if (element && element.tabulator) { // Ensure element exists before trying to destroy
+      console.log("coilTable2 UEE cleanup: Destroying Tabulator instance.");
+      if (element && element.tabulator) {
         element.tabulator.destroy();
       }
     };
-  }, [openRMDialog, coilTable1Data]);
+  }, [tabValue, coilTable2Data]); // Re-run when tabValue or coilTable2Data changes
 
   const fetchTableData = (type) => {
     setLoading(true);
     GetAuthorization().then((token) => {
       // Only call getCoilData for the De-Linking (UpdateCoil) operation
-      Promise.all([getCoilData(token.accessToken, type)]).finally(() => {
+      Promise.all([getCoilData(token?.accessToken, type)]).finally(() => {
         setLoading(false);
       });
     });
@@ -355,7 +438,7 @@ export default function LD01S010() {
     setLoading(true);
     let varCoilId = [];
 
-    // Only consider the De-Linking tab\'s selected rows
+    // Only consider the De-Linking tab's selected rows
     if (type.includes("Update")) {
       if (!coilTable) {
         alertify.error("Please Click Get Batches");
@@ -466,6 +549,8 @@ export default function LD01S010() {
       title: "Ord Qty (TON)",
       field: "COS_ORD_QUANTITY",
       hozAlign: "right",
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -480,6 +565,8 @@ export default function LD01S010() {
       title: "Current BTR Qty (TON)",
       field: "COS_BTR",
       hozAlign: "right",
+            bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -494,6 +581,8 @@ export default function LD01S010() {
       title: "Proposed Linked RM(TON)",
       field: "COS_ORD_QTY_RESERVE",
       hozAlign: "right",
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -506,8 +595,10 @@ export default function LD01S010() {
     },
     {
       title: "Propossed BTR Qty (TON)",
-      field: "COS_BTR",
+      field: "PROPOSED_BTR",
       hozAlign: "right",
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -574,7 +665,7 @@ export default function LD01S010() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-        {
+    {
       title: "Last Refresh Date",
       field: "COS_CREATE_DATE",
       headerFilter: "input",
@@ -584,7 +675,6 @@ export default function LD01S010() {
 
   // 1.FRONTEND - Modify coilTable1Col
   const coilTable1Col = [
-
     {
       title: "RM Batch",
       field: "ID_BATCH",
@@ -594,6 +684,9 @@ export default function LD01S010() {
     {
       title: "Net Wt (TON)",
       field: "QTY", // Assuming this is derived or another field, if not, adjust
+      hozAlign: "right",
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -607,6 +700,7 @@ export default function LD01S010() {
     {
       title: "Thik",
       field: "RMF_SEC1",
+            hozAlign: "right",
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -620,6 +714,7 @@ export default function LD01S010() {
     {
       title: "Odia",
       field: "RMF_SEC2",
+            hozAlign: "right",
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -630,9 +725,10 @@ export default function LD01S010() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-        {
+    {
       title: "RM Odia Used",
       field: "SECTION2_USED",
+            hozAlign: "right",
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
         if (value) {
@@ -649,7 +745,7 @@ export default function LD01S010() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-        {
+    {
       title: "Material No.",
       field: "MATERIAL_NUMBER",
       headerFilter: "input",
@@ -675,6 +771,7 @@ export default function LD01S010() {
       title: "Linked Order",
       field: "LINKED_ORDER_ID", // Changed to match alias in SQL
       headerFilter: "input",
+            hozAlign: "right",
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
     },
@@ -683,11 +780,225 @@ export default function LD01S010() {
       field: "LINKED_ITEM_NO", // Changed to match alias in SQL//
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
+            hozAlign: "right",
     },
 
     {
       title: "Used Qty (TON)",
       field: "WEIGHT_USED_TOTAL",
+      hozAlign: "right",
+            bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(3);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Last Refresh Date",
+      field: "RMF_CREATE_DATE",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+  ];
+
+  // NEW: Column definitions for the new tab's table (getRMtab)
+  const coilTable2Col = [
+    {
+      title: "Plant",
+      field: "RMF_CD_EPA",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Batch ID",
+      field: "RMF_ID_BATCH",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Cast No",
+      field: "RMF_CAST_NO",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Material No",
+      field: "RMF_NO_MATNR",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Prod CD",
+      field: "RMF_CD_PROD",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Status",
+      field: "RMF_CD_STATUS",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    // {
+    //   title: "Quality Actl Code", // Added
+    //   field: "RMF_CD_QLTY_ACTL",
+    //   headerFilter: "input",
+    //   headerFilterPlaceholder: "search...",
+    // },
+    {
+      title: "QTY (TON)",
+      field: "RMF_MS_PIECE_ACTL",
+      hozAlign: "right",
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(3);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Thickness",
+      field: "RMF_SEC1",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(2);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Width",
+      field: "RMF_SEC2",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(2);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Length", // Added////
+      field: "RMF_LENGTH",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(2);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "TDC",
+      field: "RMF_TDC_ACTL",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Material Description", // Added
+      field: "RMF_MATNR_DESC",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Age In Days", // Added
+      field: "RMF_AGE_DAYS",
+      headerFilter: "input",
+      hozAlign: "right",
+      headerFilterPlaceholder: "search...",
+    },
+    // {
+    //   title: "Creation Timestamp", // Added
+    //   field: "RMF_TS_CREATION",
+    //   headerFilter: "input",
+    //   headerFilterPlaceholder: "search...",
+    // },
+    // {
+    //   title: "Gross Calculation", // Added
+    //   field: "RMF_GROSS_CAL",
+    //   hozAlign: "right",
+    //   formatter: function (cell, formatterParams) {
+    //     var value = cell.getValue();
+    //     if (value) {
+    //       return parseFloat(value).toFixed(3);
+    //     }
+    //     return value;
+    //   },
+    //   headerFilter: "input",
+    //   headerFilterPlaceholder: "search...",
+    // },
+    {
+      title: "Order ID 1", // Added
+      field: "RMF_ID_ORDER_1",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Item No 1", // Added
+      field: "RMF_NO_ITEM_1",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Order ID 2", // Added
+      field: "RMF_ID_ORDER_2",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Item No 2", // Added
+      field: "RMF_NO_ITEM_2",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Order ID 3", // Added
+      field: "RMF_ID_ORDER_3",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Item No 3", // Added
+      field: "RMF_NO_ITEM_3",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Order ID 4", // Added
+      field: "RMF_ID_ORDER_4",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Item No 4", // Added
+      field: "RMF_NO_ITEM_4",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Weight Used Ord1", // Added
+      field: "RMF_WT_USED_ORD1",
       hozAlign: "right",
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
@@ -699,24 +1010,159 @@ export default function LD01S010() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-            {
+    {
+      title: "Weight Used Ord2", // Added
+      field: "RMF_WT_USED_ORD2",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(3);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Weight Used Ord3", // Added
+      field: "RMF_WT_USED_ORD3",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(3);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Weight Used Ord4", // Added
+      field: "RMF_WT_USED_ORD4",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(3);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Total Weight Used", // Added
+      field: "RMF_WT_USED_TOTAL",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(3);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Section2 Used", // Added
+      field: "RMF_SEC2_USED",
+      hozAlign: "right",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        if (value) {
+          return parseFloat(value).toFixed(2);
+        }
+        return value;
+      },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Slit No Ord1", // Added
+      field: "RMF_NO_SLIT_ORD1",
+      headerFilter: "input",
+      hozAlign: "right",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Slit No Ord2", // Added
+      field: "RMF_NO_SLIT_ORD2",
+      headerFilter: "input",
+      hozAlign: "right",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Slit No Ord3", // Added
+      field: "RMF_NO_SLIT_ORD3",
+      headerFilter: "input",
+      hozAlign: "right",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Slit No Ord4", // Added
+      field: "RMF_NO_SLIT_ORD4",
+      headerFilter: "input",
+      hozAlign: "right",
+      headerFilterPlaceholder: "search...",
+    },
+    {
       title: "Last Refresh Date",
       field: "RMF_CREATE_DATE",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Create User", // Added
+      field: "RMF_CREATE_USER",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Updated On", // Added
+      field: "RMF_UPDATED_ON",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Updated By", // Added
+      field: "RMF_UPDATED_BY",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
   ];
 
   const downloadTableExcel = () => {
-    // Assuming 'coilTable' is the table to download
-    if (coilTableData.length === 0) {
-      alertify.error("No Data exists in table for Downloading");
+    let tableToDownload = null;
+    let dataToCheck = [];
+    let fileNamePrefix = "";
+
+    if (tabValue === 0) {
+      tableToDownload = coilTable;
+      dataToCheck = coilTableData;
+      fileNamePrefix = "Order_Details";
+    } else if (tabValue === 1) {
+      tableToDownload = coilTable2;
+      dataToCheck = coilTable2Data;
+      fileNamePrefix = "RM_Details";
+    } else {
+      alertify.error("No active table to download.");
       return;
     }
-    var date = new Date();
-    var fileName = "Pipe Decision" + ".xlsx";
-    coilTable.download("xlsx", fileName, {
-      sheetName: "Sheet1",
+
+    if (!tableToDownload || dataToCheck.length === 0) {
+      alertify.error("No Data exists in the current table for Downloading");
+      return;
+    }
+
+    const date = new Date();
+    const formattedDate = date.toISOString().slice(0, 10); // YYYY-MM-DD
+    const fileName = `${fileNamePrefix}_${formattedDate}.xlsx`;
+
+    tableToDownload.download("xlsx", fileName, {
+      sheetName: fileNamePrefix,
     });
   };
 
@@ -736,13 +1182,13 @@ export default function LD01S010() {
         .post("api/LD01S010/populateForecast", {}, defaultOptions)
         .then((response) => {
           console.log(response);
-// console.log(response?.data?.success);
-        if (response?.data?.success) {
-          alertify.success(response.data.message);
-          // CRITICAL CHANGE: Check if the message starts with 'Y'
-          if (response.data.message && response.data.message.startsWith('Y')) {
-            getCoilDataLinkDlink(); // Call getCoilDataLinkDlink if message starts with 'Y'
-          }
+          // console.log(response?.data?.success);
+          if (response?.data?.success) {
+            alertify.success(response.data.message);
+            // CRITICAL CHANGE: Check if the message starts with 'Y'
+            if (response.data.message && response.data.message.startsWith("Y")) {
+              getCoilDataLinkDlink(); // Call getCoilDataLinkDlink if message starts with 'Y'
+            }
           } else {
             alertify.error(response.data.message);
           }
@@ -828,6 +1274,45 @@ export default function LD01S010() {
     });
   };
 
+  // NEW: Function to fetch data for the new tab (getRMtab)
+  const getCoilDataList11 = async () => {
+    setLoading(true);
+    setCoilTable2Data([]); // Clear previous data
+    try {
+      const token = await GetAuthorization();
+      const data = {
+        plant: selectedPlant?.value || "0780", // Example: use selected plant
+        // Add any other filters or parameters required by getRMtab API
+        // For now, assuming it might take similar plant parameter
+      };
+      console.log("Sending data to getRMtab API:", data);
+      const defaultOptions = {
+        headers: {
+          Authorization: "Bearer " + token.accessToken,
+        },
+      };
+      const response = await axiosAPI.post(
+        "api/LD01S010/getRMtab", // New API endpoint
+        data,
+        defaultOptions
+      );
+      console.log("getRMtab API response:", response);
+
+      if (response?.data?.length > 0) {
+        setCoilTable2Data(response.data);
+        alertify.success("Data loaded successfully for New Tab!");
+      } else {
+        setCoilTable2Data([]);
+        alertify.error("No Data Found");
+      }
+    } catch (error) {
+      console.error("Error fetching data for New Tab:", error);
+      alertify.error("Failed to fetch data for New Tab");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // New function to fetch data for coilTable1 from api/LD01S010/getRM
   const getRMData = async (rowData) => {
     // console.log()
@@ -900,7 +1385,6 @@ export default function LD01S010() {
       )}
       {isRestricted === false && (
         <>
-          {/* This block previously rendered for tabValue == 1, now it's the only content */}
           <MDBox pt={6} pb={3} py={9.5}>
             <Grid container spacing={4}>
               <Grid item xs={12}>
@@ -926,58 +1410,13 @@ export default function LD01S010() {
                           Filters
                         </MDTypography>
                       </Grid>
-                      <Grid item xs={1}>
-                        {/* <Tooltip title="Delink">
-                          <IconButton
-                            color="white"
-                            onClick={() => fetchTableData("UpdateCoil")}
-                          >
-                            <SaveIcon />
-                          </IconButton>
-                        </Tooltip> */}
-                      </Grid>
+                      <Grid item xs={1}></Grid>
                     </Grid>
                   </MDBox>
 
                   <MDBox px={3} py={1}>
                     <Grid item xs={12}>
                       <Grid container spacing={1}>
-                        {/* <Grid item xs={3}>
-                          <MDTypography
-                            fontWeight="regular"
-                            fontSize="small"
-                            textTransform="capitalize"
-                            variant="h6"
-                            color={"dark"}
-                            noWrap
-                          >
-                            Batch Ids (Multi)
-                          </MDTypography>
-                          <MDInput
-                            id="batchId"
-                            multiline
-                            minRows={3}
-                            maxRows={10}
-                            sx={{
-                              width: "100%",
-                              "& textarea": {
-                                resize: "both",
-                                overflow: "auto",
-                              },
-                            }}
-                            placeholder="Paste batch IDs (comma, space or newline separated)"
-                            value={coilFilter.batchId} // Use the new coilFilter
-                            onChange={(e) => {
-                              setCoilFilter({
-                                // Use the new coilFilter
-                                ...coilFilter,
-                                batchId: e.target.value.toUpperCase(),
-                              });
-                              setCoilTable(null); // Use the new coilTable
-                              setCoilTableData([]); // Use the new coilTableData
-                            }}
-                          />
-                        </Grid> */}
                         <Grid item xs={2} style={{ zIndex: 3 }}>
                           <MDTypography
                             fontWeight="regular"
@@ -997,33 +1436,6 @@ export default function LD01S010() {
                             onChange={handlePlantChange}
                           />
                         </Grid>
-                        {/* <Grid item xs={2.5}>
-                          <MDTypography
-                            fontWeight="regular"
-                            fontSize="small"
-                            textTransform="capitalize"
-                            variant="h6"
-                            color={"dark"}
-                            noWrap
-                          >
-                            RM Batch Id
-                          </MDTypography>
-                          <MDInput
-                            id="parentBatch"
-                            value={coilFilter.parentBatch} // Use the new coilFilter
-                            onChange={(e) => {
-                              setCoilFilter({
-                                // Use the new coilFilter
-                                ...coilFilter,
-                                parentBatch: e.target.value
-                                  .toUpperCase()
-                                  .slice(0, 10),
-                              });
-                              setCoilTable(null); // Use the new coilTable
-                              setCoilTableData([]); // Use the new coilTableData
-                            }}
-                          />
-                        </Grid> */}
 
                         <Grid item xs={2}>
                           <MDButton
@@ -1036,163 +1448,245 @@ export default function LD01S010() {
                           </MDButton>
                         </Grid>
 
-                        <Grid item xs={2}>
-                          <MDButton
-                            style={{ marginTop: "1.5rem" }}
-                            size="small"
-                            color="info"
-                            onClick={() => getCoilDataLinkDlink("")}
-                          >
-                            View
-                          </MDButton>
-                        </Grid>
-
+                        {/* Moved the "View" button to be specific to the active tab */}
+                        {tabValue === 0 && (
+                          <Grid item xs={2}>
+                            <MDButton
+                              style={{ marginTop: "1.5rem" }}
+                              size="small"
+                              color="info"
+                              onClick={() => getCoilDataLinkDlink("")}
+                            >
+                              View Order Details
+                            </MDButton>
+                          </Grid>
+                        )}
+                        {tabValue === 1 && (
+                          <Grid item xs={2}>
+                            <MDButton
+                              style={{ marginTop: "1.5rem" }}
+                              size="small"
+                              color="info"
+                              onClick={getCoilDataList11}
+                            >
+                              View RM Details
+                            </MDButton>
+                          </Grid>
+                        )}
                       </Grid>
                     </Grid>
                   </MDBox>
                 </Card>
               </Grid>
 
+              {/* NEW: Tab Navigation */}
               <Grid item xs={12}>
-                <Card>
-                  <MDBox
-                    mx={2}
-                    mt={-3}
-                    py={0.25}
-                    px={2}
-                    variant="gradient"
-                    bgColor="info"
-                    borderRadius="lg"
-                    coloredShadow="info"
+                <AppBar position="static">
+                  <Tabs
+                    value={tabValue}
+                    onChange={handleTabChange}
+                    indicatorColor="secondary"
+                    textColor="inherit"
+                    variant="fullWidth"
+                    aria-label="full width tabs example"
                   >
-                    <Grid
-                      container
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
-                      <Grid item xs={4}>
-                        <MDTypography variant="h6" color="white">
-                          Order Details
-                        </MDTypography>
-                      </Grid>
-                      <Tooltip title="Rm View">
-                        <IconButton
-                          color="white"
-                          onClick={() => {
-                            if (!coilTable) {
-                              alertify.error("Please load Order Details first");
-                              return;
-                            }
-
-                            const selectedRows = coilTable.getSelectedRows();
-
-                            if (selectedRows.length === 0) {
-                              alertify.error("Please select an Order");
-                              return;
-                            }
-
-                            const rowData = selectedRows[0].getData();
-
-                            setSelectedOrderRow(rowData);
-                            getRMData(rowData);
-                          }}
-                        >
-                          <ManageSearchIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
-                  </MDBox>
-                  <MDBox px={3} py={1}>
-                    <Grid container spacing={1}>
-                      <Grid item xs={12}>
-                        {coilTableData?.length > 0 && ( // Use the new coilTableData
-                          <>
-                            <div id="coilTable" />
-                            <p>Showing 1 to {coilTableData?.length} rows</p>
-                          </>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </MDBox>
-                </Card>
+                    <Tab label="Order Details" />
+                    <Tab label="RM Details" /> {/* New Tab */}
+                  </Tabs>
+                </AppBar>
               </Grid>
 
-              {/* Removed the third Card for "RM Batch Details" from the main page */}
-              {/* <Grid item xs={12}>
-                <Card>
-                  <MDBox
-                    mx={2}
-                    mt={-3}
-                    py={0.25}
-                    px={2}
-                    variant="gradient"
-                    bgColor="info"
-                    borderRadius="lg"
-                    coloredShadow="info"
-                  >
-                    <Grid
-                      container
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
+              {/* Conditional rendering based on tabValue */}
+              {tabValue === 0 && (
+                <Grid item xs={12}>
+                  <Card>
+                    <MDBox
+                      mx={2}
+                      mt={-3}
+                      py={0.25}
+                      px={2}
+                      variant="gradient"
+                      bgColor="info"
+                      borderRadius="lg"
+                      coloredShadow="info"
                     >
-                      <Grid item xs={4}>
-                        <MDTypography variant="h6" color="white">
-                          RM Batch Details
-                        </MDTypography>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Grid item xs={10}>
+                          <MDTypography variant="h6" color="white">
+                            Order Details
+                          </MDTypography>
+                        </Grid>
+                         <Grid item xs={0.25}>
+                        <Tooltip title="Rm View">
+                          <IconButton
+                            color="white"
+                            onClick={() => {
+                              if (!coilTable) {
+                                alertify.error(
+                                  "Please load Order Details first"
+                                );
+                                return;
+                              }
+
+                              const selectedRows = coilTable.getSelectedRows();
+
+                              if (selectedRows.length === 0) {
+                                alertify.error("Please select an Order");
+                                return;
+                              }
+
+                              const rowData = selectedRows[0].getData();
+
+                              setSelectedOrderRow(rowData);
+                              getRMData(rowData);
+                            }}
+                          >
+                            <ManageSearchIcon />
+                          </IconButton>
+                        </Tooltip>
+                        </Grid>
+ <Grid item xs={0.25}>
+                                                <Tooltip title="Download">
+                                                  <IconButton
+                                                    color="white"
+                                                    onClick={() => downloadTableExcel()}
+                                                  >
+                                                    <DownloadForOfflineIcon />
+                                                  </IconButton>
+                                                </Tooltip>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </MDBox>
-                  <MDBox px={3} py={1}>
-                    <Grid container spacing={1}>
-                      <Grid item xs={12}>
-                        {coilTable1Data?.length > 0 && ( // Use the new coilTable1Data
-                          <>
-                            <div id="coilTable1" />
-                            <p>Showing 1 to {coilTable1Data?.length} rows</p>
-                          </>
-                        )}
+                    </MDBox>
+                    <MDBox px={3} py={1}>
+                      <Grid container spacing={1}>
+                        <Grid item xs={12}>
+                          {coilTableData?.length > 0 && ( // Use the new coilTableData
+                            <>
+                              <div id="coilTable" />
+                              <p>Showing 1 to {coilTableData?.length} rows</p>
+                            </>
+                          )}
+                          {coilTableData?.length === 0 && !loading && (
+                            <MDTypography
+                              variant="body2"
+                              color="text"
+                              sx={{ mt: 2, textAlign: "center" }}
+                            >
+                            </MDTypography>
+                          )}
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </MDBox>
-                </Card>
-              </Grid> */}
+                    </MDBox>
+                  </Card>
+                </Grid>
+              )}
+
+              {/* NEW: Content for the new tab */}
+              {tabValue === 1 && (
+                <Grid item xs={12}>
+                  <Card>
+                    <MDBox
+                      mx={2}
+                      mt={-3}
+                      py={0.25}
+                      px={2}
+                      variant="gradient"
+                      bgColor="info"
+                      borderRadius="lg"
+                      coloredShadow="info"
+                    >
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Grid item xs={10}>
+                          <MDTypography variant="h6" color="white">
+                            RM details
+                          </MDTypography>
+                        </Grid>
+                        {/* Download button for RM Details tab */}
+                        <Grid item xs={0.25}>
+                          <Tooltip title="Download">
+                            <IconButton
+                              color="white"
+                              onClick={() => downloadTableExcel()}
+                            >
+                              <DownloadForOfflineIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Grid>
+                      </Grid>
+                    </MDBox>
+                    <MDBox px={3} py={1}>
+                      <Grid container spacing={1}>
+                        <Grid item xs={12}>
+                          {coilTable2Data?.length > 0 && (
+                            <>
+                              <div ref={coilTable2Ref}></div>{" "}
+                              {/* Attach ref here */}
+                              <p>Showing 1 to {coilTable2Data?.length} rows</p>
+                            </>
+                          )}
+                          {coilTable2Data?.length === 0 && !loading && (
+                            <MDTypography
+                              variant="body2"
+                              color="text"
+                              sx={{ mt: 2, textAlign: "center" }}
+                            >
+                            </MDTypography>
+                          )}
+                        </Grid>
+                      </Grid>
+                    </MDBox>
+                  </Card>
+                </Grid>
+              )}
             </Grid>
           </MDBox>
         </>
       )}
-      <Dialog
-        open={openRMDialog}
-        onClose={handleCloseRMDialog}
-        maxWidth="xl"
-        fullWidth
-      >
-        <BootstrapDialogTitle onClose={handleCloseRMDialog}>
-
-        </BootstrapDialogTitle>
+<Dialog
+  open={openRMDialog}
+  onClose={handleCloseRMDialog}
+  maxWidth="xl"
+  fullWidth
+  keepMounted
+>
+        <BootstrapDialogTitle onClose={handleCloseRMDialog}></BootstrapDialogTitle>
 
         <MDBox p={2}>
           {selectedOrderRow && (
-            <Grid container spacing={2} sx={{ mb: 2 }}>
-              <Grid item xs={3}>
-                <b>Order:</b> {selectedOrderRow?.COS_ID_ORDER}
+            <MDBox mb={3} px={2}> {/* Added mb for vertical spacing and px for horizontal alignment */}
+              <Grid container spacing={2}>
+                <Grid item xs={5}>
+                  {/* <MDTypography variant="body1" fontWeight="bold">Order: {selectedOrderRow?.COS_ID_ORDER}</MDTypography> */}
+                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_ID_ORDER}</MDTypography> */}
+                </Grid>
+
+                <Grid item xs={4}>
+                  {/* <MDTypography variant="body1" fontWeight="bold">Item: {selectedOrderRow?.COS_NO_ITEM}</MDTypography> */}
+                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_NO_ITEM}</MDTypography> */}
+                </Grid>
+
+                <Grid item xs={1}>
+                  {/* <MDTypography variant="body1" fontWeight="bold">TDC: {selectedOrderRow?.COS_NO_TDC}</MDTypography> */}
+                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_NO_TDC}</MDTypography> */}
+                </Grid>
               </Grid>
-
-               <Grid item xs={2}>
-                 <b>Item:</b> {selectedOrderRow?.COS_NO_ITEM}
-               </Grid>
-
-               <Grid item xs={2}>
-                 <b>TDC:</b> {selectedOrderRow?.COS_NO_TDC}
-               </Grid>
-             </Grid>
+            </MDBox>
           )}
 
-          {/* Moved the RM Batch Details header into the Dialog */}
+          {/* RM Batch Details header - CRITICAL FIX: Removed mt={-3} to prevent overlap */}
           <MDBox
-            mx={2}
-            mt={-3}
+            mx={2} // Keeps horizontal margin consistent with other MDBox headers
+            mt={0} // Removed negative margin. Vertical spacing is now handled by mb on the element above.
             py={0.25}
             px={2}
             variant="gradient"
@@ -1206,21 +1700,43 @@ export default function LD01S010() {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Grid item xs={4}>
+              <Grid item xs={4}> {/* Ensures the title takes full width */}
                 <MDTypography variant="h6" color="white">
                   RM Batch Details
+                  
                 </MDTypography>
               </Grid>
+              <Grid item xs={3}>
+                  <MDTypography variant="body1" color="white" fontWeight="bold">Order: {selectedOrderRow?.COS_ID_ORDER} /  {selectedOrderRow?.COS_NO_ITEM}</MDTypography>
+                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_ID_ORDER}</MDTypography> */}
+                </Grid>
+
+                <Grid item xs={2}>
+                  {/* <MDTypography variant="body1" color="white" fontWeight="bold">Item: {selectedOrderRow?.COS_NO_ITEM}</MDTypography> */}
+                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_NO_ITEM}</MDTypography> */}
+                </Grid>
             </Grid>
           </MDBox>
 
-          {/* CRITICAL CHANGE 3: Attach //the ref to the div */}
-          <div id="coilTable1" ref={coilTable1Ref}></div>
+          {/* CRITICAL CHANGE 3: Attach the ref to the div */}
+          <MDBox mt={2} px={2}> {/* Added mt for vertical spacing and px for horizontal alignment of the table */}
+            <div
+  id="coilTable1"
+  ref={coilTable1Ref}
+  style={{
+    // minHeight: "400px",
+    // width: "100%",
+  }}
+></div>
+          </MDBox>
 
           {coilTable1Data?.length > 0 && (
-            <p>Showing 1 to {coilTable1Data?.length} rows</p>
+            <MDTypography variant="body2" sx={{ mt: 1, px: 2 }}> {/* Used MDTypography for consistency and added spacing/padding */}
+              Showing 1 to {coilTable1Data?.length} rows
+            </MDTypography>
           )}
         </MDBox>
+
       </Dialog>
     </DashboardLayout>
   );

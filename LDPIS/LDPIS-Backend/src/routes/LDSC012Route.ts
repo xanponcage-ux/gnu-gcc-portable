@@ -11,4 +11,8 @@ LDSC012Route.route("/InsertData").post(
   authenticationMiddleware.bearer,
   controller.InsertData
 );
+LDSC012Route.route("/DeleteData").post(
+  authenticationMiddleware.bearer,
+  controller.DeleteData
+);
 export default LDSC012Route;

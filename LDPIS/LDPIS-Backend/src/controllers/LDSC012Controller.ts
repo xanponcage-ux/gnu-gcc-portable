@@ -37,3 +37,21 @@ export const InsertData = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+
+export const DeleteData = async (req: Request, res: Response) => {
+  try {
+    const selectedData = req?.body?.rowData;
+    const adid = req?.body?.adid;
+    let results: any[] = [];
+
+    for (const data of selectedData) {
+      const result = await LDSC012.prototype.DeleteData(data, adid);
+      results.push(result);
+    }
+
+    return res.status(200).json(results);
+  } catch (error: any) {
+    console.log("delete_cont", error);
+    return res.status(400).json(error);
+  }
+};

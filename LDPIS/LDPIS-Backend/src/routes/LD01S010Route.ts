@@ -12,6 +12,10 @@ LD01S010Route.route("/getRM").post(
   authenticationMiddleware.bearer,
   controller.getRM
 );
+LD01S010Route.route("/getRMtab").post(
+  authenticationMiddleware.bearer,
+  controller.getRMtab
+);
 LD01S010Route.route("/populateForecast").post(
 authenticationMiddleware.bearer,
 controller.populateForecast

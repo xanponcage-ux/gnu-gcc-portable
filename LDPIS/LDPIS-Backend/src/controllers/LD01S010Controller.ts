@@ -26,6 +26,18 @@ export const getRM = async (req: Request, res: Response) => {
   }
 };
 
+export const getRMtab = async (req: Request, res: Response) => {
+  try {
+    let props = req.body;
+    const results: any = await ResponceData(
+      await LD01S010.prototype.getRMtab(props)
+    );
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
 export const populateForecast = async (req: Request, res: Response) => {
   try {
     const result: any = await LD01S010.prototype.populateForecast();

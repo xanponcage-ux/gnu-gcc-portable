@@ -172,7 +172,7 @@ export const getCdValue = async () => {
 
 export const getPathVal = async () => {
   try {
-    const sql = `select DISTINCT OPD_CD_PATH from V_ord_path_dtls `;
+    const sql = `select DISTINCT LPP_NO_PROC_PATH from v_ldp_proc_path `;
 
     return await query.executeQuery(sql);
   } catch (error) {

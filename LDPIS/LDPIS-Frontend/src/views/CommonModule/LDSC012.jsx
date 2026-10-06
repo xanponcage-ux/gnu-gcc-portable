@@ -569,15 +569,37 @@ export default function LDSC012() {
   };
 
   const deleteData = async () => {
-    //console.log('hello')
-    let tableSelect = tableRef.current.getSelectedRows();
-    let selectedData = tableSelect.map((row) => row?._row?.data);
-    let data = {
+    // Collect selected rows using Tabulator instance (preferred) or fallback to ref
+    let tableSelect = [];
+    if (tabulatorInstance.current && typeof tabulatorInstance.current.getSelectedRows === "function") {
+      tableSelect = tabulatorInstance.current.getSelectedRows();
+    } else if (tableRef.current && typeof tableRef.current.getSelectedRows === "function") {
+      tableSelect = tableRef.current.getSelectedRows();
+    }
+
+    if (!tableSelect || tableSelect.length === 0) {
+      alertify.error("Please Select Rows to Delete");
+      return;
+    }
+
+    // Tabulator row components expose the row data differently depending on version
+    // Try to read _row.data first (common in this codebase), otherwise fall back to getData()
+    const selectedData = tableSelect.map((row) => {
+      try {
+        if (row?._row?.data) return row._row.data;
+        if (typeof row.getData === "function") return row.getData();
+        return row;
+      } catch (e) {
+        return row;
+      }
+    });
+
+    const data = {
       adid: serverDetails.PersonalNo,
       rowData: selectedData,
     };
 
-    const url = "api/LDSC011/DeleteOrderData";
+    const url = "api/LDSC012/DeleteData";
 
     GetAuthorization().then((token) => {
       var defaultOptions = {
@@ -589,19 +611,57 @@ export default function LDSC012() {
       axiosAPI.post(url, data, defaultOptions).then((response) => {
         if (response.statusText != "" && response.statusText != "OK") {
           alertify.error(response);
-          //setE1Table([,]);
         } else {
           console.log(response);
-          var res = response.data?.rowsAffected;
-          console.log("res", res);
-          if (res >= 1) {
-            console.log("msg", res);
+
+          // Robustly sum any "rowsAffected" values found in the response (supports nested insertResult/deleteResult)
+          const sumRowsAffected = (obj) => {
+            if (obj == null) return 0;
+            let sum = 0;
+            if (typeof obj === "number") return obj;
+            if (Array.isArray(obj)) {
+              obj.forEach((item) => {
+                sum += sumRowsAffected(item);
+              });
+              return sum;
+            }
+            if (typeof obj === "object") {
+              for (const key in obj) {
+                if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+                const val = obj[key];
+                if (key === "rowsAffected") {
+                  // rowsAffected may be a number or string depending on the backend wrapper
+                  if (typeof val === "number") sum += val;
+                  else if (typeof val === "string") sum += Number(val) || 0;
+                } else {
+                  sum += sumRowsAffected(val);
+                }
+              }
+              return sum;
+            }
+            return 0;
+          };
+
+          let total = 0;
+          try {
+            total = sumRowsAffected(response.data);
+          } catch (e) {
+            total = 0;
+          }
+
+          console.log("delete rowsAffected total:", total, "response.data:", response.data);
+
+          if (total >= 1) {
             alertify.success("Row Deleted Successfully !!!");
-            getOrderData();
+            // Use the submit button handler to refresh the table (requested)
+            handleSubmitBtn();
           } else {
             alertify.error("Row Deletion Failed");
           }
         }
+      }).catch((err) => {
+        console.error('Delete API error', err);
+        alertify.error('Error deleting rows');
       });
     });
   };

@@ -9,4 +9,7 @@ export default class LDSC012 {
   InsertData(data: any, adid: any, tabValue: any) {
     return repository.InsertData(data, adid, tabValue);
   }
+  DeleteData(data: any, adid: any) {
+    return repository.DeleteData(data, adid);
+  }
 }

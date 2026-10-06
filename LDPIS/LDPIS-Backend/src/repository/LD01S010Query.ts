@@ -85,6 +85,7 @@ export const getList = async (props: any) => {
     t.COS_DISPATCHED_FG,
     t.COS_BTS,
     t.COS_BTR,
+  (t.COS_BTR-t.COS_ORD_QTY_RESERVE) PROPOSED_BTR,
     t.COS_WIP_QTY,
     t.COS_FG_STOCK,
     t.COS_ODIA,
@@ -130,6 +131,71 @@ WHERE
 
     let results = await query.executeQuery(sql);
     // console.log("getList results: ", results);
+    return results;
+  } catch (error) {
+    console.log(error);
+    throw new Error.InternalServerErrorMsg(error);
+  }
+};
+
+export const getRMtab = async (props: any) => {
+  try {
+
+    let sql = `SELECT
+  RMF_CD_EPA,
+  RMF_ID_BATCH,
+  RMF_CD_PROD,
+  RMF_CD_STATUS,
+  RMF_CD_QLTY_ACTL,
+  RMF_SEC1,
+  RMF_SEC2,
+  RMF_LENGTH,
+  RMF_TDC_ACTL,
+  RMF_MS_PIECE_ACTL,
+  RMF_CAST_NO,
+  RMF_NO_MATNR,
+  RMF_MATNR_DESC,
+  RMF_AGE_DAYS,
+  RMF_TS_CREATION,
+  RMF_GROSS_CAL,
+  RMF_ID_ORDER_1,
+  RMF_NO_ITEM_1,
+  RMF_ID_ORDER_2,
+  RMF_NO_ITEM_2,
+  RMF_ID_ORDER_3,
+  RMF_NO_ITEM_3,
+  RMF_ID_ORDER_4,
+  RMF_NO_ITEM_4,
+  RMF_WT_USED_ORD1,
+  RMF_WT_USED_ORD2,
+  RMF_WT_USED_ORD3,
+  RMF_WT_USED_ORD4,
+  RMF_WT_USED_TOTAL,
+  RMF_SEC2_USED,
+  RMF_NO_SLIT_ORD1,
+  RMF_NO_SLIT_ORD2,
+  RMF_NO_SLIT_ORD3,
+  RMF_NO_SLIT_ORD4,
+  To_char(RMF_CREATE_DATE,'yyyy-MM-dd HH24:MI:SS') RMF_CREATE_DATE, -- Formatted for consistency
+  RMF_CREATE_USER,
+  RMF_UPDATED_ON,
+  To_char(RMF_UPDATED_ON,'yyyy-MM-dd HH24:MI:SS') RMF_UPDATED_ON, -- Formatted for consistency
+  RMF_UPDATED_BY
+FROM V_RM_FORCAST`;
+
+    const conditions = [];
+
+    if (props.plant) {
+      conditions.push(`RMF_CD_EPA = '${props.plant}'`);
+    }
+
+    if (conditions.length > 0) {
+      sql += ` WHERE ${conditions.join(' AND ')}`;
+    }
+
+    console.log("getRMtab sql: ", sql);
+
+    let results = await query.executeQuery(sql);
     return results;
   } catch (error) {
     console.log(error);
