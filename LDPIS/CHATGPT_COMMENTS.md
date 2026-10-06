@@ -15,3 +15,24 @@ This file is the shared scratchpad for ChatGPT instructions, runnable commands, 
 ## 2026-10-06 — File created
 
 Use this file for future LDPIS-related runnable instructions and supplementary code.
+
+---
+
+## 2026-10-06 — PowerShell script blocked during LD150 transfer
+
+The error means PowerShell is blocking scripts; the transfer hasn’t started.
+
+Run these two commands in the same PowerShell window:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
+```
+
+This setting lasts only until you close that window; it doesn’t permanently change your laptop’s policy.
+
+If it still fails, run this and send the output:
+
+```powershell
+Get-ExecutionPolicy -List
+```
