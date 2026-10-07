@@ -1,0 +1,242 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S002.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S002.jsx
+index e8ab48a..e50ce64 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S002.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S002.jsx
+@@ -38,6 +38,23 @@ export default function LD09S002() {
+   const [table, setTable] = useState(null);
+   const [tableData, setTableData] = useState([]);
+   const [batchId, setBatchId] = useState("");
++  const [pipeOptions, setPipeOptions] = useState([]);
++  const [ordNo, setOrdNo] = useState("");
++  const [ordItem, setOrdItem] = useState("");
++
++  useEffect(() => {
++    let active = true;
++    setPipeOptions([]);
++    if (selectedPlant?.value) {
++      GetAuthorization().then((token) => axiosAPI.post(
++        "api/LD09S002/getPipeNoList", { plant: selectedPlant.value },
++        { headers: { Authorization: "Bearer " + token.accessToken } }
++      )).then((response) => {
++        if (active) setPipeOptions(response.data);
++      }).catch(() => { if (active) alertify.error("Could not load Pipe No list."); });
++    }
++    return () => { active = false; };
++  }, [selectedPlant?.value]);
+   const [mBatch, setMBatch] = useState("");
+   const [thick, setThick] = useState("");
+   const [odia, setOdia] = useState("");
+@@ -196,14 +213,7 @@ export default function LD09S002() {
+ 
+             setSelectedPlant(items[0]);
+ 
+-            Promise.all([
+-              getProcess(items[0], token.accessToken),
+-              getStatus(items[0], token.accessToken),
+-              getHoldRsn(token.accessToken),
+-              getScrapMatNo(items[0], token.accessToken),
+-            ]).finally(() => {
+-              setLoading(false);
+-            });
++            setLoading(false);
+           }
+         })
+         .catch((f) => {
+@@ -212,24 +222,45 @@ export default function LD09S002() {
+     });
+   };
+ 
+-  //use Effect to render display data
++  // Destroy the old grid when filters change, preventing stale selection saves.
+   useEffect(() => {
+-    if (tableData && tableData.length > 0) {
+-      setTable(
+-        new Tabulator("#table", {
+-          data: tableData,
+-          columns: tableCol,
+-          height: 380,
+-          layout: "fitDataFill",
+-        })
+-      );
++    if (!tableData.length) {
++      setTable(null);
++      return;
+     }
++    const grid = new Tabulator("#table", {
++      data: tableData, columns: tableCol, height: 380, layout: "fitDataFill",
++    });
++    setTable(grid);
++    return () => grid.destroy();
+   }, [tableData]);
+ 
+   const handlePlantChange = (value) => {
+     setSelectedPlant(value);
++    setBatchId("");
++    setOrdNo("");
++    setOrdItem("");
++    setTableData([]);
++  };
++
++  const handlePipeNoChange = (value) => {
++    setBatchId(value?.value || "");
++    setOrdNo(String(value?.orderNo ?? ""));
++    setOrdItem(String(value?.orderItem ?? ""));
++    setTableData([]);
++  };
++
++  const handleOrderNoChange = (event) => {
++    if (batchId) setOrdItem("");
++    setOrdNo(event.target.value);
++    setBatchId("");
++    setTableData([]);
++  };
++
++  const handleOrderItemChange = (event) => {
++    setOrdItem(event.target.value);
++    setBatchId("");
+     setTableData([]);
+-    setTable(null);
+   };
+ 
+   const fetchTableData = () => {
+@@ -246,7 +277,9 @@ export default function LD09S002() {
+     return new Promise((resolve) => {
+       var data = {
+         plant: selectedPlant ? selectedPlant.value : "",
+-        batchId: batchId ? batchId : "",
++        batchId: String(batchId || "").trim(),
++        ordNo: batchId ? "" : ordNo.trim(),
++        ordItem: batchId ? "" : ordItem.trim(),
+         mBatch: mBatch ? mBatch : "",
+         thick: thick ?? "",
+         odia: odia ?? "",
+@@ -256,6 +289,11 @@ export default function LD09S002() {
+         resolve();
+         return;
+       }
++      if (!data.batchId && (!data.ordNo || !data.ordItem)) {
++        alertify.error("Please select Pipe No or enter both Order No and Order Item.");
++        resolve();
++        return;
++      }
+       var defaultOptions = {
+         headers: {
+           Authorization: "Bearer " + accessToken,
+@@ -271,7 +309,7 @@ export default function LD09S002() {
+           } else {
+             if (response.data.length == 0) {
+               alertify.error("No Data Found!");
+-              setTableData([,]);
++              setTableData([]);
+               return;
+             } else {
+               setTableData(response.data);
+@@ -286,7 +324,7 @@ export default function LD09S002() {
+ 
+   const saveData = async () => {
+     console.log("Inside Save Data");
+-    var selectedRows = table.getSelectedRows();
++    var selectedRows = table?.getSelectedRows() || [];
+ 
+     var selectedData = [];
+     selectedRows.forEach(function (item) {
+@@ -302,7 +340,7 @@ export default function LD09S002() {
+     }
+     var data = {
+       selectedData: selectedData,
+-      plantCd: "0780",
++      plantCd: selectedPlant?.value,
+     };
+     setLoading(true);
+     GetAuthorization().then((token) => {
+@@ -580,7 +618,11 @@ export default function LD09S002() {
+     setSelectedPlant([]);
+     setBatchId("");
+     setMBatch("");
+-    setTableData([,]);
++    setOrdNo("");
++    setOrdItem("");
++    setThick("");
++    setOdia("");
++    setTableData([]);
+     setTable(null);
+   };
+ 
+@@ -654,7 +696,7 @@ export default function LD09S002() {
+                   <MDBox px={3} py={1}>
+                     <Grid item xs={12}>
+                       <Grid container spacing={1}>
+-                        <Grid item xs={2.5} style={{ zIndex: 5 }}>
++                        <Grid item xs={1.5} style={{ zIndex: 5 }}>
+                           <MDTypography
+                             fontWeight="regular"
+                             fontSize="small"
+@@ -672,7 +714,7 @@ export default function LD09S002() {
+                             onChange={handlePlantChange}
+                           />
+                         </Grid>
+-                        <Grid item xs={1.5}>
++                        <Grid item xs={1.5} style={{ zIndex: 5 }}>
+                           <MDTypography
+                             fontWeight="regular"
+                             fontSize="small"
+@@ -681,19 +723,23 @@ export default function LD09S002() {
+                             color={"dark"}
+                             noWrap
+                           >
+-                            Batch Id
++                            Pipe No
+                           </MDTypography>
+-                          <MDInput
++                          <ReactSelect
+                             id="batchId"
+-                            value={batchId}
+-                            onChange={(e) => {
+-                              setBatchId(
+-                                e.target.value.toUpperCase().slice(0, 10)
+-                              );
+-                              setTableData([,]);
+-                            }}
++                            options={pipeOptions}
++                            value={pipeOptions.find((option) => option.value === batchId) || null}
++                            onChange={handlePipeNoChange}
+                           />
+                         </Grid>
++                        <Grid item xs={1.5}>
++                          <MDTypography fontWeight="regular" fontSize="small" variant="h6">Order No</MDTypography>
++                          <MDInput name="ordNo" value={ordNo} onChange={handleOrderNoChange} />
++                        </Grid>
++                        <Grid item xs={1}>
++                          <MDTypography fontWeight="regular" fontSize="small" variant="h6">Order Item</MDTypography>
++                          <MDInput name="ordItem" value={ordItem} onChange={handleOrderItemChange} />
++                        </Grid>
+                         <Grid item xs={1.5}>
+                           <MDTypography
+                             fontWeight="regular"
+@@ -712,7 +758,7 @@ export default function LD09S002() {
+                               setMBatch(
+                                 e.target.value.toUpperCase().slice(0, 10)
+                               );
+-                              setTableData([,]);
++                              setTableData([]);
+                             }}
+                           />
+                         </Grid>
+@@ -734,7 +780,7 @@ export default function LD09S002() {
+                               setThick(
+                                 e.target.value.toUpperCase().slice(0, 10)
+                               );
+-                              setTableData([,]);
++                              setTableData([]);
+                             }}
+                           />
+                         </Grid>
+@@ -756,7 +802,7 @@ export default function LD09S002() {
+                               setOdia(
+                                 e.target.value.toUpperCase().slice(0, 10)
+                               );
+-                              setTableData([,]);
++                              setTableData([]);
+                             }}
+                           />
+                         </Grid>

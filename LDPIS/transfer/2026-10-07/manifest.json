@@ -1,0 +1,104 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD09S001Controller.ts",
+    "Patch": "LDPIS-Backend-LD09S001Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD09S002Controller.ts",
+    "Patch": "LDPIS-Backend-LD09S002Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD10S001Controller.ts",
+    "Patch": "LDPIS-Backend-LD10S001Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD11S001Controller.ts",
+    "Patch": "LDPIS-Backend-LD11S001Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD12S001Controller.ts",
+    "Patch": "LDPIS-Backend-LD12S001Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD13S001Controller.ts",
+    "Patch": "LDPIS-Backend-LD13S001Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/models/LD09S002Model.ts",
+    "Patch": "LDPIS-Backend-LD09S002Model.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD09S002Query.ts",
+    "Patch": "LDPIS-Backend-LD09S002Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD14S001Query.ts",
+    "Patch": "LDPIS-Backend-LD14S001Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD15S001Query.ts",
+    "Patch": "LDPIS-Backend-LD15S001Query.ts.patch",
+    "LegacyPatch": "legacy-LDPIS-Backend-LD15S001Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD16S001Query.ts",
+    "Patch": "LDPIS-Backend-LD16S001Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/routes/LD09S002Route.ts",
+    "Patch": "LDPIS-Backend-LD09S002Route.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD09S001.jsx",
+    "Patch": "LDPIS-Frontend-LD09S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD09S002.jsx",
+    "Patch": "LDPIS-Frontend-LD09S002.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD10S001.jsx",
+    "Patch": "LDPIS-Frontend-LD10S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD11S001.jsx",
+    "Patch": "LDPIS-Frontend-LD11S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD12S001.jsx",
+    "Patch": "LDPIS-Frontend-LD12S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD13S001.jsx",
+    "Patch": "LDPIS-Frontend-LD13S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD14S001.jsx",
+    "Patch": "LDPIS-Frontend-LD14S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD15S001.jsx",
+    "Patch": "LDPIS-Frontend-LD15S001.jsx.patch",
+    "LegacyPatch": "legacy-LDPIS-Frontend-LD15S001.jsx.patch"
+  }
+]

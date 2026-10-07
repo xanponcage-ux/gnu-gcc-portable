@@ -13,4 +13,10 @@ LD09S002Route.route("/saveData").post(
   controller.saveData
 );
 
+LD09S002Route.route("/getPipeNoList").post(
+  authenticationMiddleware.bearer,
+  controller.getPipeNoList
+);
+
 export default LD09S002Route;
+

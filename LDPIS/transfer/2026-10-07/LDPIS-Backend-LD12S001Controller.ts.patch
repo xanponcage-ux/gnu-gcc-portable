@@ -1,0 +1,32 @@
+diff --git a/LDPIS/LDPIS-Backend/src/controllers/LD12S001Controller.ts b/LDPIS/LDPIS-Backend/src/controllers/LD12S001Controller.ts
+index f794ed7..d11bb0a 100644
+--- a/LDPIS/LDPIS-Backend/src/controllers/LD12S001Controller.ts
++++ b/LDPIS/LDPIS-Backend/src/controllers/LD12S001Controller.ts
+@@ -58,12 +58,12 @@ export const getPipeNoList = async (req: Request, res: Response) => {
+ };
+ 
+ export const insertTempData = async (req: Request, res: Response) => {
++  const successBatches: string[] = [];
++  const failedBatches: string[] = [];
+   try {
+     const selectedData = req.body?.selectedRowsData || [];
+ 
+     // Track successful and failed batches
+-    const successBatches: string[] = [];
+-    const failedBatches: string[] = [];
+ 
+     let totalRowsAffected = 0;
+     let totalRowsAffectedLab = 0;
+@@ -406,9 +406,9 @@ export const insertTempData = async (req: Request, res: Response) => {
+     console.error("insertTempData error =>", error);
+ 
+     return res.status(400).json({
+-      message: `Error: ${error?.message || error}`,
+-      successCount: 0,
+-      failedCount: 0,
++      message: `Successfully saved ${successBatches.length} pipe(s). Error: ${error?.message || error}`,
++      successCount: successBatches.length,
++      failedCount: failedBatches.length,
+     });
+   }
+ };

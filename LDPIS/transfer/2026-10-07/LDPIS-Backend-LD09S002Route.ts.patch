@@ -1,0 +1,15 @@
+diff --git a/LDPIS/LDPIS-Backend/src/routes/LD09S002Route.ts b/LDPIS/LDPIS-Backend/src/routes/LD09S002Route.ts
+index 18724a7..3145d5d 100644
+--- a/LDPIS/LDPIS-Backend/src/routes/LD09S002Route.ts
++++ b/LDPIS/LDPIS-Backend/src/routes/LD09S002Route.ts
+@@ -13,5 +13,10 @@ LD09S002Route.route("/saveData").post(
+   controller.saveData
+ );
+ 
++LD09S002Route.route("/getPipeNoList").post(
++  authenticationMiddleware.bearer,
++  controller.getPipeNoList
++);
++
+ export default LD09S002Route;
+ 

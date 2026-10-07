@@ -1,0 +1,26 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S001.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S001.jsx
+index 12c638b..0d6edcd 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S001.jsx
+@@ -1140,11 +1140,17 @@ export default function LDS090() {
+         if (response.statusText != "" && response.statusText != "OK") {
+           alertify.error("Error in Procedure");
+         } else {
+-          var res = response.data[0];
+-          if (res == "N") {
+-            alertify.error("Row Insertion Failed");
++          if (response.data.failedCount > 0 && response.data.successfulPipes?.length) {
++            const saved = new Set(response.data.successfulPipes);
++            selectedTable.getRows().forEach((row) => {
++              if (saved.has(String(row.getData().Pipe_No))) row.delete();
++            });
++          }
++          const result = response.data;
++          if (result.failedCount > 0 || result.successCount === 0) {
++            alertify.error(result.message);
+           } else {
+-            alertify.success("Row Inserted Successfully !!!");
++            alertify.success(response.data.message);
+             setTable([,]);
+             setSelectedTable(null);
+             handleClearAll();

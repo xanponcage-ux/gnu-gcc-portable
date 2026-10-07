@@ -480,6 +480,16 @@ export const getFillData = async (data: any) => {
                             AND x.TBP_CD_PROC = '8'
                         )
                       and rownum = 1) ASL_NO,
+             (SELECT f.TBP_FLD_NO_130 FROM V_BARE_PDO f
+                WHERE f.TBP_BATCH_NO = LOM_ID_BATCH
+                  AND f.TBP_PLANT_CD = LOM_CD_EPA
+                  AND f.TBP_CD_PROC = 'E'
+                  AND f.TBP_BATCH_PROC_NO = (
+                    SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
+                     WHERE x.TBP_BATCH_NO = f.TBP_BATCH_NO
+                       AND x.TBP_PLANT_CD = f.TBP_PLANT_CD
+                       AND x.TBP_CD_PROC = 'E')
+                  AND ROWNUM = 1) AS TBP_FLD_NO_130,
                (select A.TBP_DIA_END_10 FROM V_BARE_PDO A
                       where A.TBP_BATCH_NO = LOM_ID_BATCH
                         and A.TBP_CD_PROC = 'A'
@@ -532,3 +542,4 @@ export const getFillData = async (data: any) => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
+

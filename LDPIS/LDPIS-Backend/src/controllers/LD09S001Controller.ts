@@ -28,36 +28,47 @@ export const getPipeNoList = async (req: Request, res: Response) => {
 };
 
 export const insertTempData = async (req: Request, res: Response) => {
-  try {
-    const selectedData = req.body?.selectedRowsData;
-    let totalRowsAffected = 0;
-
-    console.log("selectedData: ", selectedData);
-
-    for (const data of selectedData) {
-      console.log("deleteTempData");
-      let result = await LD09S001.prototype.deleteTempData(data);
-      console.log("del", result);
-      console.log("insertTempData");
-      let result1 = await LD09S001.prototype.insertTempData(data);
-      if (result1?.rowsAffected) {
-        totalRowsAffected += result1.rowsAffected;
-      }
-      var result2: any;
-      if (totalRowsAffected >= 1) {
-        result2 = await LD09S001.prototype.callproc90(data);
-        //console.log("procedure",result2)
-      }
-      if (result2[0][0] == "Y") {
-        let result3 = await LD09S001.prototype.deleteTempData(data);
-        console.log("delete3", result3);
-      }
-    }
-
-    return res.status(200).json(result2);
-  } catch (error: any) {
-    return res.status(400).json(error);
+  const selectedData = req.body?.selectedRowsData;
+  if (!Array.isArray(selectedData) || selectedData.length === 0) {
+    return res.status(400).json({ message: "Please select pipes to save.", successCount: 0, failedCount: 0 });
   }
+  const successfulPipes: string[] = [];
+  const failedPipes: string[] = [];
+  let failureMessage = "";
+  for (const data of selectedData) {
+    const pipe = String(data?.BATCH_NO ?? data?.PIPE_NO ?? "");
+    try {
+      await LD09S001.prototype.deleteTempData(data);
+      const inserted = await LD09S001.prototype.insertTempData(data);
+      if (!inserted?.rowsAffected) {
+        failedPipes.push(pipe);
+        failureMessage = `Temporary data could not be inserted for Pipe ${pipe}.`;
+        break;
+      }
+      const result = await LD09S001.prototype.callproc90(data);
+      const flag = String(result?.[0] ?? "").trim();
+      if (flag.charAt(0).toUpperCase() === "Y") {
+        successfulPipes.push(pipe);
+        try { await LD09S001.prototype.deleteTempData(data); }
+        catch (cleanupError) { console.error("Saved pipe; temporary cleanup failed", cleanupError); }
+      } else {
+        failedPipes.push(pipe);
+        failureMessage = `Pipe ${pipe}: ${flag || "Procedure did not return a success flag."}`;
+        break;
+      }
+    } catch (error: any) {
+      failedPipes.push(pipe);
+      failureMessage = `Pipe ${pipe}: ${error?.message || "Save failed."}`;
+      break;
+    }
+  }
+  const successCount = successfulPipes.length;
+  const failedCount = failedPipes.length;
+  const pendingCount = selectedData.length - successCount - failedCount;
+  const message = failedCount
+    ? `Successfully saved ${successCount} pipe(s). Failed: ${failedCount}. Not processed: ${pendingCount}. ${failureMessage}`
+    : `Successfully saved ${successCount} pipe(s).`;
+  return res.status(200).json({ message, successCount, failedCount, pendingCount, successfulPipes, failedPipes });
 };
 
 export const getTataDate = async (req: Request, res: Response) => {
@@ -154,3 +165,4 @@ export const getOrderDetails = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+

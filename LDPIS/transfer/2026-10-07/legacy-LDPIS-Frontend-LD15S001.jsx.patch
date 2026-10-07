@@ -1,0 +1,602 @@
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
+@@ -445,6 +445,13 @@
+           paginationSize: 12,
+           data: getBlastAppTable,
+           columns: BlastAppColumns,
++          rowFormatter: (row) => {
++            const existing = Number(row.getData().NO_OF_REC || 0) > 0;
++            const style = row.getElement().style;
++            style.backgroundColor = existing ? "#FFE5E5" : "";
++            style.borderLeft = existing ? "5px solid #DC3545" : "5px solid #198754";
++            style.fontWeight = existing ? "600" : "";
++          },
+           height: 400,
+           layout: "fitDataFill",
+         });
+@@ -601,6 +608,7 @@
+               obj.label = row.LOM_ID_BATCH;
+               obj.value = row.LOM_ID_BATCH;
+               obj.parentCoilNo = row.LOM_ID_PAR_COIL_NO;
++              obj.NO_OF_REC = Number(row.NO_OF_REC || 0);
+               items.push(obj);
+             });
+             
+@@ -746,44 +754,48 @@
+       setLoading(true);
+       setBlastAppTable([])
+       setSelectedBlastAppTable(null)
+-      var prodStartDateInput = document.getElementById("prodStartDate").value;
+-    var prodEndDateInput = document.getElementById("prodEndDate").value;
+-    var currentTime = new Date(); 
+-    var prodEndDateCheck = new Date(prodEndDateInput);
+-
+-    //if productionendDt is greater than currentdate check
+-    if (prodEndDateCheck > currentTime) {
+-     
+-      alertify.error("The selected end date is greater than the current time.");
+-      setLoading(false);
+-      return;
+-    }
+-    //if startdt is greater than endDt
+-    if (new Date(prodStartDateInput) >= new Date(prodEndDateInput)) {
+-      alertify.error("Start time should be before end time");
+-      setLoading(false);
+-      return;
+-    }
+-    
+-    // startdt must be in 72 hours of current date
+-    var hoursDifference = (currentTime - new Date(prodStartDateInput)) / (1000 * 60 * 60); // Corrected calculation
+-    if (hoursDifference > 72) {
+-      alertify.error(
+-        "Start date must be within 72 hours of the current time."
+-      );
+-      setLoading(false);
+-      return;
+-    }
+-    if (prodStartDateInput == "") {
+-      alertify.error("Please select Prod Start Dt");
+-      setLoading(false);
+-      return;
+-    }
+-    if (prodEndDateInput == "") {
+-      alertify.error("Please select Prod End Dt");
+-      setLoading(false);
+-      return;
+-    }
++      const isExistingSelectedPipe = Boolean(pipeno?.value) && Number(pipeno.NO_OF_REC || 0) > 0;
++      // Order/item searches retain full validation, even when some returned rows exist.
++      if (!isExistingSelectedPipe) {
++        var prodStartDateInput = document.getElementById("prodStartDate").value;
++        var prodEndDateInput = document.getElementById("prodEndDate").value;
++        var currentTime = new Date();
++        var prodEndDateCheck = new Date(prodEndDateInput);
++
++        //if productionendDt is greater than currentdate check
++        if (prodEndDateCheck > currentTime) {
++
++          alertify.error("The selected end date is greater than the current time.");
++          setLoading(false);
++          return;
++        }
++        //if startdt is greater than endDt
++        if (new Date(prodStartDateInput) >= new Date(prodEndDateInput)) {
++          alertify.error("Start time should be before end time");
++          setLoading(false);
++          return;
++        }
++
++        // startdt must be in 72 hours of current date
++        var hoursDifference = (currentTime - new Date(prodStartDateInput)) / (1000 * 60 * 60); // Corrected calculation
++        if (hoursDifference > 72) {
++          alertify.error(
++          "Start date must be within 72 hours of the current time."
++          );
++          setLoading(false);
++          return;
++        }
++        if (prodStartDateInput == "") {
++          alertify.error("Please select Prod Start Dt");
++          setLoading(false);
++          return;
++        }
++        if (prodEndDateInput == "") {
++          alertify.error("Please select Prod End Dt");
++          setLoading(false);
++          return;
++        }
++      }
+       const hasPipeNo = Boolean(pipeno?.value);
+       const hasOrderNo = Boolean(String(ordNo || "").trim());
+       const hasOrderItem = Boolean(
+@@ -806,7 +818,12 @@
+         return;
+       }
+ 
+-      if (
++      if (!selectedResult?.value) {
++        alertify.error("Decision is mandatory for the selected Pipe No.");
++        return;
++      }
++
++      if (!isExistingSelectedPipe && (
+         !SHIFT_DATE ||
+         !selectedShift?.value ||
+         !String(tbpVisualInsp80 || "").trim() ||
+@@ -820,7 +837,7 @@
+         !String(tbpWftT2150 || "").trim() ||
+         !String(tbpWftT3150 || "").trim() ||
+         !String(tbpWftT4150 || "").trim()
+-      ) {
++      )) {
+         alertify.error("All fields marked * are mandatory. Kindly fill.");
+         return;
+       }
+@@ -855,7 +872,7 @@
+       let response = await axiosAPI.post("api/LD15S001/getFillData", requestData, defaultOptions);
+   
+       console.log("response", response);
+-      if (response.status !== 200 || !response.data) {
++      if (response.status !== 200 || !Array.isArray(response.data)) {
+         throw new Error("Invalid response from API");
+       }
+       if (response.data.length == 0)
+@@ -865,228 +882,242 @@
+         return;
+       }
+ 
+-        let BlastAppData = response.data.map((row) => ({
++        let BlastAppData = response.data.map((row) => {
++          const noOfRec = Number(row.NO_OF_REC ?? (hasPipeNo ? pipeno.NO_OF_REC : 0) ?? 0);
++          const alreadyExists = noOfRec > 0;
++          // A stale pipe option must not bypass required inputs for a new row.
++          if (isExistingSelectedPipe && !alreadyExists) {
++            throw new Error("The selected pipe status has changed. Reselect the pipe and fill the mandatory fields.");
++          }
++          const value = (field, screenValue) => alreadyExists
++            ? row[field] ?? ""
++            : screenValue || "";
++          return {
+   C_PRC: nxtproc2 || "",
+   N_PRC: row.NEXT_PROC || nxtproc || "",
+ 
+   PIPE_NO: row.TBP_BATCH_NO || "",
+ 
+-  DATE: SHIFT_DATE || "",
+-  TIME: timeOfProcess || "",
++  DATE: alreadyExists ? row.TBP_PROD_DATE ?? "" : SHIFT_DATE || "",
++  NO_OF_REC: noOfRec,
++  TIME: value("TIME", timeOfProcess),
+ 
+   RESULT: selectedResult?.value || "",
+ 
+-  SHIFT: selectedShift?.value || "",
+-
+-  HOLD_REASON: inspectorRemarks || "",
+-  INSPECT_NAME: tbpVisualInsp80 || "",
++  SHIFT: value("TBP_SHIFT_DN", selectedShift?.value),
++
++  HOLD_REASON: value("TBP_REMARK", inspectorRemarks),
++  INSPECT_NAME: value("TBP_INSP_NAME", tbpVisualInsp80),
+ 
+   ORDER_NO: row.ORDER_NO || ordNo || "",
+   ITEM: row.ITEM || ordItem || "",
+   PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || rmBatchId?.value || "",
+ 
+-  TBP_NO_MATNR: row.TBP_NO_MATNR || "",
+-  TBP_WEIGHT: row.TBP_WEIGHT || "",
+-  TBP_ID_FIRST_PAR: row.TBP_ID_FIRST_PAR || "",
+-  TBP_QUALITY_CD: row.TBP_QUALITY_CD || "",
+-  TBP_CD_FLAG: row.TBP_CD_FLAG || "",
++  TBP_NO_MATNR: value("TBP_NO_MATNR", row.TBP_NO_MATNR || ""),
++  TBP_WEIGHT: value("TBP_WEIGHT", row.TBP_WEIGHT || ""),
++  TBP_ID_FIRST_PAR: value("TBP_ID_FIRST_PAR", row.TBP_ID_FIRST_PAR || ""),
++  TBP_QUALITY_CD: value("TBP_QUALITY_CD", row.TBP_QUALITY_CD || ""),
++  TBP_CD_FLAG: value("TBP_CD_FLAG", row.TBP_CD_FLAG || ""),
+ 
+   /* -------------------------
+      VISUAL INSPECTION
+      ------------------------- */
+ 
+   TBP_VISUAL_INSP_80:
+-    TBP_VISUAL_INSP_80 ||
++    value("TBP_VISUAL_INSP_80", TBP_VISUAL_INSP_80 ||
+     row.TBP_VISUAL_INSP_80 ||
+-    "",
++    ""),
+ 
+   TBP_ASL_NO_80:
+-    row.TBP_ASL_NO_80 || "",
++    value("TBP_ASL_NO_80", row.TBP_ASL_NO_80 || ""),
+ 
+   TBP_FLD_NO_130:
+-    row.TBP_FLD_NO_130 || "",
++    value("TBP_FLD_NO_130", row.TBP_FLD_NO_130 || ""),
+ 
+   /* -------------------------
+      ENVIRONMENT
+      ------------------------- */
+ 
+   TBP_AMBT_TMP_100:
+-    tbpAmbTmp100 ||
++    value("TBP_AMBT_TMP_100", tbpAmbTmp100 ||
+     row.TBP_AMBT_TMP_100 ||
+-    "",
++    ""),
+ 
+   TBP_RH_100:
+-    tbpRh100 ||
++    value("TBP_RH_100", tbpRh100 ||
+     row.TBP_RH_100 ||
+-    "",
++    ""),
+ 
+   TBP_DEW_TEMP_100:
+-    tbpDewTemp100 ||
++    value("TBP_DEW_TEMP_100", tbpDewTemp100 ||
+     row.TBP_DEW_TEMP_100 ||
+-    "",
++    ""),
+ 
+   /* -------------------------
+      WFT VALUES
+      ------------------------- */
+ 
+   TBP_WFT_F1_150:
+-    tbpWftF1150 ||
++    value("TBP_WFT_F1_150", tbpWftF1150 ||
+     row.TBP_WFT_F1_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_F2_150:
+-    tbpWftF2150 ||
++    value("TBP_WFT_F2_150", tbpWftF2150 ||
+     row.TBP_WFT_F2_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_F3_150:
+-    tbpWftF3150 ||
++    value("TBP_WFT_F3_150", tbpWftF3150 ||
+     row.TBP_WFT_F3_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_F4_150:
+-    tbpWftF4150 ||
++    value("TBP_WFT_F4_150", tbpWftF4150 ||
+     row.TBP_WFT_F4_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_T1_150:
+-    tbpWftT1150 ||
++    value("TBP_WFT_T1_150", tbpWftT1150 ||
+     row.TBP_WFT_T1_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_T2_150:
+-    tbpWftT2150 ||
++    value("TBP_WFT_T2_150", tbpWftT2150 ||
+     row.TBP_WFT_T2_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_T3_150:
+-    tbpWftT3150 ||
++    value("TBP_WFT_T3_150", tbpWftT3150 ||
+     row.TBP_WFT_T3_150 ||
+-    "",
++    ""),
+ 
+   TBP_WFT_T4_150:
+-    tbpWftT4150 ||
++    value("TBP_WFT_T4_150", tbpWftT4150 ||
+     row.TBP_WFT_T4_150 ||
+-    "",
++    ""),
+ 
+   /* -------------------------
+      COATING WT
+      ------------------------- */
+ 
+   TBP_COT_WT_IN_150:
+-    row.TBP_COT_WT_IN_150 || "",
++    value("TBP_COT_WT_IN_150", row.TBP_COT_WT_IN_150 || ""),
+ 
+   /* -------------------------
+      CUT BACK
+      ------------------------- */
+ 
+   TBP_ME_FEND_150:
+-    Cut_Back_F_End ||
++    value("TBP_ME_FEND_150", Cut_Back_F_End ||
+     row.TBP_ME_FEND_150 ||
+-    "",
++    ""),
+ 
+   TBP_UME_TEND_150:
+-    Cut_Back_T_End ||
++    value("TBP_UME_TEND_150", Cut_Back_T_End ||
+     row.TBP_UME_TEND_150 ||
+-    "",
++    ""),
+ 
+   /* -------------------------
+      RAW MATERIAL USED
+      ------------------------- */
+ 
+   TBP_RMUSE1_150:
+-    tbpBaseManufacturer ||
++    value("TBP_RMUSE1_150", tbpBaseManufacturer ||
+     row.TBP_RMUSE1_150 ||
+-    "",
++    ""),
+ 
+   TBP_RMUSE2_150:
+-    Base_Batch_No ||
++    value("TBP_RMUSE2_150", Base_Batch_No ||
+     row.TBP_RMUSE2_150 ||
+-    "",
++    ""),
+ 
+   TBP_RMUSE3_150:
+-    Hardner_Grade ||
++    value("TBP_RMUSE3_150", Hardner_Grade ||
+     row.TBP_RMUSE3_150 ||
+-    "",
++    ""),
+ 
+   TBP_RMUSE4_150:
+-    tbpGrade3 ||
++    value("TBP_RMUSE4_150", tbpGrade3 ||
+     row.TBP_RMUSE4_150 ||
+-    "",
++    ""),
+ 
+   TBP_RMUSE5_150:
+-    tbpGrade4 ||
++    value("TBP_RMUSE5_150", tbpGrade4 ||
+     row.TBP_RMUSE5_150 ||
+-    "",
++    ""),
+ 
+   /* -------------------------
+      BATCHS / GRADES
+      ------------------------- */
+ 
+   TBP_BATCH1_150:
+-    Base_Grade ||
++    value("TBP_BATCH1_150", Base_Grade ||
+     row.TBP_BATCH1_150 ||
+-    "",
++    ""),
+ 
+   TBP_BATCH2_150:
+-    Hardner_Manf ||
++    value("TBP_BATCH2_150", Hardner_Manf ||
+     row.TBP_BATCH2_150 ||
+-    "",
++    ""),
+ 
+   TBP_BATCH3_150:
+-    Hardner_Batch_No ||
++    value("TBP_BATCH3_150", Hardner_Batch_No ||
+     tbpBatch3150 ||
+     row.TBP_BATCH3_150 ||
+-    "",
++    ""),
+ 
+   TBP_BATCH4_150:
+-    tbpBatch4150 ||
++    value("TBP_BATCH4_150", tbpBatch4150 ||
+     row.TBP_BATCH4_150 ||
+-    "",
++    ""),
+ 
+   TBP_BATCH5_150:
+-    tbpBatch5150 ||
++    value("TBP_BATCH5_150", tbpBatch5150 ||
+     row.TBP_BATCH5_150 ||
+-    "",
++    ""),
+ 
+   /* -------------------------
+      PROCESS PARAMETERS
+      ------------------------- */
+ 
+   TBP_LINES_SPED_150:
+-    tbpLineSpeed150 ||
++    value("TBP_LINES_SPED_150", tbpLineSpeed150 ||
+     row.TBP_LINES_SPED_150 ||
+-    "",
++    ""),
+ 
+   TBP_MIXPAINT_RATIO:
+-    tbpMixPaintRatio ||
++    value("TBP_MIXPAINT_RATIO", tbpMixPaintRatio ||
+     row.TBP_MIXPAINT_RATIO ||
+-    "",
++    ""),
+ 
+   TBP_QUANTITY_150:
+-    row.TBP_QUANTITY_150 || "",
++    value("TBP_QUANTITY_150", row.TBP_QUANTITY_150 || ""),
+ 
+   /* -------------------------
+      SAMPLE
+      ------------------------- */
+ 
+   TBP_SAMPLE_10:
+-    row.TBP_SAMPLE_10 || "NO",
++    value("TBP_SAMPLE_10", row.TBP_SAMPLE_10 || "NO"),
+ 
+   /* -------------------------
+      WORKCENTER
+      ------------------------- */
+ 
++  TBP_SAMPL_TAG: value("TBP_SAMPL_TAG", row.TBP_SAMPL_TAG || ""),
++
+   TBP_WORK_CENTER:
+-    row.TBP_WORK_CENTER || "",
+-}));
++    value("TBP_WORK_CENTER", row.TBP_WORK_CENTER || ""),
++};
++        });
+   
+       console.log("BlastAppData",BlastAppData)
+       setBlastAppTable(BlastAppData)
+       
+   
+     } catch (error) {
+-      alertify.error("Error fetching data.");
++      alertify.error(error?.message || "Error fetching data.");
+       console.error(error);
+       
+     } finally {
+@@ -1135,7 +1166,7 @@
+     const h = date.getHours().toString().padStart(2, "0");
+     const min = date.getMinutes().toString().padStart(2, "0");
+ 
+-    return `${d}-${m}-${y} ${h}:${min}`;
++    return `${d}/${m}/${y} ${h}:${min}`;
+   };
+ 
+   const prodStartDateVal =
+@@ -1144,8 +1175,9 @@
+   const prodEndDateVal =
+     document.getElementById("prodEndDate")?.value || "";
+ 
+-  const prodstartdt = formatDate(new Date(prodStartDateVal));
+-  const prodenddt = formatDate(new Date(prodEndDateVal));
++  const prodstartdt = prodStartDateVal ? formatDate(new Date(prodStartDateVal)) : "";
++  const prodenddt = prodEndDateVal ? formatDate(new Date(prodEndDateVal)) : "";
++  const decisionTimestamp = formatDate(new Date());
+ 
+   const newData = [];
+   let hasError = false;
+@@ -1202,7 +1234,7 @@
+       C_PRC: item._row.data.C_PRC ?? null,
+       BATCH_PROC_NO: "0",
+       NEXT_PROC: item._row.data.N_PRC ?? null,
+-      PROD_DATE: SHIFT_DATE,
++      PROD_DATE: Number(item._row.data.NO_OF_REC || 0) > 0 ? item._row.data.DATE : SHIFT_DATE,
+       SHIFT: item._row.data.SHIFT ?? null,
+       STATUS: "GC",
+       TBP_WEIGHT: item._row.data.TBP_WEIGHT ?? null,
+@@ -1213,8 +1245,8 @@
+       TBP_QUALITY_CD: item._row.data.TBP_QUALITY_CD ?? null,
+       NO_MATNR: item._row.data.TBP_NO_MATNR ?? null,
+       TBP_CD_FLAG: item._row.data.TBP_CD_FLAG ?? null,
+-      START_DT: prodstartdt,
+-      END_DT: prodenddt,
++      START_DT: Number(item._row.data.NO_OF_REC || 0) > 0 ? decisionTimestamp : prodstartdt,
++      END_DT: Number(item._row.data.NO_OF_REC || 0) > 0 ? decisionTimestamp : prodenddt,
+       RESULT: resultValue ?? null,
+       INSP_NAME: item._row.data.INSPECT_NAME ?? null,
+       HOLD_RSN: item._row.data.HOLD_REASON ?? null,
+@@ -1249,6 +1281,7 @@
+       TBP_LINES_SPED_150: item._row.data.TBP_LINES_SPED_150 ?? null,
+       TBP_MIXPAINT_RATIO: item._row.data.TBP_MIXPAINT_RATIO ?? null,
+       TBP_QUANTITY_150: item._row.data.TBP_QUANTITY_150 ?? null,
++      TBP_SAMPL_TAG: item._row.data.TBP_SAMPL_TAG ?? null,
+       TBP_WORK_CENTER: item._row.data.TBP_WORK_CENTER ?? null,
+       TBP_SHIFT_DN: item._row.data.SHIFT ?? null,
+       TBP_SAMPLE_10: item._row.data.TBP_SAMPLE_10 ?? "NO",
+@@ -1407,6 +1440,8 @@
+ 
+ 
+  
++  const isRowEditable = (cell) => Number(cell.getRow().getData().NO_OF_REC || 0) === 0;
++
+   const BlastAppColumns = [
+     {
+       formatter: "rowSelection",
+@@ -1442,7 +1477,7 @@
+     { title: "Tag", 
+       field: "TBP_SAMPLE_10",
+        headerFilter: "input", 
+-       editable: true, editor: "select",
++       editable: isRowEditable, editor: "select",
+         editorParams: { values: { NO: "NO", YES: "YES" } },
+         formatter: function (cell) {
+         const value = cell.getValue();
+@@ -1486,6 +1521,7 @@
+     {
+       title: "Inspector",
+       field: "INSPECT_NAME",
++      editable: isRowEditable,
+       headerFilterPlaceholder: "search...",
+       headerFilter: "input",
+       editor: "input",
+@@ -1527,36 +1563,37 @@
+     {
+       title: "Visual Of coated surface", // Updated title
+       field: "TBP_VISUAL_INSP_80",
++      editable: isRowEditable,
+       headerFilterPlaceholder: "search...",
+       headerFilter: "input",
+       editor: "input",
+     },
+-    { title: "AMB temperature", field: "TBP_AMBT_TMP_100", headerFilter: "input",editable: true, editor: "input" }, // Updated title
+-    { title: "RH", field: "TBP_RH_100", headerFilter: "input",editable: true, editor: "input" }, // Title already correct
+-    { title: "Dew Point", field: "TBP_DEW_TEMP_100", headerFilter: "input",editable: true, editor: "input" }, // Updated title
+-    { title: "F End 1", field: "TBP_WFT_F1_150", headerFilter: "input", editable: true, editor: "input" }, // Added and made editable
+-    { title: "F End 2", field: "TBP_WFT_F2_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "F End 3", field: "TBP_WFT_F3_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "F End 4", field: "TBP_WFT_F4_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "T End 1", field: "TBP_WFT_T1_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "T End 2", field: "TBP_WFT_T2_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "T End 3", field: "TBP_WFT_T3_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "T End 4", field: "TBP_WFT_T4_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "Cut Back FEND", field: "TBP_ME_FEND_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "Cut Back TEND", field: "TBP_UME_TEND_150", headerFilter: "input", editable: true, editor: "input" }, // Updated title
+-    { title: "Base Manufacturer", field: "TBP_RMUSE1_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Base Batch No", field: "TBP_RMUSE2_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Hardner Grade", field: "TBP_RMUSE3_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "RM Use 4", field: "TBP_RMUSE4_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "RM Use 5", field: "TBP_RMUSE5_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Base Grade", field: "TBP_BATCH1_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Hardner Manufacturer", field: "TBP_BATCH2_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Hardner Batch No", field: "TBP_BATCH3_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Batch 4", field: "TBP_BATCH4_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Batch 5", field: "TBP_BATCH5_150", headerFilter: "input", editable: true, editor: "input" }, // Added
+-    { title: "Line Speed", field: "TBP_LINES_SPED_150", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Mix Paint Ratio", field: "TBP_MIXPAINT_RATIO", headerFilter: "input", editable: true, editor: "input" },
+-    { title: "Quantity", field: "TBP_QUANTITY_150", headerFilter: "input", editable: true, editor: "input" }, // Added
++    { title: "AMB temperature", field: "TBP_AMBT_TMP_100", headerFilter: "input",editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "RH", field: "TBP_RH_100", headerFilter: "input",editable: isRowEditable, editor: "input" }, // Title already correct
++    { title: "Dew Point", field: "TBP_DEW_TEMP_100", headerFilter: "input",editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "F End 1", field: "TBP_WFT_F1_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Added and made editable
++    { title: "F End 2", field: "TBP_WFT_F2_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "F End 3", field: "TBP_WFT_F3_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "F End 4", field: "TBP_WFT_F4_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "T End 1", field: "TBP_WFT_T1_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "T End 2", field: "TBP_WFT_T2_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "T End 3", field: "TBP_WFT_T3_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "T End 4", field: "TBP_WFT_T4_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "Cut Back FEND", field: "TBP_ME_FEND_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "Cut Back TEND", field: "TBP_UME_TEND_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
++    { title: "Base Manufacturer", field: "TBP_RMUSE1_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Base Batch No", field: "TBP_RMUSE2_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Hardner Grade", field: "TBP_RMUSE3_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "RM Use 4", field: "TBP_RMUSE4_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "RM Use 5", field: "TBP_RMUSE5_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Base Grade", field: "TBP_BATCH1_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Hardner Manufacturer", field: "TBP_BATCH2_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Hardner Batch No", field: "TBP_BATCH3_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Batch 4", field: "TBP_BATCH4_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Batch 5", field: "TBP_BATCH5_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Added
++    { title: "Line Speed", field: "TBP_LINES_SPED_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Mix Paint Ratio", field: "TBP_MIXPAINT_RATIO", headerFilter: "input", editable: isRowEditable, editor: "input" },
++    { title: "Quantity", field: "TBP_QUANTITY_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Added
+     
+   ];
+ 
+@@ -2207,3 +2244,4 @@
+     </DashboardLayout>
+   );
+ }
++

@@ -908,7 +908,7 @@ export default function TubePlanning() {
         PROC_DT: formattedDate,
         // COAT_WT: coatwt ? coatwt : "",
         COAT_WT: row.COAT_WT ? row.COAT_WT : "",
-        FIELD_NO: "",
+        FIELD_NO: row.TBP_FLD_NO_130 ?? "",
         REMARKS: remarks ? remarks : "",
         VIS_INSP: VIS_INSP ? VIS_INSP : "",
         FIELD_TEST: "",
@@ -1003,6 +1003,11 @@ export default function TubePlanning() {
       title: "ASL No",
       field: "ASL_NO",
       headerFilterPlaceholder: "search...",
+      headerFilter: "input",
+    },
+    {
+      title: "Field No",
+      field: "FIELD_NO",
       headerFilter: "input",
     },
     {

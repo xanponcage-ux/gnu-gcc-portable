@@ -36,6 +36,15 @@ export const getPipeNoList = async (req: Request, res: Response) => {
 export const insertTempData = async (req: Request, res: Response) => {
   try {
     const selectedData = req.body?.selectedRowsData;
+    if (!Array.isArray(selectedData) || selectedData.length === 0) {
+      return res.status(400).json({ message: "Please select pipes to save." });
+    }
+    // Validate every pipe before any database write.
+    const missingFieldNo = selectedData.find((data: any) => !String(data?.FIELD_NO ?? "").trim());
+    if (missingFieldNo) {
+      return res.status(400).json({ message: `Field No is required for Pipe No: ${missingFieldNo.BATCH_NO}.` });
+    }
+    selectedData.forEach((data: any) => { data.FIELD_NO = String(data.FIELD_NO).trim(); });
     let totalRowsAffected = 0;
 
     for (const data of selectedData) {
@@ -106,3 +115,4 @@ export const getTataDate = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+

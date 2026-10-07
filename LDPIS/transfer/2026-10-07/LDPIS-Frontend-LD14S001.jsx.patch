@@ -1,0 +1,25 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD14S001.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD14S001.jsx
+index 8495a04..c0bd684 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD14S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD14S001.jsx
+@@ -908,7 +908,7 @@ export default function TubePlanning() {
+         PROC_DT: formattedDate,
+         // COAT_WT: coatwt ? coatwt : "",
+         COAT_WT: row.COAT_WT ? row.COAT_WT : "",
+-        FIELD_NO: "",
++        FIELD_NO: row.TBP_FLD_NO_130 ?? "",
+         REMARKS: remarks ? remarks : "",
+         VIS_INSP: VIS_INSP ? VIS_INSP : "",
+         FIELD_TEST: "",
+@@ -1005,6 +1005,11 @@ export default function TubePlanning() {
+       headerFilterPlaceholder: "search...",
+       headerFilter: "input",
+     },
++    {
++      title: "Field No",
++      field: "FIELD_NO",
++      headerFilter: "input",
++    },
+     {
+       title: "Length",
+       field: "LENGTH",

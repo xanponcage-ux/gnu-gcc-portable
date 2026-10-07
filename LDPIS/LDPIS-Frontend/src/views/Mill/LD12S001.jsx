@@ -1856,7 +1856,7 @@ const getFieldTestOptions = async (accessToken) => {
         setShowSaveMsgError(true);
         setSaveMsg(response?.error?.response?.data?.message || "An error occurred.");
       } else {
-        if (response.data?.failedCount > 0) {
+        if (response.data?.failedCount > 0 || !response.data?.successCount) {
           if(response.data?.successCount > 0){
             setThickTable([]);
             setSelectedThickTable(null);
@@ -1866,15 +1866,17 @@ const getFieldTestOptions = async (accessToken) => {
           setShowSaveMsgError(true);
           setSaveMsg(response.data?.message);
         } else {
-          alertify.success(response.data?.message);
-          setShowSaveMsgSuccess(true);
-          setShowSaveMsgError(false);
-          setSaveMsg(response.data?.message);
+          const successMessage = `Successfully saved ${response.data.successCount} pipe(s).`;
+          alertify.success(successMessage);
           setSelectedThickTable(null);
           setThickTable([]);
           handleClearAll();
           handleClearMain();
           fetchDetails();
+          // Clear handlers reset banners, so set the save outcome afterwards.
+          setShowSaveMsgSuccess(true);
+          setShowSaveMsgError(false);
+          setSaveMsg(`${successMessage} ${response.data.message || ""}`);
         }
       }
     })
@@ -2281,12 +2283,12 @@ const getFieldTestOptions = async (accessToken) => {
       field: "COAT_WT",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
-      editor: "input",
-      editable: isRowEditable,
+      editor: false,
+      editable: false,
       formatter: function (cell, formatterParams) {
         var value = cell.getValue();
-        cell.getElement().style["background-color"] = "#DA8EE7";
-        cell.getElement().style["color"] = "#FFFFFF";
+        cell.getElement().style["background-color"] = "#F2F2F2";
+        cell.getElement().style["color"] = "#000000";
         return value;
       },
     },

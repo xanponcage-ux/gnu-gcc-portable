@@ -3,6 +3,10 @@ import { Post } from "../typed/typed";
 import Error from "./errors";
 
 export default class LD09S002 {
+  getPipeNoList(plant: any) {
+    return repository.getPipeNoList(plant);
+  }
+
   getCoils(data: any) {
     return repository.getCoils(data);
   }
@@ -11,3 +15,4 @@ export default class LD09S002 {
     return repository.saveData(batchId, plant);
   }
 }
+

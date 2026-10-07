@@ -65,3 +65,15 @@ export const saveData = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+
+
+export const getPipeNoList = async (req: Request, res: Response) => {
+  try {
+    const result: any = await LD09S002.prototype.getPipeNoList(req.body?.plant);
+    return res.status(200).json(result.rows.map((row: any[]) => ({
+      value: row[0], label: row[0], orderNo: row[1], orderItem: row[2],
+    })));
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};

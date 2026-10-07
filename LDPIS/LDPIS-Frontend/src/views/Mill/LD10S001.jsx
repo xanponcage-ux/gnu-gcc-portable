@@ -468,9 +468,14 @@ export default function TubePlanning() {
           if (response.statusText != "" && response.statusText != "OK") {
             alertify.error("Error in Procedure");
           } else {
-            var res= response.data[0][0]
-            if (res == 'Y' ) {
-              alertify.success("Row Inserted Successfully !!!");
+          if (response.data.failedCount > 0 && response.data.successfulPipes?.length) {
+            const saved = new Set(response.data.successfulPipes);
+            selectedBlastTable.getRows().forEach((row) => {
+              if (saved.has(String(row.getData().PIPE_NO))) row.delete();
+            });
+          }
+            if (response.data.successCount > 0 && response.data.failedCount === 0) {
+              alertify.success(response.data.message);
               setSelectedBlastTable(null)
               setBlastTable([])
               handleClearAll();
@@ -478,7 +483,7 @@ export default function TubePlanning() {
               fetchDetails();
               
             } else {
-              const errorMessage =response?.data[0] ||  "Unexpected error occurred.";
+              const errorMessage = response.data.message || "Unexpected error occurred.";
 
 
              showErrorAlert(errorMessage);

@@ -719,6 +719,14 @@ const showErrorAlert = (errorMessage) => {
       return;
     }
 
+    const missingFieldNo = selectedRows.find(
+      (item) => !String(item._row.data.FIELD_NO ?? "").trim()
+    );
+    if (missingFieldNo) {
+      alertify.error(`Field No is required for Pipe No: ${missingFieldNo._row.data.PIPE_NO}.`);
+      return;
+    }
+
     const formatDate = (date) => {
       const d = date.getDate().toString().padStart(2, "0");
       const m = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -775,7 +783,7 @@ const showErrorAlert = (errorMessage) => {
         RESUMG_4_130: item._row.data.RM_G4 ?? null,
         FSTATION_130: item._row.data.FINAL_STATION ?? null,
         HOLD_RSN: item._row.data.HOLD_REASON ?? null,
-        FIELD_NO: item._row.data.FIELD_NO ?? null,
+        FIELD_NO: String(item._row.data.FIELD_NO ?? "").trim(),
       });
     });
     setLoading(true);
@@ -805,6 +813,9 @@ const showErrorAlert = (errorMessage) => {
             // setSelectedLPETable(null)
           }
         }
+      })
+      .catch((error) => {
+        alertify.error(error?.response?.data?.message || "Failed to save pipes.");
       })
       .finally((f) => {
         setLoading(false);
@@ -1226,8 +1237,9 @@ const showErrorAlert = (errorMessage) => {
       },
     },
     {
-      title: "Field No",
+      title: "Field No *",
       field: "FIELD_NO",
+      validator: "required",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
       editor: "input",

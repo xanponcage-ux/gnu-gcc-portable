@@ -1,0 +1,19 @@
+diff --git a/LDPIS/LDPIS-Backend/src/controllers/LD09S002Controller.ts b/LDPIS/LDPIS-Backend/src/controllers/LD09S002Controller.ts
+index 96d2b38..29e1e45 100644
+--- a/LDPIS/LDPIS-Backend/src/controllers/LD09S002Controller.ts
++++ b/LDPIS/LDPIS-Backend/src/controllers/LD09S002Controller.ts
+@@ -66,3 +66,14 @@ export const saveData = async (req: Request, res: Response) => {
+   }
+ };
+ 
++
++export const getPipeNoList = async (req: Request, res: Response) => {
++  try {
++    const result: any = await LD09S002.prototype.getPipeNoList(req.body?.plant);
++    return res.status(200).json(result.rows.map((row: any[]) => ({
++      value: row[0], label: row[0], orderNo: row[1], orderItem: row[2],
++    })));
++  } catch (error) {
++    return res.status(400).json(error);
++  }
++};

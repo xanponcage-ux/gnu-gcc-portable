@@ -1,0 +1,69 @@
+diff --git a/LDPIS/LDPIS-Backend/src/repository/LD09S002Query.ts b/LDPIS/LDPIS-Backend/src/repository/LD09S002Query.ts
+index 01209e9..626128b 100644
+--- a/LDPIS/LDPIS-Backend/src/repository/LD09S002Query.ts
++++ b/LDPIS/LDPIS-Backend/src/repository/LD09S002Query.ts
+@@ -18,25 +18,34 @@ export const getCoils = async (data: any) => {
+     FROM V_LDP_PRODN
+     WHERE LOM_CD_STATUS = 'KC' `;
+ 
+-    if (data.plant) {
+-      sql += ` AND lom_cd_epa = '${data?.plant}'`;
++    const plant = String(data.plant ?? "").trim();
++    const pipeNo = String(data.batchId ?? "").trim();
++    const orderNo = String(data.ordNo ?? "").trim();
++    const orderItem = String(data.ordItem ?? "").trim();
++    const binds: any = {};
++    if (!plant || (!pipeNo && (!orderNo || !orderItem))) {
++      sql += " AND 1=0";
++    } else {
++      sql += " AND LOM_CD_EPA = :plant";
++      binds.plant = plant;
++      if (pipeNo) {
++        sql += " AND LOM_ID_BATCH = :pipeNo";
++        binds.pipeNo = pipeNo;
++      } else {
++        sql += " AND LOM_ID_ORDER_CUS = :orderNo AND LOM_ID_ORD_ITEM_CUS = :orderItem";
++        binds.orderNo = orderNo;
++        binds.orderItem = orderItem;
++      }
++      for (const [key, column] of [["mBatch", "LOM_ID_FIRST_PAR"], ["thick", "LOM_SEC1"], ["odia", "LOM_SEC2"]]) {
++        const value = String(data[key] ?? "").trim();
++        if (value) {
++          sql += ` AND ${column} = :${key}`;
++          binds[key] = value;
++        }
++      }
+     }
+-    if (data.batchId) {
+-      sql += ` And LOM_ID_BATCH = '${data?.batchId}'`;
+-    }
+-    if (data.mBatch) {
+-      sql += ` and LOM_ID_FIRST_PAR = '${data?.mBatch}'`;
+-    }
+-    if (data.thick) {
+-      sql += ` and LOM_SEC1 = '${data?.thick}'`;
+-    }
+-    if (data.odia) {
+-      sql += ` and LOM_SEC2 = '${data?.odia}'`;
+-    }
+-    sql += ` order by LOM_ID_PAR_COIL_NO, LOM_ID_BATCH `;
+-
+-    // console.log("sql: ", sql);
+-    return await query.executeQuery(sql);
++    sql += " ORDER BY LOM_ID_PAR_COIL_NO, LOM_ID_BATCH";
++    return await query.executeQuery(sql, binds);
+   } catch (error) {
+     console.log(error);
+     throw new Error.InternalServerErrorMsg(error);
+@@ -64,3 +73,11 @@ export const saveData = async (batchId: any, plant: any) => {
+   }
+ };
+ 
++
++export const getPipeNoList = async (plant: any) => {
++  const sql = `SELECT DISTINCT LOM_ID_BATCH, LOM_ID_ORDER_CUS, LOM_ID_ORD_ITEM_CUS
++    FROM V_LDP_PRODN
++    WHERE LOM_CD_STATUS = 'KC' AND LOM_CD_EPA = :plant
++    ORDER BY LOM_ID_BATCH`;
++  return await query.executeQuery(sql, { plant: String(plant ?? "").trim() });
++};

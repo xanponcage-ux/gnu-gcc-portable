@@ -1,0 +1,72 @@
+diff --git a/LDPIS/LDPIS-Backend/src/controllers/LD10S001Controller.ts b/LDPIS/LDPIS-Backend/src/controllers/LD10S001Controller.ts
+index 0c06893..0ff8011 100644
+--- a/LDPIS/LDPIS-Backend/src/controllers/LD10S001Controller.ts
++++ b/LDPIS/LDPIS-Backend/src/controllers/LD10S001Controller.ts
+@@ -5,32 +5,45 @@ import { Post } from "../typed/typed";
+ import { ResponceData } from "./LDSM016Controller";
+ 
+ export const insertTempData = async (req: Request, res: Response) => {
+-  try {
+-    const selectedData = req.body?.selectedRowsData;
+-    let totalRowsAffected = 0;
+-
+-    for (const data of selectedData) {
+-      let result = await LD10S001.prototype.deleteTempData(data);
+-      console.log("del", result);
+-      let result1 = await LD10S001.prototype.insertTempData(data);
+-      if (result1?.rowsAffected) {
+-        totalRowsAffected += result1.rowsAffected;
++  const selectedData = req.body?.selectedRowsData;
++  if (!Array.isArray(selectedData) || selectedData.length === 0) {
++    return res.status(400).json({ message: "Please select pipes to save.", successCount: 0, failedCount: 0 });
++  }
++  const successfulPipes: string[] = [];
++  const failedPipes: string[] = [];
++  let failureMessage = "";
++  for (const data of selectedData) {
++    const pipe = String(data?.BATCH_NO ?? data?.PIPE_NO ?? "");
++    try {
++      await LD10S001.prototype.deleteTempData(data);
++      const inserted = await LD10S001.prototype.insertTempData(data);
++      if (!inserted?.rowsAffected) {
++        failedPipes.push(pipe);
++        failureMessage = `Temporary data could not be inserted for Pipe ${pipe}.`;
++        break;
+       }
+-      var result2: any;
+-      if (totalRowsAffected >= 1) {
+-        result2 = await LD10S001.prototype.callproc100(data);
+-        //console.log("procedure",result2)
++      const result = await LD10S001.prototype.callproc100(data);
++      const flag = String(result?.[0] ?? "").trim();
++      if (flag.charAt(0).toUpperCase() === "Y") {
++        successfulPipes.push(pipe);
++      } else {
++        failedPipes.push(pipe);
++        failureMessage = `Pipe ${pipe}: ${flag || "Procedure did not return a success flag."}`;
++        break;
+       }
+-      // if (result2[0][0] == "Y") {
+-      //   let result3 = await LD10S001.prototype.deleteTempData(data);
+-      //   console.log("delete3", result3);
+-      // }
++    } catch (error: any) {
++      failedPipes.push(pipe);
++      failureMessage = `Pipe ${pipe}: ${error?.message || "Save failed."}`;
++      break;
+     }
+-    console.log("insert100", result2);
+-    return res.status(200).json(result2);
+-  } catch (error: any) {
+-    return res.status(400).json(error);
+   }
++  const successCount = successfulPipes.length;
++  const failedCount = failedPipes.length;
++  const pendingCount = selectedData.length - successCount - failedCount;
++  const message = failedCount
++    ? `Successfully saved ${successCount} pipe(s). Failed: ${failedCount}. Not processed: ${pendingCount}. ${failureMessage}`
++    : `Successfully saved ${successCount} pipe(s).`;
++  return res.status(200).json({ message, successCount, failedCount, pendingCount, successfulPipes, failedPipes });
+ };
+ 
+ export const getRmList = async (req: Request, res: Response) => {

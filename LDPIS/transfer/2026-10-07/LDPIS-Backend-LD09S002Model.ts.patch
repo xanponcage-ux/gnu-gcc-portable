@@ -1,0 +1,15 @@
+diff --git a/LDPIS/LDPIS-Backend/src/models/LD09S002Model.ts b/LDPIS/LDPIS-Backend/src/models/LD09S002Model.ts
+index 1eacac0..d198b2b 100644
+--- a/LDPIS/LDPIS-Backend/src/models/LD09S002Model.ts
++++ b/LDPIS/LDPIS-Backend/src/models/LD09S002Model.ts
+@@ -3,6 +3,10 @@ import { Post } from "../typed/typed";
+ import Error from "./errors";
+ 
+ export default class LD09S002 {
++  getPipeNoList(plant: any) {
++    return repository.getPipeNoList(plant);
++  }
++
+   getCoils(data: any) {
+     return repository.getCoils(data);
+   }

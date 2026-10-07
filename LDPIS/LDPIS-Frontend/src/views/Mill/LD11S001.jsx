@@ -1082,10 +1082,14 @@ useEffect(() => {
           if (response.statusText != "" && response.statusText != "OK") {
             alertify.error("Error in Procedure");
           } else {
-            var res= response.data[0][0]
-            console.log("res",res)
-            if (res == 'Y' ) {
-              alertify.success("Row Inserted Successfully !!!");
+          if (response.data.failedCount > 0 && response.data.successfulPipes?.length) {
+            const saved = new Set(response.data.successfulPipes);
+            selectedAppTable.getRows().forEach((row) => {
+              if (saved.has(String(row.getData().PIPE_NO))) row.delete();
+            });
+          }
+            if (response.data.successCount > 0 && response.data.failedCount === 0) {
+              alertify.success(response.data.message);
               setSelectedAppTable(null)
               setAppTable([]);
               handleClearAll();
@@ -1095,7 +1099,7 @@ useEffect(() => {
              
             } else {
               
-              showErrorAlert(response?.data[0])
+              showErrorAlert(response.data.message)
              
     
             }
@@ -1446,7 +1450,6 @@ const handleClearAll = (newToken = false) => {
       SOLUTION_C_TEMP: chromatesolutionapp ? chromatesolutionapp : "",
       PIPTMP_AFCRM_110:pipetempafterchromateapp?pipetempafterchromateapp:"",
       PIPTMP_BEFBE_110:pipetempfbeapp2?pipetempfbeapp2:"",
-      INDUCTION2: pipetempfbeapp2 ? pipetempfbeapp2 : "",
       ADHESIVE_FILM_TEMP : adhesivefilmtemp ? adhesivefilmtemp : "",
       PEPP_FILM_TEMP : peppfilmtemp ? peppfilmtemp : "",
       WATER_TEMP_BEFORE_QUENCHING : watertempbeforequenching ? watertempbeforequenching : "",
@@ -1748,14 +1751,6 @@ const handleClearAll = (newToken = false) => {
     {
       title: "PipeTemp Before FBE",
       field: "PIPTMP_BEFBE_110",
-      headerFilterPlaceholder: "search...",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      editor : "input"
-    },
-    {
-      title: "PipeTemp FBEInduction",
-      field: "INDUCTION2",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",

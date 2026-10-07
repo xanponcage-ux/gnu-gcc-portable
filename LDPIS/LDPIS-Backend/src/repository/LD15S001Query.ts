@@ -357,8 +357,26 @@ export const getFillData = async (data: any) => {
                AND x.TBP_PLANT_CD = t.TBP_PLANT_CD
                AND x.TBP_CD_PROC = 'G')) AS NO_OF_REC,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_VISUAL_INSP_80 ELSE b.TBP_VISUAL_INSP_80 END AS TBP_VISUAL_INSP_80,
-      CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_ASL_NO_80 ELSE b.TBP_ASL_NO_80 END AS TBP_ASL_NO_80,
-      CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_FLD_NO_130 ELSE b.TBP_FLD_NO_130 END AS TBP_FLD_NO_130,
+      CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_ASL_NO_80 ELSE (SELECT f.TBP_ASL_NO_80 FROM V_BARE_PDO f
+                WHERE f.TBP_BATCH_NO = b.TBP_BATCH_NO
+                  AND f.TBP_PLANT_CD = b.TBP_PLANT_CD
+                  AND f.TBP_CD_PROC = '8'
+                  AND f.TBP_BATCH_PROC_NO = (
+                    SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
+                     WHERE x.TBP_BATCH_NO = f.TBP_BATCH_NO
+                       AND x.TBP_PLANT_CD = f.TBP_PLANT_CD
+                       AND x.TBP_CD_PROC = '8')
+                  AND ROWNUM = 1) END AS TBP_ASL_NO_80,
+      CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_FLD_NO_130 ELSE (SELECT f.TBP_FLD_NO_130 FROM V_BARE_PDO f
+                WHERE f.TBP_BATCH_NO = b.TBP_BATCH_NO
+                  AND f.TBP_PLANT_CD = b.TBP_PLANT_CD
+                  AND f.TBP_CD_PROC = 'E'
+                  AND f.TBP_BATCH_PROC_NO = (
+                    SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
+                     WHERE x.TBP_BATCH_NO = f.TBP_BATCH_NO
+                       AND x.TBP_PLANT_CD = f.TBP_PLANT_CD
+                       AND x.TBP_CD_PROC = 'E')
+                  AND ROWNUM = 1) END AS TBP_FLD_NO_130,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_AMBT_TMP_100 ELSE b.TBP_AMBT_TMP_100 END AS TBP_AMBT_TMP_100,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_RH_100 ELSE b.TBP_RH_100 END AS TBP_RH_100,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_WFT_F1_150 ELSE b.TBP_WFT_F1_150 END AS TBP_WFT_F1_150,
@@ -466,4 +484,5 @@ export const getTataDate = async (prodEndDt: any) => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
+
 

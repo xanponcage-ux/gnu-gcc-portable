@@ -1467,13 +1467,16 @@ const showErrorAlert = (errorMessage) => {
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
     },
-    // {
-    //   title: "Asl No",
-    //   field: "ASL_NO",
-    //   headerFilterPlaceholder: "search...",
-    //   headerFilter: "input",
-    //   editor: "input",
-    // },
+    {
+      title: "ASL No",
+      field: "TBP_ASL_NO_80",
+      headerFilter: "input",
+    },
+    {
+      title: "Field No",
+      field: "TBP_FLD_NO_130",
+      headerFilter: "input",
+    },
     { title: "Tag", 
       field: "TBP_SAMPLE_10",
        headerFilter: "input", 
@@ -2244,3 +2247,4 @@ const showErrorAlert = (errorMessage) => {
     </DashboardLayout>
   );
 }
+
