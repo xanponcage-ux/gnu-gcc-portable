@@ -72,3 +72,26 @@ Optional regression commands from the rough repository root (Node 24+):
 node LDPIS/tests/ld09-ld16-changes.cjs
 node LDPIS/tests/ld150-rework.cjs
 ```
+
+---
+
+## 2026-10-07 — Fix PowerShell ChildPath / System.Object[] error
+
+The new transfer script stopped during preparation because Windows PowerShell 5.1 can wrap the JSON job list as a nested array when `ConvertFrom-Json` is used inside `@(...)`. Consequently `$job.Project` was an array instead of one project name, and `Join-Path` rejected it. This was a transfer-script bug, not an execution-policy problem.
+
+Fixed by assigning the parsed JSON array directly and validating that each job contains scalar Project/File/Patch strings. These failed runs did not change office application files. The earlier "Transfer complete" in the screenshot belongs to the older LD150 transfer.
+
+Run in the same office PowerShell window:
+
+```powershell
+git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
+```
+
+If the checks pass, apply:
+
+```powershell
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
+```
+
+The script fix is committed as `72dfafe`. Native Windows PowerShell execution still needs verification on the office machine.
