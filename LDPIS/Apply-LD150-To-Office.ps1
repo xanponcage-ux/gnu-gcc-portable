@@ -18,7 +18,17 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 $bundle = Join-Path $PSScriptRoot "transfer\2026-10-07"
 $manifest = Join-Path $bundle "manifest.json"
 if (-not (Test-Path -LiteralPath $manifest)) { throw "Transfer bundle missing. Pull origin main first." }
-$jobs = @(Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json)
+# Windows PowerShell 5.1 emits the JSON array as one pipeline object.
+# Assign it directly; wrapping that pipeline in @() can create a nested array.
+$jobs = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+if (-not $jobs) { throw "Transfer manifest contains no application files." }
+foreach ($job in $jobs) {
+    foreach ($field in @("Project", "File", "Patch")) {
+        if ($job.$field -isnot [string] -or [string]::IsNullOrWhiteSpace($job.$field)) {
+            throw "Invalid transfer manifest: each entry must have a single nonempty $field string."
+        }
+    }
+}
 $workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("LDPIS-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $workDir | Out-Null
 Write-Host "Preview files and backups: $workDir"
