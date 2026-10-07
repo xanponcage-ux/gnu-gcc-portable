@@ -394,7 +394,9 @@ export default function LDLTS004() {
                                 style={{
                                   marginTop: "8px",
                                   fontSize: "0.9rem",
+                                  zIndex: 10
                                 }}
+                               
                                 noWrap
                               >
                                 Sales Order
@@ -406,7 +408,7 @@ export default function LDLTS004() {
                                 options={salesOrdId}
                                 onChange={handlesalesOrdChange}
                                 value={filterData?.saleOrd}
-                                style={{ marginLeft: "8px" }}
+                                style={{ marginLeft: "8px" ,zIndex: 10}}
                               />
                             </Grid>
                           </Grid>
@@ -423,6 +425,7 @@ export default function LDLTS004() {
                                 style={{
                                   marginTop: "8px",
                                   fontSize: "0.9rem",
+                                  zIndex: 10
                                 }}
                                 noWrap
                               >
@@ -435,7 +438,7 @@ export default function LDLTS004() {
                                 options={itemData}
                                 onChange={handleItemChange}
                                 value={filterData?.item}
-                                style={{ marginLeft: "8px" }}
+                                style={{ marginLeft: "8px" ,zIndex: 10}}
                               />
                               {/* <MDInput
                                   id="item"
@@ -505,23 +508,22 @@ export default function LDLTS004() {
             </Grid>
             <Grid margin={1.5}></Grid>
             <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <AppBar position="static">
-                  <Tabs
-                    orientation={"horizontal"}
-                    value={tabValue}
-                    onChange={handleSetTabValue}
-                  >
-                    <Tab label="Sales Details" />
-                    <Tab label="Coating Process 1" />
-                    <Tab label="Coating Process 2" />
-                    <Tab label="Lab Details" />
-                    <Tab label="Instrument Details" />
-                    <Tab label="Field Details" />
-                    {/* <Tab label="Coating Process Sheet" /> */}
-                  </Tabs>
-                </AppBar>
-              </Grid>
+<Grid item xs={12} sx={{ position: "relative", zIndex: 0 }}>
+  <AppBar position="static">
+    <Tabs
+      orientation="horizontal"
+      value={tabValue}
+      onChange={handleSetTabValue}
+    >
+      <Tab label="Sales Details" />
+      <Tab label="Coating Process 1" />
+      <Tab label="Coating Process 2" />
+      <Tab label="Lab Details" />
+      <Tab label="Instrument Details" />
+      <Tab label="Field Details" />
+    </Tabs>
+  </AppBar>
+</Grid>
               {tabValue == 0 && (
                 <>
                   <LDLTS004SD

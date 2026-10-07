@@ -128,6 +128,18 @@ export default function LDSM006() {
    
   };
 
+  const numericFormatter = (cell) => {
+  const value = cell?.getValue();
+
+  if (value === null || value === undefined || value === "") {
+    return value;
+  }
+
+  const num = Number(value);
+
+  return !isNaN(num) ? num?.toFixed(3) : value;
+};
+
   const ShiftType = [
     { label: "A", value: "A" },
     { label: "B", value: "B" },
@@ -135,6 +147,21 @@ export default function LDSM006() {
     { label: "D", value: "D" },
     { label: "N", value: "N" },
   ];
+  const decimalFormatter = function (cell) {
+  const value = cell.getValue();
+
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return "";
+  }
+
+  const num = Number(value);
+
+  return isNaN(num) ? value : num.toFixed(3);
+};
 
   const prodInquiryColumn = [
     {
@@ -243,6 +270,12 @@ export default function LDSM006() {
       headerFilterPlaceholder: "search...",
     },
     {
+      title: "External Seq No",
+      field: "EXTERNAL_SEQ_NO",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
       title: "Mark Cust Name",
       field: "MARK_CUST",
       headerFilter: "input",
@@ -320,39 +353,21 @@ export default function LDSM006() {
       field: "LOM_SEC2",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Thick",
       field: "LOM_SEC1",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Length",
       field: "LOM_LENGTH",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Flating0O10",
@@ -378,91 +393,49 @@ export default function LDSM006() {
       field: "TBP_DIA_END_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Dia Body10",
       field: "TBP_DIA_BODY_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Round Body10",
       field: "TBP_OUT_ROUND_BODY_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Round End10",
       field: "TBP_OUT_ROUND_END_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Wall Thk Body10",
       field: "TBP_WALL_THK_BODY_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Wall Thk End10",
       field: "TBP_WALL_THK_END_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Strghtness TEnd10",
       field: "TBP_STRGHTNES_T_END_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Sqoc10",
@@ -511,13 +484,7 @@ export default function LDSM006() {
       field: "TBP_WIDTHS_10",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Sample10",
@@ -628,39 +595,21 @@ export default function LDSM006() {
       field: "TBP_RES_MG_F_END_40",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Res MGTEnd40",
       field: "TBP_RES_MG_T_END_40",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Ind No50",
       field: "TBP_NO_IND_50",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Mut Result50",
@@ -704,26 +653,14 @@ export default function LDSM006() {
       field: "TBP_ECN_PERCEN_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Angl FEnd80",
       field: "TBP_B_ANGL_F_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
 
     {
@@ -731,78 +668,42 @@ export default function LDSM006() {
       field: "TBP_B_ANGL_T_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "RootFace FEnd80",
       field: "TBP_ROOTFACE_F_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "RootFace TEnd80",
       field: "TBP_ROOTFACE_T_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Strghtness FEnd80",
       field: "TBP_STRGHTNES_F_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Squ FEnd80",
       field: "TBP_SQU_F_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Squ TEnd80",
       field: "TBP_SQU_T_END_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Asl No80",
@@ -851,26 +752,14 @@ export default function LDSM006() {
       field: "TBP_LEN_FT_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Len Inch80",
       field: "TBP_LEN_INCH_80",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Create Dt",
@@ -903,26 +792,14 @@ export default function LDSM006() {
       field: "TBP_PIPTMP_BEBLST_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "PipTmp BeAcid100",
       field: "TBP_PIPTMP_BEACID_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
 
     {
@@ -930,65 +807,35 @@ export default function LDSM006() {
       field: "TBP_PH_BEACID_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {         
       title: "Ph AfAcid100",
       field: "TBP_PH_AFACID_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "DwellTM100",
       field: "TBP_DWELLTM_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "PreDM WA100",
       field: "TBP_PREDM_WA_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Dmwa Fra1 100",
       field: "TBP_DMWA_FRA_1_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
 
     {
@@ -996,195 +843,105 @@ export default function LDSM006() {
       field: "TBP_DMWA_FRA_2_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Dmwa Fra3 100",
       field: "TBP_DMWA_FRA_3_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirTem AftWa100",
       field: "TBP_AIRTEM_AFTWA_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Rh100",
       field: "TBP_RH_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Ambt Tmp100",
       field: "TBP_AMBT_TMP_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Dew Tmp100",
       field: "TBP_DEW_TMP_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Pipsur Tmp100",
       field: "TBP_PIPSUR_TEMP_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Deg Clean100",
       field: "TBP_DEG_CLEAN_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Rough100",
       field: "TBP_ROUGH_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Dust Lvlra100",
       field: "TBP_DUST_LVLRA_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Dust Lvlcl100",
       field: "TBP_DUST_LVLCL_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Salt Conta100",
       field: "TBP_SALT_CONTA_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Phosacid M100",
       field: "TBP_PHOSACID_M_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Phosacid Gr100",
       field: "TBP_PHOSACID_GR_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Phosacid Bh100",
       field: "TBP_PHOSACID_BH_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
 
     {
@@ -1192,13 +949,7 @@ export default function LDSM006() {
       field: "TBP_PIPTMP_BECRM_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Chrm Vis110",
@@ -1211,1027 +962,553 @@ export default function LDSM006() {
       field: "TBP_CHRM_TMP_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "PipTmp Afcrm110",
       field: "TBP_PIPTMP_AFCRM_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "PipTmp BefBe100",
       field: "TBP_PIPTMP_BEFBE_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Tmp Adhef Fil110",
       field: "TBP_TMP_ADHEF_FIL_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Tmp PeFlim110",
       field: "TBP_TMP_PEFILM_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "QunWa Betmp110",
       field: "TBP_QUN_WA_BETMP_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "QunWa Aftmp110",
       field: "TBP_QUN_WA_AFTMP_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun1 110",
       field: "TBP_EPGUN_1_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun2 110",
       field: "TBP_EPGUN_2_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun3 110",
       field: "TBP_EPGUN_3_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun4 110",
       field: "TBP_EPGUN_4_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun5 110",
       field: "TBP_EPGUN_5_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun6 110",
       field: "TBP_EPGUN_6_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun7 110",
       field: "TBP_EPGUN_7_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun8 110",
       field: "TBP_EPGUN_8_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun9 110",
       field: "TBP_EPGUN_9_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun10 110",
       field: "TBP_EPGUN_10_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun11 110",
       field: "TBP_EPGUN_11_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun12 110",
       field: "TBP_EPGUN_12_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun13 110",
       field: "TBP_EPGUN_13_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun14 110",
       field: "TBP_EPGUN_14_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun15 110",
       field: "TBP_EPGUN_15_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun16 110",
       field: "TBP_EPGUN_16_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun17 110",
       field: "TBP_EPGUN_17_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun18 110",
       field: "TBP_EPGUN_18_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun19 110",
       field: "TBP_EPGUN_19_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun20 110",
       field: "TBP_EPGUN_20_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun21 110",
       field: "TBP_EPGUN_21_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun22 110",
       field: "TBP_EPGUN_22_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun23 110",
       field: "TBP_EPGUN_23_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Epgun24 110",
       field: "TBP_EPGUN_24_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress1 110",
       field: "TBP_AIRPRESS_1_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress2 110",
       field: "TBP_AIRPRESS_2_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress3 110",
       field: "TBP_AIRPRESS_3_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress4 110",
       field: "TBP_AIRPRESS_4_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress5 110",
       field: "TBP_AIRPRESS_5_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress6 110",
       field: "TBP_AIRPRESS_6_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress7 110",
       field: "TBP_AIRPRESS_7_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress8 110",
       field: "TBP_AIRPRESS_8_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress9 110",
       field: "TBP_AIRPRESS_9_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress10 110",
       field: "TBP_AIRPRESS_10_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress11 110",
       field: "TBP_AIRPRESS_11_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress12 110",
       field: "TBP_AIRPRESS_12_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress13 110",
       field: "TBP_AIRPRESS_13_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress14 110",
       field: "TBP_AIRPRESS_14_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress15 110",
       field: "TBP_AIRPRESS_15_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress16 110",
       field: "TBP_AIRPRESS_16_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress17 110",
       field: "TBP_AIRPRESS_17_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress18 110",
       field: "TBP_AIRPRESS_18_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress19 110",
       field: "TBP_AIRPRESS_19_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress20 110",
       field: "TBP_AIRPRESS_20_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress21 110",
       field: "TBP_AIRPRESS_21_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress22 110",
       field: "TBP_AIRPRESS_22_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress23 110",
       field: "TBP_AIRPRESS_23_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "AirPress24 110",
       field: "TBP_AIRPRESS_24_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate1 110",
       field: "TBP_FLWRATE_1_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate2 110",
       field: "TBP_FLWRATE_2_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate3 110",
       field: "TBP_FLWRATE_3_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate4 110",
       field: "TBP_FLWRATE_4_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate5 110",
       field: "TBP_FLWRATE_5_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate6 110",
       field: "TBP_FLWRATE_6_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate7 110",
       field: "TBP_FLWRATE_7_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate8 110",
       field: "TBP_FLWRATE_8_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate9 110",
       field: "TBP_FLWRATE_9_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate10 110",
       field: "TBP_FLWRATE_10_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate11 110",
       field: "TBP_FLWRATE_11_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate12 110",
       field: "TBP_FLWRATE_12_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate13 110",
       field: "TBP_FLWRATE_13_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate14 110",
       field: "TBP_FLWRATE_14_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate15 110",
       field: "TBP_FLWRATE_15_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate16 110",
       field: "TBP_FLWRATE_16_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate17 110",
       field: "TBP_FLWRATE_17_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate18 110",
       field: "TBP_FLWRATE_18_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate19 110",
       field: "TBP_FLWRATE_19_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate20 110",
       field: "TBP_FLWRATE_20_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate21 110",
       field: "TBP_FLWRATE_21_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate22 110",
       field: "TBP_FLWRATE_22_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate23 110",
       field: "TBP_FLWRATE_23_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "FlwRate24 110",
       field: "TBP_FLWRATE_24_110",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Rm1 110",
@@ -2364,169 +1641,91 @@ export default function LDSM006() {
       field: "TBP_COT_THK_1_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk2 120",
       field: "TBP_COT_THK_2_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk3 120",
       field: "TBP_COT_THK_3_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk4 120",
       field: "TBP_COT_THK_4_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk5 120",
       field: "TBP_COT_THK_5_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk6 120",
       field: "TBP_COT_THK_6_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk7 120",
       field: "TBP_COT_THK_7_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk8 120",
       field: "TBP_COT_THK_8_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk9 120",
       field: "TBP_COT_THK_9_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk10 120",
       field: "TBP_COT_THK_10_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk11 120",
       field: "TBP_COT_THK_11_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotThk12 120",
       field: "TBP_COT_THK_12_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "CotWt Vs120",
       field: "TBP_COT_WT_VS_120",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value.toFixed(3);
-        }
-        return value;
-      },
+      formatter: decimalFormatter
     },
     {
       title: "Coat Stas120",
@@ -2662,10 +1861,10 @@ export default function LDSM006() {
       setprodInquiryTable(
         new Tabulator("#inquiryTable", {
           pagination: "local",
-          paginationSize: 12,
+          paginationSize: 15,
           data: prodInquiryData,
           columns: prodInquiryColumn,
-          height: 400,
+          // height: 400,
           layout: "fitDataFill",
         })
       );
@@ -2823,7 +2022,7 @@ export default function LDSM006() {
   };
 
   const getData = () => {
-    // setLoading(true);
+    setLoading(true);
     GetAuthorization().then(async (token) => {
       var defaultOptions = {
         headers: {
@@ -2898,10 +2097,12 @@ export default function LDSM006() {
             if (response.data.length == 0) {
               alertify.error("No Data Found");
               setProdInquiryData([]);
+              setLoading(false);
             } else {
               setProdInquiryData(response.data);
+              setLoading(false);
             }
-            setLoading(false);
+            
           }
         })
         .catch((error) => {

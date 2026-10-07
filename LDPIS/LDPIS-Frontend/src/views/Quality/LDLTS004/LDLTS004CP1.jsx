@@ -1790,7 +1790,7 @@ export default function LDLTS004CP1(props) {
               </Card>
             </Grid>
             {/* Coating Application */}
-            <Grid item xs={12} style={{ display: "none" }}>
+            <Grid item xs={12}>
               <Card>
                 <MDBox
                   mx={2}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, forwardRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import TableContainer from "../../components/tableContainer";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -24,41 +24,52 @@ import MDButton from "components/MDButton";
 import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
 
 export const LD50S002 = () => {
-  const [controller, dispatch] = useMaterialUIController();
-  const { pageData, user } = controller;
-  const [loading, setLoading] = React.useState(false);
-  const [plantId, setPlantId] = React.useState("");
-  const [tabledata1, setTableData1] = React.useState("");
-  const [tabledata2, setTableData2] = React.useState([]);
-  const [tabledataDim, setTableDataDim] = React.useState([]);
-  const [table1, setTable1] = React.useState("");
-  const [table2, setTable2] = React.useState(null);
-  const [tableDim, setTableDim] = React.useState(null);
-  const [plantIds, setPlantIds] = React.useState([]);
-  const [tabValue, setTabValue] = useState(0);
-  const [tdcList, setTdcList] = React.useState([]);
-  const [holdrsn, setHoldrsn] = React.useState([]);
-  const [isRestricted, setRestricted] = React.useState(true);
-  const [isReadWriteAccess, setReadWriteAccess] = React.useState(true);
-  const [isAdmin, setAdmin] = React.useState(false);
+  const [controller] = useMaterialUIController();
+  const { pageData } = controller;
 
-  const [saveBtnFlag, setSaveBtnFlag] = React.useState(true);
+  const [loading, setLoading] = useState(false);
+  const [plantId, setPlantId] = useState("");
+  const [tabledata1, setTableData1] = useState([]);
+  const [tabledata2, setTableData2] = useState([]);
+  const [tabledataDim, setTableDataDim] = useState([]);
+  const [plantIds, setPlantIds] = useState([]);
+  const [tabValue, setTabValue] = useState(0);
+  const [tdcList, setTdcList] = useState([]);
+  const [holdrsn, setHoldrsn] = useState([]);
+  const [isRestricted, setRestricted] = useState(true);
+  const [isReadWriteAccess, setReadWriteAccess] = useState(true);
+  const [isAdmin, setAdmin] = useState(false);
+  const [saveBtnFlag, setSaveBtnFlag] = useState(true);
+
+  // DOM container refs
+  const table1Ref = useRef(null);
+  const table2Ref = useRef(null);
+  const tableDimRef = useRef(null);
+
+  // Tabulator instance refs
+  const table1Instance = useRef(null);
+  const table2Instance = useRef(null);
+  const tableDimInstance = useRef(null);
+
+  // Component mounted ref to prevent memory leaks / unmounted state updates
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const validateUser = async (accessToken, refreshToken) => {
     try {
-      console.log("Inside validateUser: ");
-      var plant = "";
-      //if (serverDetails.PersonalNo === ``)
-      // {
-      // var userDetails = jwt.verify(refreshToken, serverDetails.REFRESH_KEY);
-      // console.log("userDetails:: ", userDetails);
-      var userDetails;
+      let plant = "";
+      let userDetails;
       try {
         userDetails = jwt.verify(
           localStorage.getItem("tmm_refreshToken"),
           serverDetails.REFRESH_KEY
         );
-        console.log("userDetails:: ", userDetails);
       } catch (err) {
         console.error("Token verification failed:", err);
         throw new Error("Invalid token");
@@ -68,62 +79,51 @@ export const LD50S002 = () => {
       serverDetails.PersonalNo = userDetails.payload.id;
       serverDetails.Plant = userDetails.payload.plant;
       serverDetails.Company = userDetails.payload.company;
-      // }
 
-      if (
-        serverDetails.PersonalNo == null ||
-        serverDetails.PersonalNo == undefined ||
-        serverDetails.PersonalNo === ``
-      ) {
+      if (!serverDetails.PersonalNo) {
         window.location.href = "#/signin";
+        return;
       }
 
-      var userId = serverDetails.PersonalNo;
-      var pageName = "LD50S002";
+      const userId = serverDetails.PersonalNo;
+      const pageName = "LD50S002";
 
-      var authDetails = await getScreenAuth(
-        plant,
-        userId,
-        pageName,
-        accessToken
-      );
+      const authDetails = await getScreenAuth(plant, userId, pageName, accessToken);
+
+      if (!isMounted.current) return;
 
       if (authDetails) {
         setRestricted(false);
-        if (authDetails.payload.PS_AUTH_DML == "Z") {
+        if (authDetails.payload.PS_AUTH_DML === "Z") {
           setRestricted(true);
           setAdmin(false);
-        } else if (authDetails.payload.PS_AUTH_DML == "Y") {
+        } else if (authDetails.payload.PS_AUTH_DML === "Y") {
           setAdmin(true);
-          if (authDetails.payload.LS_READ_WRITE_FLAG == "RL_RW") {
+          if (authDetails.payload.LS_READ_WRITE_FLAG === "RL_RW") {
             setReadWriteAccess(false);
-            alertify.success(
-              "You are authorized to make changes from this page"
-            );
+            alertify.success("You are authorized to make changes from this page");
           } else {
             setReadWriteAccess(true);
-            alertify.error(
-              "You are not authorized to make changes from this page"
-            );
+            alertify.error("You are not authorized to make changes from this page");
           }
         } else {
-          alertify.error(
-            "You are not authorized to make changes from this page"
-          );
+          alertify.error("You are not authorized to make changes from this page");
         }
       } else {
         setRestricted(true);
         setAdmin(false);
       }
     } catch (error) {
-      setRestricted(true);
-      setAdmin(false);
-      if (serverDetails.devMode == false) {
+      if (isMounted.current) {
+        setRestricted(true);
+        setAdmin(false);
+      }
+      if (serverDetails.devMode === false) {
         window.location.href = "#/signin";
       }
     }
 
-    if (serverDetails.devMode == true) {
+    if (serverDetails.devMode === true && isMounted.current) {
       setRestricted(false);
       setAdmin(true);
     }
@@ -131,176 +131,84 @@ export const LD50S002 = () => {
 
   const getScreenAuth = (plantCd, userId, pageName) =>
     new Promise((resolve, reject) => {
-      var defaultOptions = {
+      const defaultOptions = {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("tmm_accessToken"),
         },
       };
-      console.log("userId: ", userId);
-      var url = "api/users/screenAuth";
+      const url = "api/users/screenAuth";
+      const data = { plantCd, user: userId, page: pageName };
 
-      if (serverDetails.devMode == true) {
-        //(userId = "198447"), (pageName = "TSMCPPF001");
-      }
-      var data = { plantCd: plantCd, user: userId, page: pageName };
-
-      axiosAPI.post(url, data, defaultOptions).then((response) => {
-        if (response.statusText != "" && response.statusText != "OK") {
-          reject(null);
-        } else {
-          var encryptUserInfo = response.data;
-          var authDetails = jwt.verify(
-            encryptUserInfo,
-            serverDetails.SCREEN_AUTH_KEY
-          );
-          if (authDetails) {
-            resolve(authDetails);
-          } else {
+      axiosAPI
+        .post(url, data, defaultOptions)
+        .then((response) => {
+          if (response.statusText !== "" && response.statusText !== "OK") {
             reject(null);
+          } else {
+            const encryptUserInfo = response.data;
+            const authDetails = jwt.verify(
+              encryptUserInfo,
+              serverDetails.SCREEN_AUTH_KEY
+            );
+            if (authDetails) {
+              resolve(authDetails);
+            } else {
+              reject(null);
+            }
           }
-        }
-      });
+        })
+        .catch(() => reject(null));
     });
 
   const loadData = () => {
-    if (serverDetails.devMode) {
+    if (serverDetails.devMode && isMounted.current) {
       setRestricted(false);
     }
-    console.log("Inside load data.");
-    console.log("load data serverDetails: ", serverDetails);
     GetAuthorization().then(async (data) => {
-      validateUser(data.accessToken, data.refreshToken);
+      if (!isMounted.current) return;
+      await validateUser(data.accessToken, data.refreshToken);
       await LD50S002ConfirmApiCall("onLoad");
-      const plantId = "0780";
-      await LD50S002ConfirmApiCall("data", plantId);
+      const defaultPlantId = "0780";
+      await LD50S002ConfirmApiCall("data", defaultPlantId);
     });
   };
 
-  React.useEffect(() => {
-    console.log("hii");
+  useEffect(() => {
     loadData();
   }, []);
 
   const formatPlantId = (data) => {
-    //console.log(data)
-    if (data.length > 0) {
-      let options = data.map((row, index) => {
-        return {
-          key: index,
-          value: row["CD_VALUE"],
-          label: row["CD_VALUE"] + " - " + row["CD_DESC"],
-        };
-      });
+    if (data?.length > 0) {
+      const options = data.map((row, index) => ({
+        key: index,
+        value: row["CD_VALUE"],
+        label: `row["CDVALUE"] - {row["CD_DESC"]}`,
+      }));
       options.push({
         key: options.length,
         value: "ALL",
         label: "All",
       });
-      setPlantIds(options);
+      if (isMounted.current) setPlantIds(options);
     }
   };
-
-  React.useEffect(() => {
-    if (tabledata1?.length > 0) {
-      if (table1) {
-        table1.destroy();
-        setTable1(null);
-      }
-
-      const newTable = new Tabulator("#table1", {
-        data: tabledata1,
-        columns: column1,
-        layout: "fitDataFill",
-        height: 250,
-        pagination: "local",
-        paginationSize: 20,
-        selectable: 1,
-      });
-
-      newTable.on("rowSelectionChanged", function (data, rows) {
-        setTableData2([]);
-      });
-      newTable.on("rowDeselected", function (data, rows) {
-        setTableData2([,]);
-      });
-
-      setTable1(newTable);
-    }
-
-    return () => {
-      if (table1) {
-        table1.destroy();
-        setTable1(null);
-      }
-    };
-  }, [tabledata1, tdcList, holdrsn]);
-
-  // useEffect(() => {
-  //   if (plantId.length > 1) {
-  //     LD50S002ConfirmApiCall("data", plantId);
-  //   }
-  // }, [plantId]);
-
-  React.useEffect(() => {
-    if (tabValue === 0 && tabledata2?.length > 0) {
-      setTable2(
-        new Tabulator("#table2", {
-          data: tabledata2,
-          columns: column2,
-          height: 500,
-          layout: "fitDataFill",
-          rowFormatter: function (row) {
-            const data = row.getData();
-            const paraMin = data?.PARA_MIN ?? 0;
-            const paraMax = data?.PARA_MAX ?? 99999;
-            const testParaValCoil = data?.PARA_VAL ?? 0;
-
-            if (testParaValCoil < paraMin || testParaValCoil > paraMax) {
-              row.getElement().style.backgroundColor = "yellow";
-            }
-          },
-        })
-      );
-    }
-
-    // return () => {
-    //   // Don't destroy the table unless it's needed (e.g., unmounting component)
-    //   if (tabValue !== 0 && table2) {
-    //     table2.destroy();
-    //     setTable2(null);
-    //   }
-    // };
-  }, [tabValue, tabledata2]);
-
-  React.useEffect(() => {
-    if (tabValue === 1 && tabledataDim?.length > 0) {
-      setTableDim(
-        new Tabulator("#tableDim", {
-          data: tabledataDim,
-          columns: columnDim,
-          maxHeight: 500,
-          layout: "fitDataFill",
-        })
-      );
-    }
-
-    // return () => {
-    //   // Don't destroy the table unless it's needed (e.g., unmounting component)
-    //   if (tabValue !== 1 && tableDim) {
-    //     tableDim?.destroy();
-    //     setTableDim(null);
-    //   }
-    // };
-  }, [tabValue, tabledataDim]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
+  const getTdcList = async () => {
+    LD50S002ConfirmApiCall("getTdcList", undefined, []);
+  };
+
+  const getHoldrsn = async () => {
+    LD50S002ConfirmApiCall("getHoldrsn", undefined, []);
+  };
+
+  // Column definitions
   const column1 = [
     {
       formatter: "rowSelection",
-      // titleFormatter: "rowSelection",
       hozAlign: "center",
       headerSort: false,
     },
@@ -339,59 +247,51 @@ export const LD50S002 = () => {
           { label: "HOLD", value: "HOLD" },
         ],
       },
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
       cellEdited: function (cell) {
-        var row = cell.getRow();
-        var decision = cell.getValue();
+        const row = cell.getRow();
+        const decision = cell.getValue();
+
+        row.update({
+          TDC_LIST: "",
+          HOLD_RSN: "",
+          REMARKS: "",
+        });
 
         if (decision === "DOWNGRADE") {
-          row.update({
-            TDC_LIST: "",
-            HOLD_RSN: "",
-            REMARKS: "", // Clear REMARKS!
-          });
           getTdcList();
         } else if (decision === "HOLD") {
-          row.update({
-            TDC_LIST: "",
-            HOLD_RSN: "",
-            REMARKS: "", // Clear REMARKS!
-          });
           getHoldrsn();
-        } else if (decision === "PASS" || decision === "RETURN") {
-          row.update({
-            TDC_LIST: "",
-            HOLD_RSN: "",
-            REMARKS: "", // Clear REMARKS!
-          });
         }
 
         if (decision === "HOLD" || decision === "RETURN") {
           setSaveBtnFlag(false);
+        } else {
+          setSaveBtnFlag(true);
         }
 
-        // updating bg of tdc downgrade based on decision
-        row.getCell("TDC_LIST").getElement().innerHTML = row
-          .getCell("TDC_LIST")
-          .getValue();
-        row.getCell("TDC_LIST").getElement().style["background-color"] =
-          decision === "DOWNGRADE" ? "#DA8EE7" : "white";
-        row.getCell("TDC_LIST").getElement().style["color"] =
-          decision === "DOWNGRADE" ? "#FFFFFF" : "black";
+        const tdcCell = row.getCell("TDC_LIST");
+        if (tdcCell) {
+          tdcCell.getElement().innerHTML = tdcCell.getValue() || "";
+          tdcCell.getElement().style["background-color"] =
+            decision === "DOWNGRADE" ? "#DA8EE7" : "white";
+          tdcCell.getElement().style["color"] =
+            decision === "DOWNGRADE" ? "#FFFFFF" : "black";
+        }
 
-        // updating bg of HOLD Reason based on decision
-        row.getCell("HOLD_RSN").getElement().innerHTML = row
-          .getCell("HOLD_RSN")
-          .getValue();
-        row.getCell("HOLD_RSN").getElement().style["background-color"] =
-          decision === "HOLD" ? "#DA8EE7" : "white";
-        row.getCell("HOLD_RSN").getElement().style["color"] =
-          decision === "HOLD" ? "#FFFFFF" : "black";
+        const holdCell = row.getCell("HOLD_RSN");
+        if (holdCell) {
+          holdCell.getElement().innerHTML = holdCell.getValue() || "";
+          holdCell.getElement().style["background-color"] =
+            decision === "HOLD" ? "#DA8EE7" : "white";
+          holdCell.getElement().style["color"] =
+            decision === "HOLD" ? "#FFFFFF" : "black";
+        }
       },
     },
     {
@@ -399,53 +299,44 @@ export const LD50S002 = () => {
       field: "TDC_LIST",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      // visible: tdcDownFlag,
-      editor: function (cell, onRendered, success, cancel, editorParams) {
-        var decision = cell.getRow().getData().DECISION;
-
+      editor: function (cell, onRendered, success) {
+        const decision = cell.getRow().getData().DECISION;
         if (decision !== "DOWNGRADE") {
-          var editor = document.createElement("input");
+          const editor = document.createElement("input");
           editor.readOnly = true;
           editor.style.padding = "3px";
           editor.style.width = "100%";
           editor.value = cell.getValue() || "";
           onRendered(() => editor.focus());
-
           editor.addEventListener("blur", function () {
             success(editor.value);
           });
-
           return editor;
         }
 
-        var editor1 = document.createElement("select");
-
+        const editor1 = document.createElement("select");
         tdcList.forEach((item) => {
-          var option = document.createElement("option");
+          const option = document.createElement("option");
           option.value = item.value;
           option.text = item.key;
           editor1.appendChild(option);
         });
 
-        editor1.value = cell.getValue();
+        editor1.value = cell.getValue() || "";
         editor1.style.padding = "3px";
         editor1.style.width = "100%";
-
         onRendered(() => editor1.focus());
-
         editor1.addEventListener("change", function () {
           success(editor1.value);
-
-          var row = cell.getRow();
+          const row = cell.getRow();
           row.update({ REMARKS: "" });
         });
-
         return editor1;
       },
       formatter: function (cell) {
-        var value = cell.getValue();
-        var decision = cell.getRow().getData().DECISION;
-        if (decision == "DOWNGRADE") {
+        const value = cell.getValue();
+        const decision = cell.getRow().getData().DECISION;
+        if (decision === "DOWNGRADE") {
           cell.getElement().style["background-color"] = "#DA8EE7";
           cell.getElement().style["color"] = "#FFFFFF";
         } else {
@@ -460,52 +351,44 @@ export const LD50S002 = () => {
       field: "HOLD_RSN",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      editor: function (cell, onRendered, success, cancel, editorParams) {
-        var decision = cell.getRow().getData().DECISION;
-
+      editor: function (cell, onRendered, success) {
+        const decision = cell.getRow().getData().DECISION;
         if (decision !== "HOLD") {
-          var editor = document.createElement("input");
+          const editor = document.createElement("input");
           editor.readOnly = true;
           editor.style.padding = "3px";
           editor.style.width = "100%";
           editor.value = cell.getValue() || "";
           onRendered(() => editor.focus());
-
           editor.addEventListener("blur", function () {
             success(editor.value);
           });
-
           return editor;
         }
 
-        var editor1 = document.createElement("select");
-
+        const editor1 = document.createElement("select");
         holdrsn.forEach((item) => {
-          var option = document.createElement("option");
+          const option = document.createElement("option");
           option.value = item.key;
           option.text = item.value;
           editor1.appendChild(option);
         });
 
-        editor1.value = cell.getValue();
+        editor1.value = cell.getValue() || "";
         editor1.style.padding = "3px";
         editor1.style.width = "100%";
-
         onRendered(() => editor1.focus());
-
         editor1.addEventListener("change", function () {
           success(editor1.value);
-
-          var row = cell.getRow();
+          const row = cell.getRow();
           row.update({ REMARKS: "" });
         });
-
         return editor1;
       },
       formatter: function (cell) {
-        var value = cell.getValue();
-        var decision = cell.getRow().getData().DECISION;
-        if (decision == "HOLD") {
+        const value = cell.getValue();
+        const decision = cell.getRow().getData().DECISION;
+        if (decision === "HOLD") {
           cell.getElement().style["background-color"] = "#DA8EE7";
           cell.getElement().style["color"] = "#FFFFFF";
         } else {
@@ -522,7 +405,7 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       editor: "input",
       formatter: function (cell) {
-        var value = cell.getValue();
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
@@ -546,12 +429,11 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
-      formatter: function (cell, formatterParams) {
-        var value = cell?.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value;
+      formatter: function (cell) {
+        const value = cell?.getValue();
+        return value !== null && value !== undefined && typeof value === "number"
+          ? value.toFixed(3)
+          : value;
       },
     },
     {
@@ -560,12 +442,11 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
-      formatter: function (cell, formatterParams) {
-        var value = cell?.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value;
+      formatter: function (cell) {
+        const value = cell?.getValue();
+        return value !== null && value !== undefined && typeof value === "number"
+          ? value.toFixed(3)
+          : value;
       },
     },
     {
@@ -574,12 +455,11 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
-      formatter: function (cell, formatterParams) {
-        var value = cell?.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value;
+      formatter: function (cell) {
+        const value = cell?.getValue();
+        return value !== null && value !== undefined && typeof value === "number"
+          ? value.toFixed(3)
+          : value;
       },
     },
     {
@@ -594,12 +474,11 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value?.toFixed(3);
+      formatter: function (cell) {
+        const value = cell.getValue();
+        return value !== null && value !== undefined && !isNaN(Number(value))
+          ? Number(value).toFixed(3)
+          : value;
       },
       bottomCalc: "sum",
       bottomCalcParams: { precision: 3 },
@@ -611,12 +490,11 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
       visible: false,
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value?.toFixed(3);
+      formatter: function (cell) {
+        const value = cell.getValue();
+        return value !== null && value !== undefined && !isNaN(Number(value))
+          ? Number(value).toFixed(3)
+          : value;
       },
       bottomCalc: "sum",
       bottomCalcParams: { precision: 3 },
@@ -628,12 +506,11 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
       visible: false,
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value?.toFixed(3);
+      formatter: function (cell) {
+        const value = cell.getValue();
+        return value !== null && value !== undefined && !isNaN(Number(value))
+          ? Number(value).toFixed(3)
+          : value;
       },
       bottomCalc: "sum",
       bottomCalcParams: { precision: 3 },
@@ -687,42 +564,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-    // {
-    //   field: "SALVAGING_REMARKS",
-    //   title: "Salvaging Remarks",
-    //   headerFilter: "input",
-    //   headerFilterPlaceholder: "search...",
-    // },
-    // {
-    //   field: "TOP_REMARKS",
-    //   title: "Top Remarks",
-    //   headerFilter: "input",
-    //   headerFilterPlaceholder: "search...",
-    // },
-    // {
-    //   field: "BOTTOM_REMARKS",
-    //   title: "Bottom Remarks",
-    //   headerFilter: "input",
-    //   headerFilterPlaceholder: "search...",
-    // },
-    // {
-    //   field: "FILE_NAME",
-    //   title: "Salvaging File Name",
-    //   headerFilter: "input",
-    //   headerFilterPlaceholder: "search...",
-    // },
-    // {
-    //   field: "WORK_CENTER",
-    //   title: "Work Center",
-    //   headerFilter: "input",
-    //   headerFilterPlaceholder: "search...",
-    // },
-    // {
-    //   field: "PASSED_PROC",
-    //   title: "Mill Passed Process",
-    //   headerFilter: "input",
-    //   headerFilterPlaceholder: "search...",
-    // },
     {
       field: "EIC_WO_NO",
       title: "Mill order",
@@ -750,7 +591,6 @@ export const LD50S002 = () => {
       headerSort: false,
       frozen: true,
       title: "",
-      // width: 30,
       headerWordWrap: true,
     },
     {
@@ -759,7 +599,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: true,
-      // width: 100,
       headerWordWrap: true,
     },
     {
@@ -768,7 +607,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: true,
-      // width: 80,
       headerWordWrap: true,
     },
     {
@@ -777,7 +615,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 30,
       headerWordWrap: true,
     },
     {
@@ -786,7 +623,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 80,
       headerWordWrap: true,
     },
     {
@@ -795,7 +631,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 80,
       headerWordWrap: true,
     },
     {
@@ -804,12 +639,11 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value;
+      formatter: function (cell) {
+        const value = cell.getValue();
+        return value !== null && value !== undefined && typeof value === "number"
+          ? value.toFixed(3)
+          : value;
       },
       headerWordWrap: true,
     },
@@ -819,8 +653,6 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 80,
-      headerWordWrap: true,
     },
     {
       field: "PARA_MAX",
@@ -828,13 +660,11 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 80,
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        if (value) {
-          return value?.toFixed(3);
-        }
-        return value;
+      formatter: function (cell) {
+        const value = cell.getValue();
+        return value !== null && value !== undefined && typeof value === "number"
+          ? value.toFixed(3)
+          : value;
       },
       headerWordWrap: true,
     },
@@ -844,17 +674,14 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 80,
       headerWordWrap: true,
     },
-
     {
       field: "TEST_PARA_VAL_COIL_SEQ",
       title: "PARA_SEQ",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 80,
       headerWordWrap: true,
     },
     {
@@ -864,58 +691,55 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        let paraMin = cell?._cell?.row?.data?.PARA_MIN;
-        let paraMax = cell?._cell?.row?.data?.PARA_MAX;
-        var value = cell?.getValue();
+      formatter: function (cell) {
+        const rowData = cell.getRow().getData();
+        const paraMin = rowData?.PARA_MIN;
+        const paraMax = rowData?.PARA_MAX;
+        const value = cell.getValue();
+
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFF";
 
-        if (paraMin !== null && value < paraMin) {
+        if (paraMin !== null && paraMin !== undefined && value < paraMin) {
           cell.getElement().style["background-color"] = "red";
         }
-        if (paraMax !== null && value > paraMax) {
+        if (paraMax !== null && paraMax !== undefined && value > paraMax) {
           cell.getElement().style["background-color"] = "red";
         }
-        if (paraMin === null && value < 0) {
+        if ((paraMin === null || paraMin === undefined) && value < 0) {
           cell.getElement().style["background-color"] = "red";
         }
-        if (value !== null && value !== undefined) {
-          return parseFloat(value).toFixed(3);
-        }
-        const cellVal = parseFloat(value);
+
+        return value !== null && value !== undefined && !isNaN(parseFloat(value))
+          ? parseFloat(value).toFixed(3)
+          : value;
       },
       editorParams: {
         allowEmpty: false,
         showListOnEmpty: true,
       },
       cellEdited: (cell) => {
-        let paraMin = cell?._cell?.row?.data?.PARA_MIN;
-        let paraMax = cell?._cell?.row?.data?.PARA_MAX;
-        let oldVal = cell.getOldValue();
-
+        const rowData = cell.getRow().getData();
+        const paraMin = rowData?.PARA_MIN;
+        const paraMax = rowData?.PARA_MAX;
         const value = cell.getValue();
         const cellVal = parseFloat(value);
 
         if (!isNaN(cellVal)) {
+          const rowElement = cell.getRow().getElement();
           if (
-            //if paraMin or paraMax has value then change colour
-            (paraMin !== null && cellVal < paraMin) ||
-            (paraMax !== null && cellVal > paraMax)
+            (paraMin !== null && paraMin !== undefined && cellVal < paraMin) ||
+            (paraMax !== null && paraMax !== undefined && cellVal > paraMax)
           ) {
-            const rowElement = cell.getRow().getElement();
             rowElement.style["background-color"] = "yellow";
           } else {
-            const rowElement = cell.getRow().getElement();
             rowElement.style["background-color"] = "";
           }
-
           cell.setValue(cellVal);
         } else {
           cell.setValue(0);
         }
       },
-      // width: 120,
       headerWordWrap: true,
     },
     {
@@ -924,11 +748,12 @@ export const LD50S002 = () => {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       frozen: false,
-      // width: 120,
       headerWordWrap: true,
-      formatter: function (cell, formatterParams) {
-        var value = cell?.getValue();
-        return value?.toFixed(3);
+      formatter: function (cell) {
+        const value = cell?.getValue();
+        return value !== null && value !== undefined && typeof value === "number"
+          ? value.toFixed(3)
+          : value;
       },
     },
   ];
@@ -969,17 +794,13 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
-      editorParams: {
-        allowEmpty: false,
-        showListOnEmpty: true,
-        //values: varVal,
-      },
+      editorParams: { allowEmpty: false, showListOnEmpty: true },
     },
     {
       field: "INP_WIDTH_MIDDLE",
@@ -988,17 +809,13 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
-      editorParams: {
-        allowEmpty: false,
-        showListOnEmpty: true,
-        //values: varVal,
-      },
+      editorParams: { allowEmpty: false, showListOnEmpty: true },
     },
     {
       field: "INP_WIDTH_BOTTOM",
@@ -1007,17 +824,13 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
-      editorParams: {
-        allowEmpty: false,
-        showListOnEmpty: true,
-        //values: varVal,
-      },
+      editorParams: { allowEmpty: false, showListOnEmpty: true },
     },
     {
       field: "INP_THICK_TOP",
@@ -1026,17 +839,13 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
-      editorParams: {
-        allowEmpty: false,
-        showListOnEmpty: true,
-        //values: varVal,
-      },
+      editorParams: { allowEmpty: false, showListOnEmpty: true },
     },
     {
       field: "INP_THICK_MIDDLE",
@@ -1045,17 +854,13 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
-      editorParams: {
-        allowEmpty: false,
-        showListOnEmpty: true,
-        //values: varVal,
-      },
+      editorParams: { allowEmpty: false, showListOnEmpty: true },
     },
     {
       field: "INP_THICK_BOTTOM",
@@ -1064,107 +869,116 @@ export const LD50S002 = () => {
       headerFilterPlaceholder: "search...",
       frozen: false,
       editor: "input",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
+      formatter: function (cell) {
+        const value = cell.getValue();
         cell.getElement().style["background-color"] = "#DA8EE7";
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
-      editorParams: {
-        allowEmpty: false,
-        showListOnEmpty: true,
-        //values: varVal,
-      },
+      editorParams: { allowEmpty: false, showListOnEmpty: true },
     },
   ];
 
-  const passBatch = () => {
-    const gridData = table1?.getSelectedRows();
-    if (gridData?.length === 0) {
-      alertify.error("Please select a row!");
-      return;
-    }
-    let newData = [];
-    for (let i = 0; i < gridData.length; i++) {
-      const rowData = gridData[i]?._row?.getData();
-      const decision = rowData?.DECISION;
-      const tdc = rowData?.TDC_LIST;
-      const hold = rowData?.HOLD_RSN;
-      const remarks = rowData?.REMARKS;
+  // Table 1 Initialization via Ref
+  useEffect(() => {
+    if (!table1Ref.current) return;
 
-      if (!decision) {
-        alertify.error("Please select decision!");
-        return;
-      }
-      if (!remarks) {
-        alertify.error("Remarks is mandatory!");
-        return;
-      }
-      if (decision == "DOWNGRADE" && !tdc) {
-        alertify.error("Please select downgrade TDC!");
-        return;
-      }
-      if (decision == "HOLD" && !hold) {
-        alertify.error("Please select hold reason!");
-        return;
-      }
-      newData.push(gridData[i]?._row?.getData());
+    if (table1Instance.current) {
+      table1Instance.current.destroy();
+      table1Instance.current = null;
     }
 
-    setLoading(true);
-    GetAuthorization().then((token) => {
-      axiosAPI({
-        url: "api/LD50S002/passBatch",
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + token?.accessToken,
-        },
-        data: {
-          data: newData,
-          p_flag: "PASS",
-          P_USER: serverDetails.PersonalNo,
-        },
-      })
-        .then((res) => {
-          if (res.statusText !== "" && res.statusText !== "OK") {
-            alertify.error(res?.data?.err ? res.data.err : res?.toString());
-          } else if (res?.data) {
-            var msg = res.data;
-            if (res.data.startsWith("Y-")) {
-              alertify.success(msg);
-              const plantId = "0780";
-              LD50S002ConfirmApiCall("data", plantId);
-              //setTableData1([,]);
-              //alertify.success("Y- Successfully Confirmed");
-            } else {
-              //let msg = res.data.outBinds.ls_out_flag;
-              alertify.error(msg.toString().replace("N-", ""));
-            }
+    if (tabledata1?.length > 0) {
+      const newTable = new Tabulator(table1Ref.current, {
+        data: tabledata1,
+        columns: column1,
+        layout: "fitDataFill",
+        height: 250,
+        pagination: "local",
+        paginationSize: 20,
+        selectable: 1,
+      });
+
+      newTable.on("rowSelectionChanged", function () {
+        if (isMounted.current) setTableData2([]);
+      });
+      newTable.on("rowDeselected", function () {
+        if (isMounted.current) setTableData2([]);
+      });
+
+      table1Instance.current = newTable;
+    }
+
+    return () => {
+      if (table1Instance.current) {
+        table1Instance.current.destroy();
+        table1Instance.current = null;
+      }
+    };
+  }, [tabledata1, tdcList, holdrsn]);
+
+  // Table 2 Initialization via Ref
+  useEffect(() => {
+    if (tabValue === 0 && table2Ref.current && tabledata2?.length > 0) {
+      if (table2Instance.current) {
+        table2Instance.current.destroy();
+        table2Instance.current = null;
+      }
+
+      table2Instance.current = new Tabulator(table2Ref.current, {
+        data: tabledata2,
+        columns: column2,
+        height: 500,
+        layout: "fitDataFill",
+        rowFormatter: function (row) {
+          const data = row.getData();
+          const paraMin = data?.PARA_MIN ?? 0;
+          const paraMax = data?.PARA_MAX ?? 99999;
+          const testParaValCoil = data?.PARA_VAL ?? 0;
+
+          if (testParaValCoil < paraMin || testParaValCoil > paraMax) {
+            row.getElement().style.backgroundColor = "yellow";
           }
-        })
-        .catch((e) => {
-          alertify.error(e?.error?.message ? e.error.message : e?.toString());
-          // alertify.error(
-          //   e?.error?.message ? e.error.message : "Something Wents wrong!"
-          // );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    });
-  };
+        },
+      });
+    }
 
-  const tableUi1 = () => {
-    return <div id="table1"></div>;
-  };
+    return () => {
+      if (table2Instance.current) {
+        table2Instance.current.destroy();
+        table2Instance.current = null;
+      }
+    };
+  }, [tabValue, tabledata2]);
 
-  const tableUi2 = () => {
-    return <div id="table2"></div>;
-  };
+  // Table Dim Initialization via Ref
+  useEffect(() => {
+    if (tabValue === 1 && tableDimRef.current && tabledataDim?.length > 0) {
+      if (tableDimInstance.current) {
+        tableDimInstance.current.destroy();
+        tableDimInstance.current = null;
+      }
+
+      tableDimInstance.current = new Tabulator(tableDimRef.current, {
+        data: tabledataDim,
+        columns: columnDim,
+        maxHeight: 500,
+        layout: "fitDataFill",
+      });
+    }
+
+    return () => {
+      if (tableDimInstance.current) {
+        tableDimInstance.current.destroy();
+        tableDimInstance.current = null;
+      }
+    };
+  }, [tabValue, tabledataDim]);
 
   const LD50S002ConfirmApiCall = async (tabVal, id, obj) => {
-    setLoading(true);
-    await GetAuthorization().then(async (token) => {
+    if (isMounted.current) setLoading(true);
+    try {
+      const token = await GetAuthorization();
       let varParam = {};
       if (tabVal) {
         varParam = {
@@ -1193,137 +1007,171 @@ export const LD50S002 = () => {
         };
       }
 
-      if (table1 && table1?.getSelectedRows().length === 0) {
-        alertify.error("Please select a row ");
-        return;
-      }
-      
-      // console.log("varParam: ", varParam);
-      // console.log(pageData);
-      
-      await axiosAPI({
+      const res = await axiosAPI({
         url: "api/LD50S002/LD50S002ConfirmApi",
         method: "POST",
         headers: {
           Authorization: "Bearer " + token?.accessToken,
         },
         data: varParam,
+      });
+
+      if (!isMounted.current) return;
+
+      if (res.statusText !== "" && res.statusText !== "OK") {
+        alertify.error(res?.data?.err ? res.data.err : res?.toString());
+      } else if (tabVal === "data") {
+        if (res.data.length === 0) {
+          alertify.success("0 Rows Found");
+        }
+        setTableData1(res.data);
+      } else if (tabVal === "onLoad") {
+        formatPlantId(res.data);
+      } else if (tabVal === "searchData") {
+        if (res.data?.results2?.length === 0) {
+          alertify.success("0 Rows found");
+        }
+        setTableData2(res.data?.results2 || []);
+        setTableDataDim(res.data?.resultsDim || []);
+      } else if (tabVal === "updateData" || tabVal === "updateDataDim") {
+        alertify.success(`${res?.data} row(s) saved!`);
+        if (tabVal === "updateData") {
+          setTableData2([]);
+        } else {
+          setTableDataDim([]);
+        }
+      } else if (tabVal === "getTdcList") {
+        if (res.data.length === 0) {
+          alertify.error("No Data Found");
+          setTdcList([]);
+        } else {
+          const rows = res.data.map((item) => ({
+            key: item?.TSL_TDC_NO,
+            value: item?.TSL_TDC_NO,
+          }));
+          setTdcList(rows);
+        }
+      } else if (tabVal === "getHoldrsn") {
+        if (res.data.length === 0) {
+          alertify.error("No Data Found");
+          setHoldrsn([]);
+        } else {
+          const rows = res.data.map((item) => ({
+            key: item?.CD_VALUE,
+            value: `item?.CDVALUE-{item?.CD_DESC}`,
+            label: `item?.CDVALUE-{item?.CD_DESC}`,
+          }));
+          setHoldrsn(rows);
+        }
+      }
+    } catch (error) {
+      if (!isMounted.current) return;
+      if (error?.error?.response?.data?.error) {
+        alertify.error(error.error.response.data.error);
+      } else {
+        alertify.error("An unexpected error occurred.");
+      }
+    } finally {
+      if (isMounted.current) setLoading(false);
+    }
+  };
+
+  const passBatch = () => {
+    const gridData = table1Instance.current?.getSelectedRows();
+    if (!gridData || gridData.length === 0) {
+      alertify.error("Please select a row!");
+      return;
+    }
+    const newData = [];
+    for (let i = 0; i < gridData.length; i++) {
+      const rowData = gridData[i]?.getData();
+      const decision = rowData?.DECISION;
+      const tdc = rowData?.TDC_LIST;
+      const hold = rowData?.HOLD_RSN;
+      const remarks = rowData?.REMARKS;
+
+      if (!decision) {
+        alertify.error("Please select decision!");
+        return;
+      }
+      if (!remarks) {
+        alertify.error("Remarks is mandatory!");
+        return;
+      }
+      if (decision === "DOWNGRADE" && !tdc) {
+        alertify.error("Please select downgrade TDC!");
+        return;
+      }
+      if (decision === "HOLD" && !hold) {
+        alertify.error("Please select hold reason!");
+        return;
+      }
+      newData.push(rowData);
+    }
+
+    setLoading(true);
+    GetAuthorization().then((token) => {
+      axiosAPI({
+        url: "api/LD50S002/passBatch",
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token?.accessToken,
+        },
+        data: {
+          data: newData,
+          p_flag: "PASS",
+          P_USER: serverDetails.PersonalNo,
+        },
       })
-        .then(async (res) => {
+        .then((res) => {
+          if (!isMounted.current) return;
           if (res.statusText !== "" && res.statusText !== "OK") {
             alertify.error(res?.data?.err ? res.data.err : res?.toString());
-          } else if (tabVal === "data") {
-            if (res.data.length === 0) {
-              alertify.success("0 Rows Found");
-              setTableData1(res.data);
+          } else if (res?.data) {
+            const msg = res.data;
+            if (res.data.startsWith("Y-")) {
+              alertify.success(msg);
+              const defaultPlantId = "0780";
+              LD50S002ConfirmApiCall("data", defaultPlantId);
             } else {
-              setTableData1(res.data);
-            }
-          } else if (tabVal === "onLoad") {
-            formatPlantId(res.data);
-          } else if (tabVal === "searchData") {
-            if (res.data.length === 0) {
-              alertify.success("0 Rows found");
-            }
-            // res?.data?.results2?.forEach((x) => {
-            //   if (x.PROP == "C") return (x.PARA_VAL = x.TEST_PARA_VAL_CAST);
-            // });
-            setTableData2(res.data.results2);
-            setTableDataDim(res.data.resultsDim);
-          } else if (tabVal === "updateData" || tabVal === "updateDataDim") {
-            alertify.success(`${res?.data} row(s) saved!`);
-            if (tabVal === "updateData") {
-              setTableData2([,]);
-            } else {
-              setTableDataDim([,]);
-            }
-          } else if (tabVal === "getTdcList") {
-            if (res.data.length == 0) {
-              alertify.error("No Data Found");
-              setTdcList([,]);
-              // console.log("TDC LIST EMPTIED at 932 while api call");
-            } else {
-              var rows = [];
-              for (var i in res.data) {
-                rows.push({
-                  key: res?.data?.[i]?.TSL_TDC_NO,
-                  value: res?.data?.[i]?.TSL_TDC_NO,
-                });
-              }
-              console.log(rows);
-              setTdcList(rows);
-              // console.log("TDC LIST filled at 943 while api call");
-            }
-          } else if (tabVal === "getHoldrsn") {
-            if (res.data.length == 0) {
-              alertify.error("No Data Found");
-              setHoldrsn([,]);
-              // console.log("Hold Reason  EMPTIED at 932 while api call");
-            } else {
-              var rows = [];
-              console.log("res: ", res);
-              console.log("res.data: ", res.data);
-              for (var i in res.data) {
-                rows.push({
-                  key: res?.data?.[i]?.CD_VALUE,
-                  value:
-                    res?.data?.[i]?.CD_VALUE + "-" + res?.data?.[i]?.CD_DESC,
-                  label:
-                    res?.data?.[i]?.CD_VALUE + "-" + res?.data?.[i]?.CD_DESC,
-                });
-              }
-              console.log("rows: ", rows);
-              setHoldrsn(rows);
-              // console.log("Hold Reason filled at 943 while api call");
+              alertify.error(msg.toString().replace("N-", ""));
             }
           }
-          setLoading(false);
         })
-        .catch((error) => {
-          console.log(error);
-          console.log(error?.error?.response?.data?.error);
-          if (
-            error.error.response &&
-            error.error.response.data &&
-            error.error.response.data.error
-          ) {
-            // Get the error message
-            const errorMessage = error.error.response.data.error;
-            // Display the error message using alertify
-            alertify.error(errorMessage);
-          } else {
-            // Handle other cases
-            alertify.error("An unexpected error occurred.");
+        .catch((e) => {
+          if (isMounted.current) {
+            alertify.error(e?.error?.message ? e.error.message : e?.toString());
           }
         })
         .finally(() => {
-          setLoading(false);
+          if (isMounted.current) setLoading(false);
         });
     });
   };
 
   const handleSearch = () => {
-    if (!table1) {
+    if (!table1Instance.current) {
       alertify.error("Please get table data first");
       return;
     }
-    if (table1 && table1?.getSelectedRows().length === 0) {
+    const selectedRows = table1Instance.current.getSelectedRows();
+    if (selectedRows.length === 0) {
       alertify.error("Please select a row ");
       return;
     }
-    let data = table1.getSelectedRows()[0]._row.data;
-    let batchId = data?.EIC_ID_COIL;
-    let castNo = data?.EIC_NO_CAST;
-    let decVal = data?.DECISION;
-    let downTdc = data?.TDC_LIST;
-    let tdcVal = data?.EIC_TDC_ACTL;
+    const data = selectedRows[0].getData();
+    const batchId = data?.EIC_ID_COIL;
+    const castNo = data?.EIC_NO_CAST;
+    const decVal = data?.DECISION;
+    const downTdc = data?.TDC_LIST;
+    const tdcVal = data?.EIC_TDC_ACTL;
 
-    if (decVal === "DOWNGRADE" && (downTdc === "" || downTdc === null)) {
+    if (decVal === "DOWNGRADE" && (!downTdc || downTdc === "")) {
       alertify.error("Please Select Downgrade TDC");
       return;
     }
 
-    let inputObj = {
+    const inputObj = {
       Batchid: batchId,
       CastNo: castNo,
       PLANT: "0780",
@@ -1333,58 +1181,45 @@ export const LD50S002 = () => {
   };
 
   const handleUpdate = async () => {
-    let data = table2.getRows();
-    let formattedData = data.map((row) => {
-      return row.getData();
-    });
-    let statusData = table1.getSelectedRows()[0]._row.data;
-      let status = statusData?.EIC_CD_STATUS;
-      if(status != "SA" && status != "SD" )
-      {
-        alertify.error("Update can only be done in SA and SD status");
-        return;
-      }
+    if (!table2Instance.current) return;
+    const data = table2Instance.current.getRows();
+    const formattedData = data.map((row) => row.getData());
+
+    const selectedRows = table1Instance.current?.getSelectedRows();
+    if (!selectedRows || selectedRows.length === 0) {
+      alertify.error("Please select a row in Plant Data");
+      return;
+    }
+    const statusData = selectedRows[0].getData();
+    const status = statusData?.EIC_CD_STATUS;
+    if (status !== "SA" && status !== "SD") {
+      alertify.error("Update can only be done in SA and SD status");
+      return;
+    }
 
     LD50S002ConfirmApiCall("updateData", undefined, formattedData);
-    return;
-  };
-
-  const getTdcList = async () => {
-    // let seqRes = await LD50S002ConfirmApiCall("genSeqNo")
-    //let batchID:string = table1.getSelectedRows()[0]?._row?.data.EIC_ID_COIL;
-    // let res = await data.map(async (row, index: number) => {
-    //   let newData = data[index]._row.data;
-    //   let obj = newData;
-    //   await LD50S002ConfirmApiCall("updateData", undefined, data);
-    // });
-    let formattedData = [];
-
-    console.log(formattedData);
-    LD50S002ConfirmApiCall("getTdcList", undefined, formattedData);
-    //alertify.success(`Updated Successfully`);
-    return;
-  };
-  const getHoldrsn = async () => {
-    let formattedData = [];
-
-    LD50S002ConfirmApiCall("getHoldrsn", undefined, formattedData);
-    return;
   };
 
   const handleUpdateDim = async () => {
-    let data = tableDim.getRows();
-    let formattedData = data.map((row) => row.getData());
+    if (!tableDimInstance.current) return;
+    const data = tableDimInstance.current.getRows();
+    const formattedData = data.map((row) => row.getData());
     let hasError = false;
 
-    let statusData = table1.getSelectedRows()[0]._row.data;
-      let status = statusData?.EIC_CD_STATUS;
-      if (!['SA', 'SD'].includes(status)) {
-        alertify.error("Update can only be done in SA and SD status");
-        return;
-      }
+    const selectedRows = table1Instance.current?.getSelectedRows();
+    if (!selectedRows || selectedRows.length === 0) {
+      alertify.error("Please select a row in Plant Data");
+      return;
+    }
+    const statusData = selectedRows[0].getData();
+    const status = statusData?.EIC_CD_STATUS;
+    if (!["SA", "SD"].includes(status)) {
+      alertify.error("Update can only be done in SA and SD status");
+      return;
+    }
 
     formattedData.forEach((row) => {
-      if (row.PARA_MIN !== null) {
+      if (row.PARA_MIN !== null && row.PARA_MIN !== undefined) {
         if (
           row.INP_WIDTH_TOP === null ||
           row.INP_WIDTH_TOP === "" ||
@@ -1410,24 +1245,22 @@ export const LD50S002 = () => {
     }
 
     LD50S002ConfirmApiCall("updateDataDim", undefined, formattedData);
-    return;
   };
 
   const downloadTestParaGrid = () => {
-    console.log("Inside Grid");
-    if (table2 == null) {
+    if (!table2Instance.current) {
       alertify.error("No Data exists in table for Downloading");
       return;
     }
 
-    var len = table2.getData();
-    if (len == 0) {
+    const data = table2Instance.current.getData();
+    if (!data || data.length === 0) {
       alertify.error("No Data exists in table for Downloading");
       return;
     }
 
-    var fileName = "LD50S002" + ".xlsx";
-    table2.download("xlsx", fileName, {
+    const fileName = "LD50S002.xlsx";
+    table2Instance.current.download("xlsx", fileName, {
       sheetName: "Sheet1",
     });
   };
@@ -1456,244 +1289,207 @@ export const LD50S002 = () => {
               </h4>
             </Grid>
           )}
-          {isRestricted == false && (
+          {!isRestricted && (
             <MDBox pt={6} pb={3} py={10}>
               <Grid container spacing={5}>
                 <Grid item xs={12}>
                   <Grid item xs={12}>
-                    {/* <TableContainer title="Selection Details">
-                      <Grid sx={{ display: "flex" }}>
-                        <Grid item xs={3}>
-                          <MDButton
-                            size="small"
-                            color="info"
-                            style={{ margin: "1.5rem" }}
-                            onClick={() => {
-                              const plantId = "0780";
-                              LD50S002ConfirmApiCall("data", plantId);
-                            }}
-                          >
-                            Fetch
-                          </MDButton>
-                        </Grid>
-                      </Grid>
-                    </TableContainer> */}
-
-                    {
-                      <Grid item xs={12}>
-                        <TableContainer
-                          title="Plant Data"
-                          headerContainer={
-                            <Grid container>
-                              <Grid item>
-                                <Tooltip title="Search">
-                                  <IconButton
-                                    onClick={() => {
-                                      handleSearch();
-                                    }}
-                                  >
-                                    <SearchIcon sx={{ color: "#ffffff" }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </Grid>
-                              <Grid item>
-                                <Tooltip title="Update">
-                                  <IconButton
-                                    onClick={() => {
-                                      passBatch();
-                                    }}
-                                  >
-                                    <SaveIcon sx={{ color: "#ffffff" }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </Grid>
+                    <Grid item xs={12}>
+                      <TableContainer
+                        title="Plant Data"
+                        headerContainer={
+                          <Grid container>
+                            <Grid item>
+                              <Tooltip title="Search">
+                                <IconButton onClick={handleSearch}>
+                                  <SearchIcon sx={{ color: "#ffffff" }} />
+                                </IconButton>
+                              </Tooltip>
                             </Grid>
-                          }
-                        >
-                          {tabledata1?.length > 0 && tableUi1()}
-                          Showing {tabledata1?.length} of {tabledata1?.length}{" "}
-                          entries
-                        </TableContainer>
-                      </Grid>
-                    }
+                            <Grid item>
+                              <Tooltip title="Update">
+                                <IconButton onClick={passBatch}>
+                                  <SaveIcon sx={{ color: "#ffffff" }} />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
+                          </Grid>
+                        }
+                      >
+                        <div ref={table1Ref}></div>
+                        Showing {tabledata1?.length} of {tabledata1?.length} entries
+                      </TableContainer>
+                    </Grid>
 
-                    {
-                      <Grid item xs={12}>
-                        <TableContainer
-                          title="Test Parameter Verification"
-                          headerContainer={
-                            <Grid container>
+                    <Grid item xs={12}>
+                      <TableContainer
+                        title="Test Parameter Verification"
+                        headerContainer={
+                          <Grid container>
+                            <Grid item>
+                              <Tooltip title="Update">
+                                <IconButton
+                                  onClick={() => {
+                                    if (tabValue === 0) {
+                                      handleUpdate();
+                                    } else if (tabValue === 1) {
+                                      handleUpdateDim();
+                                    }
+                                  }}
+                                  disabled={!saveBtnFlag}
+                                >
+                                  <SaveIcon sx={{ color: "#ffffff" }} />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
+                            {tabValue === 0 && (
                               <Grid item>
-                                <Tooltip title="Update">
+                                <Tooltip title="Copy Source Val">
                                   <IconButton
                                     onClick={() => {
-                                      if (tabValue == 0) {
-                                        handleUpdate();
-                                      } else if (tabValue == 1) {
-                                        handleUpdateDim();
-                                      }
-                                    }}
-                                    disabled={!saveBtnFlag}
-                                  >
-                                    <SaveIcon sx={{ color: "#ffffff" }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </Grid>
-                              {tabValue === 0 && (
-                                <Grid item>
-                                  <Tooltip title="Copy Source Val">
-                                    <IconButton
-                                      onClick={() => {
-                                        table2?.getRows().forEach((row) => {
+                                      table2Instance.current
+                                        ?.getRows()
+                                        .forEach((row) => {
                                           const srcValue = row
                                             .getCell("PARA_VAL")
                                             .getValue();
                                           row
                                             .getCell("TEST_PARA_VAL_COIL")
-                                            .setValue(srcValue); // Copy values
+                                            .setValue(srcValue);
                                         });
-                                      }}
-                                      sx={{ marginLeft: "10px" }}
-                                    >
-                                      <ContentCopy sx={{ color: "#ffffff" }} />
-                                    </IconButton>
-                                  </Tooltip>
-                                </Grid>
-                              )}
-                              <Grid item>
-                                {/* Button to clear values */}
-                                <Tooltip title="Clear TEST_PARA_VAL_COIL">
-                                  <IconButton
-                                    onClick={() => {
-                                      if (tabValue == 0) {
-                                        table2.getRows().forEach((row) => {
+                                    }}
+                                    sx={{ marginLeft: "10px" }}
+                                  >
+                                    <ContentCopy sx={{ color: "#ffffff" }} />
+                                  </IconButton>
+                                </Tooltip>
+                              </Grid>
+                            )}
+                            <Grid item>
+                              <Tooltip title="Clear Values">
+                                <IconButton
+                                  onClick={() => {
+                                    if (tabValue === 0) {
+                                      table2Instance.current
+                                        ?.getRows()
+                                        .forEach((row) => {
                                           row
                                             .getCell("TEST_PARA_VAL_COIL")
-                                            .setValue(""); // Clear values
-                                        });
-                                      } else if (tabValue == 1) {
-                                        tableDim.getRows().forEach((row) => {
-                                          row
-                                            .getCell("INP_WIDTH_TOP")
                                             .setValue("");
+                                        });
+                                    } else if (tabValue === 1) {
+                                      tableDimInstance.current
+                                        ?.getRows()
+                                        .forEach((row) => {
+                                          row.getCell("INP_WIDTH_TOP").setValue("");
                                           row
                                             .getCell("INP_WIDTH_MIDDLE")
                                             .setValue("");
                                           row
                                             .getCell("INP_WIDTH_BOTTOM")
                                             .setValue("");
-                                          row
-                                            .getCell("INP_THICK_TOP")
-                                            .setValue("");
+                                          row.getCell("INP_THICK_TOP").setValue("");
                                           row
                                             .getCell("INP_THICK_MIDDLE")
                                             .setValue("");
                                           row
                                             .getCell("INP_THICK_BOTTOM")
-                                            .setValue(""); // Clear values
+                                            .setValue("");
                                         });
-                                      }
-                                    }}
-                                    sx={{ marginLeft: "10px" }}
-                                  >
-                                    <ClearAll sx={{ color: "#ffffff" }} />
-                                  </IconButton>
-                                </Tooltip>
-                                {/* Button to copy values from TEST_PARA_VAL_CAST to TEST_PARA_VAL_COIL */}
-                              </Grid>
-                              {tabValue === 0 && (
-                                <Grid item>
-                                  <Tooltip title="Copy CAST to COIL">
-                                    <IconButton
-                                      onClick={() => {
-                                        // if (tabValue == 0) {
-                                        table2?.getRows().forEach((row) => {
+                                    }
+                                  }}
+                                  sx={{ marginLeft: "10px" }}
+                                >
+                                  <ClearAll sx={{ color: "#ffffff" }} />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
+                            {tabValue === 0 && (
+                              <Grid item>
+                                <Tooltip title="Copy CAST to COIL">
+                                  <IconButton
+                                    onClick={() => {
+                                      table2Instance.current
+                                        ?.getRows()
+                                        .forEach((row) => {
                                           const castValue = row
                                             .getCell("TEST_PARA_VAL_CAST")
                                             .getValue();
                                           row
                                             .getCell("TEST_PARA_VAL_COIL")
-                                            .setValue(castValue); // Copy values
+                                            .setValue(castValue);
                                         });
-                                        // } else if (tabValue == 1) {
-                                        //   alertify.error("Not for this tab");
-                                        // }
-                                      }}
-                                      sx={{ marginLeft: "10px" }}
-                                    >
-                                      <ContentCopy sx={{ color: "#ffffff" }} />
-                                    </IconButton>
-                                  </Tooltip>
-                                </Grid>
-                              )}
-                              <Grid item xs={1}>
-                                <Tooltip title="Download" arrow>
-                                  <IconButton
-                                    color="white"
-                                    onClick={() => downloadTestParaGrid()}
+                                    }}
+                                    sx={{ marginLeft: "10px" }}
                                   >
-                                    <DownloadForOfflineIcon />
+                                    <ContentCopy sx={{ color: "#ffffff" }} />
                                   </IconButton>
                                 </Tooltip>
                               </Grid>
+                            )}
+                            <Grid item xs={1}>
+                              <Tooltip title="Download" arrow>
+                                <IconButton
+                                  color="white"
+                                  onClick={downloadTestParaGrid}
+                                >
+                                  <DownloadForOfflineIcon />
+                                </IconButton>
+                              </Tooltip>
                             </Grid>
-                          }
-                        >
-                          <Box sx={{ width: "100%" }}>
-                            <Box
-                              sx={{ borderBottom: 1, borderColor: "divider" }}
+                          </Grid>
+                        }
+                      >
+                        <Box sx={{ width: "100%" }}>
+                          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                            <Tabs
+                              value={tabValue}
+                              onChange={handleTabChange}
+                              aria-label="Para tables"
                             >
-                              <Tabs
-                                value={tabValue}
-                                onChange={handleTabChange}
-                                aria-label="Para tables"
-                              >
-                                <Tab label="Chem and Mech Para" />
-                                <Tab label="Width and Thick para" />
-                              </Tabs>
-                            </Box>
-                            {tabValue === 0 && tabledata2?.length > 0 && (
-                              <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                  <div id="table2"></div>
-                                  <br />
-                                  <p
-                                    color="black"
-                                    style={{
-                                      color: "black",
-                                      paddingLeft: "1rem",
-                                      marginTop: "-1rem",
-                                    }}
-                                  >
-                                    Showing {tabledata2?.length} of{" "}
-                                    {tabledata2?.length} entries
-                                  </p>
-                                </Grid>
-                              </Grid>
-                            )}
-                            {tabValue === 1 && tabledataDim?.length > 0 && (
-                              <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                  <div id="tableDim"></div>
-                                  <br />
-                                  <p
-                                    color="black"
-                                    style={{
-                                      color: "black",
-                                      paddingLeft: "1rem",
-                                      marginTop: "-1rem",
-                                    }}
-                                  >
-                                    Showing {tabledataDim?.length} of{" "}
-                                    {tabledataDim?.length} entries
-                                  </p>
-                                </Grid>
-                              </Grid>
-                            )}
+                              <Tab label="Chem and Mech Para" />
+                              <Tab label="Width and Thick para" />
+                            </Tabs>
                           </Box>
-                        </TableContainer>
-                      </Grid>
-                    }
+                          {tabValue === 0 && (
+                            <Grid container spacing={2}>
+                              <Grid item xs={12}>
+                                <div ref={table2Ref}></div>
+                                <br />
+                                <p
+                                  style={{
+                                    color: "black",
+                                    paddingLeft: "1rem",
+                                    marginTop: "-1rem",
+                                  }}
+                                >
+                                  Showing {tabledata2?.length} of{" "}
+                                  {tabledata2?.length} entries
+                                </p>
+                              </Grid>
+                            </Grid>
+                          )}
+                          {tabValue === 1 && (
+                            <Grid container spacing={2}>
+                              <Grid item xs={12}>
+                                <div ref={tableDimRef}></div>
+                                <br />
+                                <p
+                                  style={{
+                                    color: "black",
+                                    paddingLeft: "1rem",
+                                    marginTop: "-1rem",
+                                  }}
+                                >
+                                  Showing {tabledataDim?.length} of{" "}
+                                  {tabledataDim?.length} entries
+                                </p>
+                              </Grid>
+                            </Grid>
+                          )}
+                        </Box>
+                      </TableContainer>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>

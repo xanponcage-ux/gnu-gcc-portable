@@ -178,6 +178,7 @@ export default function LDSM012() {
 
   const StockType = [
     { label: "RM", value: "RM" },
+    { label: "RM(without Inspection)", value: "RM(without Inspection)" },
     { label: "WIP", value: "WIP" },
     { label: "SCRAP", value: "SCRAP" },
     { label: "FG", value: "FG" },

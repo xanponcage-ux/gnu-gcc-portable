@@ -54,13 +54,11 @@ FROM
     const conditions = [];
 
     if (props.orderId || props.itemId) {
-      sql += `WHERE RMF_ID_ORDER_1 = '${props.orderId}'`;
+      sql += `WHERE RMF_ID_ORDER_1 = '${props.orderId}' and rmf_no_item_1 = '${props.itemId}' 
+         OR (RMF_ID_ORDER_2 = '${props.orderId}' AND rmf_no_item_2 = '${props.itemId}' )
+   OR (RMF_ID_ORDER_3 = '${props.orderId}' AND rmf_no_item_3 = '${props.itemId}' )
+   OR (RMF_ID_ORDER_4 = '${props.orderId}' AND rmf_no_item_4 = '${props.itemId}' )`;
     }
-    if (props.itemId) {
-      conditions.push(`rmf_no_item_1 = '${props.itemId}'`);
-    }
-
-
 
     console.log("getRM sql: ", sql); // Corrected log message
     let results = await query.executeQuery(sql);

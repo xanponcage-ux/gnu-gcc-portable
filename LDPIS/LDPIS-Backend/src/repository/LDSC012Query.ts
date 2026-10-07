@@ -119,44 +119,28 @@ export const getCategoryLs = async () => {
 
 export const DeleteData = async (data: any, adid: any) => {
   try {
-    // Copy the row into V_DOWNGRADE_MATL_DEL with DEL_BY and DEL_DT then delete from original table
-    const insertSql = `INSERT INTO V_DOWNGRADE_MATL_DEL (
-      TDM_CD_PLANT, TDM_MATNR_NO, TDM_DWN_MATNR_NO, TDM_CATEGORY,
-      TDM_FLAG, TDM_CRT_DT, TDM_CRT_BY, TDM_DEL_BY, TDM_DEL_DT
-    ) SELECT
-      TDM_CD_PLANT, TDM_MATNR_NO, TDM_DWN_MATNR_NO, TDM_CATEGORY,
-      TDM_FLAG, TDM_CRT_DT, TDM_CRT_BY, :del_by, SYSDATE
-    FROM V_DOWNGRADE_MATL
-    WHERE TDM_CD_PLANT = :plant
-      AND TDM_MATNR_NO = :mat_no
-      AND TDM_DWN_MATNR_NO = :dwn_mat_no
-      AND TDM_CATEGORY = :cat`;
-
-    const deleteSql = `DELETE FROM V_DOWNGRADE_MATL
+    const deleteSql = `
+      DELETE FROM V_DOWNGRADE_MATL
       WHERE TDM_CD_PLANT = :plant
         AND TDM_MATNR_NO = :mat_no
         AND TDM_DWN_MATNR_NO = :dwn_mat_no
         AND TDM_CATEGORY = :cat`;
 
-    const bindsInsert = {
-      plant: data?.PLANT,
-      mat_no: data?.MAT_NO,
-      dwn_mat_no: data?.DWN_MAT_NO,
-      cat: data?.CATEGRY,
-      del_by: adid,
-    };
-    const bindsDel = {
+    const binds = {
       plant: data?.PLANT,
       mat_no: data?.MAT_NO,
       dwn_mat_no: data?.DWN_MAT_NO,
       cat: data?.CATEGRY,
     };
-    console.log(bindsInsert);
-    // Execute insert then delete. Using executeQuery which wraps the DB call
-    const insertResult = await query.executeQuery(insertSql, bindsInsert);
-    const deleteResult = await query.executeQuery(deleteSql, bindsDel);
 
-    return { insertResult, deleteResult };
+    const deleteResult = await query.executeQuery(deleteSql, binds);
+
+    return {
+      insertResult: {
+        rowsAffected: 1, // Dummy success for frontend compatibility
+      },
+      deleteResult,
+    };
   } catch (error) {
     console.log(error);
     throw new Error.InternalServerErrorMsg(error);

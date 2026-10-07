@@ -231,6 +231,7 @@ const handleCloseRMDialog = () => {
           setAdmin(false);
         } else if (authDetails.payload.PS_AUTH_DML == "Y") {
           setAdmin(true);
+          console.log("authDetails.payload.LS_READ_WRITE_FLAG",authDetails.payload.LS_READ_WRITE_FLAG)
           if (authDetails.payload.LS_READ_WRITE_FLAG == "RL_RW") {
             setReadWriteAccess(false);
             alertify.success(
@@ -1204,6 +1205,31 @@ const handleCloseRMDialog = () => {
     });
   };
 
+  const downloadRMTableExcel = () => {
+  if (
+    !coilTable1Instance.current ||
+    !coilTable1Data ||
+    coilTable1Data.length === 0
+  ) {
+    alertify.error("No RM Data available for download");
+    return;
+  }
+
+  const date = new Date();
+  const formattedDate = date.toISOString().slice(0, 10);
+
+  const orderId = selectedOrderRow?.COS_ID_ORDER || "Order";
+   const orderitem = selectedOrderRow?.COS_NO_ITEM || "Item";
+
+  coilTable1Instance.current.download(
+    "xlsx",
+    `RM_Batch_Details_${orderId}/${orderitem}_${formattedDate}.xlsx`,
+    {
+      sheetName: "RM Batch Details",
+    }
+  );
+};
+
   // Renamed handleDLinkTabDataClear to handleCoilTabDataClear
   const handleCoilTabDataClear = (e) => {
     setCoilFilter({
@@ -1439,10 +1465,11 @@ const handleCloseRMDialog = () => {
 
                         <Grid item xs={2}>
                           <MDButton
-                            style={{ marginTop: "1.5rem" }}
+                            style={{ marginTop: "1.5rem",marginLeft: "1.5rem" }}
                             size="small"
                             color="info"
                             onClick={populateForecast}
+                            disabled = {isReadWriteAccess}
                           >
                             Populate Forecast
                           </MDButton>
@@ -1694,28 +1721,41 @@ const handleCloseRMDialog = () => {
             borderRadius="lg"
             coloredShadow="info"
           >
-            <Grid
-              container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={4}> {/* Ensures the title takes full width */}
-                <MDTypography variant="h6" color="white">
-                  RM Batch Details
-                  
-                </MDTypography>
-              </Grid>
-              <Grid item xs={3}>
-                  <MDTypography variant="body1" color="white" fontWeight="bold">Order: {selectedOrderRow?.COS_ID_ORDER} /  {selectedOrderRow?.COS_NO_ITEM}</MDTypography>
-                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_ID_ORDER}</MDTypography> */}
-                </Grid>
+<Grid
+  container
+  direction="row"
+  justifyContent="space-between"
+  alignItems="center"
+>
+  <Grid item xs={4}>
+    <MDTypography variant="h6" color="white">
+      RM Batch Details
+    </MDTypography>
+  </Grid>
 
-                <Grid item xs={2}>
-                  {/* <MDTypography variant="body1" color="white" fontWeight="bold">Item: {selectedOrderRow?.COS_NO_ITEM}</MDTypography> */}
-                  {/* <MDTypography variant="body1">{selectedOrderRow?.COS_NO_ITEM}</MDTypography> */}
-                </Grid>
-            </Grid>
+  <Grid item xs={3}>
+    <MDTypography
+      variant="body1"
+      color="white"
+      fontWeight="bold"
+    >
+      Order: {selectedOrderRow?.COS_ID_ORDER} /{" "}
+      {selectedOrderRow?.COS_NO_ITEM}
+    </MDTypography>
+  </Grid>
+
+  {/* Download Button */}
+  <Grid item xs={1}>
+    <Tooltip title="Download">
+      <IconButton
+        color="white"
+        onClick={downloadRMTableExcel}
+      >
+        <DownloadForOfflineIcon />
+      </IconButton>
+    </Tooltip>
+  </Grid>
+</Grid>
           </MDBox>
 
           {/* CRITICAL CHANGE 3: Attach the ref to the div */}

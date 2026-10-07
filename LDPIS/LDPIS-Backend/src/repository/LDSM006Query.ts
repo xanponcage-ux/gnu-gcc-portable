@@ -53,6 +53,15 @@ export const getProdInqData = async (
                  WHERE MANDT = '600'
                    AND MATNR = NVL (TBP_NO_MATNR, LOM_NO_MATNR)
                    AND ROWNUM = 1) MAT_DESC, TBP_CD_FLAG,LOM_SEC2,LOM_SEC1,LOM_LENGTH,NVL(TBP_HEAT_NO,LOM_NO_CAST) TBP_HEAT_NO,
+                (select CASE WHEN REGEXP_LIKE(A.TBP_DIA_END_10, '^[0-9]+$') THEN TO_NUMBER(A.TBP_DIA_END_10) ELSE NULL END FROM V_BARE_PDO A
+                where A.TBP_BATCH_NO = LOM_ID_BATCH
+                  and A.TBP_CD_PROC = 'A'
+                  and A.TBP_BATCH_PROC_NO = (
+                    SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
+                    WHERE A.TBP_BATCH_NO = x.TBP_BATCH_NO
+                      AND x.TBP_CD_PROC = 'A'
+                  )
+                and rownum = 1) EXTERNAL_SEQ_NO,
                 TO_CHAR(TBP_PROD_START_DT, 'DD-MM-YYYY HH24:MI:SS') TBP_PROD_START_DT,TO_CHAR(TBP_PROD_END_DT, 'DD-MM-YYYY HH24:MI:SS') TBP_PROD_END_DT,
                 TBP_RESULT, TBP_REMARK, TBP_INSP_NAME, TBP_PIPE_OD_10, TBP_PIPE_THK_10, TBP_PIPE_LNG_10, TBP_FLATNG_0_O_10,
                 TBP_FLATNG_90_O_10, TBP_RBT_10, TBP_DIA_END_10, TBP_DIA_BODY_10, TBP_OUT_ROUND_BODY_10, TBP_OUT_ROUND_END_10, TBP_WALL_THK_BODY_10,
