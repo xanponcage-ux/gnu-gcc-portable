@@ -3,19 +3,21 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-# Transfers the six 2026-10-07 requests and the earlier LD150 update if needed.
+# Defaults to the 2026-10-14 requests. Use -ChangeSet 2026-10-07 for the earlier bundle.
 # Checks patches on temporary copies first; preserves unrelated office edits.
 # Does not stage, commit, push, or change either office repository's Git settings.
 [CmdletBinding()]
 param(
     [string]$OfficeRoot = "D:\LDP UAT MAY",
-    [switch]$CheckOnly
+    [switch]$CheckOnly,
+    [ValidateSet("2026-10-07", "2026-10-14")]
+    [string]$ChangeSet = "2026-10-14"
 )
 $ErrorActionPreference = "Stop"
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw "Git is not available. Run in the VS Code PowerShell terminal where Git works."
 }
-$bundle = Join-Path $PSScriptRoot "transfer\2026-10-07"
+$bundle = Join-Path $PSScriptRoot ("transfer\" + $ChangeSet)
 $manifest = Join-Path $bundle "manifest.json"
 if (-not (Test-Path -LiteralPath $manifest)) { throw "Transfer bundle missing. Pull origin main first." }
 # Windows PowerShell 5.1 emits the JSON array as one pipeline object.
@@ -31,7 +33,7 @@ foreach ($job in $jobs) {
 }
 $workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("LDPIS-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $workDir | Out-Null
-Write-Host "Preview files and backups: $workDir"
+Write-Host "Change set: $ChangeSet. Preview files and backups: $workDir"
 $prepared = @()
 
 function Test-Patch([string]$Root, [string]$Patch, [switch]$Reverse) {
@@ -115,5 +117,5 @@ try {
     }
     throw "Transfer failed; attempted rollback. $applyError. Backups: $workDir"
 }
-Write-Host "Transfer complete: $($prepared.Count) file(s) updated. Review Source Control and test LD09-LD16."
-Write-Host "Restart the backend for the receive-screen route. No Azure commit or push performed. Backups: $workDir"
+Write-Host "Transfer complete: $($prepared.Count) file(s) updated. Review Source Control and test the affected screens."
+Write-Host "Restart the backend to load the updated handlers. No Azure commit or push performed. Backups: $workDir"

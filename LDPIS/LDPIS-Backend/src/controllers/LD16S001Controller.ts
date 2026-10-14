@@ -56,139 +56,86 @@ export const getPipeNoList = async (req: Request, res: Response) => {
 };
 
 export const insertTempData = async (req: Request, res: Response) => {
-  try {
-    const selectedData = req.body?.selectedRowsData || [];
-
-    let successBatches: string[] = [];
-    let failedBatches: string[] = [];
-    let totalRowsAffected = 0;
-    let totalRowsAffectedScrap = 0;
-    let scrapCount = 0;
-    let totalRowsAffectedLab = 0;
-    let labTestCount = 0;
-    let totalRowsAffectedField = 0;
-    let fieldTestCount = 0;
-    let procedureFailureMessage = "";
-
-    console.log("req.body =>", req.body);
-
-    const parseCsvValues = (value: string | null | undefined): string[] => {
-      if (!value) return [];
-      return value
-        .split(",")
-        .map((v) => v.trim())
-        .filter((v) => v !== "");
-    };
-
-    for (const data of selectedData) {
-      const result = await LD16S001.prototype.deleteTempData(data);
-      console.log("delete temp =>", result);
-
-      const result1 = await LD16S001.prototype.insertTempData(data);
-      console.log("insert temp =>", result1);
-
-      if (result1?.rowsAffected) {
-        totalRowsAffected += result1.rowsAffected;
-      }
-
-      if (data?.BATCH_SCRAP_WEIGHT > 0) {
-        scrapCount += 1;
-        let resultScrap = await LD16S001.prototype.insertScrapTempData(data);
-        if (resultScrap?.rowsAffected) {
-          totalRowsAffectedScrap += resultScrap.rowsAffected;
-        }
-        console.log("result scrap", resultScrap);
-      }
-
-      const labTests = parseCsvValues(data.LAB_TST);
-      if (labTests.length > 0) {
-        for (const labTest of labTests) {
-          const resultLab = await LD16S001.prototype.insertLAB(
-            data.BATCH_NO,
-            data.PROD_DATE,
-            data.SHIFT,
-            labTest
-          );
-
-          if (resultLab?.rowsAffected) {
-            totalRowsAffectedLab += resultLab.rowsAffected;
-          }
-        }
-        labTestCount += labTests.length;
-      }
-
-      const fieldTests = parseCsvValues(data.FLD_TEST);
-      if (fieldTests.length > 0) {
-        for (const fieldTest of fieldTests) {
-          const resultField = await LD16S001.prototype.insertField(
-            data.BATCH_NO,
-            data.PROD_DATE,
-            data.SHIFT,
-            fieldTest
-          );
-
-          if (resultField?.rowsAffected) {
-            totalRowsAffectedField += resultField.rowsAffected;
-          }
-        }
-        fieldTestCount += fieldTests.length;
-      }
-
-      let result2: any;
-      const scrapCondition =
-        scrapCount === 0 || scrapCount === totalRowsAffectedScrap;
-      const labCondition =
-        labTestCount === 0 || labTestCount === totalRowsAffectedLab;
-      const fieldCondition =
-        fieldTestCount === 0 || fieldTestCount === totalRowsAffectedField;
-
-      if (
-        totalRowsAffected >= 1 &&
-        scrapCondition &&
-        labCondition &&
-        fieldCondition
-      ) {
-        result2 = await LD16S001.prototype.callproc120(data);
-        console.log("procedure =>", result2);
-
-        if (result2?.[0]?.[0] !== "Y") {
-          procedureFailureMessage = `Procedure Failure Details: ${JSON.stringify(
-            result2?.[0]
-          )}`;
-          failedBatches.push(data.BATCH_NO);
-          break;
-        }
-
-        successBatches.push(data.BATCH_NO);
-      } else {
-        failedBatches.push(data.BATCH_NO);
-      }
-    }
-
-    const successCount = successBatches.length;
-    const failedCount = failedBatches.length;
-    const finalOutput = `
-      ${procedureFailureMessage}
-      Successful Batches (${successCount}): ${successBatches.join(", ")}
-      Failed Batches (${failedCount}): ${failedBatches.join(", ")}
-    `.trim();
-
-    console.log("Final Output:", finalOutput);
-    console.log("rowsaffected120 =>", totalRowsAffected);
-
-    return res.status(200).json({
-      message: finalOutput,
-      successCount,
-      failedCount,
-    });
-  } catch (error: any) {
-    console.error("insertTempData error =>", error);
+  const selectedData = req.body?.selectedRowsData;
+  if (!Array.isArray(selectedData) || selectedData.length === 0) {
     return res.status(400).json({
-      message: `Error: ${error.message || error}`,
-      successCount: 0,
-      failedCount: 0,
+      message: "Please select pipes to save.", successCount: 0, failedCount: 0,
+      pendingCount: 0, successfulPipes: [], failedPipes: [],
     });
   }
+  // Reject all selected rows before the first write if any internal field number is blank.
+  const invalidRow = selectedData.find((data: any) => !String(data?.TBP_FIELDNO_INT_160 ?? "").trim());
+  if (invalidRow) {
+    return res.status(400).json({
+      message: `Internal Field No is required for Pipe No: ${invalidRow.BATCH_NO}.`,
+      successCount: 0, failedCount: 0, pendingCount: selectedData.length,
+      successfulPipes: [], failedPipes: [],
+    });
+  }
+  selectedData.forEach((data: any) => {
+    data.TBP_FIELDNO_INT_160 = String(data.TBP_FIELDNO_INT_160).trim();
+  });
+  const successfulPipes: string[] = [];
+  const failedPipes: string[] = [];
+  let failureMessage = "";
+  for (const data of selectedData) {
+    const pipe = String(data?.BATCH_NO ?? "");
+    try {
+      await LD16S001.prototype.deleteTempData(data);
+      const inserted = await LD16S001.prototype.insertTempData(data);
+      if (!inserted?.rowsAffected) {
+        failedPipes.push(pipe);
+        failureMessage = `Temporary data could not be inserted for Pipe ${pipe}.`;
+        break;
+      }
+      // Preserve the existing scrap/lab/field-before-procedure order, checking THIS pipe only.
+      if (Number(data.BATCH_SCRAP_WEIGHT || 0) > 0) {
+        const scrap = await LD16S001.prototype.insertScrapTempData(data);
+        if (!scrap?.rowsAffected) {
+          failedPipes.push(pipe);
+          failureMessage = `Scrap data could not be inserted for Pipe ${pipe}.`;
+          break;
+        }
+      }
+      const parseTests = (value: any): string[] => String(value ?? "").split(",").map(v => v.trim()).filter(Boolean);
+      let testFailure = "";
+      for (const test of parseTests(data.LAB_TST)) {
+        const result = await LD16S001.prototype.insertLAB(data.BATCH_NO, data.PROD_DATE, data.SHIFT, test);
+        if (!result?.rowsAffected) { testFailure = `Lab test ${test}`; break; }
+      }
+      if (!testFailure) {
+        for (const test of parseTests(data.FLD_TEST)) {
+          const result = await LD16S001.prototype.insertField(data.BATCH_NO, data.PROD_DATE, data.SHIFT, test);
+          if (!result?.rowsAffected) { testFailure = `Field test ${test}`; break; }
+        }
+      }
+      if (testFailure) {
+        failedPipes.push(pipe);
+        failureMessage = `${testFailure} could not be inserted for Pipe ${pipe}.`;
+        break;
+      }
+      const result = await LD16S001.prototype.callproc120(data);
+      const flag = String(result?.[0] ?? "").trim();
+      if (flag.charAt(0).toUpperCase() === "Y") {
+        successfulPipes.push(pipe);
+      } else {
+        failedPipes.push(pipe);
+        failureMessage = `Pipe ${pipe}: ${flag || "Procedure did not return a success flag."}`;
+        break;
+      }
+    } catch (error: any) {
+      failedPipes.push(pipe);
+      failureMessage = `Pipe ${pipe}: ${error?.message || "Save failed."}`;
+      break;
+    }
+  }
+  const successCount = successfulPipes.length;
+  const failedCount = failedPipes.length;
+  const pendingCount = selectedData.length - successCount - failedCount;
+  const message = failedCount
+    ? `Successfully saved ${successCount} pipe(s). Failed: ${failedCount}. Not processed: ${pendingCount}. ${failureMessage}`
+    : `Successfully saved ${successCount} pipe(s).`;
+  return res.status(200).json({ message, successCount, failedCount, pendingCount, successfulPipes, failedPipes });
 };
 
 export const getFillData = async (req: Request, res: Response) => {

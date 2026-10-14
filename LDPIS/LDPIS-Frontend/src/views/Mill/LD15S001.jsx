@@ -1237,7 +1237,7 @@ const updateData = async () => {
       { selectedRowsData: newData },
       defaultOptions
     )
-    .then((response) => {
+    .then(async (response) => {
       if (response.statusText !== "" && response.statusText !== "OK") {
         const errMsg =
           response?.error?.response?.data?.message ||
@@ -1247,25 +1247,28 @@ const updateData = async () => {
         setShowSaveMsgError(true);
         setSaveMsg(errMsg);
       } else {
-        if (response.data?.failedCount > 0) {
-          if (response.data?.successCount > 0) {
-            setBlastAppTable([]);
-            setSelectedBlastAppTable(null);
+        if (response.data?.failedCount > 0 || !response.data?.successCount) {
+          if (response.data?.successfulPipes?.length) {
+            const saved = new Set(response.data.successfulPipes);
+            await Promise.all(selectedBlastAppTable.getRows()
+              .filter(row => saved.has(String(row.getData().PIPE_NO)))
+              .map(row => row.delete()));
           }
           showErrorAlert(response.data?.message);
           setShowSaveMsgSuccess(false);
           setShowSaveMsgError(true);
           setSaveMsg(response.data?.message);
         } else {
-          alertify.success(response.data?.message || "Row Inserted Successfully !!!");
-          setShowSaveMsgSuccess(true);
-          setShowSaveMsgError(false);
-          setSaveMsg(response.data?.message || "Row Inserted Successfully !!!");
+          const successMessage = `Successfully saved ${response.data.successCount} pipe(s).`;
+          alertify.success(successMessage);
           setSelectedBlastAppTable(null);
           setBlastAppTable([]);
           handleClearAll();
           handleClearMain();
           fetchDetails();
+          setShowSaveMsgSuccess(true);
+          setShowSaveMsgError(false);
+          setSaveMsg(successMessage);
         }
       }
     })

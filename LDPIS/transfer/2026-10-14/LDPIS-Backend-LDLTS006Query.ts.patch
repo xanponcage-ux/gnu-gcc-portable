@@ -1,0 +1,58 @@
+diff --git a/LDPIS/LDPIS-Backend/src/repository/LDLTS006Query.ts b/LDPIS/LDPIS-Backend/src/repository/LDLTS006Query.ts
+index 6b3b811..044457d 100644
+--- a/LDPIS/LDPIS-Backend/src/repository/LDLTS006Query.ts
++++ b/LDPIS/LDPIS-Backend/src/repository/LDLTS006Query.ts
+@@ -15,24 +15,37 @@ export const getCoils = async (data: any) => {
+        LOM_ID_PAR_COIL_NO PARENT_BATCH, LOM_ID_FIRST_PAR MOTHER_BATCH,
+        LOM_TDC_ACTL TDC, LOM_CD_EPA PLANT, LOM_NO_MATNR MAT_NO,
+        LOM_PLANNED_PROC PLAN_PROC, LOM_PASSED_PROC PASS_PROC, LOM_SAMPL_TAG SAMPLE_TAG,
+-       LOM_TAGGED_BATCH TAGGED_BATCH
+-       FROM V_LDP_PRODN`;
++       LOM_TAGGED_BATCH TAGGED_BATCH,
++       (SELECT a.TBP_ASL_NO_80 FROM V_BARE_PDO a
++         WHERE a.TBP_BATCH_NO = LOM_ID_BATCH AND a.TBP_PLANT_CD = LOM_CD_EPA
++           AND a.TBP_CD_PROC = '8'
++           AND a.TBP_BATCH_PROC_NO = (SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
++             WHERE x.TBP_BATCH_NO = a.TBP_BATCH_NO AND x.TBP_PLANT_CD = a.TBP_PLANT_CD AND x.TBP_CD_PROC = '8')
++           AND ROWNUM = 1) AS ASL_NO,
++       (SELECT f.TBP_FLD_NO_130 FROM V_BARE_PDO f
++         WHERE f.TBP_BATCH_NO = LOM_ID_BATCH AND f.TBP_PLANT_CD = LOM_CD_EPA
++           AND f.TBP_CD_PROC = 'E'
++           AND f.TBP_BATCH_PROC_NO = (SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
++             WHERE x.TBP_BATCH_NO = f.TBP_BATCH_NO AND x.TBP_PLANT_CD = f.TBP_PLANT_CD AND x.TBP_CD_PROC = 'E')
++           AND ROWNUM = 1) AS FIELD_NO
++       FROM V_LDP_PRODN
++       WHERE LOM_CD_EPA = :plant AND LOM_CD_STATUS = :status`;
+ 
+-    if (data.plant) {
+-      sql += ` where lom_cd_epa = '${data?.plant}'`;
+-    }
+-    if (data.batchId) {
+-      sql += ` And LOM_ID_BATCH = '${data?.batchId}'`;
+-    }
+-    if (data.mBatch) {
+-      sql += ` and LOM_ID_FIRST_PAR = '${data?.mBatch}'`;
+-    }
+-
+-    sql += ` and lom_cd_status = 'EQ'`; //EQ
+-    sql += ` order by LOM_TS_CREATION desc, LOM_ID_PAR_COIL_NO, LOM_ID_BATCH `;
+ 
+-    // console.log("sql: ", sql);
+-    return await query.executeQuery(sql);
++    const binds: any = { plant: String(data.plant ?? "").trim(), status: "EQ" };
++    const filters = [
++      ["batchId", "LOM_ID_BATCH"], ["mBatch", "LOM_ID_FIRST_PAR"],
++      ["ordNo", "LOM_ID_ORDER_CUS"], ["ordItem", "LOM_ID_ORD_ITEM_CUS"],
++    ];
++    for (const [key, column] of filters) {
++      const value = String(data[key] ?? "").trim();
++      if (value) {
++        sql += ` AND ${column} = :${key}`;
++        binds[key] = value;
++      }
++    }
++    sql += " ORDER BY LOM_TS_CREATION DESC, LOM_ID_PAR_COIL_NO, LOM_ID_BATCH";
++    return await query.executeQuery(sql, binds);
+   } catch (error) {
+     console.log(error);
+     throw new Error.InternalServerErrorMsg(error);

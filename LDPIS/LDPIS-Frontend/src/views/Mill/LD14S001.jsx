@@ -605,7 +605,7 @@ export default function TubePlanning() {
       },
     };
 
-    var selectedRows = selectedLPETable.getSelectedRows();
+    var selectedRows = selectedLPETable?.getSelectedRows() || [];
     if (selectedRows.length == 0) {
       alertify.error("Please select rows");
       return;
@@ -671,13 +671,19 @@ export default function TubePlanning() {
     var url = "api/LD14S001/insertTempData";
     axiosAPI
       .post(url, data, defaultOptions)
-      .then((response) => {
+      .then(async (response) => {
         if (response.statusText != "" && response.statusText != "OK") {
           alertify.error("Error in Procedure");
         } else {
-          var res = response.data[0][0];
-          if (res == "Y") {
-            alertify.success("Row Inserted Successfully !!!");
+          const result = response.data;
+          if (result.failedCount > 0 && result.successfulPipes?.length) {
+            const saved = new Set(result.successfulPipes);
+            await Promise.all(selectedLPETable.getRows()
+              .filter(row => saved.has(String(row.getData().PIPE_NO)))
+              .map(row => row.delete()));
+          }
+          if (result.successCount > 0 && result.failedCount === 0) {
+            alertify.success(result.message);
             setLPETable([]);
             setSelectedLPETable(null);
             handleClearAll();
@@ -685,11 +691,14 @@ export default function TubePlanning() {
             handleAllBelow();
             fetchDetails();
           } else {
-            alertify.alert(response?.data[0]);
+            alertify.error(result.message || "No pipes were saved.");
             // setLPETable([]);
             // setSelectedLPETable(null)
           }
         }
+      })
+      .catch((error) => {
+        alertify.error(error?.response?.data?.message || "Failed to save pipes.");
       })
       .finally((f) => {
         setLoading(false);

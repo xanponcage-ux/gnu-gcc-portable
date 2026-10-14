@@ -40,6 +40,8 @@ export default function LDLTS006() {
   const [tableData, setTableData] = useState([]);
   const [batchId, setBatchId] = useState("");
   const [mBatch, setMBatch] = useState("");
+  const [ordNo, setOrdNo] = useState("");
+  const [ordItem, setOrdItem] = useState("");
   const [downMatl, setDownMatl] = useState([]);
   const [scrapMatl, setScrapMatl] = useState([]);
   const [showSaveMsgSuccess, setShowSaveMsgSuccess] = useState(false);
@@ -207,23 +209,19 @@ export default function LDLTS006() {
     });
   };
 
-  //use Effect to render display data
+  // Destroy stale results when any filter clears the data.
   useEffect(() => {
-    if (tableData && tableData.length > 0) {
-      setTable(
-        new Tabulator("#table", {
-          data: tableData,
-          columns: tableCol,
-          height: 380,
-          layout: "fitDataFill",
-          // selectable: 1,
-          pagination: true,
-          paginationSize: 10,
-          paginationSizeSelector: [10, 30, 60, 80],
-          paginationCounter: "rows",
-        })
-      );
+    if (!tableData.length) {
+      setTable(null);
+      return;
     }
+    const grid = new Tabulator("#table", {
+      data: tableData, columns: tableCol, height: 380, layout: "fitDataFill",
+      pagination: true, paginationSize: 10,
+      paginationSizeSelector: [10, 30, 60, 80], paginationCounter: "rows",
+    });
+    setTable(grid);
+    return () => grid.destroy();
   }, [tableData, downMatl, scrapMatl]);
 
   const handlePlantChange = (value) => {
@@ -248,6 +246,8 @@ export default function LDLTS006() {
         plant: selectedPlant ? selectedPlant.value : "",
         batchId: batchId ? batchId : "",
         mBatch: mBatch ? mBatch : "",
+        ordNo: ordNo.trim(),
+        ordItem: ordItem.trim(),
       };
       if (!data.plant) {
         alertify.error("Please select Plant ID");
@@ -269,7 +269,7 @@ export default function LDLTS006() {
           } else {
             if (response.data.length == 0) {
               alertify.error("No Data Found!");
-              setTableData([,]);
+              setTableData([]);
               return;
             } else {
               setTableData(response.data);
@@ -287,7 +287,7 @@ export default function LDLTS006() {
     setShowSaveMsgError(false);
     setSaveMsg("");
     console.log("Inside Save Data");
-    var selectedRows = table.getSelectedRows();
+    var selectedRows = table?.getSelectedRows() || [];
 
     //no row selected alert
     if (selectedRows.length == 0) {
@@ -506,6 +506,18 @@ export default function LDLTS006() {
     {
       title: "Batch ID",
       field: "BATCH_ID",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "ASL No",
+      field: "ASL_NO",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Field No",
+      field: "FIELD_NO",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -820,7 +832,9 @@ export default function LDLTS006() {
     setSelectedPlant([]);
     setBatchId("");
     setMBatch("");
-    setTableData([,]);
+    setOrdNo("");
+    setOrdItem("");
+    setTableData([]);
     setTable(null);
   };
 
@@ -931,7 +945,7 @@ export default function LDLTS006() {
                               setBatchId(
                                 e.target.value.toUpperCase().slice(0, 10)
                               );
-                              setTableData([,]);
+                              setTableData([]);
                             }}
                           />
                         </Grid>
@@ -954,9 +968,24 @@ export default function LDLTS006() {
                               setMBatch(
                                 e.target.value.toUpperCase().slice(0, 10)
                               );
-                              setTableData([,]);
+                              setTableData([]);
                             }}
                           />
+                        </Grid>
+
+                        <Grid item xs={2}>
+                          <MDTypography fontWeight="regular" fontSize="small" variant="h6">Order No</MDTypography>
+                          <MDInput name="ordNo" value={ordNo} onChange={(e) => {
+                            setOrdNo(e.target.value);
+                            setTableData([]);
+                          }} />
+                        </Grid>
+                        <Grid item xs={1.5}>
+                          <MDTypography fontWeight="regular" fontSize="small" variant="h6">Order Item</MDTypography>
+                          <MDInput name="ordItem" value={ordItem} onChange={(e) => {
+                            setOrdItem(e.target.value);
+                            setTableData([]);
+                          }} />
                         </Grid>
 
                         <Grid item xs={1}>

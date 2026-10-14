@@ -1,0 +1,157 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD16S001.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD16S001.jsx
+index 111e4cf..1ed5084 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD16S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD16S001.jsx
+@@ -87,7 +87,6 @@ export default function TubePlanning() {
+     return local.toISOString().slice(0, 16);
+   };
+ 
+-  const [fieldNoInt, setFieldNoInt] = useState("");
+   const [roughness, setRoughness] = useState("");
+ 
+   const [dftF1, setDftF1] = useState("");
+@@ -333,7 +332,6 @@ export default function TubePlanning() {
+     setSelectedResult(null);
+     setInspectorName("");
+ 
+-    setFieldNoInt("");
+     setRoughness("");
+ 
+     setDftF1("");
+@@ -407,7 +405,6 @@ export default function TubePlanning() {
+     setSelectedResult(null);
+     setInspectorName("");
+ 
+-    setFieldNoInt("");
+     setRoughness("");
+ 
+     setDftF1("");
+@@ -465,7 +462,6 @@ export default function TubePlanning() {
+     setSelectedResult(null);
+     setInspectorName("");
+ 
+-    setFieldNoInt("");
+     setRoughness("");
+ 
+     setDftF1("");
+@@ -819,8 +815,8 @@ export default function TubePlanning() {
+         PIPE_NO: row.TBP_BATCH_NO || "",
+         ASL_NO: row.ASL_NO || "",
+ 
+-        FIELD_NO: row.TBP_FLD_NO_130 || "",
+-        INT_FIELD_NO: fieldNoInt || "",
++        FIELD_NO: row.TBP_FLD_NO_130 ?? "",
++        INT_FIELD_NO: row.TBP_FLD_NO_130 ?? "",
+ 
+         LENGTH: row.TBP_PIPE_LNG_10 || 0,
+         DT_OF_PROC: dtOfProcDisplay,
+@@ -927,6 +923,17 @@ export default function TubePlanning() {
+       const rowData = item.getData ? item.getData() : item?._row?.data;
+       const pipeNo = rowData?.PIPE_NO || "";
+ 
++      const internalFieldNo = String(rowData?.INT_FIELD_NO ?? "").trim();
++      if (!internalFieldNo) {
++        const msg = `Internal Field No is required for Pipe No: ${pipeNo}.`;
++        alertify.error(msg);
++        setShowSaveMsgSuccess(false);
++        setShowSaveMsgError(true);
++        setSaveMsg(msg);
++        hasError = true;
++        continue;
++      }
++
+       const weight = rowData?.PIPE_WEIGHT ? parseFloat(rowData.PIPE_WEIGHT) : 0;
+       let batchOriginalWeight = weight;
+ 
+@@ -1000,7 +1007,7 @@ export default function TubePlanning() {
+ 
+         // Final Station Internal fields
+         TBP_FLD_NO_130: rowData.FIELD_NO ?? null,
+-        TBP_FIELDNO_INT_160: rowData.INT_FIELD_NO ?? null,
++        TBP_FIELDNO_INT_160: internalFieldNo,
+         TBP_ROUGH_100: rowData.ROUGHNESS ?? null,
+ 
+         TBP_DFT_F1_160: rowData.DFT_F1 ?? null,
+@@ -1055,7 +1062,7 @@ export default function TubePlanning() {
+ 
+     axiosAPI
+       .post(url, data, defaultOptions)
+-      .then((response) => {
++      .then(async (response) => {
+         if (response.statusText !== "" && response.statusText !== "OK") {
+           const errMsg =
+             response?.error?.response?.data?.message || "An error occurred.";
+@@ -1064,22 +1071,28 @@ export default function TubePlanning() {
+           setShowSaveMsgError(true);
+           setSaveMsg(errMsg);
+         } else {
+-          if (response.data?.failedCount > 0) {
++          if (response.data?.failedCount > 0 || !response.data?.successCount) {
++            if (response.data?.successfulPipes?.length) {
++              const saved = new Set(response.data.successfulPipes);
++              await Promise.all(selectedThickTable.getRows()
++                .filter(row => saved.has(String(row.getData().PIPE_NO)))
++                .map(row => row.delete()));
++            }
+             alertify.error(response.data?.message);
+             setShowSaveMsgSuccess(false);
+             setShowSaveMsgError(true);
+             setSaveMsg(response.data?.message);
+           } else {
+-            alertify.success(response.data?.message);
+-            setShowSaveMsgSuccess(true);
+-            setShowSaveMsgError(false);
+-            setSaveMsg(response.data?.message);
+-
++            const successMessage = `Successfully saved ${response.data.successCount} pipe(s).`;
++            alertify.success(successMessage);
+             setSelectedThickTable(null);
+             setThickTable([]);
+             handleClearAll();
+             handleClearMain();
+             fetchDetails();
++            setShowSaveMsgSuccess(true);
++            setShowSaveMsgError(false);
++            setSaveMsg(successMessage);
+           }
+         }
+       })
+@@ -1175,8 +1188,9 @@ export default function TubePlanning() {
+       // width: 110,
+     },
+     {
+-      title: "Int. Field No",
++      title: "Int. Field No *",
+       field: "INT_FIELD_NO",
++      validator: "required",
+       headerFilter: "input",
+       editor: "input",
+       // width: 120,
+@@ -1743,27 +1757,6 @@ export default function TubePlanning() {
+                           <MDInput name="nxtproc2" value={nxtproc2} disabled={true} />
+                         </Grid>
+ 
+-                        <Grid item xs={1.5}>
+-                          <MDTypography
+-                            fontWeight="regular"
+-                            fontSize="small"
+-                            textTransform="capitalize"
+-                            variant="h6"
+-                            color={"dark"}
+-                            noWrap
+-                          >
+-                            Int. Field No
+-                          </MDTypography>
+-                          <MDInput
+-                            name="fieldNoInt"
+-                            value={fieldNoInt}
+-                            onChange={(e) => {
+-                              setFieldNoInt(e.target.value);
+-                              setTableNull();
+-                            }}
+-                          />
+-                        </Grid>
+-
+                         <Grid item xs={1.5}>
+                           <MDTypography
+                             fontWeight="regular"
