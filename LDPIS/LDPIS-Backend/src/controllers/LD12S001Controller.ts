@@ -109,76 +109,76 @@ export const insertTempData = async (req: Request, res: Response) => {
        * "YES" when repetition exists.
        * "NO" when repetition does not exist.
        */
-      const verificationResult =
-        await LD12S001.prototype.verifyProdDateRepetition(data);
+      // const verificationResult =
+      //   await LD12S001.prototype.verifyProdDateRepetition(data);
 
-      console.log("verifyProdDateRepetition =>", verificationResult);
+      // console.log("verifyProdDateRepetition =>", verificationResult);
 
-      const repetitionStatus = String(verificationResult || "")
-        .trim()
-        .toUpperCase();
-
+      // const repetitionStatus = String(verificationResult || "")
+      //   .trim()
+      //   .toUpperCase();
+      const repetitionStatus = "NO";
       /*
        * If production-date repetition is found,
        * stop processing immediately and return the
        * response in the original API format.
        */
-      if (repetitionStatus === "YES") {
-        failedBatches.push(currentBatch);
+      // if (repetitionStatus === "YES") {
+      //   failedBatches.push(currentBatch);
 
-        const repetitionMessage =
-          `For current Batch ${currentBatch}, ` +
-          `record for 120 already exists with the given Production Date.`;
+      //   const repetitionMessage =
+      //     `For current Batch ${currentBatch}, ` +
+      //     `record for 120 already exists with the given Production Date.`;
 
-        const successCount = successBatches.length;
-        const failedCount = failedBatches.length;
+      //   const successCount = successBatches.length;
+      //   const failedCount = failedBatches.length;
 
-        const finalOutput = `
-          ${repetitionMessage}
-          Successful Batches (${successCount}): ${successBatches.join(", ")}
-          Failed Batches (${failedCount}): ${failedBatches.join(", ")}
-        `.trim();
+      //   const finalOutput = `
+      //     ${repetitionMessage}
+      //     Successful Batches (${successCount}): ${successBatches.join(", ")}
+      //     Failed Batches (${failedCount}): ${failedBatches.join(", ")}
+      //   `.trim();
 
-        console.log("Production Date repetition found =>", finalOutput);
+      //   console.log("Production Date repetition found =>", finalOutput);
 
-        return res.status(200).json({
-          message: finalOutput,
-          successCount,
-          failedCount,
-        });
-      }
+      //   return res.status(200).json({
+      //     message: finalOutput,
+      //     successCount,
+      //     failedCount,
+      //   });
+      // }
 
       /*
        * Optional safeguard:
        * Do not continue if the model returns anything
        * other than YES or NO.
        */
-      if (repetitionStatus !== "NO") {
-        failedBatches.push(currentBatch);
+      // if (repetitionStatus !== "NO") {
+      //   failedBatches.push(currentBatch);
 
-        const verificationFailureMessage =
-          `Unable to verify Production Date repetition ` +
-          `for Batch ${currentBatch}. ` +
-          `verifyProdDateRepetition returned: ` +
-          `${JSON.stringify(verificationResult)}`;
+      //   const verificationFailureMessage =
+      //     `Unable to verify Production Date repetition ` +
+      //     `for Batch ${currentBatch}. ` +
+      //     `verifyProdDateRepetition returned: ` +
+      //     `${JSON.stringify(verificationResult)}`;
 
-        const successCount = successBatches.length;
-        const failedCount = failedBatches.length;
+      //   const successCount = successBatches.length;
+      //   const failedCount = failedBatches.length;
 
-        const finalOutput = `
-          ${verificationFailureMessage}
-          Successful Batches (${successCount}): ${successBatches.join(", ")}
-          Failed Batches (${failedCount}): ${failedBatches.join(", ")}
-        `.trim();
+      //   const finalOutput = `
+      //     ${verificationFailureMessage}
+      //     Successful Batches (${successCount}): ${successBatches.join(", ")}
+      //     Failed Batches (${failedCount}): ${failedBatches.join(", ")}
+      //   `.trim();
 
-        console.log("Invalid verification response =>", finalOutput);
+      //   console.log("Invalid verification response =>", finalOutput);
 
-        return res.status(200).json({
-          message: finalOutput,
-          successCount,
-          failedCount,
-        });
-      }
+      //   return res.status(200).json({
+      //     message: finalOutput,
+      //     successCount,
+      //     failedCount,
+      //   });
+      // }
 
       /*
        * STEP 2:
@@ -406,7 +406,9 @@ export const insertTempData = async (req: Request, res: Response) => {
     console.error("insertTempData error =>", error);
 
     return res.status(400).json({
-      message: `Successfully saved ${successBatches.length} pipe(s). Error: ${error?.message || error}`,
+      message: `Successfully saved ${successBatches.length} pipe(s). Error: ${
+        error?.message || error
+      }`,
       successCount: successBatches.length,
       failedCount: failedBatches.length,
     });

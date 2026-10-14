@@ -170,6 +170,17 @@ export default function MaxWidthDialog2448(props) {
     }`
   : "";
 
+
+    const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
+
   const componentRef = React.useRef();
 
   //const pageStyle = `
@@ -330,7 +341,8 @@ export default function MaxWidthDialog2448(props) {
                               <p>Test Finish Time  </p>
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getcathodic?.length > 0  ? `${getcathodic[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getcathodic?.length > 0  ? `${getcathodic[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getcathodic?.length > 0  ? `CDT/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {getcathodic?.length > 0  ? getcathodic[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>

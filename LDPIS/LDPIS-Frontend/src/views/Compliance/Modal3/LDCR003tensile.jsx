@@ -170,6 +170,16 @@ export default function MaxWidthtensile(props) {
     }`
   : "";
 
+      const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
+
   const componentRef = React.useRef();
 
   //const pageStyle = `
@@ -331,7 +341,7 @@ export default function MaxWidthtensile(props) {
                               {/* <p>Test Finish Time  </p> */}
                             </Grid>
                             <Grid item xs={3.5} style={{ fontSize: '12.5px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {gettensl?.length > 0  ? `${gettensl[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              <p>: {gettensl?.length > 0  ? `${gettensl[0].REP_NO}${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               {/* <p>: {gettensl?.length > 0  ? gettensl[0].DATE_SHIFTQ : ' '} </p> */}
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {gettensl?.length > 0  ? gettensl[0].PROCESS_SHEET_NO : ' '} </p>

@@ -420,20 +420,21 @@ export default function MaxWidthDialogapplication(props) {
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
                                                     Min
                                                     </Grid>
-                                                    {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>Max</Grid>
                                               </Grid>
                                              </Grid>
                                             <Grid item xs={1} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* PIPE TEMP BEFORE CHROMATE (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getapplication?.length > 0 ? getapplication[0].PIPE_TEMP_B4CHROM_MIN : '-'}
+                                                    {(getapplication?.length > 0 && getapplication[0].PIPE_TEMP_B4CHROM_MIN !== null)? getapplication[0].PIPE_TEMP_B4CHROM_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].PIPE_TEMP_B4CHROM_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].PIPE_TEMP_B4CHROM_MAX !== null )? getapplication[0].PIPE_TEMP_B4CHROM_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
                                                 <Grid item xs={1} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* VISUAL OF CHROMATE APPLICATION */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
                                                     -
@@ -443,6 +444,7 @@ export default function MaxWidthDialogapplication(props) {
                                               </Grid>
                                              </Grid>
                                             <Grid item xs={0.9} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* CHROMATE SOLUTION TEMP (°C */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
                                                     -
@@ -453,61 +455,68 @@ export default function MaxWidthDialogapplication(props) {
                                              </Grid>
 
                                          <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* PIPE TEMP AFTER CHROMATE APPLICATION (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
                                                     -
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].CHROM_SOL_TEMP_MAX : ' '}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].CHROM_SOL_TEMP_MAX !== null)? getapplication[0].CHROM_SOL_TEMP_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
                                            <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* PIPE TEMP BEFORE FBE APPLICATION (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getapplication?.length > 0 ? getapplication[0].TCP_CP1_PH_FBEAPP_MIN : ' '}
+                                                    {getapplication?.length > 0 ? getapplication[0].TCP_CP1_PH_FBEAPP_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].TCP_CP1_PH_FBEAPP_MAX : ' '}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].TCP_CP1_PH_FBEAPP_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
-                                                                                      <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                            <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* ADHESIVE FILM Temp. (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
-                                                                                      <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                             <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* PE/PP FILM Temp. (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
-                                                                                      <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                            <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* WATER TEMP BEFORE QUENCHING */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : ' '}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : ' '}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
-                                                                                      <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                            <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
+                                              {/* WATER TEMP AFTER QUENCHING */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : ' '}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getapplication?.length > 0 ? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : ' '}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}</Grid>
                                               </Grid>
                                              </Grid>
                                              <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               <Grid container>
+                                                {/* REMARKS */}
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
                                                     <br/>
                                                     </Grid>
@@ -672,16 +681,19 @@ export default function MaxWidthDialogapplication(props) {
                            <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>HDPE SCrew <br />  RPM</Grid>    
                            <Grid item xs={1.1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>Adhesive Screw <br />  RPM.</Grid>    
 
-                           {Array.from({ length: 4 }).map((_, rowIndex) => (
+  {Array.from({ length: 4 }).map((_, rowIndex) => (
   <React.Fragment key={rowIndex}>
     <Grid item xs={0.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px', textAlign: 'Center' }}>
-     {rowIndex + 1}
+      {(rowIndex === 0  && getapplication?.length > 0) ? '1' :  <br />}
+      {(rowIndex === 1  && getapplication?.length > 0) ? '2' :  <br />}
+      {(rowIndex === 2  && getapplication?.length > 0) ? '3' :  <br />}
+      {(rowIndex === 3  && getapplication?.length > 0) ? '4' :  <br />}
     </Grid>
     <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_RM_1_110 :  <br />}
-      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_RM_2_110 :  <br />}
-      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_RM_3_110 :  <br />}
-      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_RM_4_110 :  <br />}
+      {(rowIndex === 0  && getapplication?.length > 0) ? 'Chromate' :  <br />}
+      {(rowIndex === 1  && getapplication?.length > 0) ? 'Epoxy Powder' :  <br />}
+      {(rowIndex === 2  && getapplication?.length > 0) ? 'Adhesive' :  <br />}
+      {(rowIndex === 3  && getapplication?.length > 0) ? 'Polyethylene' :  <br />}
     </Grid>
     <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
       {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_1_110 :  <br />}

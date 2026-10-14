@@ -489,7 +489,7 @@ export default function MaxWidthindent(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getindent?.length > 0 ? getindent[0].SPEC : '  '} & QAPNO:{getindent?.length > 0 ? getindent[0].QAP_NO : '  '} </Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getindent?.length > 0 ? getindent[0].SPEC : '  '} & QAPNO:{getindent?.length > 0 ? getindent[0].QAP_NO : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 

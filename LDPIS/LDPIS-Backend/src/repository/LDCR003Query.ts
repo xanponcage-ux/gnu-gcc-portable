@@ -947,20 +947,20 @@ t.TCP_CP1_CO_APPLI PROJECTNAME,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/PS'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
+'LTR/PS'||'/' REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
 t.tpc_sd_qap_no1 qap_no,
 --=====================================
-'Extruded Polyethylene' Mat_desc,
+'Extruded Polyethylene from coated pipes' Mat_desc,
 'PIPE No:-'||T3.CHARG Batch_no ,
-'Product Stability TestProduct Stability Test'  Test_desc,
+'Product Stability Test'  Test_desc,
 t.TCP_LD_ELONG_REFSTD Test_method,
-UNISTR('\x394')||t.TCP_LD_PRDSTABL_MIN ||' between raw material and app applied material'  requirement,
-UNISTR('\x394')||'MFR= '||t3.CDT_PRDSTABL_MIN 	test_result1
+t.TCP_LD_PRDSTABL_MIN ||' between raw material and app applied material'  requirement,
+'MFR = '||t3.CDT_PRDSTABL_MIN 	test_result1
 --=======================================
 from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
 where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
@@ -968,6 +968,7 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+ AND t3.CDT_PRDSTABL_MIN is not null
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -1026,15 +1027,15 @@ t.TCP_CP1_CO_APPLI PROJECTNAME,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/PS'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
+'LTR/TS'||'/' REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120 COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
 t.tpc_sd_qap_no1 qap_no,
 --=====================================
-'PIPE No:-'||T3.CHARG Mat_desc,
+T3.CHARG Mat_desc,
 T3.CDT_TAN_INS_NAME Batch_no ,
 'Tensile Strength'  Test_desc,
 t.TCP_LD_TENSILE_REFSTD	Test_method,
@@ -1047,6 +1048,7 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+AND CDT_TENSILE is not null
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -1198,7 +1200,8 @@ SELECT t1.enc_mark_cust_name client,
        TO_CHAR (t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' coating_date,
        t3.prd_shift_120 coating_shift, SYSDATE, 'D' shift,
        t.tpc_sd_proc_sheet process_sheet_no, t.tpc_sd_qap_no1 qap_no,
-       t3.lp3_sdate_indt strt_dt_time, t3.lp3_edate_indt end_dt_time,
+       t3.lp3_sdate_indt strt_dt_time, 
+       t3.lp3_edate_indt end_dt_time,
        --TO_CHAR (t3.lp3_sdate_indt, 'DD.MM.YYYY') strt_dt_time,
        --TO_CHAR (t3.lp3_edate_indt, 'DD.MM.YYYY') end_dt_time,
         t3.LP3_STIME_INDT START_time,
@@ -1249,6 +1252,15 @@ FROM   v_process_sheet_ec t,
 --and t3.prd_date_120 ='13-JUL-2026'
 --AND t3.prd_shift_120 ='D'
  AND T2.LOM_CD_EPA = ${plant}
+ and t3.lp3_initial_hot is not null
+     and t3.lp3_initial_hot1 is not null
+     and t3.lp3_initial_hot2 is not null
+     and t3.lp3_finalrd_hot is not null
+     and t3.lp3_finalrd_hot1 is not null
+     and t3.lp3_finalrd_hot2 is not null
+     and t3.lp3_result_hot is not null
+     and t3.lp3_result_hot1 is not null
+     and t3.lp3_result_hot2 is not null
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {

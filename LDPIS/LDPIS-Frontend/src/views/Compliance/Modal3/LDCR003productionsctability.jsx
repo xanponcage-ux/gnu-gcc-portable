@@ -170,6 +170,16 @@ export default function MaxWidthproductionstab(props) {
     }`
   : "";
 
+        const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
+
   const componentRef = React.useRef();
 
   //const pageStyle = `
@@ -193,7 +203,7 @@ export default function MaxWidthproductionstab(props) {
   }
   `;
   
-    const rowsPerPage = 15;
+    const rowsPerPage = 8 ;
     const numPages = Math.max(1, Math.ceil(getproducts?.length / rowsPerPage));
 
   return (
@@ -331,11 +341,12 @@ export default function MaxWidthproductionstab(props) {
                               {/* <p>Test Finish Time  </p> */}
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12.5px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getproducts?.length > 0  ? `${getproducts[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getproducts?.length > 0  ? `${getproducts[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getproducts?.length > 0  ? `${getproducts[0].REP_NO}${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {getproducts?.length > 0  ? getproducts[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
-                              <p>: {getproducts?.length > 0  ? getproducts[0].DATE_SHIFTQ : ' '} </p>
+                              <p>: {getproducts?.length > 0  ? getproducts[0].COATING_DATE : ' '} </p>
                               {/* <p>: {getproducts?.length > 0  ? getproducts[0].TEST_ED_TIME : ' '} </p> */}
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
@@ -344,12 +355,12 @@ export default function MaxWidthproductionstab(props) {
                     <Grid container xs = {12} >
 
                       <Grid item xs={0.5}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={2.9}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
-                      <Grid item xs={1.1}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
-                      <Grid item xs={1.7}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
-                      <Grid item xs={1.7}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST RESULT</Grid>
+                      <Grid item xs={1.7}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
+                      <Grid item xs={1}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
+                      <Grid item xs={1.3}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
+                      <Grid item xs={1.2}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
+                      <Grid item xs={3.9}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
+                      <Grid item xs={1.3}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST RESULT</Grid>
                       <Grid item xs={1.1}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
                     
@@ -358,12 +369,12 @@ export default function MaxWidthproductionstab(props) {
                             .map((dataRow, i) => (
 <Grid key={`data-${pageIndex}-${i}`} container>
                             <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                            <Grid item xs={2.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.BATCH_NO !== null ? dataRow.BATCH_NO : <br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_METHOD  !== null ? dataRow.TEST_METHOD: <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_RESULT1 !== null ? dataRow.TEST_RESULT1 : <br />}</Grid>
+                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}</Grid>
+                            <Grid item xs={1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.BATCH_NO !== null ? dataRow.BATCH_NO : <br />}</Grid>
+                            <Grid item xs={1.3}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}</Grid>
+                            <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_METHOD  !== null ? dataRow.TEST_METHOD: <br />}</Grid>
+                            <Grid item xs={3.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ?  'Δ '+ dataRow.REQUIREMENT : <br />}</Grid>
+                            <Grid item xs={1.3}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_RESULT1 !== null ? 'Δ '+ dataRow.TEST_RESULT1 : <br />}</Grid>
                             <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                          </Grid>
                       ))}
@@ -373,12 +384,12 @@ export default function MaxWidthproductionstab(props) {
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
                             <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={2.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={1.3}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={3.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={1.3}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
                             <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
                          </Grid>
                       ))}
@@ -389,7 +400,7 @@ export default function MaxWidthproductionstab(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getproducts?.length > 0 ? getproducts[0].SPEC : '  '} & QAPNO:{getproducts?.length > 0 ? getproducts[0].QAP_NO : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getproducts?.length > 0 ? getproducts[0].SPEC : '  '} & QAPNO:{getproducts?.length > 0 ? getproducts[0].QAP_NO : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 
@@ -423,6 +434,7 @@ export default function MaxWidthproductionstab(props) {
                                <Grid item xs={6.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
                                <Grid item xs={5.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>ACCEPTED BY</Grid>
                           </Grid>
+                       <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
