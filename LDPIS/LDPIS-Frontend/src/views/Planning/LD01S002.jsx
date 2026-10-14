@@ -386,7 +386,7 @@ export default function LD01S002() {
     }
 
     // Round to nearest integer and convert to string (varchar backend)
-    var noOfTubesString = Math.round(noOfTubes).toString();
+    var noOfTubesString = Math.floor(noOfTubes).toString();
 
     // Update the row with new values
     row.update({
@@ -1292,7 +1292,7 @@ export default function LD01S002() {
   const calculateNoOfTubes = (tonnage, od, rmThk, length) => {
     if (od > 0 && rmThk > 0 && length > 0) {
       const noOfTubes = tonnage / (((od - rmThk) * rmThk * 0.02466) / 1000) / length;
-      return Math.round(noOfTubes).toString();
+      return Math.floor(noOfTubes).toString();
     }
     return "";
   };

@@ -1986,6 +1986,7 @@ export default function LDSM006() {
   };
 
   const procList = [
+    { value: "S", label: "S" },
     { value: "1", label: "10" },
     { value: "2", label: "20" },
     { value: "3", label: "30" },

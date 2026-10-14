@@ -317,7 +317,9 @@ export const insertTempData = async (data: any) => {
       // Row exists, perform UPDATE
       const updateSql = `
         UPDATE V_ZCOAT_LAB
-        SET ${updateSetClause}
+        SET ${updateSetClause},
+        ZCL_UPD_DT = SYSDATE,
+        ZCL_UPD_BY = USER
         WHERE MANDT = '${primaryKeys.MANDT}'
           AND PSNO = '${primaryKeys.PSNO}'
           AND CHARG = '${primaryKeys.CHARG}'
@@ -328,8 +330,8 @@ export const insertTempData = async (data: any) => {
     } else {
       // Row doesn't exist, perform INSERT
       const insertSql = `
-        INSERT INTO V_ZCOAT_LAB (MANDT, PSNO, CHARG, PRD_DATE_120, PRD_SHIFT_120, ZCL_PLANT_CD ,${columnsForInsert})
-        VALUES ('${primaryKeys.MANDT}', '${primaryKeys.PSNO}', '${primaryKeys.CHARG}', '${data?.DATE_IN}', '${data?.SHIFT}', '${primaryKeys.PLANT}',${valuesForInsert})
+        INSERT INTO V_ZCOAT_LAB (MANDT, PSNO, CHARG, PRD_DATE_120, PRD_SHIFT_120, ZCL_PLANT_CD ,ZCL_CRT_BY,${columnsForInsert})
+        VALUES ('${primaryKeys.MANDT}', '${primaryKeys.PSNO}', '${primaryKeys.CHARG}', '${data?.DATE_IN}', '${data?.SHIFT}', '${primaryKeys.PLANT}', USER ,${valuesForInsert})
       `;
       console.log("Generated INSERT SQL:", insertSql);
       return await query.executeQuery(insertSql);

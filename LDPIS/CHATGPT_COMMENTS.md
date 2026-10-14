@@ -21,25 +21,18 @@ Use this file for future LDPIS-related runnable instructions and supplementary c
 ```
 Prompt:
 implement the following points.
-1.in LD12S001 if alreadyExists is false then if   row.TBP_SAMPLE_10     is not null  and row. tbp_prod_date from getfilldata api is same as SHIFT_DATE then lab test and field test will remain uneditable and tag will also be uneditable and will assume the vaue of row.TBP_SAMPLE_10
-2.in LDSM012 in getInventoryData if no stock type is selected the two different queries both(Normal Inventory and RM WITHOUT INSPECTION inventory) will be run and will be union
+1.create a screen LDLTS011(name: Free Stock to Rework)just like LDLTS010 both  the front end and back end , where data of status 2F and 8F will be fetched and upon save for each batch we execute following update query:
+UPDATE V_LDP_PRODN
+SET    LOM_CD_STATUS    = 'RC',
+       LOM_REC_UPD_DT   = SYSDATE,
+       LOM_REC_UPD_USR  = user,
+       LOM_DT_PIECE_UPD = SYSDATE,
+       LOM_PASSED_PROC  = LOM_PASSED_PROC || substr(LOM_CD_STATUS,1,1),
+       LOM_CD_CURR_PROC = substr(LOM_CD_STATUS,1,1),
+       LOM_CD_NEXT_PROC = ((select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC || substr(LOM_CD_STATUS,1,1), '2') as nxtproc from dual))
+WHERE  LOM_ID_BATCH = :TBP_BATCH_NO
+AND    LOM_CD_EPA   = '0780'
+
+Also, in front end just comment out he order and the item filter as not needed
+2.
 ```
-
-## Implemented — 14 October 2026 (evening)
-
-- LD12S001: for a new row (`alreadyExists === false`), a non-null `TBP_SAMPLE_10` and production date equal to `SHIFT_DATE` lock Tag, Lab Test and Field Test. Tag retains the exact returned sample value. Calendar-day comparison accepts ISO and DD-MON-YYYY/DD-MON-YY dates. Other new-row fields keep their existing editability; existing-record behavior is unchanged.
-- LDSM012: an empty, whitespace-only, null or omitted stock type combines normal inventory and RM without inspection using SQL `UNION`, with one final plant/batch sort. Existing query filters and explicit stock-type selections are preserved. The RM without inspection source has no mill column, so its existing handling of the mill filter remains unchanged.
-- `Apply-LD150-To-Office.ps1` now defaults to bundle `2026-10-14-evening`, containing only these two application-file patches. Previous bundles remain selectable with `-ChangeSet 2026-10-14` or `-ChangeSet 2026-10-07`.
-
-### Office PowerShell commands
-
-```powershell
-git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
-& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
-& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-```
-
-Default destination: `D:\LDP UAT MAY`. Use `-OfficeRoot "your destination root"` on both script calls to override it. The script checks every patch on temporary copies before writing, detects already-applied patches, preserves unrelated edits, and creates backups. It does not commit or push to Azure.
-
-Validation: `node LDPIS/tests/oct14-evening.cjs` tests sampling date conditions, lock/edit callbacks, inventory selections, SQL union and filter bind coverage. Transfer patches were checked with LF and Windows CRLF files and reverse checks for repeat application. Live Oracle execution and Windows PowerShell execution require office verification.

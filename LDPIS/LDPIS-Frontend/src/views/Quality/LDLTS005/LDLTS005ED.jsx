@@ -235,6 +235,22 @@ const handleDisplay = async (ordId, itemNo) => {
       .slice(0, 16);
   };
 
+  const formatForBackend = (value) => {
+  if (!value) return "";
+
+  const dt = new Date(value);
+
+  const day = String(dt.getDate()).padStart(2, "0");
+  const month = String(dt.getMonth() + 1).padStart(2, "0");
+  const year = dt.getFullYear();
+
+  const hours = String(dt.getHours()).padStart(2, "0");
+  const minutes = String(dt.getMinutes()).padStart(2, "0");
+  const seconds = String(dt.getSeconds()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
   return (
     <DashboardLayout>
       <DefaultNavbar
@@ -588,15 +604,15 @@ const handleDisplay = async (ordId, itemNo) => {
                                                           type="datetime-local"
                                                           fullWidth
                                                           value={formatDateTimeLocal(holDetData?.PRT_PEEL_DATE)}
-                                                          onChange={(e) => {
-                                                            const dateTimeValue = e.target.value; // e.g., "2026-07-15T11:40"
-                                                            // const timePart = dateTimeValue ? dateTimeValue.substring(11, 16) : ""; // Extracts "11:40"
-                                                            setHolDetData((prev) => ({
-                                                              ...prev,
-                                                              PRT_PEEL_DATE: dateTimeValue,
-                                                              // LP3_STIME_INDT: timePart, // Update the separate time field
-                                                            }));
-                                                          }}
+onChange={(e) => {
+  const formattedDate = formatForBackend(e.target.value);
+
+  setHolDetData((prev) => ({
+    ...prev,
+    PRT_PEEL_DATE: formattedDate,
+  }));
+}}
+
                                                         />
                           </Grid>
                         </Grid>

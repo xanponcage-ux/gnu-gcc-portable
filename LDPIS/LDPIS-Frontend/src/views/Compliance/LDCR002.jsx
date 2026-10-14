@@ -520,6 +520,7 @@ export default function LDCR002() {
      setInstrumentId3("");
      setInstrumentId4("");
      setWiNo("");
+
   };
 
   const handleRadioChange = (event) => {
@@ -924,7 +925,8 @@ export default function LDCR002() {
                           />
                         </Grid>
                       )}
-
+                                   {(selectedrepType?.value !== "2H" ||
+                        selectedrepType?.value !== "2H") && (
                                            <Grid item xs={1} style={{ zIndex: 3 }}>
                                               <MDTypography
                                                 fontWeight="regular"
@@ -942,6 +944,10 @@ export default function LDCR002() {
                                                 onChange={(date) => setprintdate(date)}
                                               />
                                             </Grid>
+                                            )}
+                        {(selectedrepType?.value !== "2H" ||
+                        selectedrepType?.value !== "2H") && (
+
                                             <Grid item xs={1}>
                                               <MDTypography
                                                 fontWeight="regular"
@@ -961,6 +967,7 @@ export default function LDCR002() {
                                                 value={selectedpShift}
                                               />
                                             </Grid>
+                                            )}
 
                       <Grid item xs={1.5}>
                         <MDTypography

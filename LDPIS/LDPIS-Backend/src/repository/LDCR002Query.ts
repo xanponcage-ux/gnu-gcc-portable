@@ -1247,8 +1247,9 @@ SELECT   t1.enc_mark_cust,
          'TSL/COAT/' || t11.tpc_sd_qap_no1 acceptance_criteria, prt_pel_srno1,
          prt_pel_ins_name1 instrument_name, prt_peel_wino procedure_wi_no,
          prt_pel_ins_id1 || '/' || prt_pel_srno1 instrument_id_serial_no,
-         charg, required_value1 ,required_value2 , achieve_value, remarks
+         charg, required_value1 ,required_value2 , achieve_value, remarks,remarks_in
     FROM (SELECT t3.charg, prt_fend1 achieve_value, 'F-END' remarks,
+    'F-END-COLD' remarks_in,
                  t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
                  t3.prd_date_120, t3.prd_shift_120,
                     'Minimum'
@@ -1263,8 +1264,12 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
+AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
+    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
+             AND prt_fend1 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_fend2 achieve_value, 'F-END' remarks,
+              'F-END-HOT' remarks_in,
                  t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
                  t3.prd_date_120, t3.prd_shift_120,
                     'Minimum'
@@ -1279,8 +1284,12 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
+AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
+    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
+             AND prt_fend2 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_midle1 achieve_value, 'MIDDLE' remarks,
+          'MIDDLE-COLD' remarks_in,
                  t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
                  t3.prd_date_120, t3.prd_shift_120,
                     'Minimum'
@@ -1295,8 +1304,12 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
+AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
+    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
+             AND prt_midle1 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_midle2 achieve_value, 'MIDDLE' remarks,
+          'MIDDLE-HOT' remarks_in,
                  t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
                  t3.prd_date_120, t3.prd_shift_120,
                     'Minimum'
@@ -1311,8 +1324,12 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
+AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
+    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
+             AND prt_midle2 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_tend1 achieve_value, 'T-END' remarks,
+          'T-END-COLD' remarks_in,
                  t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
                  t3.prd_date_120, t3.prd_shift_120,
                     'Minimum'
@@ -1327,8 +1344,12 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
+AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
+    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
+             AND prt_tend1 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_tend2 achieve_value, 'T-END' remarks,
+          'T-END-HOT' remarks_in,
                  t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
                  t3.prd_date_120, t3.prd_shift_120,
                     'Minimum'
@@ -1342,6 +1363,9 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_order_cus = t.tpc_order_id
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
+AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
+    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
+             AND prt_tend2 IS NOT NULL
                           AND t2.LOM_CD_EPA = ${plant}
              AND TO_NUMBER (t.tpc_order_item) = '${item}') q,
          v_process_sheet_ec t11,
@@ -1349,7 +1373,8 @@ SELECT   t1.enc_mark_cust,
    WHERE q.lom_id_order_cus = t11.tpc_order_id
      AND q.lom_id_ord_item_cus = TO_NUMBER (t11.tpc_order_item)
      AND t11.tpc_order_id = t1.enc_id_order
-     AND TO_NUMBER (t11.tpc_order_item) = t1.enc_no_item `;
+     AND TO_NUMBER (t11.tpc_order_item) = t1.enc_no_item 
+     `;
 
      //9519363503/9  -- TO be Removed after testing of the screen
 
@@ -1368,10 +1393,10 @@ SELECT   t1.enc_mark_cust,
       // binds["matno"] = matno;
     }
 
-    if (crdate && crdate !== "" && crdate !== null) {
-      // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-      sql += ` AND TRUNC(q.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
-    }
+    // if (crdate && crdate !== "" && crdate !== null) {
+    //   // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
+    //   sql += ` AND TRUNC(q.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+    // }
 
     if (heatno && heatno !== "" && heatno !== null) {
       sql += ` AND t1.lom_no_cast IN ('${heatno}')  `;
@@ -1383,7 +1408,7 @@ SELECT   t1.enc_mark_cust,
       // binds["pipeno"] = pipeno;
     }
 
-    sql += `  order by charg `;
+    sql += `  order by charg ,remarks_in`;
 
     // if (DespFromDate && DespFromDate !== "" && DespToDate !== "") {
     //   sql += ` And trunc(LOM_DT_LOADING) BETWEEN :DespFromDate AND :DespToDate`;
@@ -1535,7 +1560,7 @@ export const getapplicationdata = async (
 SELECT    
        TO_CHAR (t3.tbp_prod_date, 'DD.MM.YYYY')
        || ' & '
-       || t3.tbp_shift date_shift,
+       || t3.tbp_shift_DN date_shift,
        t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
        t.tcp_sd_tech_spec spec,
        'TSL/COAT/' || t.tpc_sd_qap_no1 acceptance_criteria,
@@ -1621,8 +1646,10 @@ SELECT
        v_bare_pdo t3
  WHERE t.tpc_order_id = t1.enc_id_order
    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-   AND t.tpc_order_id = t2.lom_id_order_cus
-   AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+   --AND t.tpc_order_id = t2.lom_id_order_cus
+   --AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+             AND T.TPC_ORDER_ID = t3.tbp_id_order_no
+      AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
    AND t3.tbp_batch_no = t2.lom_id_batch
    AND t3.tbp_cd_proc = 'C'
    --FILTER COND.
@@ -1699,7 +1726,7 @@ export const getthickness = async (
        SELECT    
        TO_CHAR (t3.tbp_prod_date, 'DD.MM.YYYY')
        || ' & '
-       || t3.tbp_shift date_shift,
+       || t3.tbp_shift_DN date_shift,
        t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
        t.tcp_sd_tech_spec spec,
        'TSL/COAT/' || t.tpc_sd_qap_no1 acceptance_criteria,
@@ -1752,8 +1779,10 @@ where t4.elf_batch_no = t3.tbp_batch_no and t4.elf_prod_date=t3.tbp_prod_date an
        v_bare_pdo t3
  WHERE t.tpc_order_id = t1.enc_id_order
    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-   AND t.tpc_order_id = t2.lom_id_order_cus
-   AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+   --AND t.tpc_order_id = t2.lom_id_order_cus
+   --AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+             AND T.TPC_ORDER_ID = t3.tbp_id_order_no
+      AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
    AND t3.tbp_batch_no = t2.lom_id_batch
    AND t3.tbp_cd_proc = 'D'
 --FILTER COND.
@@ -1830,7 +1859,7 @@ export const getfinalinspection = async (
        SELECT   
         TO_CHAR (t3.tbp_prod_date, 'DD.MM.YYYY')
        || ' & '
-       || t3.tbp_shift date_shift,
+       || t3.tbp_shift_DN date_shift,
        t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
        t.tcp_sd_tech_spec spec,
        'TSL/COAT/' || t.tpc_sd_qap_no1 acceptance_criteria,
@@ -1886,8 +1915,10 @@ export const getfinalinspection = async (
        v_bare_pdo t3
  WHERE t.tpc_order_id = t1.enc_id_order
    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-   AND t.tpc_order_id = t2.lom_id_order_cus
-   AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+   --AND t.tpc_order_id = t2.lom_id_order_cus
+   --AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+             AND T.TPC_ORDER_ID = t3.tbp_id_order_no
+      AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
    AND t3.tbp_batch_no = t2.lom_id_batch
    AND t3.tbp_cd_proc = 'E'
    --FILTER COND.
@@ -3597,11 +3628,11 @@ WHERE
 export const getInletData = async (data: any) => {
   try {
     let sql = `select
-      TO_CHAR(t3.tbp_prod_date,'DD.MM.YYYY')||' & '||t3.tbp_shift date_shift,
+      TO_CHAR(t3.tbp_prod_date,'DD.MM.YYYY')||' & '||t3.tbp_shift_DN date_shift,
       T1.ENC_MARK_CUST_NAME Client,
       t.TCP_SD_POREF_NO PO_ref_no,
       t.TCP_SD_TECH_SPEC SPEC,
-      'TSL/COAT/EXT/JE/IOAGPL/01 REV.00 DATE:25.04.2024' Acceptance_Criteria,
+      'TSL/COAT/'||t.tpc_sd_qap_no1 Acceptance_Criteria,
       t.tpc_sd_proc_sheet process_sheet_no,
       t1.enc_sec2_max || 'mm OD X ' || t1.enc_sec1_max || 'mm WT' pipe_size,
       t.TCP_SD_IC_TYPE type_of_coating,
@@ -3624,8 +3655,10 @@ export const getInletData = async (data: any) => {
           v_bare_pdo t3
       where t.TPC_ORDER_ID = t1.ENC_ID_ORDER
       and to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
-      and t.TPC_ORDER_ID = t2.lom_id_order_cus
-      and to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+      --and t.TPC_ORDER_ID = t2.lom_id_order_cus
+      --and to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+      AND T.TPC_ORDER_ID = t3.tbp_id_order_no
+      AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
       and t3.tbp_batch_no = t2.LOM_ID_BATCH
       and t3.tbp_cd_proc='A' `;
 
@@ -3642,7 +3675,7 @@ export const getInletData = async (data: any) => {
     }
 
     if (data?.shift) {
-      sql += ` and t3.tbp_shift='${data?.shift}' `;
+      sql += ` and t3.tbp_shift_DN='${data?.shift}' `;
     }
 
     sql += ` order by t3.tbp_prod_date,t3.tbp_dia_end_10`;
@@ -3657,7 +3690,7 @@ export const getInletData = async (data: any) => {
 
 export const getBlastingData = async (data: any) => {
   try {
-    var sql = `select TO_CHAR(t3.tbp_prod_date,'DD.MM.YYYY')||' & '||t3.tbp_shift date_shift,
+    var sql = `select TO_CHAR(t3.tbp_prod_date,'DD.MM.YYYY')||' & '||t3.tbp_shift_DN date_shift,
     T1.ENC_MARK_CUST_NAME Client,
     t.TCP_SD_POREF_NO PO_ref_no,
     t.TCP_SD_TECH_SPEC SPEC,
@@ -3703,8 +3736,10 @@ export const getBlastingData = async (data: any) => {
     from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,v_bare_pdo t3
     where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
     AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
-    AND T.TPC_ORDER_ID = t2.lom_id_order_cus
-    AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+    --AND T.TPC_ORDER_ID = t2.lom_id_order_cus
+    --AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+          AND T.TPC_ORDER_ID = t3.tbp_id_order_no
+      AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
     AND T3.tbp_batch_no = T2.LOM_ID_BATCH
     AND t3.tbp_cd_proc='B' `;
 
@@ -3714,9 +3749,9 @@ export const getBlastingData = async (data: any) => {
     if (data?.item) {
       sql += ` AND TO_NUMBER(t.TPC_ORDER_ITEM) = '${data?.item}' `;
     }
-    // if (data?.matno) {
-    //   sql += ` AND t1.LOM_NO_MATNR IN ('${data?.matno}')  `;
-    // }
+    if (data?.shift) {
+      sql += ` and t3.tbp_shift_DN='${data?.shift}' `;
+    }
     if (data?.crdate) {
       sql += ` AND TRUNC(t3.tbp_prod_date) = TO_DATE('${data?.crdate}', 'DD-MON-YYYY') `;
     }

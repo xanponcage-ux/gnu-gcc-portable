@@ -118,7 +118,7 @@ export default function DialogBlastingModel(props) {
 
     body{
       -webkit-print-color-adjust: exact;
-      zoom:100%;
+      zoom:147%;
     }
 
     .print-page{
