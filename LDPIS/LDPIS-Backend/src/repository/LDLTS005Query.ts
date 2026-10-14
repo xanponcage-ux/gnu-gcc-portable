@@ -47,9 +47,9 @@ export const getItemNo = async (data: any) => {
 
 export const getdateandshift = async (data: any) => {
   try {
-    const CHARG = data?.BATCH_ID;
+        const CHARG = data?.BATCH_ID;
 
-    let sql = `SELECT DISTINCT TBP_PROD_DATE PROD_DATE, TO_CHAR(TBP_PROD_DATE, 'DD-MON-YYYY') DATE_FR,TBP_SHIFT SHIFT FROM V_BARE_PDO
+        let sql = `SELECT DISTINCT TBP_PROD_DATE PROD_DATE, TO_CHAR(TBP_PROD_DATE, 'DD-MON-YYYY') DATE_FR,TBP_SHIFT SHIFT FROM V_BARE_PDO
 WHERE TBP_BATCH_NO = '${CHARG}' AND TBP_CD_PROC = 'D'`;
 
     return await query.executeQuery(sql);

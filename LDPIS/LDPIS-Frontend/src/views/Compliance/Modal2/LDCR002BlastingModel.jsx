@@ -118,7 +118,7 @@ export default function DialogBlastingModel(props) {
 
     body{
       -webkit-print-color-adjust: exact;
-      zoom:143%;
+      zoom:100%;
     }
 
     .print-page{
@@ -217,14 +217,14 @@ export default function DialogBlastingModel(props) {
                           noWrap
                           style={{
                             textAlign: "right",
-                            fontSize: "7px",
+                            fontSize: "8px",
                             color: "black",
                             fontFamily: "Times New Roman",
                             borderLeft: "1px solid black",
                             borderRight: "2px solid black",
                           }}
                         >
-                          FORMAT NO : TSL/COAT/QC/F-51 REV-03 DATE : 19.01.2023
+                          FORMAT NO : TSL/COAT/QC/F-51 REV-03 DATE : 19.01.2023   _
                         </MDTypography>
                       </Grid>
 
@@ -326,17 +326,17 @@ export default function DialogBlastingModel(props) {
                             {/* TABLE HEADER START */}
                             <Table
                               sx={{
-                                tableLayout: "fixed",
-                                width: "100%",
-                                // minWidth: "1400px",
-                                borderCollapse: "collapse",
+                                // tableLayout: "fixed",
+                                // width: "100%",
+                                // minWidth: "100px",
+                                // borderCollapse: "collapse",
                                 margin: 0,
                                 "& td,& th": {
                                   border: "1px solid black",
-                                  fontSize: "4px",
+                                  fontSize: "8px",
                                   fontWeight: "bold",
-                                  padding: "0.5px",
-                                  lineHeight: "8px",
+                                  padding: "1px",
+                                  // lineHeight: "8px",
                                   textAlign: "center",
                                   verticalAlign: "middle",
                                 },
@@ -978,7 +978,7 @@ export default function DialogBlastingModel(props) {
                             style={{
                               fontSize: "9px",
                               fontWeight: "bold",
-                              border: "1px solid black",
+                              borderLeft: "1px solid black",
                               padding: "5px",
                               textAlign: "center",
                             }}
@@ -988,7 +988,7 @@ export default function DialogBlastingModel(props) {
                             <br />
                             {props?.reviewedBy}
                             <br />
-                            (QC Engineer)
+                            (QC ENGINEER)
                             <br />
                           </Grid>
 
@@ -998,7 +998,7 @@ export default function DialogBlastingModel(props) {
                             style={{
                               fontSize: "9px",
                               fontWeight: "bold",
-                              border: "1px solid black",
+                              borderRight: "1px solid black",
                               padding: "5px",
                               textAlign: "center",
                             }}

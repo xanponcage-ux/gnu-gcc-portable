@@ -338,7 +338,8 @@ export default function MaxWidthDialogPeel(props) {
                             <Grid item xs={3} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                           {/* <p>: {getpeeldata?.length > 0  ? getpepeeldata[0].REP_NO + "-" + numPages: ' '} </p> */}
                               <p>: {getpeeldata?.length > 0 ? `${getpeeldata[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
-                              <p>: {getpeeldata?.length > 0  ? getpeeldata[0].DATE_SHIFTQ : ' '} </p>
+                              {/* <p>: {getpeeldata?.length > 0  ? getpeeldata[0].DATE_SHIFTQ : ' '} </p> */}
+                                                            <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getpeeldata?.length > 0  ? getpeeldata[0].PROCESS_SHEET_NO : ' '} </p>
                               {/* <p>: {getpeeldata?.length > 0  ? getpeeldata[0].PROCEDURE_WI_NO : ' '} </p> */}
                               <p>: {props?.wiNo} </p> 
@@ -389,7 +390,7 @@ export default function MaxWidthDialogPeel(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '6px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getpeeldata?.length > 0 ? getpeeldata[0].SPEC : '  '} & QAPNO:{getpeeldata?.length > 0 ? getpeeldata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getpeeldata?.length > 0 ? getpeeldata[0].SPEC : '  '} & QAPNO:{getpeeldata?.length > 0 ? getpeeldata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 

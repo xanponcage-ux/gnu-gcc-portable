@@ -346,7 +346,8 @@ export default function MaxWidthDialogFinalinsp(props) {
                             </Grid>
                             <Grid item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                               <p>: {getfinalINSP?.length > 0  ? `${getfinalINSP[0].REP_NO}-${pageIndex + 1}`: ' '} </p>
-                              <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].DATE_SHIFT : ' '} </p>
+                              {/* <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].DATE_SHIFT : ' '} </p> */}
+                              <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].ACCEPTANCE_CRITERIA : ' '} </p>
                               <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].PROCESS_SHEET_NO : ' '} </p>
                                <p>: {props?.wiNo} </p> 
@@ -503,7 +504,7 @@ export default function MaxWidthDialogFinalinsp(props) {
 
                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '2px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.1}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getfinalINSP?.length > 0 ? getfinalINSP[0].SPEC : '  '} & QAPNO:{getfinalINSP?.length > 0 ? getfinalINSP[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getfinalINSP?.length > 0 ? getfinalINSP[0].SPEC : '  '} & QAPNO:{getfinalINSP?.length > 0 ? getfinalINSP[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.1}>{<br/>}</Grid>

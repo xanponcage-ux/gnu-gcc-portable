@@ -363,6 +363,7 @@ export const getInventoryData = async (
             WHERE CD_TYPE = 'TB019'
               AND CD_DESC1 = A.EIC_CD_EPA
           )
+            AND :plant=:plant
       `;
 
       let binds: any = {

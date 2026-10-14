@@ -652,6 +652,7 @@ export const getAirdata = async (
    AND t.tpc_order_id = t2.lom_id_order_cus
    AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
    AND t3.charg = t2.lom_id_batch
+   AND prt_air_ent_test is not null
 --FILTER COND.
    ---AND t.tpc_order_id = '0060977581'
    ---AND TO_NUMBER (t.tpc_order_item) = 1
@@ -753,6 +754,7 @@ export const getCrossdata = async (
    AND t.tpc_order_id = t2.lom_id_order_cus
    AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
    AND t3.charg = t2.lom_id_batch
+   AND t3.eit_cross_cut_test is not null
 --FILTER COND.
    -- AND t.tpc_order_id = '0060977581'
    -- AND TO_NUMBER (t.tpc_order_item) = 1
@@ -866,6 +868,7 @@ export const getREPAIRdata = async (
    AND t.tpc_order_id = t2.lom_id_order_cus
    AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
    AND t3.charg = t2.lom_id_batch
+   and t3.prt_repair_holiday is not null
 --FILTER COND.
    -- AND t.tpc_order_id = '0060977581'
    -- AND TO_NUMBER (t.tpc_order_item) = 1
@@ -1048,6 +1051,7 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+AND T3.EIT_EPOXY_HOLIDAY_TEST is not null
 --FILTER COND.
 --and t.TPC_ORDER_ID = '0060977581' 
 --and to_number(t.TPC_ORDER_ITEM) =1
@@ -1141,6 +1145,7 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+AND T3.EIT_IMPACT_TEST is not null
 --FILTER COND.
 --and t.TPC_ORDER_ID = '0060977581' 
 --and to_number(t.TPC_ORDER_ITEM) =1 
@@ -1346,6 +1351,8 @@ SELECT   t1.enc_mark_cust,
      AND t11.tpc_order_id = t1.enc_id_order
      AND TO_NUMBER (t11.tpc_order_item) = t1.enc_no_item `;
 
+     //9519363503/9  -- TO be Removed after testing of the screen
+
     // if (orderNo && orderNo !== "" && orderNo !== null) {
     //   sql += ` AND t.tps_order_id = '${orderNo}' `;
     //   // binds["orderNo"] = orderNo;
@@ -1376,7 +1383,7 @@ SELECT   t1.enc_mark_cust,
       // binds["pipeno"] = pipeno;
     }
 
-    sql += `  order by charg,Remarks `;
+    sql += `  order by charg `;
 
     // if (DespFromDate && DespFromDate !== "" && DespToDate !== "") {
     //   sql += ` And trunc(LOM_DT_LOADING) BETWEEN :DespFromDate AND :DespToDate`;
@@ -1456,7 +1463,7 @@ TCP_CP2_TOT_CTHICK_MIN COATING_THICK
    AND t3.charg = t2.lom_id_batch
 --FILTER COND.
 --and t.TPC_ORDER_ID = '9518845119'
-   AND TO_NUMBER (t.tpc_order_item) = 1
+--AND TO_NUMBER (t.tpc_order_item) = 1
 --and t3.shiftdate=''
 --and t3.shift='D'
     AND LOM_CD_EPA = ${plant} `;
@@ -1844,7 +1851,8 @@ export const getfinalinspection = async (
        t.tcp_cp2_bevel_angle_max cutbackanglemax,
        t.tcp_cp2_resu_mg resudialmagnetism, t.tcp_fd_3lpe_holiday_min holiday,
        t3.tbp_batch_no, t2.lom_no_cast heat_no,
-       ROUND (t2.lom_length / 1000, 2) LENGTH,
+       --ROUND (t2.lom_length / 1000, 2) LENGTH,
+        TO_CHAR(ROUND(t2.lom_length / 1000, 2), 'FM9999999990.00') AS LENGTH,
        (SELECT t5.tbp_asl_no_80
           FROM v_bare_pdo t5
          WHERE t5.tbp_batch_no = t3.tbp_batch_no
@@ -1859,7 +1867,7 @@ export const getfinalinspection = async (
        t3.tbp_holidat_130, t3.tbp_resumg_1_130, t3.tbp_resumg_2_130,
        t3.tbp_resumg_3_130, t3.tbp_resumg_4_130,
        (SELECT 
-           TO_CHAR (t4.tbp_prod_date, 'DD-MM-YYYY')
+           TO_CHAR (t4.tbp_prod_date, 'DD.MM.YYYY')
           FROM v_bare_pdo t4
          WHERE t4.tbp_batch_no = t3.tbp_batch_no
            AND t4.tbp_cd_proc = 'D'
@@ -1919,7 +1927,7 @@ export const getfinalinspection = async (
       // binds["pipeno"] = pipeno;
     }
 
-    sql += `  order by t2.LOM_ID_FIRST_PAR,t2.LOM_ID_BATCH,t2.LOM_CD_STATUS `;
+    sql += `  order by TBP_FLD_NO_130,t2.LOM_ID_BATCH,t2.LOM_CD_STATUS `;
 
     // if (DespFromDate && DespFromDate !== "" && DespToDate !== "") {
     //   sql += ` And trunc(LOM_DT_LOADING) BETWEEN :DespFromDate AND :DespToDate`;
@@ -3603,7 +3611,8 @@ export const getInletData = async (data: any) => {
       t.TCP_ID_INS_INLET_ID1_M Instrument_ID_SNo,
       t3.tbp_batch_no,
       t2.lom_no_cast Heat_no,
-      round(t2.lom_length/1000,2) length,
+      --round(t2.lom_length/1000,2) length,
+      TO_CHAR(ROUND(t2.lom_length / 1000, 2), 'FM9999999990.00') AS LENGTH,
       t3.TBP_ASL_NO_80,
       t3.tbp_visual_insp_80,
       t3.tbp_prod_date,

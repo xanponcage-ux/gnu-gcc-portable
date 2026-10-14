@@ -508,15 +508,15 @@ export default function MaxWidthDialogTrial(props) {
 
                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '7px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.05}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {gettrialdata?.length > 0 ? gettrialdata[0].SPEC_GRD : '  '} & QAPNO:{gettrialdata?.length > 0 ? gettrialdata[0].GD_QAP_NO : '  '} AND FOUND SATISFACTORY</Grid>
+                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {gettrialdata?.length > 0 ? gettrialdata[0].SPEC_GRD : '  '} & QAPNO:{gettrialdata?.length > 0 ? gettrialdata[0].GD_QAP_NO : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
                       <Grid item xs={12}    style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px', textAlign: 'Center' }}>USED INSTRUMENT</Grid>
-                      <Grid item xs={0.75}  style={{ fontSize: '9px',  color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>S No.</Grid>
+                      <Grid item xs={0.75}  style={{ fontSize: '9px',  color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>SR No.</Grid>
                       <Grid item xs={2.25}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
                       <Grid item xs={3}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,textAlign: 'Center' }}>INSTRUMENT ID/SERIAL NO.</Grid>
-                      <Grid item xs={0.75}  style={{ fontSize: '9px',  color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>S No.</Grid>
+                      <Grid item xs={0.75}  style={{ fontSize: '9px',  color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>SR No.</Grid>
                       <Grid item xs={2.25}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
                       <Grid item xs={3}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,textAlign: 'Center' }}>INSTRUMENT ID/SERIAL NO.</Grid>
                        

@@ -30,4 +30,30 @@ export default class LD15S001 {
   getTataDate(prodEndDt: any) {
     return repository.getTataDate(prodEndDt);
   }
+
+    getCoatWt(
+      W1: any,
+      W2: any,
+      W3: any,
+      W4: any,
+      W5: any,
+      W6: any,
+      W7: any,
+      W8: any,
+      LENGTH: any,
+      OD: any
+    ) {
+      return repository.getCoatWt(
+        W1,
+        W2,
+        W3,
+        W4,
+        W5,
+        W6,
+        W7,
+        W8,
+        LENGTH,
+        OD
+      );
+    }
 }

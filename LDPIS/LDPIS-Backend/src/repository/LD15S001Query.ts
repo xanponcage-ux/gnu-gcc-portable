@@ -90,7 +90,6 @@ export const insertTempData = async (data: any) => {
       TBP_WFT_T2_150,
       TBP_WFT_T3_150,
       TBP_WFT_T4_150,
-      TBP_COT_WT_IN_150,
       TBP_ME_FEND_150,
       TBP_UME_TEND_150,
       TBP_RMUSE1_150,
@@ -108,7 +107,8 @@ export const insertTempData = async (data: any) => {
       TBP_QUANTITY_150,
       TBP_SAMPL_TAG,
       TBP_WORK_CENTER,
-      TBP_SHIFT_DN
+      TBP_SHIFT_DN,
+      TBP_COT_WT_IN_150
     ) VALUES (
       :PLANT,
       :BATCH_NO,
@@ -146,7 +146,6 @@ export const insertTempData = async (data: any) => {
       :TBP_WFT_T2_150,
       :TBP_WFT_T3_150,
       :TBP_WFT_T4_150,
-      :TBP_COT_WT_IN_150,
       :TBP_ME_FEND_150,
       :TBP_UME_TEND_150,
       :TBP_RMUSE1_150,
@@ -164,7 +163,8 @@ export const insertTempData = async (data: any) => {
       :TBP_QUANTITY_150,
       :TBP_SAMPL_TAG,
       :TBP_WORK_CENTER,
-      :TBP_SHIFT_DN
+      :TBP_SHIFT_DN,
+      :COT_WT_VS
     )`;
 
     // Accept either CD_PROC (new) or C_PRC (frontend legacy) for compatibility
@@ -180,7 +180,16 @@ export const insertTempData = async (data: any) => {
 
       PROD_DATE: data.PROD_DATE || null,
 
-      TBP_WEIGHT: data.TBP_WEIGHT ?? null,
+      // TBP_WEIGHT: data.TBP_WEIGHT ?? null,
+
+            TBP_WEIGHT:
+        String(data.RESULT).toUpperCase() === "NOT OK"
+          ? Number(Number(data.TBP_WEIGHT || 0).toFixed(1))
+          : Number(
+              (
+                Number(data.TBP_WEIGHT || 0) + Number(data.COT_WT_VS || 0)
+              ).toFixed(0)
+            ),
 
       STATUS: data.STATUS || null,
 
@@ -241,7 +250,7 @@ export const insertTempData = async (data: any) => {
 
       TBP_WFT_T4_150: data.TBP_WFT_T4_150 ?? null,
 
-      TBP_COT_WT_IN_150: data.TBP_COT_WT_IN_150 ?? null,
+      // TBP_COT_WT_IN_150: data.TBP_COT_WT_IN_150 ?? null,
 
       TBP_ME_FEND_150: data.TBP_ME_FEND_150 ?? null,
 
@@ -278,6 +287,8 @@ export const insertTempData = async (data: any) => {
       TBP_WORK_CENTER: data.TBP_WORK_CENTER ?? null,
 
       TBP_SHIFT_DN: data.TBP_SHIFT_DN || data.SHIFT || null,
+
+      COT_WT_VS: data.COT_WT_VS,
     };
 
     return await query.executeQuery(sql, binds);
@@ -340,9 +351,124 @@ export const deleteTempData = async (data: any) => {
 export const getFillData = async (data: any) => {
   try {
     // Only the latest G record can activate the rework path, as in LD120.
-    let sql = `SELECT b.TBP_BATCH_NO, b.TBP_PIPE_OD_10, b.TBP_PIPE_THK_10,
-      b.TBP_PIPE_LNG_10, b.TBP_NO_MATNR, b.TBP_ID_FIRST_PAR,
+    let sql = `SELECT b.TBP_BATCH_NO, l.LOM_ODIA as TBP_PIPE_OD_10, l.LOM_SEC1 as TBP_PIPE_THK_10,
+      l.LOM_LENGTH as TBP_PIPE_LNG_10, b.TBP_NO_MATNR, b.TBP_ID_FIRST_PAR,
       b.TBP_QUALITY_CD, b.TBP_CD_FLAG,
+             TO_CHAR(
+(
+SELECT ldpdba.f_get_coatwt_int(
+         :plant,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_F1_150,0) ELSE :w1 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_F2_150,0) ELSE :w2 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_F3_150,0) ELSE :w3 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_F4_150,0) ELSE :w4 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_T1_150,0) ELSE :w5 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_T2_150,0) ELSE :w6 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_T3_150,0) ELSE :w7 END,
+         CASE WHEN (
+             SELECT COUNT(1)
+             FROM v_bare_pdo t
+             WHERE t.tbp_cd_proc = 'D'
+               AND t.tbp_batch_no = b.tbp_batch_no
+               AND NVL(t.tbp_rbt_10,'N') = 'Y'
+               AND t.tbp_batch_proc_no = (
+                    SELECT MAX(t1.tbp_batch_proc_no)
+                    FROM v_bare_pdo t1
+                    WHERE t1.tbp_batch_no = t.tbp_batch_no
+                      AND t1.tbp_cd_proc = 'D'
+               )
+         ) > 0 THEN NVL(d150.TBP_WFT_T4_150,0) ELSE :w8 END,
+         l.lom_length,
+         l.lom_sec2
+       )
+FROM dual
+),
+'FM9999999990.000'
+) AS coat_wt,
       b.TBP_ID_ORDER_NO AS ORDER_NO, b.TBP_ITEM_NO AS ITEM,
       l.LOM_ID_PAR_COIL_NO,
       F_GET_NEXTPROC(l.LOM_PLANNED_PROC, l.LOM_PASSED_PROC, 'G') AS NEXT_PROC,
@@ -408,7 +534,7 @@ export const getFillData = async (data: any) => {
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_SHIFT_DN ELSE b.TBP_SHIFT_DN END AS TBP_SHIFT_DN,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_INSP_NAME ELSE b.TBP_INSP_NAME END AS TBP_INSP_NAME,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_REMARK ELSE b.TBP_REMARK END AS TBP_REMARK,
-      CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_WEIGHT ELSE b.TBP_WEIGHT END AS TBP_WEIGHT,
+      CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_WEIGHT ELSE l.LOM_MS_PIECE_ACTL END AS TBP_WEIGHT,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_DEW_TMP_100 ELSE b.TBP_DEW_TMP_100 END AS TBP_DEW_TEMP_100,
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_MIXPAINT_RATIO_150 ELSE b.TBP_MIXPAINT_RATIO_150 END AS TBP_MIXPAINT_RATIO,
       TO_CHAR(d150.TBP_PROD_DATE, 'DD-MON-YYYY', 'NLS_DATE_LANGUAGE=English') AS TBP_PROD_DATE,
@@ -449,7 +575,25 @@ export const getFillData = async (data: any) => {
              AND x.TBP_PLANT_CD = b.TBP_PLANT_CD
              AND x.TBP_CD_PROC = '1')`;
 
-    const binds: any = { status: data.STATUS || "", plant: data.PLANT || "0780" };
+                 const safeNumber = (v: any) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    let binds: any = {
+      plant: data.PLANT ? data.PLANT : "0780",
+      w1: safeNumber(data.W1),
+      w2: safeNumber(data.W2),
+      w3: safeNumber(data.W3),
+      w4: safeNumber(data.W4),
+      w5: safeNumber(data.W5),
+      w6: safeNumber(data.W6),
+      w7: safeNumber(data.W7),
+      w8: safeNumber(data.W8),
+      status: data.STATUS ? data.STATUS : "",
+    };
+
+    // const binds: any = { status: data.STATUS || "", plant: data.PLANT || "0780" };
     if (data.PIPE_NO) {
       sql += ` AND b.TBP_BATCH_NO = :pipeNo`;
       binds.pipeNo = data.PIPE_NO;
@@ -463,6 +607,7 @@ export const getFillData = async (data: any) => {
     } else {
       sql += ` AND 1=0`;
     }
+    console.log(sql, binds);
     return await query.executeQuery(sql, binds);
   } catch (error) {
     console.log(error);
@@ -485,4 +630,45 @@ export const getTataDate = async (prodEndDt: any) => {
   }
 };
 
+
+export const getCoatWt = async (
+  W1: any,
+  W2: any,
+  W3: any,
+  W4: any,
+  W5: any,
+  W6: any,
+  W7: any,
+  W8: any,
+  LENGTH: any,
+  OD: any
+) => {
+  try {
+    // Coerce to numbers, default 0 for non-numeric inputs
+    const safeNumber = (v: any) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const binds = {
+      plant: "0780",
+      w1: safeNumber(W1),
+      w2: safeNumber(W2),
+      w3: safeNumber(W3),
+      w4: safeNumber(W4),
+      w5: safeNumber(W5),
+      w6: safeNumber(W6),
+      w7: safeNumber(W7),
+      w8: safeNumber(W8),
+      length: LENGTH,
+      od: OD,
+    };
+
+    const sql = `select LDPDBA.f_get_coatwt_int(:plant,:w1,:w2,:w3,:w4,:w5,:w6,:w7,:w8,:length,:od) COAT_WT from dual `;
+    console.log("coat", sql, binds);
+    return await query.executeQuery(sql, binds);
+  } catch (error) {
+    console.log(error);
+    throw new Error.InternalServerErrorMsg(error);
+  }
+};
 

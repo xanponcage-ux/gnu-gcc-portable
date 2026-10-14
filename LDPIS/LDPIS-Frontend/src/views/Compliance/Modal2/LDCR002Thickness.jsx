@@ -399,7 +399,7 @@ export default function MaxWidthDialogThick(props) {
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_11_120 !== null ? Number(dataRow.TBP_COT_THK_11_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_12_120 !== null ? Number(dataRow.TBP_COT_THK_12_120).toFixed(2) : <br />}</Grid>
                             
-                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
+                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.VISUAL !== null ? dataRow.VISUAL : <br />}</Grid>
                             <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
                             <Grid item xs={2.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_NAME !== null ? dataRow.TEST_NAME : <br />}</Grid>
                             <Grid item xs={1.3}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_QTEMP_120 !== null ? dataRow.TBP_QTEMP_120 : <br />}</Grid>
@@ -443,7 +443,7 @@ export default function MaxWidthDialogThick(props) {
 
                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.1}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getthick?.length > 0 ? getthick[0].SPEC : '  '} & QAPNO:{getthick?.length > 0 ? getthick[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getthick?.length > 0 ? getthick[0].SPEC : '  '} & QAPNO:{getthick?.length > 0 ? getthick[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
                       {/* <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.1}>{<br/>}</Grid>

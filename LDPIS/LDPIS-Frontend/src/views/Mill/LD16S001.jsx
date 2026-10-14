@@ -1113,7 +1113,7 @@ export default function TubePlanning() {
   const ResultType = [
     { label: "OK", value: "OK" },
     { label: "NOT OK", value: "NOT OK" },
-    { label: "HOLD", value: "HOLD" },
+    // { label: "HOLD", value: "HOLD" },
   ];
 
   const ShiftType = [
@@ -1209,7 +1209,7 @@ export default function TubePlanning() {
         values: {
           OK: "OK",
           "NOT OK": "NOT OK",
-          HOLD: "HOLD",
+          // HOLD: "HOLD",
         },
       },
       width: 100,
@@ -1459,7 +1459,7 @@ export default function TubePlanning() {
       <DefaultNavbar
         routes={routes}
         module="Mill"
-        page="Final Station Internal"
+        page="Final Station Internal (160)"
       />
 
       <Grid container direction="row" justifyContent="center" alignItems="center">

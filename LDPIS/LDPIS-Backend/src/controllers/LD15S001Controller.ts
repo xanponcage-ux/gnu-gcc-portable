@@ -106,3 +106,36 @@ export const getTataDate = async (req: Request, res: Response) => {
     return res.status(400).json(error);
   }
 };
+
+export const getCoatWt = async (req: Request, res: Response) => {
+  try {
+    let W1 = req.body.W1;
+    let W2 = req.body.W2;
+    let W3 = req.body.W3;
+    let W4 = req.body.W4;
+    let W5 = req.body.W5;
+    let W6 = req.body.W6;
+    let W7 = req.body.W7;
+    let W8 = req.body.W8;
+    let OD = req.body.OD;
+    let LENGTH = req.body.LENGTH;
+
+    const results: any = await LD15S001.prototype.getCoatWt(
+      W1,
+      W2,
+      W3,
+      W4,
+      W5,
+      W6,
+      W7,
+      W8,
+      LENGTH,
+      OD
+    );
+    console.log(results);
+    console.log(await ResponceData(results));
+    return res.status(200).json(await ResponceData(results));
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};

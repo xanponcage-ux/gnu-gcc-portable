@@ -468,8 +468,8 @@ export const deleteTempData = async (data: any) => {
 
 export const getFillData = async (data: any) => {
   try {
-    let sql = `SELECT TBP_BATCH_NO,TBP_PIPE_OD_10,TBP_PIPE_THK_10,TBP_PIPE_LNG_10,TBP_NO_MATNR,TBP_HEAT_NO,
-                TBP_ID_ORDER_NO ORDER_NO,LOM_ID_PAR_COIL_NO, TBP_ITEM_NO ITEM,LOM_NO_CAST,LOM_WORK_CENTER, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
+    let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,TBP_NO_MATNR,TBP_HEAT_NO,
+                TBP_ID_ORDER_NO ORDER_NO,LOM_MS_PIECE_ACTL,LOM_ID_PAR_COIL_NO, TBP_ITEM_NO ITEM,LOM_NO_CAST,LOM_WORK_CENTER, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
                (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'D') as nxtproc from dual) NEXT_PROC,
                (select D.TBP_ASL_NO_80 FROM V_BARE_PDO D
                       where D.TBP_BATCH_NO = LOM_ID_BATCH
@@ -499,7 +499,7 @@ export const getFillData = async (data: any) => {
                             AND x.TBP_CD_PROC = 'A'
                         )
                       and rownum = 1) TBP_DIA_END_10,
-               TBP_PIPE_LNG_10 PIPE_LEN, TBP_COT_THK_1_120 COT_THK_1, TBP_COT_THK_2_120 COT_THK_2,TBP_COT_THK_3_120 COT_THK_3,
+               LOM_LENGTH PIPE_LEN, TBP_COT_THK_1_120 COT_THK_1, TBP_COT_THK_2_120 COT_THK_2,TBP_COT_THK_3_120 COT_THK_3,
                (SELECT GEOMETRY
                   FROM V_YMPCT_TUB_MATL
                  WHERE MANDT = '600' AND MATNR = LOM_NO_MATNR) GEO
@@ -542,4 +542,3 @@ export const getFillData = async (data: any) => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
-

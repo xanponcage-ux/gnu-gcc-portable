@@ -967,7 +967,7 @@ export default function TubePlanning() {
   const ResultType = [
     { label: "OK", value: "OK" },
     { label: "NOT OK", value: "NOT OK" },
-    { label: "HOLD", value: "HOLD" },
+    // { label: "HOLD", value: "HOLD" },
   ];
 
   const ShiftType = [
@@ -1054,7 +1054,7 @@ export default function TubePlanning() {
         values: {
           OK: "OK",
           "NOT OK": "NOT OK",
-          HOLD: "HOLD",
+          // HOLD: "HOLD",
         },
       },
       defaultValue: "ok",
@@ -1072,6 +1072,7 @@ export default function TubePlanning() {
       headerFilter: "input",
       editor: "input",
       width: 150,
+      visible:false,
       validator: function (value, cell) {
         return value ? true : false;
       },
@@ -1278,7 +1279,7 @@ export default function TubePlanning() {
       <DefaultNavbar
         routes={routes}
         module="Mill"
-        page="Internal Coating"
+        page="Internal Coating (140)"
       />
       <Grid
         container
@@ -1769,7 +1770,7 @@ export default function TubePlanning() {
                     >
                       <Grid item xs={2}>
                         <MDTypography variant="h6" color="white">
-                          Internal Coating
+                          Internal Coating 
                         </MDTypography>
                       </Grid>
                       <Grid item xs={2}></Grid>

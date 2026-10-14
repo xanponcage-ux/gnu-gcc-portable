@@ -426,6 +426,7 @@ export default function LDLTS005() {
         PSNO: psno,
         selecteddate: prodDate,
       };
+      console.log('data',data);
       const url = "api/LDLTS005/getcountcheck";
       const res = await axiosAPI.post(url, data, defaultOptions);
 

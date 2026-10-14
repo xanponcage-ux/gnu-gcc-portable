@@ -40,14 +40,17 @@ export const getCoils = async (data: any) => {
 
 export const saveData = async (data: any) => {
   try {
-    var sql = `call LDPDBA.LDLTB006(
+    var sql = `call LDPDBA.LDLTB005(
       ls_batch         => :ls_batch,
       ls_decision      => :ls_decision,
+      ls_coatig_type   => :ls_coatig_type, 
       ls_out_flag      => :ls_out_flag
     )`;
     const binds = {
+      // Changed to an object literal for binds
       ls_batch: data?.batchId,
       ls_decision: data?.decision,
+      ls_coatig_type: "I", // Added the named parameter for 'I'
       ls_out_flag: {
         type: oracledb.STRING,
         dir: oracledb.BIND_OUT,
@@ -56,7 +59,8 @@ export const saveData = async (data: any) => {
     };
     let result = await query.executeQuery(sql, binds);
     return result;
-  } catch (error) {
+  } catch (error: any) {
+    // Added type annotation for error
     console.log(error);
     throw new Error.InternalServerErrorMsg(error);
   }

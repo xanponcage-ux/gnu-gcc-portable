@@ -288,21 +288,21 @@ export default function MaxWidthDialogEpoxy(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'Right', marginTop: '5px',fontSize: '9px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'Right', marginTop: '5px',fontSize: '11px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             FORMAT NO : TSL/COAT/QC/F-13 Rev 04,Date 13.11.2021            _
                           </MDTypography>
                         </Grid>
                         <Grid item xs={12}>
                           <Grid container>
-                            <Grid item xs={1.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',borderLeft: '1px solid black',padding: '1px' }}>
+                            <Grid item xs={1.5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',borderLeft: '1px solid black',padding: '2px' }}>
                               <p>Client        </p>  
                               <p>PO.No.         </p>
                               <p>Specification </p>
                               <p>Acceptance Criteria      </p> 
                               <p>Process Sheet</p>
                             </Grid>
-                            <Grid item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '1px',borderleft: '1px solid black' }}>
+                            <Grid item xs={5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '2px',borderleft: '1px solid black' }}>
                               <p>: {getepoxydata?.length > 0 ? getepoxydata[0].CLIENT : ' '} </p>
                               <p>: {getepoxydata?.length > 0 ? getepoxydata[0].PO_REF_NO : ' '}</p>
                               <p>: {getepoxydata?.length > 0 ? getepoxydata[0].SPEC : ' '}  </p>
@@ -310,14 +310,14 @@ export default function MaxWidthDialogEpoxy(props) {
                               <p>: {getepoxydata?.length > 0 ? getepoxydata[0].PROCESS_SHEET_NO : ' '} </p>
                             </Grid>
 
-                            <Grid item xs={1.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black', padding: '1px' }}>
+                            <Grid item xs={1.5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black', padding: '2px' }}>
                               <p>Report No</p>
                               <p>Date & Shift           </p>
                               <p>Pipe Size           </p>
                               <p>Type of Coating  </p>
                               <p>Procedure/WI No.     </p>
                             </Grid>
-                            <Grid item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '1px',borderRight: '1px solid black' }}>
+                            <Grid item xs={4} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '2px',borderRight: '1px solid black' }}>
                               <p>: {getepoxydata?.length > 0 ? `${getepoxydata[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
                               <p>: {getepoxydata?.length > 0 ? getepoxydata[0].DATE_SHIFT : ' '} </p>
                               <p>: {getepoxydata?.length > 0 ? getepoxydata[0].PIPE_SIZE : ' '} </p>
@@ -329,11 +329,11 @@ export default function MaxWidthDialogEpoxy(props) {
                     
                     <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>     
                     <Grid container xs = {12} >
-                      <Grid item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SNo</Grid>
-                      <Grid item xs={1.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Pipe No.</Grid>
-                      <Grid item xs={4}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Required Value</Grid>
-                      <Grid item xs={3}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Achieved Value</Grid>
-                      <Grid item xs={3}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Remark</Grid>
+                      <Grid item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
+                      <Grid item xs={1.5} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Pipe No.</Grid>
+                      <Grid item xs={4}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Required Value</Grid>
+                      <Grid item xs={3}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Achieved Value</Grid>
+                      <Grid item xs={3}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Remark</Grid>
 
                     
                       {getepoxydata
@@ -364,16 +364,16 @@ export default function MaxWidthDialogEpoxy(props) {
                     </Grid>
                     <Grid>
  </Grid>
-                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '2px',borderRight: '1px solid black' }}>
-                       <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getepoxydata?.length > 0 ? getepoxydata[0].SPEC : '  '} & QAPNO:{getepoxydata?.length > 0 ? getepoxydata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid container style={{textAlign: 'left', fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
+                       <Grid item xs = {0.05}>{<br/>}</Grid>
+                       <Grid item xs = {11.95}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getepoxydata?.length > 0 ? getepoxydata[0].SPEC : '  '} & QAPNO:{getepoxydata?.length > 0 ? getepoxydata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
-                      <Grid item xs={0.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>SR.NO.</Grid>
-                      <Grid item xs={5.25} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
-                      <Grid item xs={6}    style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>INSTRUMENT ID/SERIAL NO.</Grid>
+                      <Grid item xs={0.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>SR.NO.</Grid>
+                      <Grid item xs={5.25} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
+                      <Grid item xs={6}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>INSTRUMENT ID/SERIAL NO.</Grid>
                        
                           <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center'  }}>1<br/></Grid>
                           <Grid item xs={5.25} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center'  }}>{props?.instrumentName}</Grid>
@@ -387,6 +387,7 @@ export default function MaxWidthDialogEpoxy(props) {
                                <Grid item xs={6}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
                                <Grid item xs={6}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>ACCEPTED BY</Grid>
                           </Grid>
+                       <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>

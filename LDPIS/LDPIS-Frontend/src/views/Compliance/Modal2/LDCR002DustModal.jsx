@@ -311,7 +311,7 @@ export default function MaxWidthDialogDUST(props) {
                         </Grid>
                         <Grid item xs={12}>
                           <Grid container>
-                            <Grid item xs={1.25} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',borderLeft: '1px solid black',padding: '3px' }}>
+                            <Grid item xs={1.1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',borderLeft: '1px solid black',padding: '3px' }}>
                               <p>Client        </p>  
                               <p>PO.No.         </p>
                               <p>Pipe Size           </p>
@@ -319,7 +319,7 @@ export default function MaxWidthDialogDUST(props) {
                               <p><br />  </p>
                               {/* <p>Type of Coating  </p> */}
                             </Grid>
-                            <Grid item xs={4.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
+                            <Grid item xs={5} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
                               <p>: {getdustdata?.length > 0 ? getdustdata[0].CLIENT : ' '} </p>
                               <p>: {getdustdata?.length > 0 ? getdustdata[0].PO_REF_NO : ' '}</p>
                               <p>: {getdustdata?.length > 0 ? getdustdata[0].PIPE_SIZE : ' '} </p>
@@ -335,9 +335,10 @@ export default function MaxWidthDialogDUST(props) {
                               <p>Process Sheet No     </p>
                               <p><br />  </p>
                             </Grid>
-                            <Grid item xs={4.4} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
+                            <Grid item xs={4.3} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                               <p>: {getdustdata?.length > 0  ? `${getdustdata[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
-                              <p>: {getdustdata?.length > 0  ? getdustdata[0].DATE_SHIFTQ : ' '} </p>
+                              {/* <p>: {getdustdata?.length > 0  ? getdustdata[0].DATE_SHIFTQ : ' '} </p> */}
+                                                            <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getdustdata?.length > 0  ? getdustdata[0].QAP_NO : ' '} </p>
                               <p>: {getdustdata?.length > 0  ? getdustdata[0].PROCESS_SHEET_NO : ' '} </p>
                               <p><br />  </p>
@@ -416,7 +417,7 @@ export default function MaxWidthDialogDUST(props) {
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        
-                       <Grid item xs = {12}><br/></Grid>
+                       {/* <Grid item xs = {12}><br/></Grid> */}
                        <Grid item xs = {6} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '2px'  ,  textAlign: 'Center'  }}> {props?.reviewedBy} <br/> (QC ENGINEER)</Grid>
                        <Grid item xs = {6} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '2px'  ,  textAlign: 'Center'  }}> TPIA / CLIENT<br/></Grid>
                        <Grid item xs = {12}><br/></Grid>

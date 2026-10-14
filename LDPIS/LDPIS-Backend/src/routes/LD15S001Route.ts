@@ -7,6 +7,10 @@ LD15S001Route.route('/getRmList').post(authenticationMiddleware.bearer, controll
 LD15S001Route.route('/getPipeNoList').post(authenticationMiddleware.bearer, controller.getPipeNoList);
 LD15S001Route.route('/insertTempData').post(authenticationMiddleware.bearer, controller.insertTempData);
 LD15S001Route.route('/getFillData').post(authenticationMiddleware.bearer, controller.getFillData);
-LD15S001Route.route("/getTataDate").post(authenticationMiddleware.bearer,controller.getTataDate);
+LD15S001Route.route("/getTataDate").post(authenticationMiddleware.bearer, controller.getTataDate);
+LD15S001Route.route("/getCoatWt").post(
+    authenticationMiddleware.bearer,
+    controller.getCoatWt
+);
 
 export default LD15S001Route;

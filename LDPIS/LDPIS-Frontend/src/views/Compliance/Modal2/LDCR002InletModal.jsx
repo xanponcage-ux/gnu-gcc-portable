@@ -93,7 +93,7 @@ export default function DialogINLETModel(props) {
 
     body{
       -webkit-print-color-adjust: exact;
-      zoom:130%;
+      zoom:110%;
     }
 
     .print-page{
@@ -137,10 +137,10 @@ export default function DialogINLETModel(props) {
                       alt="TatasteellimitedLogo"
                       style={{
                         position: "absolute",
-                        top: 5,
-                        left: 11,
-                        height: "15px",
-                        margin: "15px",
+                        top: 7,
+                        left: 7,
+                        height: "25px",
+                        margin: "10px",
                       }}
                     />
                     <img
@@ -148,10 +148,10 @@ export default function DialogINLETModel(props) {
                       alt="Tata Logo"
                       style={{
                         position: "absolute",
-                        top: 10,
+                        top: 12,
                         right: 20,
-                        height: "15px", // Adjust the height as needed
-                        margin: "7.5px", // Adjust the margin as needed
+                        height: "25px", // Adjust the height as needed
+                        margin: "7px", // Adjust the margin as needed
                       }}
                     />
                     <Grid
@@ -171,7 +171,7 @@ export default function DialogINLETModel(props) {
                           style={{
                             textAlign: "center",
                             marginTop: "0px",
-                            fontSize: "12px",
+                            fontSize: "14px",
                             color: "black",
                             fontFamily: "Times New Roman",
                             borderLeft: "1px solid black",
@@ -195,14 +195,14 @@ export default function DialogINLETModel(props) {
                           noWrap
                           style={{
                             textAlign: "right",
-                            fontSize: "8px",
+                            fontSize: "9px",
                             color: "black",
                             fontFamily: "Times New Roman",
                             borderLeft: "1px solid black",
                             borderRight: "2px solid black",
                           }}
                         >
-                          FORMAT NO : TSL/COAT/QC/F-03 REV.05 DATE : 13.11.2021
+                          <br />FORMAT NO : TSL/COAT/QC/F-03 REV.05 DATE : 13.11.2021  _
                         </MDTypography>
                       </Grid>
 
@@ -212,7 +212,7 @@ export default function DialogINLETModel(props) {
                             item
                             xs={2}
                             style={{
-                              fontSize: "8px",
+                              fontSize: "10px",
                               color: "black",
                               fontWeight: "bold",
                               borderTop: "1px solid black",
@@ -235,7 +235,7 @@ export default function DialogINLETModel(props) {
                             item
                             xs={7}
                             style={{
-                              fontSize: "8px",
+                              fontSize: "10px",
                               color: "black",
                               fontWeight: "bold",
                               borderTop: "1px solid black",
@@ -267,7 +267,7 @@ export default function DialogINLETModel(props) {
                             item
                             xs={1.05}
                             style={{
-                              fontSize: "8px",
+                              fontSize: "10px",
                               color: "black",
                               fontWeight: "bold",
                               borderTop: "1px solid black",
@@ -282,7 +282,7 @@ export default function DialogINLETModel(props) {
                             item
                             xs={1.95}
                             style={{
-                              fontSize: "8px",
+                              fontSize: "10px",
                               color: "black",
                               fontWeight: "bold",
                               borderTop: "1px solid black",
@@ -314,9 +314,9 @@ export default function DialogINLETModel(props) {
 
                                 <Grid
                                   item
-                                  xs={0.5}
+                                  xs={0.75}
                                   style={{
-                                    fontSize: "8px",
+                                    fontSize: "11px",
                                     color: "black",
                                     fontWeight: "bold",
                                     border: "1px solid black",
@@ -331,7 +331,7 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={2}
                                   style={{
-                                    fontSize: "10px",
+                                    fontSize: "11px",
                                     color: "black",
                                     fontWeight: "bold",
                                     border: "1px solid black",
@@ -346,7 +346,7 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={2}
                                   style={{
-                                    fontSize: "10px",
+                                    fontSize: "11px",
                                     color: "black",
                                     fontWeight: "bold",
                                     border: "1px solid black",
@@ -361,7 +361,7 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={2}
                                   style={{
-                                    fontSize: "10px",
+                                    fontSize: "11px",
                                     color: "black",
                                     fontWeight: "bold",
                                     border: "1px solid black",
@@ -374,9 +374,9 @@ export default function DialogINLETModel(props) {
 
                                 <Grid
                                   item
-                                  xs={2}
+                                  xs={1.75}
                                   style={{
-                                    fontSize: "10px",
+                                    fontSize: "11px",
                                     color: "black",
                                     fontWeight: "bold",
                                     border: "1px solid black",
@@ -391,7 +391,7 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={3.5}
                                   style={{
-                                    fontSize: "10px",
+                                    fontSize: "11px",
                                     color: "black",
                                     fontWeight: "bold",
                                     border: "1px solid black",
@@ -416,9 +416,9 @@ export default function DialogINLETModel(props) {
                                     >
                                       <Grid
                                         item
-                                        xs={0.5}
+                                        xs={0.75}
                                         style={{
-                                          fontSize: "9px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "bold",
                                           borderBottom: "1px solid black",
@@ -435,7 +435,7 @@ export default function DialogINLETModel(props) {
                                         item
                                         xs={2}
                                         style={{
-                                          fontSize: "9px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "bold",
                                           borderBottom: "1px solid black",
@@ -451,7 +451,7 @@ export default function DialogINLETModel(props) {
                                         item
                                         xs={2}
                                         style={{
-                                          fontSize: "9px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "bold",
                                           borderBottom: "1px solid black",
@@ -467,7 +467,7 @@ export default function DialogINLETModel(props) {
                                         item
                                         xs={2}
                                         style={{
-                                          fontSize: "9px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "bold",
                                           borderBottom: "1px solid black",
@@ -481,9 +481,9 @@ export default function DialogINLETModel(props) {
 
                                       <Grid
                                         item
-                                        xs={2}
+                                        xs={1.75}
                                         style={{
-                                          fontSize: "9px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "bold",
                                           borderBottom: "1px solid black",
@@ -499,7 +499,7 @@ export default function DialogINLETModel(props) {
                                         item
                                         xs={3.5}
                                         style={{
-                                          fontSize: "9px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "bold",
                                           borderBottom: "1px solid black",
@@ -531,7 +531,7 @@ export default function DialogINLETModel(props) {
                                   >
                                     <Grid
                                       item
-                                      xs={0.5}
+                                      xs={0.75}
                                   style={{
                                     fontSize: "10px",
                                     color: "black",
@@ -587,7 +587,7 @@ export default function DialogINLETModel(props) {
 
                                     <Grid
                                       item
-                                      xs={2}
+                                      xs={1.75}
                                   style={{
                                     fontSize: "10px",
                                     color: "black",
@@ -620,15 +620,16 @@ export default function DialogINLETModel(props) {
                                   xs={12}
                                   style={{
                                     border: "1px solid black",
-                                    padding: "2px",
-                                    fontSize: "9px",
+                                    padding: "3px",
+                                    fontSize: "10px",
                                     fontWeight: "bold",
                                     // fontFamily: "Times New Roman",
                                     color: "black",
                                     lineHeight: "11px",
                                   }}
                                 >
-                                  REMARKS: (1) Pipe No., Heat No., Length (Mtrs),
+                                  REMARKS: <br />
+                                  (1) Pipe No., Heat No., Length (Mtrs),
                                   ASL No. Checked w.r.t. Tally sheet of Bare
                                   Pipes.
                                   <br />
@@ -645,7 +646,7 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     padding: "4px",
-                                    fontSize: "7px",
+                                    fontSize: "9px",
                                     fontWeight: "bold",
                                     fontFamily: "Arial",
                                     color: "black",
@@ -686,9 +687,11 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
-                                    fontSize: "9px",
+                                    fontSize: "11px",
                                     fontWeight: "bold",
                                     padding: "3px",
+                                    fontFamily: "Arial",
+                                    color: "black",
                                   }}
                                 >
                                   USED INSTRUMENT
@@ -700,7 +703,11 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
+                                     fontSize: "11px",
                                     fontWeight: "bold",
+                                    fontFamily: "Arial",
+                                    color: "black",
+                                    padding: "3px",
                                   }}
                                 >
                                   SR.NO.
@@ -712,7 +719,11 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
+                                    fontSize: "11px",
                                     fontWeight: "bold",
+                                    fontFamily: "Arial",
+                                    color: "black",
+                                    padding: "3px",
                                   }}
                                 >
                                   INSTRUMENT NAME
@@ -724,7 +735,11 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
+                                     fontSize: "11px",
                                     fontWeight: "bold",
+                                    fontFamily: "Arial",
+                                    color: "black",
+                                    padding: "3px",
                                   }}
                                 >
                                   INSTRUMENT ID / SERIAL NO
@@ -736,6 +751,10 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
+                                     fontSize: "11px",
+                                     fontFamily: "Arial",
+                                    color: "black",
+                                    padding: "3px",
                                   }}
                                 >
                                   1
@@ -747,6 +766,10 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
+                                     fontSize: "11px",
+                                     fontFamily: "Arial",
+                                    color: "black",
+                                    padding: "3px",
                                   }}
                                 >
                                   {props.instrumentName}
@@ -758,6 +781,10 @@ export default function DialogINLETModel(props) {
                                   style={{
                                     border: "1px solid black",
                                     textAlign: "center",
+                                     fontSize: "11px",
+                                     fontFamily: "Arial",
+                                    color: "black",
+                                    padding: "3px",
                                   }}
                                 >
                                   {props.instrumentId}
@@ -858,11 +885,13 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={6}
                                   style={{
-                                    fontSize: "9px",
+                                    fontSize: "10px",
                                     fontWeight: "bold",
                                     border: "1px solid black",
                                     padding: "2px",
                                     textAlign: "center",
+                                    fontFamily: "Arial",
+                                    color: "black",
                                   }}
                                 >
                                   INSPECTED BY
@@ -872,11 +901,13 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={6}
                                   style={{
-                                    fontSize: "9px",
+                                    fontSize: "10px",
                                     fontWeight: "bold",
                                     border: "1px solid black",
                                     padding: "2px",
                                     textAlign: "center",
+                                    fontFamily: "Arial",
+                                    color: "black",
                                   }}
                                 >
                                   ACCEPTED BY
@@ -886,19 +917,23 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={6}
                                   style={{
-                                    fontSize: "9px",
+                                    fontSize: "10px",
                                     fontWeight: "bold",
-                                    border: "1px solid black",
+                                    borderLeft: "1px solid black",
                                     padding: "5px",
                                     textAlign: "center",
+                                    fontFamily: "Arial",
+                                    color: "black",
                                   }}
                                 >
+                                  <br />
+                                  <br />
                                   <br />
                                   <br />
                                   
                                   {props?.reviewedBy}
                                   <br />
-                                  (QC Engineer)
+                                  (QC ENGINEER)
                                   <br />
                                 </Grid>
 
@@ -906,11 +941,13 @@ export default function DialogINLETModel(props) {
                                   item
                                   xs={6}
                                   style={{
-                                    fontSize: "9px",
+                                    fontSize: "10px",
                                     fontWeight: "bold",
-                                    border: "1px solid black",
+                                    borderRight: "1px solid black",
                                     padding: "5px",
                                     textAlign: "center",
+                                    fontFamily: "Arial",
+                                    color: "black",
                                   }}
                                 >
                                   <br />

@@ -51,7 +51,7 @@ export const saveData = async (req: Request, res: Response) => {
           selectedData?.[i]?.batchId.toString() +
           " " +
           outBinds?.toString() +
-          checkPass;
+          " " + checkPass;
         break;
       }
       checkPass = checkPass + selectedData?.[i]?.batchId + ",";

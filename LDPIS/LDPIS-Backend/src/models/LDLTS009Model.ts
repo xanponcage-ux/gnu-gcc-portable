@@ -14,6 +14,10 @@ export default class LDLTS009 {
     }
   }
 
+    getdateandshift(data: any) {
+      return repository.getdateandshift(data);
+    }
+
   async insertUpdateDetails(data: any) {
     try {
       return await repository.insertUpdateDetails(data);

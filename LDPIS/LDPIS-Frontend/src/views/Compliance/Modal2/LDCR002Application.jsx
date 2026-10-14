@@ -656,7 +656,7 @@ export default function MaxWidthDialogapplication(props) {
                        </Grid>
                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.1}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getapplication?.length > 0 ? getapplication[0].SPEC : '  '} & QAPNO:{getapplication?.length > 0 ? getapplication[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getapplication?.length > 0 ? getapplication[0].SPEC : '  '} & QAPNO:{getapplication?.length > 0 ? getapplication[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
@@ -702,7 +702,7 @@ export default function MaxWidthDialogapplication(props) {
       {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_PEPP_BH_110 :  <br />}
     </Grid>
     <Grid item xs={1} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_LINES_SPED_110 :  <br />}
+      {(rowIndex === 2  && getapplication?.length > 0) ? Number(getapplication[0].TBP_LINES_SPED_110).toFixed(2) :  <br />}
     </Grid>
     <Grid item xs={1.9} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
       {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_EPXY_DWPT_110 :  <br />}

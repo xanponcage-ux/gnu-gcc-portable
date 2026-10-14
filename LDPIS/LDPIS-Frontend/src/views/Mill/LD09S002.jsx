@@ -870,7 +870,20 @@ export default function LD09S002() {
                   <MDBox px={3} py={1}>
                     <Grid container spacing={1}>
                       <Grid item xs={12}>
-                        <div id="table" />
+                        {tableData?.length > 0 && <div id="table" />}
+
+                        <br />
+                        <p
+                          color="black"
+                          style={{
+                            color: "black",
+                            paddingLeft: "1rem",
+                            marginTop: "-1rem",
+                          }}
+                        >
+                          Showing 1 to {tableData.length} of {tableData.length}{" "}
+                          entries
+                        </p>
                       </Grid>
                     </Grid>
                   </MDBox>
@@ -883,4 +896,3 @@ export default function LD09S002() {
     </DashboardLayout>
   );
 }
-

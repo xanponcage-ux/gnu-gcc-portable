@@ -33,6 +33,53 @@ export const getDetails = async (data: any) => {
   }
 };
 
+export const getdateandshift = async (data: any) => {
+  try {
+    const CHARG = data?.BATCH_ID;
+
+    let sql = `SELECT DISTINCT TBP_PROD_DATE PROD_DATE, TO_CHAR(TBP_PROD_DATE, 'DD-MON-YYYY') DATE_FR,
+    TBP_SHIFT_DN SHIFT,TO_CHAR(TBP_PROD_DATE, 'DD-MON-YYYY') PROD_DATE11 FROM V_BARE_PDO
+WHERE TBP_BATCH_NO = '${CHARG}' AND TBP_CD_PROC = 'G'`;
+
+    return await query.executeQuery(sql);
+  } catch (error) {
+    console.log(error);
+    throw new Error.InternalServerErrorMsg(error);
+  }
+};
+
+export const getcountcheck = async (data: any) => {
+  try {
+    // let sql = `SELECT *
+    // FROM V_ZCOAT_LAB
+    // WHERE CHARG = '${data?.orderId}'
+    // AND MANDT = '600'
+    // AND PSNO = '${data?.PSNO}'
+    // AND ZCL_PLANT_CD = '0780' `;
+
+    let sql = ` select  COUNT(*) CNT
+      from V_LDP_PRODN,v_zcoat_lab
+      WHERE LOM_CD_EPA='0780' 
+      and LOM_SAMPL_TAG_EC = 'Y'
+      AND LOM_CD_STATUS IN (SELECT DISTINCT CD_VALUE FROM V_CODES WHERE
+      CD_TYPE='TB051'
+      AND CD_DESC='EDITABLE')
+      and  LOM_ID_BATCH = CHARG
+      AND ZCL_PI_STATUS = 'Y'
+      AND ZCL_PLANT_CD = LOM_CD_EPA 
+      AND MANDT = '600'
+      AND CHARG = '${data?.orderId}'
+      AND PRD_DATE_120 = '${data?.selecteddate}'
+      `;
+
+    console.log("sql: ", sql);
+    return await query.executeQuery(sql);
+  } catch (error) {
+    console.log(error);
+    throw new Error.InternalServerErrorMsg(error);
+  }
+};
+
 export const insertUpdateDetails = async (data: any) => {
   try {
     // Extract TEST_TYPE along with other primary keys

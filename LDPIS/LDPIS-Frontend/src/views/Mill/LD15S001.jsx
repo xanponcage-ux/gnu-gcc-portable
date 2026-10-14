@@ -281,7 +281,7 @@ export default function TubePlanning() {
   const ResultType = [
     { label: "OK", value: "OK" },
     { label: "NOT OK", value: "NOT OK" },
-    { label: "HOLD", value: "HOLD" },
+    // { label: "HOLD", value: "HOLD" },
   ];
 
   const ShiftType = [
@@ -466,6 +466,56 @@ export default function TubePlanning() {
       setBlastAppTable([]);
       setSelectedBlastAppTable(null);
     };
+
+
+      const getCoatWt = async (
+        newToken = false,
+        W1,
+        W2,
+        W3,
+        W4,
+        W5,
+        W6,
+        W7,
+        W8,
+        LENGTH,
+        OD
+      ) => {
+        const token = await GetAuthorization();
+          const defaultOptions = {
+            headers: {
+              Authorization: "Bearer " + token.accessToken,
+            },
+          };
+    
+        let data = {
+          W1: W1 ? W1 : "0",
+          W2: W2 ? W2 : "0",
+          W3: W3 ? W3 : "0",
+          W4: W4 ? W4 : "0",
+          W5: W5 ? W5 : "0",
+          W6: W6 ? W6 : "0",
+          W7: W7 ? W7 : "0",
+          W8: W8 ? W8 : "0",
+          OD: OD ? OD : "0",
+          LENGTH: LENGTH ? LENGTH : "0",
+        };
+    
+        var url = "api/LD15S001/getCoatWt";
+        return axiosAPI
+          .post(url, data, defaultOptions)
+          .then((response) => {
+            if (response.statusText != "" && response.statusText != "OK") {
+              //reject(response.statusText);
+            } else {
+              var coatWt = response.data[0].COAT_WT;
+              return coatWt;
+            }
+          })
+          .finally((f) => {
+            setLoading(false);
+          });
+      };
 
 
   
@@ -866,6 +916,15 @@ export default function TubePlanning() {
           : ordItem && ordItem.value
           ? String(ordItem.value).trim()
           : String(ordItem || "").trim(),
+          // The W values are not sent to getFillData, but used for client-side calculation
+          W1: tbpWftF1150 || "",
+          W2: tbpWftF2150 || "",
+          W3: tbpWftF3150 || "",
+          W4: tbpWftF4150 || "",
+          W5: tbpWftT1150 || "",
+          W6: tbpWftT2150 || "",
+          W7: tbpWftT3150 || "",
+          W8: tbpWftT4150 || "",
       };
   
       
@@ -882,248 +941,121 @@ export default function TubePlanning() {
         return;
       }
 
-        let BlastAppData = response.data.map((row) => {
-          const noOfRec = Number(row.NO_OF_REC ?? (hasPipeNo ? pipeno.NO_OF_REC : 0) ?? 0);
-          const alreadyExists = noOfRec > 0;
-          // A stale pipe option must not bypass required inputs for a new row.
-          if (isExistingSelectedPipe && !alreadyExists) {
-            throw new Error("The selected pipe status has changed. Reselect the pipe and fill the mandatory fields.");
-          }
-          const value = (field, screenValue) => alreadyExists
-            ? row[field] ?? ""
-            : screenValue || "";
-          return {
-  C_PRC: nxtproc2 || "",
-  N_PRC: row.NEXT_PROC || nxtproc || "",
+      // Modify the map function to include client-side COAT_WT calculation
+      let BlastAppDataPromises = response.data.map(async (row) => {
+        const noOfRec = Number(row.NO_OF_REC ?? (hasPipeNo ? pipeno.NO_OF_REC : 0) ?? 0);
+        const alreadyExists = noOfRec > 0;
+        // A stale pipe option must not bypass required inputs for a new row.
+        if (isExistingSelectedPipe && !alreadyExists) {
+          throw new Error("The selected pipe status has changed. Reselect the pipe and fill the mandatory fields.");
+        }
 
-  PIPE_NO: row.TBP_BATCH_NO || "",
+        // Helper to get the value for a field, prioritizing existing data if available
+        const getFieldValue = (field, screenValue) => alreadyExists
+          ? row[field] ?? ""
+          : screenValue || "";
 
-  DATE: alreadyExists ? row.TBP_PROD_DATE ?? "" : SHIFT_DATE || "",
-  NO_OF_REC: noOfRec,
-  TIME: value("TIME", timeOfProcess),
+        // Construct the row data first, including all WFT values, LENGTH, and OD
+        const currentRowData = {
+          C_PRC: nxtproc2 || "",
+          N_PRC: row.NEXT_PROC || nxtproc || "",
+          PIPE_NO: row.TBP_BATCH_NO || "",
+          DATE: alreadyExists ? row.TBP_PROD_DATE ?? "" : SHIFT_DATE || "",
+          NO_OF_REC: noOfRec,
+          TIME: getFieldValue("TIME", timeOfProcess),
+          RESULT: selectedResult?.value || "",
+          SHIFT: getFieldValue("TBP_SHIFT_DN", selectedShift?.value),
+          HOLD_REASON: getFieldValue("TBP_REMARK", inspectorRemarks),
+          INSPECT_NAME: getFieldValue("TBP_INSP_NAME", tbpVisualInsp80),
+          ORDER_NO: row.ORDER_NO || ordNo || "",
+          ITEM: row.ITEM || ordItem || "",
+          COAT_WT: Number(row.COAT_WT || 0),
+          PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || rmBatchId?.value || "",
+          TBP_PIPE_LNG_10: getFieldValue("TBP_PIPE_LNG_10", row.TBP_PIPE_LNG_10 || ""),
+          // TBP_PIPE_LNG_10_IN_METER: getFieldValue("TBP_PIPE_LNG_10", ((row.TBP_PIPE_LNG_10/1000)).toFixed(3) || ""),
+          TBP_PIPE_OD_10: getFieldValue("TBP_PIPE_OD_10", row.TBP_PIPE_OD_10 || ""),
+          // TBP_PIPE_OD_10_IN_METER: getFieldValue("TBP_PIPE_OD_10", ((row.TBP_PIPE_OD_10/1000)).toFixed(3) || ""),
+          TBP_NO_MATNR: getFieldValue("TBP_NO_MATNR", row.TBP_NO_MATNR || ""),
+          TBP_WEIGHT: getFieldValue("TBP_WEIGHT", row.TBP_WEIGHT || ""),
+          TBP_ID_FIRST_PAR: getFieldValue("TBP_ID_FIRST_PAR", row.TBP_ID_FIRST_PAR || ""),
+          TBP_QUALITY_CD: getFieldValue("TBP_QUALITY_CD", row.TBP_QUALITY_CD || ""),
+          TBP_CD_FLAG: getFieldValue("TBP_CD_FLAG", row.TBP_CD_FLAG || ""),
+          TBP_VISUAL_INSP_80: getFieldValue("TBP_VISUAL_INSP_80", TBP_VISUAL_INSP_80 || row.TBP_VISUAL_INSP_80 || ""),
+          TBP_ASL_NO_80: getFieldValue("TBP_ASL_NO_80", row.TBP_ASL_NO_80 || ""),
+          TBP_FLD_NO_130: getFieldValue("TBP_FLD_NO_130", row.TBP_FLD_NO_130 || ""),
+          TBP_AMBT_TMP_100: getFieldValue("TBP_AMBT_TMP_100", tbpAmbTmp100 || row.TBP_AMBT_TMP_100 || ""),
+          TBP_RH_100: getFieldValue("TBP_RH_100", tbpRh100 || row.TBP_RH_100 || ""),
+          TBP_DEW_TEMP_100: getFieldValue("TBP_DEW_TEMP_100", tbpDewTemp100 || row.TBP_DEW_TEMP_100 || ""),
+          TBP_WFT_F1_150: getFieldValue("TBP_WFT_F1_150", tbpWftF1150 || row.TBP_WFT_F1_150 || ""),
+          TBP_WFT_F2_150: getFieldValue("TBP_WFT_F2_150", tbpWftF2150 || row.TBP_WFT_F2_150 || ""),
+          TBP_WFT_F3_150: getFieldValue("TBP_WFT_F3_150", tbpWftF3150 || row.TBP_WFT_F3_150 || ""),
+          TBP_WFT_F4_150: getFieldValue("TBP_WFT_F4_150", tbpWftF4150 || row.TBP_WFT_F4_150 || ""),
+          TBP_WFT_T1_150: getFieldValue("TBP_WFT_T1_150", tbpWftT1150 || row.TBP_WFT_T1_150 || ""),
+          TBP_WFT_T2_150: getFieldValue("TBP_WFT_T2_150", tbpWftT2150 || row.TBP_WFT_T2_150 || ""),
+          TBP_WFT_T3_150: getFieldValue("TBP_WFT_T3_150", tbpWftT3150 || row.TBP_WFT_T3_150 || ""),
+          TBP_WFT_T4_150: getFieldValue("TBP_WFT_T4_150", tbpWftT4150 || row.TBP_WFT_T4_150 || ""),
+          TBP_ME_FEND_150: getFieldValue("TBP_ME_FEND_150", Cut_Back_F_End || row.TBP_ME_FEND_150 || ""),
+          TBP_UME_TEND_150: getFieldValue("TBP_UME_TEND_150", Cut_Back_T_End || row.TBP_UME_TEND_150 || ""),
+          TBP_RMUSE1_150: getFieldValue("TBP_RMUSE1_150", tbpBaseManufacturer || row.TBP_RMUSE1_150 || ""),
+          TBP_RMUSE2_150: getFieldValue("TBP_RMUSE2_150", Base_Batch_No || row.TBP_RMUSE2_150 || ""),
+          TBP_RMUSE3_150: getFieldValue("TBP_RMUSE3_150", Hardner_Grade || row.TBP_RMUSE3_150 || ""),
+          TBP_RMUSE4_150: getFieldValue("TBP_RMUSE4_150", tbpGrade3 || row.TBP_RMUSE4_150 || ""),
+          TBP_RMUSE5_150: getFieldValue("TBP_RMUSE5_150", tbpGrade4 || row.TBP_RMUSE5_150 || ""),
+          TBP_BATCH1_150: getFieldValue("TBP_BATCH1_150", Base_Grade || row.TBP_BATCH1_150 || ""),
+          TBP_BATCH2_150: getFieldValue("TBP_BATCH2_150", Hardner_Manf || row.TBP_BATCH2_150 || ""),
+          TBP_BATCH3_150: getFieldValue("TBP_BATCH3_150", Hardner_Batch_No || tbpBatch3150 || row.TBP_BATCH3_150 || ""),
+          TBP_BATCH4_150: getFieldValue("TBP_BATCH4_150", tbpBatch4150 || row.TBP_BATCH4_150 || ""),
+          TBP_BATCH5_150: getFieldValue("TBP_BATCH5_150", tbpBatch5150 || row.TBP_BATCH5_150 || ""),
+          TBP_LINES_SPED_150: getFieldValue("TBP_LINES_SPED_150", tbpLineSpeed150 || row.TBP_LINES_SPED_150 || ""),
+          TBP_MIXPAINT_RATIO: getFieldValue("TBP_MIXPAINT_RATIO", tbpMixPaintRatio || row.TBP_MIXPAINT_RATIO || ""),
+          TBP_QUANTITY_150: getFieldValue("TBP_QUANTITY_150", row.TBP_QUANTITY_150 || ""),
+          TBP_SAMPLE_10: getFieldValue("TBP_SAMPLE_10","NO"),
+          // TBP_SAMPLE_10: "NO",
+          TBP_SAMPL_TAG: getFieldValue("TBP_SAMPL_TAG", row.TBP_SAMPL_TAG || ""),
+          TBP_WORK_CENTER: getFieldValue("TBP_WORK_CENTER", row.TBP_WORK_CENTER || ""),
+        };
 
-  RESULT: selectedResult?.value || "",
+        // Calculate coatWt using the determined values for currentRowData
+        let coatWt = 0;
+        try {
+          coatWt = await getCoatWt(
+            false, // newToken parameter
+            currentRowData.TBP_WFT_F1_150,
+            currentRowData.TBP_WFT_F2_150,
+            currentRowData.TBP_WFT_F3_150,
+            currentRowData.TBP_WFT_F4_150,
+            currentRowData.TBP_WFT_T1_150,
+            currentRowData.TBP_WFT_T2_150,
+            currentRowData.TBP_WFT_T3_150,
+            currentRowData.TBP_WFT_T4_150,
+            currentRowData.TBP_PIPE_LNG_10, // LENGTH
+            currentRowData.TBP_PIPE_OD_10  // OD
+          );
+          coatWt = Number(coatWt || 0);
+        } catch (error) {
+          console.error("Error calculating coat weight for pipe:", currentRowData.PIPE_NO, error);
+          coatWt = 0;
+        }
 
-  SHIFT: value("TBP_SHIFT_DN", selectedShift?.value),
+        return { ...currentRowData, COAT_WT: coatWt }; // Add calculated COAT_WT
+      });
 
-  HOLD_REASON: value("TBP_REMARK", inspectorRemarks),
-  INSPECT_NAME: value("TBP_INSP_NAME", tbpVisualInsp80),
-
-  ORDER_NO: row.ORDER_NO || ordNo || "",
-  ITEM: row.ITEM || ordItem || "",
-  PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || rmBatchId?.value || "",
-
-  TBP_NO_MATNR: value("TBP_NO_MATNR", row.TBP_NO_MATNR || ""),
-  TBP_WEIGHT: value("TBP_WEIGHT", row.TBP_WEIGHT || ""),
-  TBP_ID_FIRST_PAR: value("TBP_ID_FIRST_PAR", row.TBP_ID_FIRST_PAR || ""),
-  TBP_QUALITY_CD: value("TBP_QUALITY_CD", row.TBP_QUALITY_CD || ""),
-  TBP_CD_FLAG: value("TBP_CD_FLAG", row.TBP_CD_FLAG || ""),
-
-  /* -------------------------
-     VISUAL INSPECTION
-     ------------------------- */
-
-  TBP_VISUAL_INSP_80:
-    value("TBP_VISUAL_INSP_80", TBP_VISUAL_INSP_80 ||
-    row.TBP_VISUAL_INSP_80 ||
-    ""),
-
-  TBP_ASL_NO_80:
-    value("TBP_ASL_NO_80", row.TBP_ASL_NO_80 || ""),
-
-  TBP_FLD_NO_130:
-    value("TBP_FLD_NO_130", row.TBP_FLD_NO_130 || ""),
-
-  /* -------------------------
-     ENVIRONMENT
-     ------------------------- */
-
-  TBP_AMBT_TMP_100:
-    value("TBP_AMBT_TMP_100", tbpAmbTmp100 ||
-    row.TBP_AMBT_TMP_100 ||
-    ""),
-
-  TBP_RH_100:
-    value("TBP_RH_100", tbpRh100 ||
-    row.TBP_RH_100 ||
-    ""),
-
-  TBP_DEW_TEMP_100:
-    value("TBP_DEW_TEMP_100", tbpDewTemp100 ||
-    row.TBP_DEW_TEMP_100 ||
-    ""),
-
-  /* -------------------------
-     WFT VALUES
-     ------------------------- */
-
-  TBP_WFT_F1_150:
-    value("TBP_WFT_F1_150", tbpWftF1150 ||
-    row.TBP_WFT_F1_150 ||
-    ""),
-
-  TBP_WFT_F2_150:
-    value("TBP_WFT_F2_150", tbpWftF2150 ||
-    row.TBP_WFT_F2_150 ||
-    ""),
-
-  TBP_WFT_F3_150:
-    value("TBP_WFT_F3_150", tbpWftF3150 ||
-    row.TBP_WFT_F3_150 ||
-    ""),
-
-  TBP_WFT_F4_150:
-    value("TBP_WFT_F4_150", tbpWftF4150 ||
-    row.TBP_WFT_F4_150 ||
-    ""),
-
-  TBP_WFT_T1_150:
-    value("TBP_WFT_T1_150", tbpWftT1150 ||
-    row.TBP_WFT_T1_150 ||
-    ""),
-
-  TBP_WFT_T2_150:
-    value("TBP_WFT_T2_150", tbpWftT2150 ||
-    row.TBP_WFT_T2_150 ||
-    ""),
-
-  TBP_WFT_T3_150:
-    value("TBP_WFT_T3_150", tbpWftT3150 ||
-    row.TBP_WFT_T3_150 ||
-    ""),
-
-  TBP_WFT_T4_150:
-    value("TBP_WFT_T4_150", tbpWftT4150 ||
-    row.TBP_WFT_T4_150 ||
-    ""),
-
-  /* -------------------------
-     COATING WT
-     ------------------------- */
-
-  TBP_COT_WT_IN_150:
-    value("TBP_COT_WT_IN_150", row.TBP_COT_WT_IN_150 || ""),
-
-  /* -------------------------
-     CUT BACK
-     ------------------------- */
-
-  TBP_ME_FEND_150:
-    value("TBP_ME_FEND_150", Cut_Back_F_End ||
-    row.TBP_ME_FEND_150 ||
-    ""),
-
-  TBP_UME_TEND_150:
-    value("TBP_UME_TEND_150", Cut_Back_T_End ||
-    row.TBP_UME_TEND_150 ||
-    ""),
-
-  /* -------------------------
-     RAW MATERIAL USED
-     ------------------------- */
-
-  TBP_RMUSE1_150:
-    value("TBP_RMUSE1_150", tbpBaseManufacturer ||
-    row.TBP_RMUSE1_150 ||
-    ""),
-
-  TBP_RMUSE2_150:
-    value("TBP_RMUSE2_150", Base_Batch_No ||
-    row.TBP_RMUSE2_150 ||
-    ""),
-
-  TBP_RMUSE3_150:
-    value("TBP_RMUSE3_150", Hardner_Grade ||
-    row.TBP_RMUSE3_150 ||
-    ""),
-
-  TBP_RMUSE4_150:
-    value("TBP_RMUSE4_150", tbpGrade3 ||
-    row.TBP_RMUSE4_150 ||
-    ""),
-
-  TBP_RMUSE5_150:
-    value("TBP_RMUSE5_150", tbpGrade4 ||
-    row.TBP_RMUSE5_150 ||
-    ""),
-
-  /* -------------------------
-     BATCHS / GRADES
-     ------------------------- */
-
-  TBP_BATCH1_150:
-    value("TBP_BATCH1_150", Base_Grade ||
-    row.TBP_BATCH1_150 ||
-    ""),
-
-  TBP_BATCH2_150:
-    value("TBP_BATCH2_150", Hardner_Manf ||
-    row.TBP_BATCH2_150 ||
-    ""),
-
-  TBP_BATCH3_150:
-    value("TBP_BATCH3_150", Hardner_Batch_No ||
-    tbpBatch3150 ||
-    row.TBP_BATCH3_150 ||
-    ""),
-
-  TBP_BATCH4_150:
-    value("TBP_BATCH4_150", tbpBatch4150 ||
-    row.TBP_BATCH4_150 ||
-    ""),
-
-  TBP_BATCH5_150:
-    value("TBP_BATCH5_150", tbpBatch5150 ||
-    row.TBP_BATCH5_150 ||
-    ""),
-
-  /* -------------------------
-     PROCESS PARAMETERS
-     ------------------------- */
-
-  TBP_LINES_SPED_150:
-    value("TBP_LINES_SPED_150", tbpLineSpeed150 ||
-    row.TBP_LINES_SPED_150 ||
-    ""),
-
-  TBP_MIXPAINT_RATIO:
-    value("TBP_MIXPAINT_RATIO", tbpMixPaintRatio ||
-    row.TBP_MIXPAINT_RATIO ||
-    ""),
-
-  TBP_QUANTITY_150:
-    value("TBP_QUANTITY_150", row.TBP_QUANTITY_150 || ""),
-
-  /* -------------------------
-     SAMPLE
-     ------------------------- */
-
-  TBP_SAMPLE_10:
-    value("TBP_SAMPLE_10", row.TBP_SAMPLE_10 || "NO"),
-
-  /* -------------------------
-     WORKCENTER
-     ------------------------- */
-
-  TBP_SAMPL_TAG: value("TBP_SAMPL_TAG", row.TBP_SAMPL_TAG || ""),
-
-  TBP_WORK_CENTER:
-    value("TBP_WORK_CENTER", row.TBP_WORK_CENTER || ""),
-};
-        });
-  
+      let BlastAppData = await Promise.all(BlastAppDataPromises); // Wait for all promises to resolve
       console.log("BlastAppData",BlastAppData)
       setBlastAppTable(BlastAppData)
-      
-  
+
+
     } catch (error) {
       alertify.error(error?.message || "Error fetching data.");
       console.error(error);
-      
+
     } finally {
       setLoading(false);
     }
   };
+
+// ... (rest of the LD15S001 code)
+
 
   
 const updateData = async () => {
@@ -1237,13 +1169,17 @@ const updateData = async () => {
       PROD_DATE: Number(item._row.data.NO_OF_REC || 0) > 0 ? item._row.data.DATE : SHIFT_DATE,
       SHIFT: item._row.data.SHIFT ?? null,
       STATUS: "GC",
-      TBP_WEIGHT: item._row.data.TBP_WEIGHT ?? null,
+      // COT_WT_VS: Number(item._row.data.COAT_WT ?? 0),
+      COT_WT_VS: Number((item._row.data.COAT_WT ?? 0).toFixed(1)),
+      TBP_WEIGHT: Number((item._row.data.TBP_WEIGHT ?? null).toFixed(0)),
       PAR_COIL_NO: parentBatchValue ?? null,
       TBP_ID_FIRST_PAR: item._row.data.TBP_ID_FIRST_PAR ?? null,
       ID_ORDER_NO: item._row.data.ORDER_NO ?? ordNo ?? null,
       ITEM_NO: item._row.data.ITEM ?? ordItem ?? null,
       TBP_QUALITY_CD: item._row.data.TBP_QUALITY_CD ?? null,
       NO_MATNR: item._row.data.TBP_NO_MATNR ?? null,
+            TBP_PIPE_LNG_10: item._row.data.TBP_PIPE_LNG_10 ?? null,
+                  TBP_PIPE_OD_10: item._row.data.TBP_PIPE_OD_10 ?? null,
       TBP_CD_FLAG: item._row.data.TBP_CD_FLAG ?? null,
       START_DT: Number(item._row.data.NO_OF_REC || 0) > 0 ? decisionTimestamp : prodstartdt,
       END_DT: Number(item._row.data.NO_OF_REC || 0) > 0 ? decisionTimestamp : prodenddt,
@@ -1265,7 +1201,7 @@ const updateData = async () => {
       TBP_WFT_T2_150: item._row.data.TBP_WFT_T2_150 ?? null,
       TBP_WFT_T3_150: item._row.data.TBP_WFT_T3_150 ?? null,
       TBP_WFT_T4_150: item._row.data.TBP_WFT_T4_150 ?? null,
-      TBP_COT_WT_IN_150: item._row.data.TBP_COT_WT_IN_150 ?? null,
+      // TBP_COT_WT_IN_150: item._row.data.TBP_COT_WT_IN_150 ?? null,
       TBP_ME_FEND_150: item._row.data.TBP_ME_FEND_150 ?? null,
       TBP_UME_TEND_150: item._row.data.TBP_UME_TEND_150 ?? null,
       TBP_RMUSE1_150: item._row.data.TBP_RMUSE1_150 ?? null,
@@ -1442,6 +1378,7 @@ const showErrorAlert = (errorMessage) => {
  
   const isRowEditable = (cell) => Number(cell.getRow().getData().NO_OF_REC || 0) === 0;
 
+
   const BlastAppColumns = [
     {
       formatter: "rowSelection",
@@ -1488,18 +1425,6 @@ const showErrorAlert = (errorMessage) => {
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       }, },
-    // {
-    //   title: "Date",
-    //   field: "DATE",
-    //   headerFilterPlaceholder: "search...",
-    //   headerFilter: "input",
-    // },
-    // {
-    //   title: "Time",
-    //   field: "TIME",
-    //   headerFilterPlaceholder: "search...",
-    //   headerFilter: "input",
-    // },
     {
       title: "Result",
       field: "RESULT",
@@ -1542,8 +1467,8 @@ const showErrorAlert = (errorMessage) => {
       headerFilter: "input",
       editor: "input", 
       width: 150,
-      validator: function(value, cell) {
-        return value ? true : false; 
+      validator: function (value) {
+        return value ? true : false;
       },
       editable: function(cell) {
         const resultValue = cell.getRow().getData().RESULT; 
@@ -1555,6 +1480,49 @@ const showErrorAlert = (errorMessage) => {
         cell.getElement().style["color"] = "#FFFFFF";
         return value;
       },
+    },
+        {
+      title: "Coat WT(Kg)",
+      field: "COAT_WT",
+      headerFilterPlaceholder: "search...",
+      headerFilter: "input",
+      editor: false,
+      editable: false,
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#F2F2F2";
+        cell.getElement().style["color"] = "#000000";
+        // Format to 3 decimal places
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(1); // Changed to toFixed(3)
+      },
+    },
+        {
+      title: "Net Wt (KG)",
+      field: "TBP_WEIGHT",
+      // field: "TBP_WEIGHT",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Added
+        {
+      title: "Length (mm)",
+      field: "TBP_PIPE_LNG_10",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      // visible : false,
+    },
+            {
+      title: "Odia (mm)",
+      field: "TBP_PIPE_OD_10",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      // visible : false,
     },
     {
       title: "Material No", // Updated title
@@ -1571,34 +1539,460 @@ const showErrorAlert = (errorMessage) => {
       headerFilter: "input",
       editor: "input",
     },
-    { title: "AMB temperature", field: "TBP_AMBT_TMP_100", headerFilter: "input",editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "RH", field: "TBP_RH_100", headerFilter: "input",editable: isRowEditable, editor: "input" }, // Title already correct
-    { title: "Dew Point", field: "TBP_DEW_TEMP_100", headerFilter: "input",editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "F End 1", field: "TBP_WFT_F1_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Added and made editable
-    { title: "F End 2", field: "TBP_WFT_F2_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "F End 3", field: "TBP_WFT_F3_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "F End 4", field: "TBP_WFT_F4_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "T End 1", field: "TBP_WFT_T1_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "T End 2", field: "TBP_WFT_T2_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "T End 3", field: "TBP_WFT_T3_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "T End 4", field: "TBP_WFT_T4_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "Cut Back FEND", field: "TBP_ME_FEND_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "Cut Back TEND", field: "TBP_UME_TEND_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Updated title
-    { title: "Base Manufacturer", field: "TBP_RMUSE1_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Base Batch No", field: "TBP_RMUSE2_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Hardner Grade", field: "TBP_RMUSE3_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "RM Use 4", field: "TBP_RMUSE4_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "RM Use 5", field: "TBP_RMUSE5_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Base Grade", field: "TBP_BATCH1_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Hardner Manufacturer", field: "TBP_BATCH2_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Hardner Batch No", field: "TBP_BATCH3_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Batch 4", field: "TBP_BATCH4_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Batch 5", field: "TBP_BATCH5_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Added
-    { title: "Line Speed", field: "TBP_LINES_SPED_150", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Mix Paint Ratio", field: "TBP_MIXPAINT_RATIO", headerFilter: "input", editable: isRowEditable, editor: "input" },
-    { title: "Quantity", field: "TBP_QUANTITY_150", headerFilter: "input", editable: isRowEditable, editor: "input" }, // Added
-    
+    {
+      title: "AMB temperature",
+      field: "TBP_AMBT_TMP_100",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Updated title
+    {
+      title: "RH",
+      field: "TBP_RH_100",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Title already correct
+    {
+      title: "Dew Point",
+      field: "TBP_DEW_TEMP_100",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Updated title
+    {
+      title: "F End 1",
+      field: "TBP_WFT_F1_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false, // newToken parameter, can be false or undefined as it's handled internally
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "F End 2",
+      field: "TBP_WFT_F2_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "F End 3",
+      field: "TBP_WFT_F3_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "F End 4",
+      field: "TBP_WFT_F4_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "T End 1",
+      field: "TBP_WFT_T1_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "T End 2",
+      field: "TBP_WFT_T2_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "T End 3",
+      field: "TBP_WFT_T3_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "T End 4",
+      field: "TBP_WFT_T4_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input",
+      formatter: function (cell) {
+        var value = cell.getValue();
+        cell.getElement().style["background-color"] = "#DA8EE7";
+        cell.getElement().style["color"] = "#FFFFFF";
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+        const num = Number(value);
+        return isNaN(num) ? value : num.toFixed(2);
+      },
+      cellEdited: async function (cell) {
+        var row = cell.getRow();
+        var W1 = row.getData().TBP_WFT_F1_150;
+        var W2 = row.getData().TBP_WFT_F2_150;
+        var W3 = row.getData().TBP_WFT_F3_150;
+        var W4 = row.getData().TBP_WFT_F4_150;
+        var W5 = row.getData().TBP_WFT_T1_150;
+        var W6 = row.getData().TBP_WFT_T2_150;
+        var W7 = row.getData().TBP_WFT_T3_150;
+        var W8 = row.getData().TBP_WFT_T4_150;
+        var LENGTH = row.getData().TBP_PIPE_LNG_10; // Updated to TBP_PIPE_LNG_10
+        var OD = row.getData().TBP_PIPE_OD_10; // Updated to TBP_PIPE_OD_10
+
+        try {
+          var coatWt = await getCoatWt(
+            false,
+            W1, W2, W3, W4, W5, W6, W7, W8,
+            LENGTH, OD
+          );
+          row.update({ COAT_WT: coatWt });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    {
+      title: "Cut Back FEND",
+      field: "TBP_ME_FEND_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Updated title
+    {
+      title: "Cut Back TEND",
+      field: "TBP_UME_TEND_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Updated title
+    {
+      title: "Base Manufacturer",
+      field: "TBP_RMUSE1_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Base Batch No",
+      field: "TBP_RMUSE2_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Hardner Grade",
+      field: "TBP_RMUSE3_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "RM Use 4",
+      field: "TBP_RMUSE4_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "RM Use 5",
+      field: "TBP_RMUSE5_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Base Grade",
+      field: "TBP_BATCH1_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Hardner Manufacturer",
+      field: "TBP_BATCH2_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Hardner Batch No",
+      field: "TBP_BATCH3_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Batch 4",
+      field: "TBP_BATCH4_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Batch 5",
+      field: "TBP_BATCH5_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    }, // Added
+    {
+      title: "Line Speed",
+      field: "TBP_LINES_SPED_150",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+    {
+      title: "Mix Paint Ratio",
+      field: "TBP_MIXPAINT_RATIO",
+      headerFilter: "input",
+      editable: isRowEditable,
+      editor: "input"
+    },
+   // Added
   ];
+
+// ... (rest of the LD15S001 code)
+
+
+
 
   const downloadExcelBlastAppTableData = () => {
     console.log("Downloading");

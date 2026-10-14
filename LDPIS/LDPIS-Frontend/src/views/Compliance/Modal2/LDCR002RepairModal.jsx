@@ -69,7 +69,7 @@ export default function MaxWidthDialogREPAIR(props) {
   const currentDate = DateTime.now().toFormat('dd.MM.yyyy');
 
   // const { reviewedBy  } = props
-      const { reviewedBy, instrumentName, instrumentId, wiNo ,repairmat } = props;
+      const { reviewedBy, instrumentName, instrumentId, wiNo ,repairmat,   printdate , selectedpShift } = props;
 
   useEffect(() => {
     if (props.open) {
@@ -295,7 +295,7 @@ export default function MaxWidthDialogREPAIR(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '55px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '45px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             REPAIR REPORT
@@ -346,7 +346,8 @@ export default function MaxWidthDialogREPAIR(props) {
                             </Grid>
                             <Grid item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                               <p>: {getREPAIRdata?.length > 0  ? `${getREPAIRdata[0].REP_NO}-${pageIndex + 1}`: ' '} </p>
-                              <p>: {getREPAIRdata?.length > 0  ? getREPAIRdata[0].DATE_SHIFTQ : ' '} </p>
+                              {/* <p>: {getREPAIRdata?.length > 0  ? getREPAIRdata[0].DATE_SHIFTQ : ' '} </p> */}
+                                                            <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getREPAIRdata?.length > 0  ? getREPAIRdata[0].ACCEPTANCE_CRITERIA : ' '} </p>
                               <p>: {getREPAIRdata?.length > 0  ? getREPAIRdata[0].PROCESS_SHEET_NO : ' '} </p>
                                <p>: {props?.wiNo} </p> 
@@ -416,7 +417,7 @@ export default function MaxWidthDialogREPAIR(props) {
 
                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '2px',borderRight: '1px solid black' }}>
                                <Grid item xs = {0.1}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getREPAIRdata?.length > 0 ? getREPAIRdata[0].SPEC : '  '} & QAPNO:{getREPAIRdata?.length > 0 ? getREPAIRdata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                               <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getREPAIRdata?.length > 0 ? getREPAIRdata[0].SPEC : '  '} & QAPNO:{getREPAIRdata?.length > 0 ? getREPAIRdata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
@@ -437,6 +438,8 @@ export default function MaxWidthDialogREPAIR(props) {
                                <Grid item xs={6}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
                                <Grid item xs={6}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>ACCEPTED BY</Grid>
                           </Grid>
+                       <Grid item xs = {12}><br/></Grid>
+                       <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>

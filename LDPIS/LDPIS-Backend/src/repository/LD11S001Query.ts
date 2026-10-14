@@ -433,7 +433,7 @@ export const deleteTempData = async (data: any) => {
 
 export const getFillData = async (data: any) => {
   try {
-    let sql = `SELECT TBP_BATCH_NO, TBP_PIPE_OD_10, TBP_PIPE_THK_10, TBP_PIPE_LNG_10, TBP_WEIGHT,TBP_ASL_NO_80,
+    let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,lom_ms_piece_actl TBP_WEIGHT,TBP_ASL_NO_80,
          TBP_NO_MATNR,TBP_HEAT_NO, TBP_ID_ORDER_NO ORDER_NO, TBP_ITEM_NO ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
          (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'C') as nxtproc from dual) NEXT_PROC,
          (select CASE WHEN REGEXP_LIKE(A.TBP_DIA_END_10, '^[0-9]+$') THEN TO_NUMBER(A.TBP_DIA_END_10) ELSE NULL END FROM V_BARE_PDO A

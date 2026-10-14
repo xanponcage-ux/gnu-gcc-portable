@@ -178,7 +178,7 @@ export default function LDSM012() {
 
   const StockType = [
     { label: "RM", value: "RM" },
-    { label: "RM(without Inspection)", value: "RM(without Inspection)" },
+    { label: "RM(w/o Inspection)", value: "RM(without Inspection)" },
     { label: "WIP", value: "WIP" },
     { label: "SCRAP", value: "SCRAP" },
     { label: "FG", value: "FG" },
@@ -670,7 +670,7 @@ export default function LDSM012() {
       var url;
       var data = {
         plant: selectedPlant?.value,
-        orderType: selectedOrderType?.label,
+        orderType: selectedOrderType?.value,
         customer: selectCustomerDesc?.value,
         widthFrm: selectedOdiaFrm?.value ? selectedOdiaFrm.value : "",
         widthTo: selectedOdiaTo?.value ? selectedOdiaTo.value : "",

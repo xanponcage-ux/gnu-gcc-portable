@@ -15,4 +15,3 @@ export default class LD09S002 {
     return repository.saveData(batchId, plant);
   }
 }
-

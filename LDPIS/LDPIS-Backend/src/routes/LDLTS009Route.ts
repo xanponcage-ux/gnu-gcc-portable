@@ -14,6 +14,11 @@ LDLTS009Route.route("/getDetails").post(
   controller.getDetails
 );
 
+LDLTS009Route.route("/getdateandshift").post(
+  authenticationMiddleware.bearer,
+  controller.getdateandshift
+);
+
 LDLTS009Route.route("/insertUpdateDetails").post(
   authenticationMiddleware.bearer,
   controller.insertUpdateDetails

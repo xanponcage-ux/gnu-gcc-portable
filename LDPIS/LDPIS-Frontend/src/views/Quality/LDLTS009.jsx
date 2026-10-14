@@ -50,6 +50,8 @@ export default function LDLTS009() {
   const [tabValue, setTabValue] = useState(0);
   const handleSetTabValue = (event, newValue) => {
     setTabValue(newValue);
+    handleClearAll();
+
   };
 
   // State to hold all form data
@@ -195,44 +197,56 @@ const activeTestDescriptionOptions =
   ];
 
   // Helper function to format Date objects to YYYY-MM-DD for input type="date"
+  // const formatDateToInput = (dateString) => {
+  //   if (!dateString) return "";
+  //   try {
+  //     const date = new Date(dateString);
+  //     if (isNaN(date.getTime())) {
+  //       // Handle cases where dateString might be in DD-MON-YYYY format
+  //       const parts = dateString.split("-");
+  //       if (parts.length === 3) {
+  //         const day = parts[0];
+  //         const month = parts[1];
+  //         const year = parts[2];
+  //         const monthNames = {
+  //           JAN: "01",
+  //           FEB: "02",
+  //           MAR: "03",
+  //           APR: "04",
+  //           MAY: "05",
+  //           JUN: "06",
+  //           JUL: "07",
+  //           AUG: "08",
+  //           SEP: "09",
+  //           OCT: "10",
+  //           NOV: "11",
+  //           DEC: "12",
+  //         };
+  //         if (monthNames[month.toUpperCase()]) {
+  //           const formattedDate = `${year}-${monthNames[month.toUpperCase()]}-${day}`;
+  //           return formattedDate;
+  //         }
+  //       }
+  //       return "";
+  //     }
+  //     return date.toISOString().split("T")[0];
+  //   } catch (error) {
+  //     console.error("Error formatting date:", error);
+  //     return "";
+  //   }
+  // };
+
   const formatDateToInput = (dateString) => {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        // Handle cases where dateString might be in DD-MON-YYYY format
-        const parts = dateString.split("-");
-        if (parts.length === 3) {
-          const day = parts[0];
-          const month = parts[1];
-          const year = parts[2];
-          const monthNames = {
-            JAN: "01",
-            FEB: "02",
-            MAR: "03",
-            APR: "04",
-            MAY: "05",
-            JUN: "06",
-            JUL: "07",
-            AUG: "08",
-            SEP: "09",
-            OCT: "10",
-            NOV: "11",
-            DEC: "12",
-          };
-          if (monthNames[month.toUpperCase()]) {
-            const formattedDate = `${year}-${monthNames[month.toUpperCase()]}-${day}`;
-            return formattedDate;
-          }
-        }
-        return "";
-      }
-      return date.toISOString().split("T")[0];
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "";
-    }
-  };
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}`;
+};
 
   // Helper function to format YYYY-MM-DD to DD-MON-YYYY for backend if needed
   const formatDateToBackend = (dateString) => {
@@ -398,7 +412,7 @@ const activeTestDescriptionOptions =
         BATCH_ID: CHARG,
       };
 
-      var url = "api/LDLTS005/getdateandshift";
+      var url = "api/LDLTS009/getdateandshift";
 
       axiosAPI
         .post(url, data, defaultOptions)
@@ -412,7 +426,7 @@ const activeTestDescriptionOptions =
 
           const items = res?.data?.map((row) => ({
             label: row.PROD_DATE,
-            date: row.DATE_FR,
+            date: row.PROD_DATE,
             value: row.SHIFT,
             prodDate: row.PROD_DATE,
           }));
@@ -856,7 +870,7 @@ alertify.success(
         plant: "0780",
         FLAG: "Y", /// MIght be changed later
       };
-      var url = "api/LDLTS005/getOrderId";
+      var url = "api/LDLTS009/getOrderId";
       axiosAPI
         .post(url, data, defaultOptions)
         .then((res) => {
@@ -892,6 +906,7 @@ const handleSave = async () => {
     return;
   }
 
+  if(tabValue === 0){
     if (!formData.CREATED_DT) {
     alertify.error("Shift Date is mandatory.");
     setLoading(false); // Ensure loading state is reset
@@ -902,6 +917,7 @@ const handleSave = async () => {
     setLoading(false); // Ensure loading state is reset
     return;
   }
+}
 
   setLoading(true);
   try {
@@ -1298,7 +1314,7 @@ if (tabValue === 0){
       <DefaultNavbar
         routes={routes}
         module="Quality"
-        page="Panel Test / Porosity Test"
+        page="Lab Test Internal"
       />
       <Grid
         container
@@ -1582,7 +1598,7 @@ if (tabValue === 0){
                               id="PROD_DT"
                               value={formData.PROD_DT}
                               onChange={handleInputChange}
-                              disabled={isReadWriteAccess}
+                              disabled={true}
                             />
                           </Grid>
                         </Grid>
@@ -1610,7 +1626,7 @@ if (tabValue === 0){
           handleSelectChange("PSHIFT", selectedOption)
         }
         value={formData.PSHIFT}
-        isDisabled={isReadWriteAccess}
+        isDisabled={true}
         menuPortalTarget={document.body}
         styles={{
           menuPortal: (base) => ({

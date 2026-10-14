@@ -391,7 +391,7 @@ const routes = [
             component: <LD15S001 />,
           },
           {
-            name: "160 - Thickness stage inspection",
+            name: "160 - Final Station Internal",
             route: "/LD16S001",
             component: <LD16S001 />,
           },

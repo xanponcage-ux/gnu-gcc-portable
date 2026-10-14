@@ -16,6 +16,8 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FormControl, { useFormControl } from "@mui/material/FormControl";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
+import moment from "moment"; // Import moment.js
+
 
 import alertify from "alertifyjs";
 import "../../alertify.css";
@@ -132,6 +134,10 @@ export default function LDCR002() {
   const [printdate, setprintdate] = useState("");
   const [selectedpShift, setSelectedpShift] = React.useState(null);
 
+      // Format printdate before passing to modals
+    const formattedPrintDate = printdate ? moment(printdate).format('DD.MM.YYYY') : '';
+
+
   var customerTable = React.createRef();
 
   const [selectedSpecimen, setSelectedSpecimen] = useState(null);
@@ -217,6 +223,28 @@ export default function LDCR002() {
     ) {
       alertify.error("Please choose a Report Type");
     }
+        if (serverDetails.PersonalNo !== '808535') {
+        if (!orderNo ) {
+          alertify.error("Please select Order No");
+          return;
+        }
+    
+        if ( !item) {
+          alertify.error("Please select  Item");
+          return;
+        }
+    
+        if ( !crdate) {
+          alertify.error("Please select  Date");
+          return;
+        }
+    
+        if ( !reviewedBy) {
+          alertify.error("Please Fill Revieved By");
+          return;
+        }}
+
+
     console.log("selectedrepType?.value", selectedrepType?.value);
     if (selectedrepType?.value === "2A") {
       setModalType("AIR");
@@ -239,8 +267,8 @@ export default function LDCR002() {
     } else if (selectedrepType?.value === "2X") {
       setModalType("TRIAL");
     } else if (selectedrepType?.value === "2H") {
-      const errFlag = checkInlet();
-      if (errFlag) 
+      // const errFlag = checkInlet();
+      // if (errFlag) 
         setModalType("INLET");
     } else if (selectedrepType?.value === "2I") {
       setModalType("BLASTING");
@@ -705,7 +733,7 @@ export default function LDCR002() {
                           color={"dark"}
                           noWrap
                         >
-                          Date<span style={{ color: "red" }}>*</span>
+                          Coating Date<span style={{ color: "red" }}>*</span>
                         </MDTypography>
                         <MonthPicker
                           name="crdate"
@@ -722,7 +750,7 @@ export default function LDCR002() {
                           color={"dark"}
                           noWrap
                         >
-                          Shift*
+                          Coating Shift*
                         </MDTypography>
                         <ReactSelect
                           options={ShiftType}
@@ -897,7 +925,7 @@ export default function LDCR002() {
                         </Grid>
                       )}
 
-                                           <Grid item xs={1}>
+                                           <Grid item xs={1} style={{ zIndex: 3 }}>
                                               <MDTypography
                                                 fontWeight="regular"
                                                 fontSize="small"
@@ -1153,7 +1181,7 @@ export default function LDCR002() {
 
                       {/* Instrument Name & Instrument IDs For blasting report */}
                       {(selectedrepType?.value === "2I" || selectedrepType?.value === "2L")&& (
-                        <Grid container spacing={2} mt={1}>
+                        <Grid container spacing={2} mt={-1}>
                           <Grid item xs={12}>
                             <MDTypography variant="h6">
                               Used Instrument Details
@@ -1247,7 +1275,7 @@ export default function LDCR002() {
                       )}
 
                     {(selectedrepType?.value === "2J")&& (
-                        <Grid container spacing={2} mt={1}>
+                        <Grid container spacing={2} mt={-1}>
                           <Grid item xs={12}>
                             <MDTypography variant="h6">
                               Used Instrument Details
@@ -1353,7 +1381,7 @@ export default function LDCR002() {
                             <PictureAsPdfIcon />
                           </IconButton>
                         </Tooltip>
-                        {modalType === "AIR" && (
+                        {(selectedrepType?.value === "2A")&& (modalType === "AIR") && (
                           <MaxWidthDialogAir
                             open={isModalOpen}
                             close={handleCloseModal}
@@ -1371,6 +1399,8 @@ export default function LDCR002() {
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "CROSS" && (
@@ -1391,6 +1421,8 @@ export default function LDCR002() {
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "EPOXY" && (
@@ -1411,6 +1443,8 @@ export default function LDCR002() {
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "IMPACT" && (
@@ -1431,6 +1465,8 @@ export default function LDCR002() {
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "DUST" && (
@@ -1452,6 +1488,8 @@ export default function LDCR002() {
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "PEEL" && (
@@ -1473,6 +1511,8 @@ export default function LDCR002() {
                             instrumentId={instrumentId}
                             wiNo={wiNo}
                             selectedunit={selectedunit}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "TRIAL" && (
@@ -1485,8 +1525,8 @@ export default function LDCR002() {
                             testMethod={valueRadio}
                             orderNo={orderNo}
                             item={item}
-                            //matno={matno}
-                            //heatno={heatno}
+                            printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
@@ -1516,6 +1556,8 @@ export default function LDCR002() {
                             instrumentId={instrumentId}
                             wiNo={wiNo}
                             repairmat={repairmat}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "INLET" && (
@@ -1536,6 +1578,8 @@ export default function LDCR002() {
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
                         {modalType === "BLASTING" && (
@@ -1560,6 +1604,8 @@ export default function LDCR002() {
                             instrumentId3={instrumentId3}
                             instrumentName4={instrumentName4}
                             instrumentId4={instrumentId4}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
 
@@ -1590,6 +1636,8 @@ export default function LDCR002() {
                             instrumentId3={instrumentId3}
                             instrumentName4={instrumentName4}
                             instrumentId4={instrumentId4}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
 
@@ -1616,6 +1664,8 @@ export default function LDCR002() {
                             instrumentId={instrumentId}
                             instrumentName2={instrumentName2}
                             instrumentId2={instrumentId2}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                           />
                         )}
 
@@ -1644,6 +1694,8 @@ export default function LDCR002() {
                             instrumentId2={instrumentId2}
                             instrumentName3={instrumentName3}
                             instrumentId3={instrumentId3}
+                           printdate={formattedPrintDate}
+                            selectedpShift={selectedpShift}
                             // instrumentName4={instrumentName4}
                             // instrumentId4={instrumentId4}
                           />

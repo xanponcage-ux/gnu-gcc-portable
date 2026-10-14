@@ -27,6 +27,18 @@ export const getDetails = async (req: Request, res: Response) => {
   }
 };
 
+export const getdateandshift = async (req: Request, res: Response) => {
+  try {
+    let data = req.body;
+    const results: any = await ResponceData(
+      await LDLTS009.prototype.getdateandshift(data)
+    );
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
 export const insertUpdateDetails = async (req: Request, res: Response) => {
   try {
     const result: any = await LDLTS009.prototype.insertUpdateDetails(req.body);

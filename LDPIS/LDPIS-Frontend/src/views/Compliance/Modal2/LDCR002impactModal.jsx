@@ -305,7 +305,7 @@ export default function MaxWidthDialogIMPACT(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'Right', marginTop: '5px',fontSize: '9px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'Right', marginTop: '5px',fontSize: '11px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                              FORMAT NO : TSL/COAT/QC/F-10 Rev 04,Date 13.11.2021            _
                           </MDTypography>
@@ -381,9 +381,9 @@ export default function MaxWidthDialogIMPACT(props) {
                     </Grid>
                     <Grid>
  </Grid>
-                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '2px',borderRight: '1px solid black' }}>
-                       <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getimpactdata?.length > 0 ? getimpactdata[0].SPEC : '  '} & QAPNO:{getimpactdata?.length > 0 ? getimpactdata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid container style={{textAlign: 'left', fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
+                       <Grid item xs = {0.05}>{<br/>}</Grid>
+                       <Grid item xs = {11.95}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getimpactdata?.length > 0 ? getimpactdata[0].SPEC : '  '} & QAPNO:{getimpactdata?.length > 0 ? getimpactdata[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 
