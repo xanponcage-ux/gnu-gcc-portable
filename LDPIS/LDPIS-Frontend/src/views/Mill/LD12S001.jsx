@@ -324,6 +324,22 @@ export default function TubePlanning() {
       setSelectedThickTable(null);
     }
   }, [getThickTable]);
+  // Compare calendar dates without timezone conversion of Oracle/ISO date strings.
+  const samplingDateKey = (value) => {
+    if (typeof value !== "string") return "";
+    const text = value.trim().toUpperCase();
+    const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])/);
+    if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+    const oracle = text.match(/^(\d{1,2})-([A-Z]{3})-(\d{4}|\d{2})(?:$|[ ])/);
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    if (!oracle || !months.includes(oracle[2])) return "";
+    const year = oracle[3].length === 2 ? `20${oracle[3]}` : oracle[3];
+    return `${year}-${String(months.indexOf(oracle[2]) + 1).padStart(2, "0")}-${oracle[1].padStart(2, "0")}`;
+  };
+
+  const isSamplingEditable = (cell) =>
+    isRowEditable(cell) && !cell.getRow().getData().SAMPLING_LOCKED;
+
   const isRowEditable = (cell) => {
 return Number(cell.getRow().getData().NO_OF_REC || 0) === 0;
 };
@@ -1407,11 +1423,13 @@ const getFieldTestOptions = async (accessToken) => {
         : Number(row.NO_OF_REC || 0);
 
       const alreadyExists = rowNoOfRec > 0;
+      const productionDate = samplingDateKey(row.TBP_PROD_DATE ?? row.tbp_prod_date);
+      const samplingLocked = !alreadyExists && row.TBP_SAMPLE_10 != null &&
+        productionDate !== "" && productionDate === samplingDateKey(SHIFT_DATE);
 
       const actualPipeWeight = Number(
         row.LOM_MS_PIECE_ACTL || 0
       );
-      console.log(row.TBP_SAMPLE_10);
       return {
         C_PRC: nxtproc2 || "",
         N_PRC: row.NEXT_PROC || "",
@@ -1510,9 +1528,10 @@ const getFieldTestOptions = async (accessToken) => {
             ""
           : "",
 
-        TAG: alreadyExists
-          ? row.TBP_SAMPLE_10 || "NO"
-          : "NO",
+        SAMPLING_LOCKED: samplingLocked,
+        TAG: samplingLocked
+          ? row.TBP_SAMPLE_10
+          : alreadyExists ? row.TBP_SAMPLE_10 || "NO" : "NO",
 
         Q_TEMP: alreadyExists
           ? row.TBP_QTEMP_120 ?? ""
@@ -2178,7 +2197,7 @@ const getFieldTestOptions = async (accessToken) => {
     headerFilterPlaceholder: "search...",
     headerFilter: "input",
     editor: "select",
-    editable: isRowEditable,
+    editable: isSamplingEditable,
     editorParams: {
       values: {
         YES: "YES",
@@ -2196,7 +2215,7 @@ const getFieldTestOptions = async (accessToken) => {
       const row = cell.getRow();
       
       // If TAG is changed to NO, clear LAB_TEST and FIELD_TEST
-      if (tagValue === "NO" || tagValue === "N" || !isRowEditable(cell)) {
+      if (tagValue === "NO" || tagValue === "N" || !isSamplingEditable(cell)) {
         row.update({
           LAB_TEST: "",
           FIELD_TEST: ""
@@ -2216,13 +2235,13 @@ const getFieldTestOptions = async (accessToken) => {
   },
   editable: function (cell) {
     const tagValue = cell.getRow().getData().TAG;
-    // console.log(tagValue === "YES" &&  isRowEditable);
-    // console.log(tagValue,isRowEditable);
-    return tagValue === "YES" &&  isRowEditable(cell);
+    // console.log(tagValue === "YES" &&  isSamplingEditable);
+    // console.log(tagValue,isSamplingEditable);
+    return tagValue === "YES" &&  isSamplingEditable(cell);
   },
   cellClick: function (e, cell) {
     const tagValue = cell.getRow().getData().TAG;
-    if (tagValue === "YES" &&  isRowEditable(cell)) {
+    if (tagValue === "YES" &&  isSamplingEditable(cell)) {
       cell.edit();
     }
   },
@@ -2230,7 +2249,7 @@ const getFieldTestOptions = async (accessToken) => {
     const value = cell.getValue();
     const tagValue = cell.getRow().getData().TAG;
 
-    if (tagValue === "NO" ||  !isRowEditable(cell) || tagValue === "N") {
+    if (tagValue === "NO" ||  !isSamplingEditable(cell) || tagValue === "N") {
       cell.getElement().style.backgroundColor = "#E0E0E0";
       cell.getElement().style.color = "#999999";
       return "N/A";
@@ -2254,11 +2273,11 @@ const getFieldTestOptions = async (accessToken) => {
   },
   editable: function (cell) {
     const tagValue = cell.getRow().getData().TAG;
-    return tagValue === "YES" &&  isRowEditable(cell);
+    return tagValue === "YES" &&  isSamplingEditable(cell);
   },
   cellClick: function (e, cell) {
     const tagValue = cell.getRow().getData().TAG;
-    if (tagValue === "YES" &&  isRowEditable(cell)) {
+    if (tagValue === "YES" &&  isSamplingEditable(cell)) {
       cell.edit();
     }
   },
@@ -2266,7 +2285,7 @@ const getFieldTestOptions = async (accessToken) => {
     const value = cell.getValue();
     const tagValue = cell.getRow().getData().TAG;
 
-    if (tagValue === "NO" ||   !isRowEditable(cell) || tagValue === "N") {
+    if (tagValue === "NO" ||   !isSamplingEditable(cell) || tagValue === "N") {
       cell.getElement().style.backgroundColor = "#E0E0E0";
       cell.getElement().style.color = "#999999";
       return "N/A";

@@ -1,0 +1,12 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LDSM012Query.ts",
+    "Patch": "LDSM012.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD12S001.jsx",
+    "Patch": "LD12S001.patch"
+  }
+]

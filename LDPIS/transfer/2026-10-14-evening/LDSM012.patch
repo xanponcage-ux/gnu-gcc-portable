@@ -1,0 +1,62 @@
+diff --git a/LDPIS/LDPIS-Backend/src/repository/LDSM012Query.ts b/LDPIS/LDPIS-Backend/src/repository/LDSM012Query.ts
+index 52ddceb..e3da29e 100644
+--- a/LDPIS/LDPIS-Backend/src/repository/LDSM012Query.ts
++++ b/LDPIS/LDPIS-Backend/src/repository/LDSM012Query.ts
+@@ -26,6 +26,10 @@ export const getInventoryData = async (
+   millNo: any
+ ) => {
+   try {
++    const allStockTypes = stockType == null || String(stockType).trim() === "";
++    let uninspectedSql = "";
++    let uninspectedBinds: any = {};
++
+     /*
+      * ==========================================================
+      * RM WITHOUT INSPECTION
+@@ -41,9 +45,7 @@ export const getInventoryData = async (
+      */
+ 
+     if (
+-      stockType &&
+-      stockType !== undefined &&
+-      stockType === "RM(without Inspection)"
++      allStockTypes || stockType === "RM(without Inspection)"
+     ) {
+       let sql = `
+         SELECT
+@@ -623,13 +625,11 @@ export const getInventoryData = async (
+        * MILL_NO alias is therefore returned blank.
+        */
+ 
+-      sql += `
+-        ORDER BY
+-          PLANT,
+-          BATCH_ID
+-      `;
+-
+-      return await query.executeQuery(sql, binds);
++      if (!allStockTypes) {
++        return await query.executeQuery(sql + " ORDER BY PLANT, BATCH_ID", binds);
++      }
++      uninspectedSql = sql;
++      uninspectedBinds = binds;
+     }
+ 
+     /*
+@@ -1449,10 +1449,13 @@ export const getInventoryData = async (
+      */
+     sql += `
+       )
+-      ORDER BY
+-        PLANT,
+-        BATCH_ID
+     `;
++    if (allStockTypes) {
++      // Both projections use the same column order. UNION removes duplicate rows.
++      sql += "\n UNION \n" + uninspectedSql;
++      binds = { ...uninspectedBinds, ...binds };
++    }
++    sql += " ORDER BY PLANT, BATCH_ID";
+ 
+     return await query.executeQuery(sql, binds);
+   } catch (error) {

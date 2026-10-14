@@ -3,15 +3,15 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-# Defaults to the 2026-10-14 requests. Use -ChangeSet 2026-10-07 for the earlier bundle.
+# Defaults to the 2026-10-14-evening requests. Earlier bundles remain selectable with -ChangeSet.
 # Checks patches on temporary copies first; preserves unrelated office edits.
 # Does not stage, commit, push, or change either office repository's Git settings.
 [CmdletBinding()]
 param(
     [string]$OfficeRoot = "D:\LDP UAT MAY",
     [switch]$CheckOnly,
-    [ValidateSet("2026-10-07", "2026-10-14")]
-    [string]$ChangeSet = "2026-10-14"
+    [ValidateSet("2026-10-07", "2026-10-14", "2026-10-14-evening")]
+    [string]$ChangeSet = "2026-10-14-evening"
 )
 $ErrorActionPreference = "Stop"
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
