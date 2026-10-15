@@ -1,0 +1,12 @@
+diff --git a/LDPIS/LDPIS-Backend/src/models/LDLTS011Model.ts b/LDPIS/LDPIS-Backend/src/models/LDLTS011Model.ts
+new file mode 100644
+index 0000000..3543ecc
+--- /dev/null
++++ b/LDPIS/LDPIS-Backend/src/models/LDLTS011Model.ts
+@@ -0,0 +1,6 @@
++import * as repository from "../repository/LDLTS011Query";
++
++export default class LDLTS011 {
++  getCoils(data: any) { return repository.getCoils(data); }
++  saveData(data: any) { return repository.saveData(data); }
++}

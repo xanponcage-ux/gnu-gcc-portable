@@ -3,15 +3,15 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-# Defaults to the 2026-10-14-evening requests. Earlier bundles remain selectable with -ChangeSet.
+# Defaults to the 2026-10-15 requests. Earlier bundles remain selectable with -ChangeSet.
 # Checks patches on temporary copies first; preserves unrelated office edits.
 # Does not stage, commit, push, or change either office repository's Git settings.
 [CmdletBinding()]
 param(
     [string]$OfficeRoot = "D:\LDP UAT MAY",
     [switch]$CheckOnly,
-    [ValidateSet("2026-10-07", "2026-10-14", "2026-10-14-evening")]
-    [string]$ChangeSet = "2026-10-14-evening"
+    [ValidateSet("2026-10-07", "2026-10-14", "2026-10-14-evening", "2026-10-15")]
+    [string]$ChangeSet = "2026-10-15"
 )
 $ErrorActionPreference = "Stop"
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -38,12 +38,12 @@ $prepared = @()
 
 function Test-Patch([string]$Root, [string]$Patch, [switch]$Reverse) {
     $ErrorActionPreference = "Continue" # Expected nonzero checks must not terminate Windows PowerShell 5.1.
-    if ($Reverse) { & git -C $Root apply --reverse --check --ignore-space-change -p3 $Patch 2>$null }
-    else { & git -C $Root apply --check --ignore-space-change -p3 $Patch 2>$null }
+    if ($Reverse) { & git -C $Root apply --reverse --check --ignore-space-change "-p3" $Patch 2>$null }
+    else { & git -C $Root apply --check --ignore-space-change "-p3" $Patch 2>$null }
     return ($LASTEXITCODE -eq 0)
 }
 function Apply-Patch([string]$Root, [string]$Patch) {
-    & git -C $Root apply --ignore-space-change -p3 $Patch
+    & git -C $Root apply --ignore-space-change "-p3" $Patch
     if ($LASTEXITCODE -ne 0) { throw "Patch failed on temporary copy: $Patch. Office files unchanged." }
 }
 
@@ -51,7 +51,9 @@ function Apply-Patch([string]$Root, [string]$Patch) {
 foreach ($job in $jobs) {
     $target = Join-Path $OfficeRoot $job.Project
     $targetFile = Join-Path $target $job.File
-    if (-not (Test-Path -LiteralPath $targetFile -PathType Leaf)) { throw "Target file not found: $targetFile" }
+    $existed = Test-Path -LiteralPath $targetFile -PathType Leaf
+    if ((Test-Path -LiteralPath $targetFile) -and -not $existed) { throw "Target is not a file: $targetFile" }
+    if (-not $existed -and -not $job.NewFile) { throw "Target file not found: $targetFile" }
     & git -C $target rev-parse --is-inside-work-tree | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "Not a Git working tree: $target" }
     $stage = Join-Path $workDir ("stage\" + $job.Project)
@@ -62,10 +64,13 @@ foreach ($job in $jobs) {
     }
     $stageFile = Join-Path $stage $job.File
     New-Item -ItemType Directory -Path (Split-Path -Parent $stageFile) -Force | Out-Null
-    $originalHash = (Get-FileHash -LiteralPath $targetFile -Algorithm SHA256).Hash
-    Copy-Item -LiteralPath $targetFile -Destination $stageFile
-    if ((Get-FileHash -LiteralPath $stageFile -Algorithm SHA256).Hash -ne $originalHash) {
-        throw "Office file changed while preparing: $targetFile. Run again."
+    $originalHash = $null
+    if ($existed) {
+        $originalHash = (Get-FileHash -LiteralPath $targetFile -Algorithm SHA256).Hash
+        Copy-Item -LiteralPath $targetFile -Destination $stageFile
+        if ((Get-FileHash -LiteralPath $stageFile -Algorithm SHA256).Hash -ne $originalHash) {
+            throw "Office file changed while preparing: $targetFile. Run again."
+        }
     }
     $patch = Join-Path $bundle $job.Patch
     if (Test-Patch $stage $patch -Reverse) {
@@ -84,7 +89,7 @@ foreach ($job in $jobs) {
     }
     Apply-Patch $stage $patch
     $backup = Join-Path $workDir ("backup\" + $job.Project + "\" + $job.File)
-    $prepared += @{ TargetFile = $targetFile; StageFile = $stageFile; Backup = $backup; OriginalHash = $originalHash }
+    $prepared += @{ TargetFile = $targetFile; StageFile = $stageFile; Backup = $backup; OriginalHash = $originalHash; Existed = $existed }
     Write-Host "$($job.Project)/$($job.File): check passed."
 }
 if ($CheckOnly) {
@@ -93,6 +98,12 @@ if ($CheckOnly) {
 }
 # Recheck originals and back up every target before applying.
 foreach ($item in $prepared) {
+    if (-not $item.Existed) {
+        if (Test-Path -LiteralPath $item.TargetFile) {
+            throw "New target appeared after preview: $($item.TargetFile). No files changed. Run again."
+        }
+        continue
+    }
     if ((Get-FileHash -LiteralPath $item.TargetFile -Algorithm SHA256).Hash -ne $item.OriginalHash) {
         throw "Office file changed after preview: $($item.TargetFile). No files changed by this script. Run again."
     }
@@ -103,6 +114,7 @@ $written = @()
 try {
     foreach ($item in $prepared) {
         $written += $item
+        New-Item -ItemType Directory -Path (Split-Path -Parent $item.TargetFile) -Force | Out-Null
         Copy-Item -LiteralPath $item.StageFile -Destination $item.TargetFile
         if ((Get-FileHash -LiteralPath $item.TargetFile -Algorithm SHA256).Hash -ne
             (Get-FileHash -LiteralPath $item.StageFile -Algorithm SHA256).Hash) {
@@ -112,8 +124,13 @@ try {
 } catch {
     $applyError = $_
     foreach ($item in $written) {
-        try { Copy-Item -LiteralPath $item.Backup -Destination $item.TargetFile }
-        catch { Write-Warning "Restore manually from $($item.Backup) to $($item.TargetFile)" }
+        try {
+            if ($item.Existed) { Copy-Item -LiteralPath $item.Backup -Destination $item.TargetFile }
+            elseif (Test-Path -LiteralPath $item.TargetFile -PathType Leaf) {
+                Remove-Item -LiteralPath $item.TargetFile -Force
+            }
+        }
+        catch { Write-Warning "Rollback failed for $($item.TargetFile). Existing-file backup: $($item.Backup)" }
     }
     throw "Transfer failed; attempted rollback. $applyError. Backups: $workDir"
 }

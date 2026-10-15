@@ -97,6 +97,7 @@ import LDLTS004Route from "./routes/LDLTS004Route";
 import LDLTS005Route from "./routes/LDLTS005Route";
 import LDLTS006Route from "./routes/LDLTS006Route";
 import LDLTS010Route from "./routes/LDLTS010Route";
+import LDLTS011Route from "./routes/LDLTS011Route";
 import LD50S005Route from "./routes/LD50S005Route";
 import LD0RS002Route from "./routes/LD0RS002Route";
 
@@ -285,6 +286,7 @@ export class App {
     this.app.use("/api/LDLTS005/", LDLTS005Route);
     this.app.use("/api/LDLTS006/", LDLTS006Route);
     this.app.use("/api/LDLTS010/", LDLTS010Route);
+    this.app.use("/api/LDLTS011/", LDLTS011Route);
     this.app.use("/api/LDLTS007/", LDLTS007Route);
 
     //PLANNING

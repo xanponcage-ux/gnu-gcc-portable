@@ -79,6 +79,7 @@ import LDLTS004 from "views/Quality/LDLTS004/LDLTS004";
 import LDLTS005 from "views/Quality/LDLTS005/LDLTS005";
 import LDLTS006 from "views/Quality/LDLTS006";
 import LDLTS010 from "views/Quality/LDLTS010";
+import LDLTS011 from "views/Quality/LDLTS011";
 import LDLTS007 from "views/Quality/LDLTS007";
 import LDLTS008 from "views/Quality/LDLTS008";
 import LDLTS009 from "views/Quality/LDLTS009";
@@ -465,6 +466,11 @@ const routes = [
             name: "Pipe Decision Screen (Internal)",
             route: "/LDLTS010",
             component: <LDLTS010 />,
+          },
+          {
+            name: "Free Stock to Rework",
+            route: "/LDLTS011",
+            component: <LDLTS011 />,
           },
           {
             name: "Process Sheet-Internal Coating",
