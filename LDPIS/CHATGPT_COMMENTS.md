@@ -21,7 +21,7 @@ Use this file for future LDPIS-related runnable instructions and supplementary c
 ```
 Prompt:
 implement the following points.
-1.in LDP ORDER BOOK AND ORDER PROGRESS SCREEN add following columns:
+1.in LDP ORDER BOOK(LDSM007) AND ORDER PROGRESS SCREEN(LDSM020) add following columns:
 Order Qty.(Sales Unit)	ENC_SALES_QTY
 Sales Unit	ENC_SALES_QTY_UOM
 Incot	ENC_INCOT
