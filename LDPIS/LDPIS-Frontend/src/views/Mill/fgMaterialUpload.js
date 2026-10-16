@@ -1,0 +1,24 @@
+// Identifiers must be text in Excel: numeric material cells lose digits after 15 places.
+export function parseFgMaterialRows(rows) {
+  const normalize = (value) => String(value ?? "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  const header = (rows[0] || []).map(normalize);
+  const batchIndex = header.findIndex((h) => ["batch", "batchid", "batchno", "pipeno"].includes(h));
+  const materialIndex = header.findIndex((h) => ["finalmaterialnumber", "finalmaterialno", "materialnumber", "materialno", "matno"].includes(h));
+  if (batchIndex < 0 || materialIndex < 0) throw new Error("Required headers: Batch and Final Material Number.");
+  const batches = new Map();
+  rows.slice(1).forEach((row, index) => {
+    if (!row.some((value) => String(value ?? "").trim())) return;
+    const batch = row[batchIndex];
+    const material = row[materialIndex];
+    if (typeof batch !== "string" || typeof material !== "string") {
+      throw new Error(`Excel row ${index + 2}: format Batch and Final Material Number as Text and re-enter the original values.`);
+    }
+    const batchId = batch.trim();
+    const matnr = material.trim();
+    if (!batchId || !/^\d{18}$/.test(matnr)) throw new Error(`Excel row ${index + 2}: batch and an 18-digit material number are required.`);
+    if (batches.has(batchId) && batches.get(batchId) !== matnr) throw new Error(`Conflicting material numbers for batch ${batchId}.`);
+    batches.set(batchId, matnr);
+  });
+  if (!batches.size) throw new Error("The Excel file has no data rows.");
+  return Array.from(batches, ([batchId, matnr]) => ({ batchId, matnr }));
+}

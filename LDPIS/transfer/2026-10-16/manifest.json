@@ -1,0 +1,18 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD0RS002Query.ts",
+    "Patch": "LDPIS-Backend-LD0RS002Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD0RS002.jsx",
+    "Patch": "LDPIS-Frontend-LD0RS002.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/fgMaterialUpload.js",
+    "Patch": "LDPIS-Frontend-fgMaterialUpload.js.patch",
+    "NewFile": true
+  }
+]

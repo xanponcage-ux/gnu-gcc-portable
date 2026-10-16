@@ -266,10 +266,18 @@ export const getMatTabData = async (props: any) => {
       ,LOM_END_FINISH END_FIN
       from v_ldp_prodn
       where lom_cd_status in ('WF' ) -- FIXED
-      and LOM_SE_UPD_FL = 'Y'
-      ORDER BY Batch_crt_dt DESC`;
+      and LOM_SE_UPD_FL = 'Y'`;
 
-    return await query.executeQuery(sql);
+    const binds: any = {};
+    // Optional exact batch lookup for Excel upload; retain the manual full-list path.
+    if (props?.batchId !== undefined) {
+      const batchId = String(props.batchId ?? "").trim();
+      if (!batchId) throw new TypeError("Batch ID is required for upload lookup");
+      sql += " AND LOM_ID_BATCH = :batchId";
+      binds.batchId = batchId;
+    }
+    sql += " ORDER BY Batch_crt_dt DESC";
+    return await query.executeQuery(sql, binds);
   } catch (error) {
     console.log(error);
     throw new Error.InternalServerErrorMsg(error);
@@ -378,3 +386,4 @@ export const getDropdown = async () => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
+

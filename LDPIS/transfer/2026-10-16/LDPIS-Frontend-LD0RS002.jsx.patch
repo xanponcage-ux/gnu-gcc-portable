@@ -1,0 +1,207 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD0RS002.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD0RS002.jsx
+index 00fd446..d301678 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD0RS002.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD0RS002.jsx
+@@ -1,4 +1,6 @@
+ import React, { useEffect, useState, useRef, forwardRef } from "react";
++import * as XLSX from "xlsx";
++import { parseFgMaterialRows } from "./fgMaterialUpload";
+ // @mui material components
+ import Grid from "@mui/material/Grid";
+ import Card from "@mui/material/Card";
+@@ -1259,6 +1261,74 @@ export default function LD0RS002() {
+ 
+   //update material tab functions
+ 
++  const materialFileRef = useRef(null);
++  const materialLoadId = useRef(0);
++  const [materialUploadBusy, setMaterialUploadBusy] = useState(false);
++  const [materialUploadMessage, setMaterialUploadMessage] = useState("");
++
++  const downloadMaterialTemplate = () => {
++    const sheet = XLSX.utils.aoa_to_sheet([["Batch", "Final Material Number"]]);
++    sheet["!cols"] = [{ wch: 22 }, { wch: 28 }];
++    // Preformat input cells as text to preserve leading zeroes and all 18 digits.
++    for (let row = 2; row <= 1001; row++) {
++      sheet[`A${row}`] = { t: "s", v: "", z: "@" };
++      sheet[`B${row}`] = { t: "s", v: "", z: "@" };
++    }
++    sheet["!ref"] = "A1:B1001";
++    const workbook = XLSX.utils.book_new();
++    XLSX.utils.book_append_sheet(workbook, sheet, "FG Material");
++    XLSX.writeFile(workbook, "LD0RS002_FG_Material_Template.xlsx");
++  };
++
++  const handleMaterialUpload = async (event) => {
++    const file = event.target.files?.[0];
++    if (!file) return;
++    const loadId = ++materialLoadId.current;
++    setMaterialUploadBusy(true);
++    setMaterialUploadMessage("");
++    setTableData([]);
++    try {
++      const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
++      const sheet = workbook.Sheets[workbook.SheetNames[0]];
++      if (!sheet) throw new Error("The workbook has no worksheet.");
++      const entries = parseFgMaterialRows(XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: "" }));
++      const token = await GetAuthorization();
++      const options = { headers: { Authorization: "Bearer " + token.accessToken } };
++      const loaded = [];
++      const skipped = [];
++      for (const entry of entries) {
++        if (loadId !== materialLoadId.current) return;
++        const response = await axiosAPI.post("api/LD0RS002/getMatTabData", { batchId: entry.batchId }, options);
++        const matches = response.data.filter((row) => String(row.BATCHID).trim() === entry.batchId);
++        if (matches.length === 0) { skipped.push(entry.batchId); continue; }
++        if (matches.length !== 1) throw new Error(`Multiple eligible records found for ${entry.batchId}; resolve before uploading.`);
++        const row = matches[0];
++        const validation = await axiosAPI.post("api/LD0RS002/validateData", {
++          batchId: entry.batchId, thick: row.THK, length: row.LENGTH, matnr: entry.matnr,
++        }, options);
++        const result = validation.data?.[0]?.RESULT;
++        if (typeof result !== "string" || !result.trim()) throw new Error(`Material validation returned no result for ${entry.batchId}.`);
++        loaded.push({ ...row, MAT_NO: entry.matnr, VALIDATE: result, COMMENT: "", SPL_COMMENT: "" });
++      }
++      if (loadId !== materialLoadId.current) return;
++      setTableData(loaded);
++      setMaterialUploadMessage(`Loaded ${loaded.length}/${entries.length} batches.` +
++        (skipped.length ? ` Not found or not eligible (WF / SE update Y): ${skipped.join(", ")}.` : "") +
++        " Review validation and comments, then select rows and Save. Save together only rows with the same existing required attributes.");
++      if (!loaded.length) alertify.error("No eligible batches found in the upload.");
++      else alertify.success(`Loaded ${loaded.length} batches from Excel`);
++    } catch (error) {
++      if (loadId !== materialLoadId.current) return;
++      setTableData([]);
++      const message = error.message || "Unable to load Excel data.";
++      setMaterialUploadMessage(message);
++      alertify.error(message);
++    } finally {
++      if (loadId === materialLoadId.current) setMaterialUploadBusy(false);
++      if (materialFileRef.current) materialFileRef.current.value = "";
++    }
++  };
++
+   const tableCol = [
+     {
+       formatter: "rowSelection",
+@@ -1489,51 +1559,32 @@ export default function LD0RS002() {
+   };
+ 
+   const getDataMatab = async () => {
++    const loadId = ++materialLoadId.current;
++    setMaterialUploadBusy(false);
++    setMaterialUploadMessage("");
+     setShowSaveMsgSuccess(false);
+     setShowSaveMsgError(false);
+     setSaveMsg("");
+-    GetAuthorization().then(async (token) => {
+-      setLoading(true);
+-
+-      var defaultOptions = {
+-        headers: {
+-          Authorization: "Bearer " + token.accessToken,
+-        },
+-      };
+-
+-      // var data = {
+-      //   plant: selectedPlant?.value,
+-      // };
+-
+-      var url = "api/LD0RS002/getMatTabData";
+-
+-      await axiosAPI
+-        .post(url, "", defaultOptions)
+-        .then((response) => {
+-          if (response.statusText != "" && response.statusText != "OK") {
+-            alertify.error("No Data Found");
+-          } else {
+-            if (response.data.length == 0) {
+-              alertify.error("No Data Found");
+-              setTableData([,]);
+-              setLoading(false);
+-            } else {
+-              setTableData(response.data);
+-              setLoading(false);
+-            }
+-          }
+-        })
+-        .finally((f) => {
+-          // resolve();
+-          setLoading(false);
+-        });
+-    });
++    setLoading(true);
++    setTableData([]);
++    try {
++      const token = await GetAuthorization();
++      const response = await axiosAPI.post("api/LD0RS002/getMatTabData", {}, {
++        headers: { Authorization: "Bearer " + token.accessToken },
++      });
++      if (loadId !== materialLoadId.current) return;
++      setTableData(response.data);
++      if (!response.data.length) alertify.error("No Data Found");
++    } catch (error) {
++      if (loadId === materialLoadId.current) alertify.error("Unable to load material data. Please retry.");
++    } finally {
++      if (loadId === materialLoadId.current) setLoading(false);
++    }
+   };
+ 
+   useEffect(() => {
+-    if (tableData && tableData.length > 0 && tabValue === 1) {
+-      setTable(
+-        new Tabulator("#table", {
++    if (tableData && tableData.length > 0 && tabValue === 1 && matTabAccFlag === 1) {
++      const grid = new Tabulator("#table", {
+           data: tableData,
+           columns: tableCol,
+           height: 400,
+@@ -1543,11 +1594,15 @@ export default function LD0RS002() {
+           paginationSize: 20,
+           paginationSizeSelector: [10, 20, 30, 40],
+           paginationCounter: "rows",
+-        })
+-      );
++        });
++      setTable(grid);
++      return () => grid.destroy();
+     }
++    setTable(null);
+   }, [tabValue, tableData, matTabAccFlag]);
+ 
++  useEffect(() => () => { materialLoadId.current++; }, [tabValue]);
++
+   let validateData = async (batchId, thick, length, matnr) => {
+     setLoading(true);
+ 
+@@ -1596,10 +1651,11 @@ export default function LD0RS002() {
+   };
+ 
+   const saveData = () => {
++    if (materialUploadBusy || loading) return;
+     setShowSaveMsgSuccess(false);
+     setShowSaveMsgError(false);
+     setSaveMsg("");
+-    var selectedRows = table.getSelectedRows();
++    var selectedRows = table?.getSelectedRows() || [];
+ 
+     if (selectedRows?.length === 0) {
+       alertify.error("Please select a row");
+@@ -2221,6 +2277,17 @@ export default function LD0RS002() {
+ 
+                 {tabValue == 1 && matTabAccFlag == 1 && (
+                   <>
++                    <MDBox mb={5}>
++                      <MDTypography variant="body2">Upload Batch and Final Material Number as Text (18 digits). Upload only prepares rows; it does not save.</MDTypography>
++                      <input ref={materialFileRef} type="file" accept=".xlsx,.xls"
++                        disabled={materialUploadBusy || loading || isReadWriteAccess}
++                        onChange={handleMaterialUpload} aria-label="Upload FG material Excel" />
++                      <MDButton size="small" color="info" onClick={downloadMaterialTemplate}>Download Template</MDButton>
++                      <MDButton size="small" color="secondary" disabled={materialUploadBusy || loading}
++                        onClick={() => getDataMatab()}>Clear Upload / Reload All</MDButton>
++                      {materialUploadBusy && <MDTypography variant="body2">Loading and validating uploaded batches…</MDTypography>}
++                      {materialUploadMessage && <MDTypography variant="body2">{materialUploadMessage}</MDTypography>}
++                    </MDBox>
+                     <Card>
+                       <MDBox
+                         mx={2}
