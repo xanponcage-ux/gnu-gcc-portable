@@ -1,0 +1,22 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LDSM007Query.ts",
+    "Patch": "LDPIS-Backend-LDSM007Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LDSM020Query.ts",
+    "Patch": "LDPIS-Backend-LDSM020Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Reports/LDSM007.jsx",
+    "Patch": "LDPIS-Frontend-LDSM007.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Reports/LDSM020.jsx",
+    "Patch": "LDPIS-Frontend-LDSM020.jsx.patch"
+  }
+]

@@ -952,7 +952,7 @@ export default function LDSM007() {
     // { "title": "ORD_REL_DT", "field": "ORD_REL_DT", "headerFilter": "input", "headerFilterPlaceholder": "search..." },
     // { "title": "TRACKINGNO", "field": "TRACKINGNO", "headerFilter": "input", "headerFilterPlaceholder": "search..." },
     {
-      title: "ShipToPartyId",
+      title: "Ship To Party",
       field: "SHIPTOPARTYID",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
@@ -1118,6 +1118,86 @@ export default function LDSM007() {
     {
       title: "End Finish",
       field: "END_FINISH",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Order Qty.(Sales Unit)",
+      field: "SALES_QTY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+      hozAlign: "right",
+      sorter: "number",
+    },
+    {
+      title: "Sales Unit",
+      field: "SALES_QTY_UOM",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Incot",
+      field: "ENC_INCOT",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Sold Cust. City",
+      field: "ENC_SOLD_CUST_CITY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ship Cust. City",
+      field: "ENC_SHIP_CUST_CITY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ship Cust. Name",
+      field: "ENC_SHIP_CUST_NAME",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Division",
+      field: "ENC_DIVISION",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Sales Org.",
+      field: "ENC_SAL_ORG",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ref. Standard",
+      field: "ENC_REF_STANDARD",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Po No.",
+      field: "ENC_PO_NO",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Freight Indicator",
+      field: "ENC_FRT_IND",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Billing Block",
+      field: "ENC_BILING_BLOCK",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Delivery Block",
+      field: "ENC_DELV_BLOCK",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -1726,3 +1806,4 @@ export default function LDSM007() {
     </DashboardLayout>
   );
 }
+

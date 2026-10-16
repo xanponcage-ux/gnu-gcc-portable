@@ -1,0 +1,44 @@
+diff --git a/LDPIS/LDPIS-Backend/src/repository/LDSM007Query.ts b/LDPIS/LDPIS-Backend/src/repository/LDSM007Query.ts
+index 5689647..345b302 100644
+--- a/LDPIS/LDPIS-Backend/src/repository/LDSM007Query.ts
++++ b/LDPIS/LDPIS-Backend/src/repository/LDSM007Query.ts
+@@ -193,7 +193,18 @@ export const GetOrderDT = async (
+     enc_matnr_spec spec,
+     ENC_GEOMETRY geometry, 
+     ENC_SUR_FINISH sur_finish, 
+-    ENC_END_FINISH end_finish
++    ENC_END_FINISH end_finish,
++    a.ENC_INCOT,
++    a.ENC_SOLD_CUST_CITY,
++    a.ENC_SHIP_CUST_CITY,
++    a.ENC_SHIP_CUST_NAME,
++    a.ENC_DIVISION,
++    a.ENC_SAL_ORG,
++    a.ENC_REF_STANDARD,
++    a.ENC_PO_NO,
++    a.ENC_FRT_IND,
++    a.ENC_BILING_BLOCK,
++    a.ENC_DELV_BLOCK
+ FROM
+     v_end_cust_ord_epa a
+ WHERE
+@@ -367,7 +378,18 @@ export const GetOrderDT_Tubes = async (
+         enc_sales_qty_uom sales_qty_uom,
+         ENC_GEOMETRY geometry, 
+         ENC_SUR_FINISH sur_finish, 
+-        ENC_END_FINISH end_finish
++        ENC_END_FINISH end_finish,
++        a.ENC_INCOT,
++        a.ENC_SOLD_CUST_CITY,
++        a.ENC_SHIP_CUST_CITY,
++        a.ENC_SHIP_CUST_NAME,
++        a.ENC_DIVISION,
++        a.ENC_SAL_ORG,
++        a.ENC_REF_STANDARD,
++        a.ENC_PO_NO,
++        a.ENC_FRT_IND,
++        a.ENC_BILING_BLOCK,
++        a.ENC_DELV_BLOCK
+     FROM
+         v_end_cust_ord_epa a
+     WHERE

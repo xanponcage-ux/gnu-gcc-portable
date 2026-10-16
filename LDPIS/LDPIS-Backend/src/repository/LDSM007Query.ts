@@ -193,7 +193,18 @@ export const GetOrderDT = async (
     enc_matnr_spec spec,
     ENC_GEOMETRY geometry, 
     ENC_SUR_FINISH sur_finish, 
-    ENC_END_FINISH end_finish
+    ENC_END_FINISH end_finish,
+    a.ENC_INCOT,
+    a.ENC_SOLD_CUST_CITY,
+    a.ENC_SHIP_CUST_CITY,
+    a.ENC_SHIP_CUST_NAME,
+    a.ENC_DIVISION,
+    a.ENC_SAL_ORG,
+    a.ENC_REF_STANDARD,
+    a.ENC_PO_NO,
+    a.ENC_FRT_IND,
+    a.ENC_BILING_BLOCK,
+    a.ENC_DELV_BLOCK
 FROM
     v_end_cust_ord_epa a
 WHERE
@@ -367,7 +378,18 @@ export const GetOrderDT_Tubes = async (
         enc_sales_qty_uom sales_qty_uom,
         ENC_GEOMETRY geometry, 
         ENC_SUR_FINISH sur_finish, 
-        ENC_END_FINISH end_finish
+        ENC_END_FINISH end_finish,
+        a.ENC_INCOT,
+        a.ENC_SOLD_CUST_CITY,
+        a.ENC_SHIP_CUST_CITY,
+        a.ENC_SHIP_CUST_NAME,
+        a.ENC_DIVISION,
+        a.ENC_SAL_ORG,
+        a.ENC_REF_STANDARD,
+        a.ENC_PO_NO,
+        a.ENC_FRT_IND,
+        a.ENC_BILING_BLOCK,
+        a.ENC_DELV_BLOCK
     FROM
         v_end_cust_ord_epa a
     WHERE
@@ -564,3 +586,4 @@ export const getlengthList = async (plant: string) => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
+
