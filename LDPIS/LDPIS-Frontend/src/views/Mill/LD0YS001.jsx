@@ -465,7 +465,7 @@ const rejectOnlyDecisionList = [
           SOURCE_PIPE: sourcePipe,
           CURR_PROC: pipeInfo?.CURR_PROC,
           // RESULT: RESULT.value,
-          NEXT_STATION: isQualityOperationD(pipeInfo?.CURR_PROC) ? "D" : "A",
+          NEXT_STATION: isQualityOperationD(pipeInfo?.CURR_PROC) ? "G" : "F",
           REMARK: remark,
           PARTNO: partCount,
           RM_BATCH:
@@ -746,7 +746,7 @@ const rejectOnlyDecisionList = [
   const isQualityOperationD = (currProc) => {
   if (!currProc) return false;
 
-  return currProc.toString().trim().toUpperCase() === "D";
+  return currProc.toString().trim().toUpperCase() === "G";
 };
   const pipeCreationColumn = [
     {

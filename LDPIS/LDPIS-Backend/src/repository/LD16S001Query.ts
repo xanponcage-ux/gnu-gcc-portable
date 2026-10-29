@@ -490,13 +490,13 @@ export const getFillData = async (data: any) => {
                        AND x.TBP_PLANT_CD = f.TBP_PLANT_CD
                        AND x.TBP_CD_PROC = 'E')
                   AND ROWNUM = 1) AS TBP_FLD_NO_130,
-               (select A.TBP_DIA_END_10 FROM V_BARE_PDO A
+               (select A.TBP_DIA_BODY_10 FROM V_BARE_PDO A
                       where A.TBP_BATCH_NO = LOM_ID_BATCH
-                        and A.TBP_CD_PROC = 'A'
+                        and A.TBP_CD_PROC = 'F'
                         and A.TBP_BATCH_PROC_NO = (
                           SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
                           WHERE A.TBP_BATCH_NO = x.TBP_BATCH_NO
-                            AND x.TBP_CD_PROC = 'A'
+                            AND x.TBP_CD_PROC = 'F'
                         )
                       and rownum = 1) TBP_DIA_END_10,
                LOM_LENGTH PIPE_LEN, TBP_COT_THK_1_120 COT_THK_1, TBP_COT_THK_2_120 COT_THK_2,TBP_COT_THK_3_120 COT_THK_3,

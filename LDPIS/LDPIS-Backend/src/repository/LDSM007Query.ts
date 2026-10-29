@@ -586,4 +586,3 @@ export const getlengthList = async (plant: string) => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
-

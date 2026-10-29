@@ -386,4 +386,3 @@ export const getDropdown = async () => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
-

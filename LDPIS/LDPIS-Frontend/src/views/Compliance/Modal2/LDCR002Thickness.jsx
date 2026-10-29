@@ -401,7 +401,7 @@ export default function MaxWidthDialogThick(props) {
                             
                             <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.VISUAL !== null ? dataRow.VISUAL : <br />}</Grid>
                             <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
-                            <Grid item xs={2.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_NAME !== null ? dataRow.TEST_NAME : <br />}</Grid>
+                            <Grid item xs={2.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_TEST_PIP_120 !== null ? dataRow.TBP_TEST_PIP_120 : <br />}</Grid>
                             <Grid item xs={1.3}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_QTEMP_120 !== null ? dataRow.TBP_QTEMP_120 : <br />}</Grid>
                          </Grid>
                       ))}

@@ -854,13 +854,13 @@ export default function LDSM007() {
       },
     },
     {
-      title: "Customer Code",
+      title: "Customer/Party Code",
       field: "CUSTOMER_CODE",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "Customer Name",
+      title: "Customer/Party Name",
       field: "CUSTOMER_NAME",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
@@ -1806,4 +1806,3 @@ export default function LDSM007() {
     </DashboardLayout>
   );
 }
-

@@ -386,27 +386,37 @@ export default function LD01S008() {
   //   });
   // };
 
-  const sendBtn = async () => {
+    const sendBtn = async () => {
     var selectedRows = table.getSelectedRows();
-// debugger
-    //no row selected alert
-    if (selectedRows.length == 0) {
+
+    // 1. Verify rows are selected
+    if (selectedRows.length === 0) {
       alertify.error("Please select row");
       return;
     }
 
+    // 2. Validate that all selected rows have the same Material No (MAT_NO)
+    const uniqueMatNos = new Set(
+      selectedRows.map((item) => item._row.data.MAT_NO)
+    );
+
+    if (uniqueMatNos.size > 1) {
+      alertify.error(
+        "Validation failed: All selected rows must have the same Material No."
+      );
+      return;
+    }
+
+    // 3. Prepare payload data
     var selectedData = [];
     selectedRows.forEach(function (item) {
-      let batchId = item._row.data.ID_BATCH;
-      let status = item._row.data.STATUS;
-
       selectedData.push({
         batchId: item._row.data.ID_BATCH,
         status: item._row.data.STATUS,
       });
     });
 
-    if (selectedData.length == 0) {
+    if (selectedData.length === 0) {
       return;
     }
 
@@ -425,9 +435,9 @@ export default function LD01S008() {
       axiosAPI
         .post(url, data, defaultOptions)
         .then((res) => {
-          if (res.statusText != "" && res.statusText != "OK") {
-             alertify.error(res?.data?.finRes);
-             setLoading(false);
+          if (res.statusText !== "" && res.statusText !== "OK") {
+            alertify.error(res?.data?.finRes);
+            setLoading(false);
             return;
           } else {
             setLoading(false);
@@ -436,14 +446,7 @@ export default function LD01S008() {
               alertify.success(res?.data?.finRes);
               return;
             }
-            // if (res?.data?.fail?.length > 0) {
-            //   alertify.error(
-            //     "Request failed for batch: " + `${res?.data?.fail}`
-            //   );
-            // }
             alertify.error(res?.data?.finRes);
-            // alertify.error(res?.data?.finRes + ` ${res?.data?.fail}`);
-
             return;
           }
         })
@@ -452,6 +455,7 @@ export default function LD01S008() {
         });
     });
   };
+
 
   useEffect(() => {
     if (tableData && tableData.length > 0) {

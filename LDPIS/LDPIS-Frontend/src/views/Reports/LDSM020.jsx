@@ -897,13 +897,13 @@ export default function TubePlanning() {
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "END CUST Code",
+      title: "END CUST/Party Code",
       field: "ENC_CD_END_CUST",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "CUST NAME",
+      title: "CUST/Party NAME",
       field: "ENC_CUST_NAME",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
@@ -1491,4 +1491,3 @@ export default function TubePlanning() {
     </DashboardLayout>
   );
 }
-

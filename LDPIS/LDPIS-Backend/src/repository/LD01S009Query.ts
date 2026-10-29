@@ -42,7 +42,7 @@ export const getList = async (props: any) => {
     console.log("binds", binds);
     const statusCondition =
       props.type === "LINK"
-        ? `lom_cd_status IN (SELECT CD_VALUE FROM V_CODES WHERE CD_TYPE = 'TB046' AND CD_DESC = 'WIP_LINK_STATUS')`
+        ? `lom_cd_status IN (SELECT CD_VALUE FROM V_CODES WHERE CD_TYPE = 'TB046' AND CD_DESC = 'EXT_WIP_LINK_STATUS')`
         : props.type === "DELINK"
         ? `lom_cd_status IN (SELECT CD_VALUE FROM V_CODES WHERE CD_TYPE = 'TB046' AND CD_DESC = 'WIP_DELINK_STATUS')`
         : `lom_cd_status IN (SELECT CD_VALUE FROM V_CODES WHERE CD_TYPE = 'TB046' AND CD_DESC = 'WIP_LINK_STATUS')`; // Default to LINK if type is not specified
@@ -157,7 +157,7 @@ export const getList = async (props: any) => {
       // console.log("sqlCoil: ", sql);
       return await query.executeQuery(sql);
     } else if (props.param == "UpdateCoil") {
-      const sql = `call LDPDBA.LDLTB003(
+      const sql = `call LDPDBA.LDLTB007(
           LS_BATCH => :LS_BATCH,
           LS_ORDER => :LS_ORDER,
           LS_ITEM => :LS_ITEM,

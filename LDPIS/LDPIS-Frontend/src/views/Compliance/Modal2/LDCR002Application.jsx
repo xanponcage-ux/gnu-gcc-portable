@@ -678,74 +678,91 @@ export default function MaxWidthDialogapplication(props) {
                            <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>Line Speed <br />  (Mtr./Min)</Grid>
                            <Grid item xs={1.9} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>Dew Point for Coating <br /> Application (°C)</Grid>
                            <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>Number of Epoxy Gun</Grid>                       
-                           <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>HDPE SCrew <br />  RPM</Grid>    
+                           <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>HDPE Screw <br />  RPM</Grid>    
                            <Grid item xs={1.1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>Adhesive Screw <br />  RPM.</Grid>    
 
   {Array.from({ length: 4 }).map((_, rowIndex) => (
   <React.Fragment key={rowIndex}>
-    <Grid item xs={0.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px', textAlign: 'Center' }}>
-      {(rowIndex === 0  && getapplication?.length > 0) ? '1' :  <br />}
-      {(rowIndex === 1  && getapplication?.length > 0) ? '2' :  <br />}
-      {(rowIndex === 2  && getapplication?.length > 0) ? '3' :  <br />}
-      {(rowIndex === 3  && getapplication?.length > 0) ? '4' :  <br />}
+    <Grid item xs={0.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
+      {(rowIndex === 0  && getapplication?.length > 0) ? '1' :  ''}
+      {(rowIndex === 1  && getapplication?.length > 0) ? '2' :  ''}
+      {(rowIndex === 2  && getapplication?.length > 0) ? '3' :  ''}
+      {(rowIndex === 3  && getapplication?.length > 0) ? '4' :  ''}
     </Grid>
     <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 0  && getapplication?.length > 0) ? 'Chromate' :  <br />}
-      {(rowIndex === 1  && getapplication?.length > 0) ? 'Epoxy Powder' :  <br />}
-      {(rowIndex === 2  && getapplication?.length > 0) ? 'Adhesive' :  <br />}
-      {(rowIndex === 3  && getapplication?.length > 0) ? 'Polyethylene' :  <br />}
+      {(rowIndex === 0  && getapplication?.length > 0) ? 'Chromate' :  ''}
+      {(rowIndex === 1  && getapplication?.length > 0) ? 'Epoxy Powder' :  ''}
+      {(rowIndex === 2  && getapplication?.length > 0) ? 'Adhesive' :  ''}
+      {(rowIndex === 3  && getapplication?.length > 0) ? 'Polyethylene' :  ''}
     </Grid>
     <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_1_110 :  <br />}
-      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_2_110 :  <br />}
-      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_3_110 :  <br />}
-      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_4_110 :  <br />}
+      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_1_110 :  ''}
+      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_2_110 :  ''}
+      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_3_110 :  ''}
+      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_MANFACT_4_110 :  ''}
     </Grid>
     <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_CHRM_GR_110 :  <br />}
-      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_EPOXY_GR_110 :  <br />}
-      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_ADHA_GR_110 :  <br />}
-      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_PEPP_GR_110 :  <br />}
+      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_CHRM_GR_110 :  ''}
+      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_EPOXY_GR_110 :  ''}
+      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_ADHA_GR_110 :  ''}
+      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_PEPP_GR_110 :  ''}
     </Grid>
     <Grid item xs={1} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_CHROM_BH_110 :  <br />}
-      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_EPXY_BH_110 :  <br />}
-      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_ADHA_BH_110 :  <br />}
-      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_PEPP_BH_110 :  <br />}
+      {(rowIndex === 0  && getapplication?.length > 0) ? getapplication[0].TBP_CHROM_BH_110 :  ''}
+      {(rowIndex === 1  && getapplication?.length > 0) ? getapplication[0].TBP_EPXY_BH_110 :  ''}
+      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_ADHA_BH_110 :  ''}
+      {(rowIndex === 3  && getapplication?.length > 0) ? getapplication[0].TBP_PEPP_BH_110 :  ''}
     </Grid>
-    <Grid item xs={1} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 2  && getapplication?.length > 0) ? Number(getapplication[0].TBP_LINES_SPED_110).toFixed(2) :  <br />}
+    <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
+      {(rowIndex === 2  && getapplication?.length > 0) ? Number(getapplication[0].TBP_LINES_SPED_110).toFixed(2) :  ''}
     </Grid>
-    <Grid item xs={1.9} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
-      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_EPXY_DWPT_110 :  <br />}
+    <Grid item xs={1.9} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
+      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_EPXY_DWPT_110 :  ''}
     </Grid>
-    <Grid item xs={1} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
-       {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_NO_EPGUN_110 :  <br />}
+    <Grid item xs={1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
+       {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_NO_EPGUN_110 :  ''}
     </Grid>
-    <Grid item xs={0.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',  borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
-      {rowIndex === 0 ? 1 : <br />}
+     <Grid
+      item
+      xs={0.5}
+      style={{
+        fontSize: '9px',
+        color: 'black',
+        fontFamily: "ArialBold",
+        fontWeight: 'bold',
+        borderRight: '1px solid black',
+        padding: '1px',
+        textAlign: 'Center',
+        ...(rowIndex === 0 ? { borderBottom: '1px solid black' } : {}) // Conditional borderBottom
+      }}
+    >
+      {rowIndex === 0 ? 1 : ''}
       {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_HDPE_RPM01_110 :  <br />}
     </Grid>
-    <Grid item xs={0.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',  borderRight: '1px solid black',padding: '1px', textAlign: 'Center' }}>
-      {rowIndex === 0 ? 2 : <br />}
-      {rowIndex === 2 ? '-' : <br />}
+    <Grid
+      item
+      xs={0.5}
+      style={{
+        fontSize: '9px',
+        color: 'black',
+        fontFamily: "ArialBold",
+        fontWeight: 'bold',
+        borderRight: '1px solid black',
+        padding: '1px',
+        textAlign: 'Center',
+        ...(rowIndex === 0 ? { borderBottom: '1px solid black' } : {}) // Conditional borderBottom
+      }}
+    >
+      {rowIndex === 0 ? 2 : ''}
+      {rowIndex === 2 ? '-' : ''}
     </Grid>
-    <Grid item xs={1.1} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black', padding: '1px', textAlign: 'Center' }}>
+    <Grid item xs={1.1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black', padding: '1px', textAlign: 'Center' }}>
       {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_ADHE_RPM_110 :  <br />}
     </Grid>
   </React.Fragment>
 ))}
 
-                            {/* <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center'  }}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center'}}> <br /> </Grid>       
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center'  }}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center'}}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center'  }}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center'}}> <br /> </Grid>      
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center'  }}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center'}}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center'  }}> <br /> </Grid>
-                            <Grid item xs={1.2} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center'}}> <br /> </Grid> */}
+                      
                       </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>

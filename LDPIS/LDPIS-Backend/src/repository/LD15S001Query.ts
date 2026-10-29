@@ -182,7 +182,7 @@ export const insertTempData = async (data: any) => {
 
       // TBP_WEIGHT: data.TBP_WEIGHT ?? null,
 
-            TBP_WEIGHT:
+      TBP_WEIGHT:
         String(data.RESULT).toUpperCase() === "NOT OK"
           ? Number(Number(data.TBP_WEIGHT || 0).toFixed(1))
           : Number(
@@ -539,15 +539,15 @@ FROM dual
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_MIXPAINT_RATIO_150 ELSE b.TBP_MIXPAINT_RATIO_150 END AS TBP_MIXPAINT_RATIO,
       TO_CHAR(d150.TBP_PROD_DATE, 'DD-MON-YYYY', 'NLS_DATE_LANGUAGE=English') AS TBP_PROD_DATE,
       TO_CHAR(d150.TBP_PROD_END_DT, 'HH24:MI') AS TIME,
-      (SELECT a.TBP_DIA_END_10 FROM V_BARE_PDO a
+      (SELECT a.TBP_DIA_BODY_10 FROM V_BARE_PDO a
         WHERE a.TBP_BATCH_NO = b.TBP_BATCH_NO
           AND a.TBP_PLANT_CD = b.TBP_PLANT_CD
-          AND a.TBP_CD_PROC = 'A'
+          AND a.TBP_CD_PROC = 'F'
           AND a.TBP_BATCH_PROC_NO = (
             SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
              WHERE x.TBP_BATCH_NO = a.TBP_BATCH_NO
                AND x.TBP_PLANT_CD = a.TBP_PLANT_CD
-               AND x.TBP_CD_PROC = 'A')
+               AND x.TBP_CD_PROC = 'F')
           AND ROWNUM = 1) AS TBP_DIA_END_10
       FROM V_BARE_PDO b
       JOIN V_END_CUST_ORD_EPA e
@@ -575,7 +575,7 @@ FROM dual
              AND x.TBP_PLANT_CD = b.TBP_PLANT_CD
              AND x.TBP_CD_PROC = '1')`;
 
-                 const safeNumber = (v: any) => {
+    const safeNumber = (v: any) => {
       const n = Number(v);
       return Number.isFinite(n) ? n : 0;
     };
@@ -630,7 +630,6 @@ export const getTataDate = async (prodEndDt: any) => {
   }
 };
 
-
 export const getCoatWt = async (
   W1: any,
   W2: any,
@@ -671,4 +670,3 @@ export const getCoatWt = async (
     throw new Error.InternalServerErrorMsg(error);
   }
 };
-

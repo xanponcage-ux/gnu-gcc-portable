@@ -1534,7 +1534,7 @@ export default function LD0RS002() {
       field: "VALIDATE",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      width: 200,
+      // width: 200,
     },
   ];
 
@@ -2398,4 +2398,3 @@ export default function LD0RS002() {
     </DashboardLayout>
   );
 }
-
