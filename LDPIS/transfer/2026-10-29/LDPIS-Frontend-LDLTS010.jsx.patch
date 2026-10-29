@@ -1,0 +1,13 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Quality/LDLTS010.jsx b/LDPIS/LDPIS-Frontend/src/views/Quality/LDLTS010.jsx
+index a92812f..a27a122 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Quality/LDLTS010.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Quality/LDLTS010.jsx
+@@ -516,7 +516,7 @@ export default function LDLTS010() {
+       headerFilterPlaceholder: "search...",
+     },
+     {
+-      title: "Field No",
++      title: "130 Field No.",
+       field: "FIELD_NO",
+       headerFilter: "input",
+       headerFilterPlaceholder: "search...",

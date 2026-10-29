@@ -767,7 +767,9 @@ export default function TubePlanning() {
         !selectedShift?.value ||
         !selectedResult?.value ||
         !String(remarks || "").trim() ||
-        !String(inspectorname || "").trim()
+        !String(inspectorname || "").trim() ||
+        !String(dftF1 ?? "").trim() ||
+        !String(dftT1 ?? "").trim()
       ) {
         alertify.error("All fields marked * are mandatory. Kindly fill.");
         setLoading(false);
@@ -923,6 +925,15 @@ export default function TubePlanning() {
       const rowData = item.getData ? item.getData() : item?._row?.data;
       const pipeNo = rowData?.PIPE_NO || "";
 
+      if (!String(rowData?.DFT_F1 ?? "").trim() || !String(rowData?.DFT_T1 ?? "").trim()) {
+        const msg = `DFT F1 and DFT T1 are required for Pipe No: ${pipeNo}.`;
+        alertify.error(msg);
+        setShowSaveMsgSuccess(false);
+        setShowSaveMsgError(true);
+        setSaveMsg(msg);
+        hasError = true;
+        continue;
+      }
       const internalFieldNo = String(rowData?.INT_FIELD_NO ?? "").trim();
       if (!internalFieldNo) {
         const msg = `Internal Field No is required for Pipe No: ${pipeNo}.`;
@@ -1265,8 +1276,9 @@ export default function TubePlanning() {
       },
     },
     {
-      title: "DFT F1",
+      title: "DFT F1 *",
       field: "DFT_F1",
+      validator: "required",
       headerFilter: "input",
       editor: "input",
       // width: 90,
@@ -1293,8 +1305,9 @@ export default function TubePlanning() {
       // width: 90,
     },
     {
-      title: "DFT T1",
+      title: "DFT T1 *",
       field: "DFT_T1",
+      validator: "required",
       headerFilter: "input",
       editor: "input",
       // width: 90,
@@ -1892,7 +1905,7 @@ export default function TubePlanning() {
                             color={"dark"}
                             noWrap
                           >
-                            DFT F1
+                            DFT F1 <span style={{ color: "red" }}>*</span>
                           </MDTypography>
                           <MDInput
                             value={dftF1}
@@ -1968,7 +1981,7 @@ export default function TubePlanning() {
                             color={"dark"}
                             noWrap
                           >
-                            DFT T1
+                            DFT T1 <span style={{ color: "red" }}>*</span>
                           </MDTypography>
                           <MDInput
                             value={dftT1}

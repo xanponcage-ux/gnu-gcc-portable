@@ -516,7 +516,7 @@ export default function LDLTS006() {
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "Field No",
+      title: "130 Field No.",
       field: "FIELD_NO",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",

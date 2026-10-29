@@ -262,6 +262,10 @@ export const insertScrapTempData = async (data: any) => {
 
 export const insertTempData = async (data: any) => {
   try {
+    if (!String(data?.TBP_DFT_F1_160 ?? "").trim() ||
+        !String(data?.TBP_DFT_T1_160 ?? "").trim()) {
+      throw new TypeError("DFT F1 and DFT T1 are required");
+    }
     const sql = `
 INSERT INTO V_BARE_PDO_TEMP
 (

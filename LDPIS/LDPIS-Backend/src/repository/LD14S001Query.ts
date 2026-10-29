@@ -194,6 +194,16 @@ export const getFillData = async (data: any) => {
     const status = data.STATUS ? String(data.STATUS) : "";
 
     let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,TBP_NO_MATNR,TBP_HEAT_NO,LOM_ID_PAR_COIL_NO,
+             (SELECT f130.TBP_FLD_NO_130 FROM V_BARE_PDO f130
+                WHERE f130.TBP_BATCH_NO = LOM_ID_BATCH
+                  AND f130.TBP_PLANT_CD = LOM_CD_EPA
+                  AND f130.TBP_CD_PROC = 'E'
+                  AND f130.TBP_BATCH_PROC_NO = (
+                    SELECT MAX(x130.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x130
+                    WHERE x130.TBP_BATCH_NO = f130.TBP_BATCH_NO
+                      AND x130.TBP_PLANT_CD = f130.TBP_PLANT_CD
+                      AND x130.TBP_CD_PROC = 'E')
+                  AND ROWNUM = 1) AS TBP_FLD_NO_130,
               TBP_ID_ORDER_NO ORDER_NO, TBP_ITEM_NO ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC, LOM_MS_PIECE_ACTL WEIGHT,
              (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'F') as nxtproc from dual) NEXT_PROC,
              (select D.TBP_ASL_NO_80 FROM V_BARE_PDO D
@@ -264,6 +274,7 @@ export const getFillData = async (data: any) => {
       sql += ` AND 1=0`;
     }
 
+    sql += " ORDER BY TBP_FLD_NO_130 ASC NULLS LAST, TBP_BATCH_NO ASC";
     console.log("filldataqry140", sql);
     return await query.executeQuery(sql);
   } catch (error) {

@@ -44,7 +44,7 @@ export const getCoils = async (data: any) => {
         binds[key] = value;
       }
     }
-    sql += " ORDER BY LOM_TS_CREATION DESC, LOM_ID_PAR_COIL_NO, LOM_ID_BATCH";
+    sql += " ORDER BY FIELD_NO ASC NULLS LAST, LOM_ID_BATCH ASC";
     return await query.executeQuery(sql, binds);
   } catch (error) {
     console.log(error);

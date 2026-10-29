@@ -1,0 +1,13 @@
+diff --git a/LDPIS/LDPIS-Backend/src/repository/LDLTS010Query.ts b/LDPIS/LDPIS-Backend/src/repository/LDLTS010Query.ts
+index 961edb8..94176ca 100644
+--- a/LDPIS/LDPIS-Backend/src/repository/LDLTS010Query.ts
++++ b/LDPIS/LDPIS-Backend/src/repository/LDLTS010Query.ts
+@@ -44,7 +44,7 @@ export const getCoils = async (data: any) => {
+         binds[key] = value;
+       }
+     }
+-    sql += " ORDER BY LOM_TS_CREATION DESC, LOM_ID_PAR_COIL_NO, LOM_ID_BATCH";
++    sql += " ORDER BY FIELD_NO ASC NULLS LAST, LOM_ID_BATCH ASC";
+     return await query.executeQuery(sql, binds);
+   } catch (error) {
+     console.log(error);

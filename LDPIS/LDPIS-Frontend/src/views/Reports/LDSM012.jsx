@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, forwardRef } from "react";
+import { getBatchAgeBand, getFreeStockCategory } from "./inventoryCategories";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -785,6 +786,8 @@ export default function LDSM012() {
                   STOCK_IN_QINSP: rowdata.STOCK_IN_QINSP,
                   BLOCKED_STOCK: rowdata.BLOCKED_STOCK,
                   BATCH_AGE: rowdata.BATCH_AGE,
+                  BATCH_AGE_BAND: getBatchAgeBand(rowdata.BATCH_AGE),
+                  FREE_STOCK_CATEGORY: getFreeStockCategory(rowdata.ACTUAL_TDC, rowdata.FG_MATERIAL_DESC),
                   STOCK_IN_TRANSIT: rowdata.STOCK_IN_TRANSIT,
                   MATERIAL_GROUP: rowdata.MATERIAL_GROUP,
                   MATERIAL_TYPE: rowdata.MATERIAL_TYPE,
@@ -1177,15 +1180,27 @@ export default function LDSM012() {
         } else if (value > 30 && value <= 60) {
           cell.getElement().style["background-color"] = "#FFFF00";
           cell.getElement().style["color"] = "black";
-        } else if (value > 61 && value <= 90) {
+        } else if (value > 60 && value <= 90) {
           cell.getElement().style["background-color"] = "#FFA500";
           cell.getElement().style["color"] = "black";
-        } else if (value > 60) {
+        } else if (value > 90) {
           cell.getElement().style["background-color"] = "#FF0000";
           cell.getElement().style["color"] = "black";
         }
         return parseFloat(value).toFixed(0);
       },
+    },
+    {
+      title: "Batch Age Band",
+      field: "BATCH_AGE_BAND",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Free Stock category",
+      field: "FREE_STOCK_CATEGORY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
     },
     {
       title: "Material Group",

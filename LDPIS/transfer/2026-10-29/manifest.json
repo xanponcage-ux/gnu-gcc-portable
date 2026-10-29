@@ -1,0 +1,48 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD14S001Query.ts",
+    "Patch": "LDPIS-Backend-LD14S001Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD16S001Query.ts",
+    "Patch": "LDPIS-Backend-LD16S001Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LDLTS006Query.ts",
+    "Patch": "LDPIS-Backend-LDLTS006Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LDLTS010Query.ts",
+    "Patch": "LDPIS-Backend-LDLTS010Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD16S001.jsx",
+    "Patch": "LDPIS-Frontend-LD16S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Quality/LDLTS006.jsx",
+    "Patch": "LDPIS-Frontend-LDLTS006.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Quality/LDLTS010.jsx",
+    "Patch": "LDPIS-Frontend-LDLTS010.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Reports/LDSM012.jsx",
+    "Patch": "LDPIS-Frontend-LDSM012.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Reports/inventoryCategories.js",
+    "Patch": "LDPIS-Frontend-inventoryCategories.js.patch",
+    "NewFile": true
+  }
+]
