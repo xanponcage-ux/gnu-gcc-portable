@@ -73,3 +73,36 @@ node LDPIS/tests/ld10-excel-upload.cjs
 ```
 
 Full application build, browser workbook upload/save against Oracle, and Windows PowerShell execution remain to be verified in the office environment.
+
+## 2026-10-30 — LD11S001 Excel upload completed after confirmation
+
+The user confirmed proceeding with LD11S001. LD13S001 remains pending confirmation.
+
+LD11 now provides Download Template, Excel upload, Clear Upload and lookup status. Use the downloaded template and store Pipe_No as Excel Text. Only the first worksheet is read. Blank inspection cells use screen defaults; nonblank cells override them, including numeric zero. Headers are case-insensitive; unknown/duplicate headers, numeric pipe identifiers and duplicate pipes are rejected.
+
+The template includes the existing coating inspection fields, material manufacturer/grade/batch fields, A1–A12 and B1–B12 epoxy readings, FA1–FA12 and FB1–FB12 flow readings, RESULT, REMARKS and INSP_NAME. Database identity/order/routing fields cannot be imported. Column names match the grid data fields; use the template headers unchanged.
+
+Set shared production start/end dates and shift, upload the workbook, then click Fill Data. Excel pipes take priority over Pipe/Order filters. Lookup uses the existing CC status and preceding process 1 eligibility. Missing/ineligible pipes are listed and skipped. Failed lookups or multiple matching database records stop the fill and leave the grid empty. Inspector, remarks and result are required after merging; result must be OK or NOT OK. Inspector is visible/editable in the grid and saved per row. Existing result-based grid editing rules remain in effect. Review and select rows, then use the existing Save action; uploading/filling does not save automatically. Mandatory values are rechecked before save.
+
+### Office commands for LD11
+
+The apply script now defaults to `2026-10-30-ld11`. Run these commands in Windows PowerShell:
+
+```powershell
+git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
+```
+
+Destination defaults to `D:\LDP UAT MAY`; append `-OfficeRoot "your destination root"` to both invocations if needed. This bundle changes only LD11 application files. If LD10 has not yet been transferred, run the check and apply commands separately with `-ChangeSet "2026-10-30-ld10"`. Earlier bundles remain available. The script checks temporary copies, backs up changed files and detects repeat application; it does not commit or push to Azure.
+
+### Verification
+
+```powershell
+# From the rough repository root; test harness requires Node 22.6+.
+node LDPIS/tests/ld11-excel-upload.cjs
+```
+
+Passed: parser/merge validation, text identifiers and zero values, protected database fields, bound SQL filters, actual multi-pipe fill including missing/ambiguous/failed lookups, and actual save payload with per-row inspector and epoxy/flow values. Source syntax checks passed. All three transfer patches passed apply/content comparison/reverse checks for LF and Windows CRLF files. Full application build, browser upload/save against Oracle and native Windows PowerShell execution remain office verification tasks.
+

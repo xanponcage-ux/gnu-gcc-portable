@@ -1,0 +1,270 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD11S001.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD11S001.jsx
+index 5ea7563..5be1d3b 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD11S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD11S001.jsx
+@@ -1,3 +1,5 @@
++import * as XLSX from "xlsx";
++import { inspectionHeaders, parseInspectionRows, mergeInspectionRow, validateInspectionRow } from "./ld11ExcelUpload";
+ import React, { useEffect, useState, useRef, forwardRef } from "react";
+ 
+ // @mui material components
+@@ -185,6 +187,44 @@ export default function TubePlanning() {
+ 
+   
+ 
++  const [excelRows, setExcelRows] = useState([]);
++  const [excelMessage, setExcelMessage] = useState("");
++  const excelFileRef = useRef(null);
++  const clearExcelUpload = () => {
++    setExcelRows([]);
++    setExcelMessage("");
++    setAppTable([]);
++    if (excelFileRef.current) excelFileRef.current.value = "";
++  };
++  const handleExcelUpload = async (event) => {
++    const file = event.target.files?.[0];
++    if (!file) return;
++    setLoading(true);
++    clearExcelUpload();
++    try {
++      const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
++      const sheet = workbook.Sheets[workbook.SheetNames[0]];
++      if (!sheet) throw new Error("No worksheet found.");
++      const rows = parseInspectionRows(XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: "" }));
++      setExcelRows(rows);
++      setExcelMessage(`Loaded ${rows.length} pipes. Set production dates/shift and click Fill Data. Excel pipes take priority over Pipe/Order filters.`);
++    } catch (error) {
++      setExcelMessage(error.message);
++      alertify.error(error.message);
++    } finally {
++      setLoading(false);
++    }
++  };
++  const downloadExcelTemplate = () => {
++    const sheet = XLSX.utils.aoa_to_sheet([inspectionHeaders]);
++    sheet["!cols"] = inspectionHeaders.map(() => ({ wch: 24 }));
++    for (let row = 2; row <= 1001; row++) sheet[`A${row}`] = { t: "s", v: "", z: "@" };
++    sheet["!ref"] = "A1:" + XLSX.utils.encode_col(inspectionHeaders.length - 1) + "1001";
++    const workbook = XLSX.utils.book_new();
++    XLSX.utils.book_append_sheet(workbook, sheet, "LD11 Inspection");
++    XLSX.writeFile(workbook, "LD11S001_Inspection_Template.xlsx");
++  };
++
+  //page load
+  const fetchDetails = () => {
+   setLoading(true);
+@@ -339,6 +379,7 @@ useEffect(() => {
+     });
+ 
+     setSelectedAppTable(table);
++    return () => table.destroy();
+   } else {
+     setSelectedAppTable(null)
+   }
+@@ -906,6 +947,7 @@ useEffect(() => {
+ 
+ 
+     const updateData = async (newToken = false) => {
++      if (loading) return;
+       const token = await GetAuthorization();
+       const defaultOptions = {
+         headers: {
+@@ -913,12 +955,15 @@ useEffect(() => {
+         },
+       };
+     
+-      var selectedRows = selectedAppTable.getSelectedRows();
++      var selectedRows = selectedAppTable?.getSelectedRows() || [];
+       if (selectedRows.length == 0) {
+         alertify.error("Please select rows");
+         return;
+       }
+   
++      const validationError = selectedRows.map(item => validateInspectionRow(item.getData())).find(Boolean);
++      if (validationError) { alertify.error(validationError); return; }
++
+       const formatDate = (date) => {
+         const d = date.getDate().toString().padStart(2, "0");
+         const m = (date.getMonth() + 1).toString().padStart(2, "0"); 
+@@ -962,7 +1007,7 @@ useEffect(() => {
+           RESULT: item._row.data.RESULT ?? null,
+           REMARK: item._row.data.REMARKS ?? null,
+           HEAT_NO: item._row.data.HEAT_NO ?? null,
+-          INSP_NAME: inspectorname ?? null,
++          INSP_NAME: item._row.data.INSP_NAME ?? null,
+           PIPE_LNG_10: item._row.data.LENGTH ?? null,
+           PIPTMP_BECRM_110: item._row.data.PIPE_TEMP_BEFORE_CHROMATE ?? null,
+           CHRM_VISUAL_110: item._row.data.VISUAL_CHROMATE_APP ?? null,
+@@ -1152,6 +1197,7 @@ useEffect(() => {
+     
+    
+ const handleClearAll = (newToken = false) => {
++    clearExcelUpload();
+     
+     setInspectorName("");
+     setSelectedResult([]);
+@@ -1190,6 +1236,7 @@ const handleClearAll = (newToken = false) => {
+     };
+ 
+     const handleClearMain = (newToken = false) => {
++    clearExcelUpload();
+       setPipeNo(null)
+       setrmBatchId(null)
+       setOrdNo("")
+@@ -1277,6 +1324,7 @@ const handleClearAll = (newToken = false) => {
+   
+ 
+   const bindAppData = async () => {
++  if (loading) return;
+   try {
+     setLoading(true);
+     setAppTable([])
+@@ -1322,13 +1370,13 @@ const handleClearAll = (newToken = false) => {
+     }
+ 
+     // Modified validation - only check mandatory fields
+-    if (!inspectorname || String(inspectorname || "").trim() === "") {
++    if (!excelRows.length && (!inspectorname || String(inspectorname || "").trim() === "")) {
+       alertify.error("Inspector Name is mandatory. Please fill it.");
+       setLoading(false);
+       return;
+     }
+ 
+-    if (!selectedResult || !selectedResult.value) {
++    if (!excelRows.length && (!selectedResult || !selectedResult.value)) {
+       alertify.error("Result is mandatory. Please select it.");
+       setLoading(false);
+       return;
+@@ -1340,7 +1388,7 @@ const handleClearAll = (newToken = false) => {
+     //   return;
+     // }
+ 
+-    if (!remarks || String(remarks || "").trim() === "") {
++    if (!excelRows.length && (!remarks || String(remarks || "").trim() === "")) {
+       alertify.error("Remarks is mandatory. Please fill it.");
+       setLoading(false);
+       return;
+@@ -1356,7 +1404,7 @@ const handleClearAll = (newToken = false) => {
+         : String(ordItem || "").trim()
+     );
+ 
+-    if (!hasPipeNo && !hasOrderNo && !hasOrderItem) {
++    if (!excelRows.length && (!hasPipeNo && !hasOrderNo && !hasOrderItem)) {
+       alertify.error(
+         "Please select Pipe No or enter both Order No and Order Item"
+       );
+@@ -1364,7 +1412,7 @@ const handleClearAll = (newToken = false) => {
+       return;
+     }
+ 
+-    if (!hasPipeNo && hasOrderNo !== hasOrderItem) {
++    if (!excelRows.length && (!hasPipeNo && hasOrderNo !== hasOrderItem)) {
+       alertify.error("Both Order No and Order Item are required");
+       setLoading(false);
+       return;
+@@ -1412,16 +1460,27 @@ const handleClearAll = (newToken = false) => {
+     console.log("formValues -> inspectorname:", inspectorname, "selectedResult:", selectedResult, "selectedProcessDt:", selectedProcessDt, "pipeno:", pipeno, "ordNo:", ordNo, "ordItem:", ordItem, "rmBatchId:", rmBatchId);
+ 
+     let response;
+-    try {
++    if (excelRows.length) {
++      const data = [];
++      const skipped = [];
++      for (const uploaded of excelRows) {
++        const fetched = await axiosAPI.post("api/LD11S001/getFillData", {
++          STATUS: "CC", PIPE_NO: uploaded.pipeNo, RM_BATCH: "", ORDNO: "", ORDITEM: ""
++        }, defaultOptions);
++        if (!Array.isArray(fetched.data)) throw new Error("Invalid pipe lookup response.");
++        const matches = fetched.data.filter(row => String(row.TBP_BATCH_NO).trim() === uploaded.pipeNo);
++        if (!matches.length) { skipped.push(uploaded.pipeNo); continue; }
++        if (matches.length !== 1) throw new Error("Multiple records found for pipe " + uploaded.pipeNo);
++        data.push(matches[0]);
++      }
++      response = { status: 200, data };
++      setExcelMessage(`Fetched ${data.length}/${excelRows.length} pipes.` +
++        (skipped.length ? " Not found or not eligible: " + skipped.join(", ") : ""));
++    } else {
+       response = await axiosAPI.post("api/LD11S001/getFillData", requestData, defaultOptions);
+-      console.log("response (full):", response);
+-    } catch (err) {
+-      console.error("axios post failed:", err);
+-      alertify.error("Error contacting server: " + (err?.message || err));
+-      setLoading(false);
+-      return;
+     }
+ 
++
+     if (response.status !== 200 || !response.data) {
+       console.error("Invalid response object:", response);
+       throw new Error("Invalid response from API");
+@@ -1443,7 +1502,7 @@ const handleClearAll = (newToken = false) => {
+       REMARKS: remarks ? remarks : "" ,
+       ORDER_NO : row.ORDER_NO ? row.ORDER_NO : "",
+       ITEM : row.ITEM ? row.ITEM : "",
+-      PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || rmBatchId?.value || "",
++      PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || (excelRows.length ? "" : rmBatchId?.value) || "",
+       CUST_NAME : row.CUST_NAME ? row.CUST_NAME : "",
+       PIPE_TEMP_BEFORE_CHROMATE: pipetempbeforechromate ? pipetempbeforechromate : "",
+       VISUAL_CHROMATE_APP: visualofchromateapp ? visualofchromateapp : "",
+@@ -1460,7 +1519,8 @@ const handleClearAll = (newToken = false) => {
+       ADHESIVE_SCREW_RPM : adhesiveExtrpm ? adhesiveExtrpm : "",
+       PEPP_RPM1: peppExtrpm1 ? peppExtrpm1 : "",
+       PEPP_RPM2: peExtRPM2? peExtRPM2 : "",
+-      RESULT: selectedResult.value ? selectedResult.value : "",
++      RESULT: selectedResult?.value || "",
++      INSP_NAME: inspectorname || "",
+       CHROM_MANUFACT : chromateManufacturer ? chromateManufacturer : "",
+       CHROMATE_GRADE: Cgrade ? Cgrade : "",
+       CHROMATE_BATCH: batch1 ? batch1 : "",
+@@ -1530,10 +1590,16 @@ const handleClearAll = (newToken = false) => {
+       
+     }));
+     console.log("AppDatta",appData)
++    const uploadedByPipe = new Map(excelRows.map(row => [row.pipeNo, row.values]));
++    appData = appData.map(row => mergeInspectionRow(row, uploadedByPipe.get(String(row.PIPE_NO).trim())));
++    const validationError = appData.map(validateInspectionRow).find(Boolean);
++    if (validationError) throw new Error(validationError);
+     setAppTable(appData)
+     
+ 
+   } catch (error) {
++    setAppTable([]);
++    setExcelMessage(error.message || "Error fetching data.");
+     console.error("bindAppData error:", error);
+     if (error?.response) {
+       console.error("error.response:", error.response);
+@@ -1652,6 +1718,12 @@ const handleClearAll = (newToken = false) => {
+         },
+       },
+        {
++      title: "Inspector Name",
++      field: "INSP_NAME",
++      headerFilter: "input",
++      editor: "input",
++    },
++    {
+       title: "Remarks",
+       field: "REMARKS",
+       headerFilterPlaceholder: "search...",
+@@ -4308,11 +4380,21 @@ sx={{ "& input": {textAlign: "right",},}}
+                           style={{ marginTop: "1.5rem" }}
+                           size="small"
+                           color="info"
++                          disabled={loading}
+                           onClick={() => bindAppData()}
+                         >
+                           Fill Data
+                         </MDButton>
+                       </Grid>
++                      <Grid item xs={12}>
++                        <MDTypography variant="body2">Upload inspection Excel. Pipe_No must be Text. Blank inspection cells use screen defaults.</MDTypography>
++                        <input type="file" accept=".xlsx,.xls" ref={excelFileRef}
++                          onChange={handleExcelUpload} disabled={loading || isReadWriteAccess}
++                          aria-label="Upload LD11 inspection Excel" />
++                        <MDButton size="small" color="info" onClick={downloadExcelTemplate}>Download Template</MDButton>
++                        <MDButton size="small" color="secondary" disabled={loading} onClick={clearExcelUpload}>Clear Upload</MDButton>
++                        {excelMessage && <MDTypography variant="body2">{excelMessage}</MDTypography>}
++                      </Grid>
+                     <Grid item xs={6}>
+                                             <MDBox
+                                               sx={{

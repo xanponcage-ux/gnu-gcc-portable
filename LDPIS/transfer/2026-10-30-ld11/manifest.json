@@ -1,0 +1,18 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD11S001Query.ts",
+    "Patch": "LD11S001Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/LD11S001.jsx",
+    "Patch": "LD11S001.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Mill/ld11ExcelUpload.js",
+    "Patch": "ld11ExcelUpload.js.patch",
+    "NewFile": true
+  }
+]
