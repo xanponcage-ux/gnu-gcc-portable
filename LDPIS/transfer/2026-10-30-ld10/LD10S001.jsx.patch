@@ -1,0 +1,245 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD10S001.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD10S001.jsx
+index 84f6113..9c88e57 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD10S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD10S001.jsx
+@@ -1,4 +1,6 @@
+ import React, { useEffect, useState, useRef, forwardRef } from "react";
++import * as XLSX from "xlsx";
++import { inspectionHeaders, parseInspectionRows, mergeInspectionRow, validateInspectionRow } from "./ld10ExcelUpload";
+ 
+ // @mui material components
+ import Grid from "@mui/material/Grid";
+@@ -121,6 +123,43 @@ export default function TubePlanning() {
+   const [SHIFT, setSHIFT] = useState("");
+   const [SHIFT_DATE, setSHIFT_DATE] = useState("");
+   const [expanded, setExpanded] = useState(true);
++  const [excelRows, setExcelRows] = useState([]);
++  const [excelMessage, setExcelMessage] = useState("");
++  const excelFileRef = useRef(null);
++  const clearExcelUpload = () => {
++    setExcelRows([]);
++    setExcelMessage("");
++    setBlastTable([]);
++    if (excelFileRef.current) excelFileRef.current.value = "";
++  };
++  const handleExcelUpload = async (event) => {
++    const file = event.target.files?.[0];
++    if (!file) return;
++    setLoading(true);
++    clearExcelUpload();
++    try {
++      const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
++      const sheet = workbook.Sheets[workbook.SheetNames[0]];
++      if (!sheet) throw new Error("No worksheet found.");
++      const rows = parseInspectionRows(XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: "" }));
++      setExcelRows(rows);
++      setExcelMessage(`Loaded ${rows.length} pipes. Set production dates/shift and click Fill Data. Excel pipes take priority over Pipe/Order filters.`);
++    } catch (error) {
++      setExcelMessage(error.message);
++      alertify.error(error.message);
++    } finally {
++      setLoading(false);
++    }
++  };
++  const downloadExcelTemplate = () => {
++    const sheet = XLSX.utils.aoa_to_sheet([inspectionHeaders]);
++    sheet["!cols"] = inspectionHeaders.map(() => ({ wch: 24 }));
++    for (let row = 2; row <= 1001; row++) sheet[`A${row}`] = { t: "s", v: "", z: "@" };
++    sheet["!ref"] = "A1:" + XLSX.utils.encode_col(inspectionHeaders.length - 1) + "1001";
++    const workbook = XLSX.utils.book_new();
++    XLSX.utils.book_append_sheet(workbook, sheet, "LD10 Inspection");
++    XLSX.writeFile(workbook, "LD10S001_Inspection_Template.xlsx");
++  };
+   
+ 
+   const fetchDetails = () => {
+@@ -367,6 +406,7 @@ export default function TubePlanning() {
+ 
+ 
+     const updateData = async (newToken = false) => {
++      if (loading) return;
+       console.log("ehee");
+       const token = await GetAuthorization();
+       const defaultOptions = {
+@@ -375,11 +415,13 @@ export default function TubePlanning() {
+         },
+       };
+     
+-      var selectedRows = selectedBlastTable.getSelectedRows();
++      var selectedRows = selectedBlastTable?.getSelectedRows() || [];
+       if (selectedRows.length == 0) {
+         alertify.error("Please select rows");
+         return;
+       }
++      const validationError = selectedRows.map(item => validateInspectionRow(item.getData())).find(Boolean);
++      if (validationError) { alertify.error(validationError); return; }
+     
+       const formatDate = (date) => {
+         const d = date.getDate().toString().padStart(2, "0");
+@@ -621,6 +663,7 @@ export default function TubePlanning() {
+     };
+ 
+   const handleClearAll = (newToken = false) => {
++    clearExcelUpload();
+     setPTempBeforeBlast("");
+     setPTempBeforeAcidWash("");
+     setPhBeforeAcidWash("");
+@@ -656,6 +699,7 @@ export default function TubePlanning() {
+   };
+ 
+   const handleClearMain = (newToken = false) => {
++    clearExcelUpload();
+     setPipeNo(null)
+     setrmBatchId(null)
+     setOrdNo("")
+@@ -771,6 +815,7 @@ export default function TubePlanning() {
+       });
+ 
+       setSelectedBlastTable(table);
++      return () => table.destroy();
+     } else {
+       setSelectedBlastTable(null)
+     }
+@@ -778,6 +823,7 @@ export default function TubePlanning() {
+ 
+ 
+   const bindBlastData = async () => {
++  if (loading) return;
+   try {
+     setLoading(true);
+     setBlastTable([]);
+@@ -828,7 +874,7 @@ export default function TubePlanning() {
+     const hasOrderNo = Boolean(normalizedOrderNo);
+     const hasOrderItem = Boolean(normalizedOrderItem);
+ 
+-    if (!hasPipeNo && !hasOrderNo && !hasOrderItem) {
++    if (!excelRows.length && !hasPipeNo && !hasOrderNo && !hasOrderItem) {
+       alertify.error(
+         "Please select Pipe No or enter both Order No and Order Item."
+       );
+@@ -836,26 +882,26 @@ export default function TubePlanning() {
+       return;
+     }
+ 
+-    if (!hasPipeNo && hasOrderNo !== hasOrderItem) {
++    if (!excelRows.length && !hasPipeNo && hasOrderNo !== hasOrderItem) {
+       alertify.error("Both Order No and Order Item are required.");
+       setLoading(false);
+       return;
+     }
+ 
+     // Updated validation: Only check mandatory fields after shift
+-    if (!visualinsp || visualinsp.trim() === "") {
++    if (!excelRows.length && (!visualinsp || visualinsp.trim() === "")) {
+       alertify.error("Please enter Visual Inspection.");
+       setLoading(false);
+       return;
+     }
+ 
+-    if (!degreeofcleanliness || degreeofcleanliness.trim() === "") {
++    if (!excelRows.length && (!degreeofcleanliness || degreeofcleanliness.trim() === "")) {
+       alertify.error("Please enter Degree of Cleanliness.");
+       setLoading(false);
+       return;
+     }
+ 
+-    if (!remarks || remarks.trim() === "") {
++    if (!excelRows.length && (!remarks || remarks.trim() === "")) {
+       alertify.error("Please enter Remarks.");
+       setLoading(false);
+       return;
+@@ -867,13 +913,13 @@ export default function TubePlanning() {
+     //   return;
+     // }
+ 
+-    if (!selectedResult || !selectedResult.value) {
++    if (!excelRows.length && (!selectedResult || !selectedResult.value)) {
+       alertify.error("Please select Result.");
+       setLoading(false);
+       return;
+     }
+ 
+-    if (!inspectorname || inspectorname.trim() === "") {
++    if (!excelRows.length && (!inspectorname || inspectorname.trim() === "")) {
+       alertify.error("Please enter Inspector Name.");
+       setLoading(false);
+       return;
+@@ -895,7 +941,26 @@ export default function TubePlanning() {
+     };
+ 
+     
+-    const response = await axiosAPI.post("api/LD10S001/getFillData", requestData, defaultOptions);
++    let response;
++    if (excelRows.length) {
++      const data = [];
++      const skipped = [];
++      for (const uploaded of excelRows) {
++        const fetched = await axiosAPI.post("api/LD10S001/getFillData", {
++          STATUS: "BC", PIPE_NO: uploaded.pipeNo, RM_BATCH: "", ORDNO: "", ORDITEM: ""
++        }, defaultOptions);
++        if (!Array.isArray(fetched.data)) throw new Error("Invalid pipe lookup response.");
++        const matches = fetched.data.filter(row => String(row.TBP_BATCH_NO).trim() === uploaded.pipeNo);
++        if (!matches.length) { skipped.push(uploaded.pipeNo); continue; }
++        if (matches.length !== 1) throw new Error("Multiple records found for pipe " + uploaded.pipeNo);
++        data.push(matches[0]);
++      }
++      response = { status: 200, data };
++      setExcelMessage(`Fetched ${data.length}/${excelRows.length} pipes.` +
++        (skipped.length ? " Not found or not eligible: " + skipped.join(", ") : ""));
++    } else {
++      response = await axiosAPI.post("api/LD10S001/getFillData", requestData, defaultOptions);
++    }
+ 
+     if (response.status !== 200 || !response.data) {
+       throw new Error("Invalid response from API");
+@@ -955,7 +1020,7 @@ export default function TubePlanning() {
+       ASL_NO: row.TBP_ASL_NO_80 ? row.TBP_ASL_NO_80 : "",
+       START_DT: prodStartDateVal,
+       END_DT: prodEndDateVal,
+-      RESULT: selectedResult.value ? selectedResult.value : "",
++      RESULT: selectedResult?.value || "",
+       REMARKS: remarks ? remarks : "",
+       HEAT_NO: row.TBP_HEAT_NO ? row.TBP_HEAT_NO : "",
+       INSP_NAME: inspectorname ? inspectorname : "",
+@@ -989,11 +1054,17 @@ export default function TubePlanning() {
+     }) );
+     console.log("dummydata",dummyData)
+ 
++    const uploadedByPipe = new Map(excelRows.map(row => [row.pipeNo, row.values]));
++    dummyData = dummyData.map(row => mergeInspectionRow(row, uploadedByPipe.get(String(row.PIPE_NO).trim())));
++    const validationError = dummyData.map(validateInspectionRow).find(Boolean);
++    if (validationError) throw new Error(validationError);
+     setBlastTable(dummyData);
+     
+   } catch (error) {
+     //console.error("Error fetching API data:", error);
+-    alertify.error("Error fetching data.");
++    setBlastTable([]);
++    setExcelMessage(error.message || "Error fetching data.");
++    alertify.error(error.message || "Error fetching data.");
+ 
+   } finally {
+     setLoading(false);
+@@ -2717,12 +2788,22 @@ export default function TubePlanning() {
+                           style={{ marginTop: "1.5rem" }}
+                           size="small"
+                           color="info"
++                          disabled={loading}
+                           onClick={() => bindBlastData()}
+                         >
+                           Fill Data
+                         </MDButton>
+                       </Grid>
+ 
++                      <Grid item xs={12}>
++                        <MDTypography variant="body2">Upload inspection Excel. Pipe_No must be Text. Blank inspection cells use screen defaults.</MDTypography>
++                        <input type="file" accept=".xlsx,.xls" ref={excelFileRef}
++                          onChange={handleExcelUpload} disabled={loading || isReadWriteAccess}
++                          aria-label="Upload LD10 inspection Excel" />
++                        <MDButton size="small" color="info" onClick={downloadExcelTemplate}>Download Template</MDButton>
++                        <MDButton size="small" color="secondary" disabled={loading} onClick={clearExcelUpload}>Clear Upload</MDButton>
++                        {excelMessage && <MDTypography variant="body2">{excelMessage}</MDTypography>}
++                      </Grid>
+                       <Grid item xs={6}>
+                         <MDBox
+                           sx={{
