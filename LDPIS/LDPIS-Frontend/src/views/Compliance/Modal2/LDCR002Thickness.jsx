@@ -188,7 +188,7 @@ export default function MaxWidthDialogThick(props) {
   }
   `;
   
-    const rowsPerPage = 12;
+    const rowsPerPage = 10;
     const numPages = Math.max(1, Math.ceil(getthick?.length / rowsPerPage));
 
 //   const qrValue = () => {
@@ -357,14 +357,14 @@ export default function MaxWidthDialogThick(props) {
                     
                     <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>     
                     <Grid container xs = {12} >
-                      <Grid item xs={0.5}     style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={1}       style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO</Grid>
-                      <Grid item xs={0.75}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ASL NO</Grid>
+                      <Grid item xs={0.40}     style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.<br />NO.</Grid>
+                      <Grid item xs={0.75}       style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO</Grid>
+                      <Grid item xs={0.65}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ASL NO</Grid>
             
                                             <Grid item xs={4.8} colSpan={6} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    TOTAL COATING THICKNESS MINIMUM {getthick?.length > 0  ? getthick[0].TCP_CP2_TOT_CTHICK_MIN : ' '}  (MM) REQUIRED THICKNESS
+                                                   <br /> TOTAL COATING THICKNESS MINIMUM {getthick?.length > 0  ? getthick[0].TCP_CP2_TOT_CTHICK_MIN : ' '}  (MM) REQUIRED THICKNESS
                                                     </Grid>
                                                     <Grid item xs={3} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>3 O'CLOCK</Grid>
                                                     <Grid item xs={3} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>6 O'CLOCK</Grid>
@@ -373,18 +373,18 @@ export default function MaxWidthDialogThick(props) {
                                               </Grid>
                                              </Grid>                                           
 
-                      <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>VISUAL OF COATED PIPE</Grid>
-                      <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>COATING STATUS</Grid>
-                      <Grid item xs={2.15}      style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST ON PIPE</Grid>
-                      <Grid item xs={1.3}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS / <br /> QUENCHING TEMP (°C)</Grid>
+                      <Grid item xs={0.65}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>VISUAL OF COATED PIPE</Grid>
+                      <Grid item xs={0.65}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>COATING STATUS</Grid>
+                      <Grid item xs={3.35}      style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST ON PIPE</Grid>
+                      <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS / <br /> QUENCHING TEMP (°C)</Grid>
 
                       {getthick
                             .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
                             .map((dataRow, i) => (
 <Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.5}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                            <Grid item xs={1}    style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_BATCH_NO !== null ? dataRow.TBP_BATCH_NO : <br />}</Grid>
-                            <Grid item xs={0.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_ASL_NO_80 !== null ? dataRow.TBP_ASL_NO_80 : <br />}</Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{pageIndex * rowsPerPage + i + 1}</Grid>
+                            <Grid item xs={0.75}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_BATCH_NO !== null ? dataRow.TBP_BATCH_NO : <br />}</Grid>
+                            <Grid item xs={0.65} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_ASL_NO_80 !== null ? dataRow.TBP_ASL_NO_80 : <br />}</Grid>
                             
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_1_120 !== null ? Number(dataRow.TBP_COT_THK_1_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_2_120 !== null ? Number(dataRow.TBP_COT_THK_2_120).toFixed(2) : <br />}</Grid>
@@ -399,10 +399,10 @@ export default function MaxWidthDialogThick(props) {
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_11_120 !== null ? Number(dataRow.TBP_COT_THK_11_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_12_120 !== null ? Number(dataRow.TBP_COT_THK_12_120).toFixed(2) : <br />}</Grid>
                             
-                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.VISUAL !== null ? dataRow.VISUAL : <br />}</Grid>
-                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
-                            <Grid item xs={2.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_TEST_PIP_120 !== null ? dataRow.TBP_TEST_PIP_120 : <br />}</Grid>
-                            <Grid item xs={1.3}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_QTEMP_120 !== null ? dataRow.TBP_QTEMP_120 : <br />}</Grid>
+                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_TEST_PIP_120 !== null ? dataRow.TBP_TEST_PIP_120 : <br />}</Grid>
+                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
+                            <Grid item xs={3.35} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_ONPIPE !== null ? dataRow.TEST_ONPIPE : <br />}</Grid>
+                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_QTEMP_120 !== null ? dataRow.TBP_QTEMP_120 : <br />}</Grid>
                          </Grid>
                       ))}
 
@@ -410,27 +410,27 @@ export default function MaxWidthDialogThick(props) {
 {Array.from({ length: Math.max(0, rowsPerPage - getthick.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
-                            <Grid item xs={0.5}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={1}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
 
-                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={2.15}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
-                            <Grid item xs={1.3}  style={{ fontSize: '7px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={3.35}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.75}  style={{ fontSize: '7px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             
                          </Grid>
                       ))}

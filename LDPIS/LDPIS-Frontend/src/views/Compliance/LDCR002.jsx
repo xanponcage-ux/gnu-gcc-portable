@@ -70,6 +70,12 @@ export default function LDCR002() {
   const [plant, setPlant] = useState([]);
   const [selectedPlant, setSelectedPlant] = React.useState([]);
 
+    const [pipelist, setpipelist] = useState([]);
+    const [slitlist, setSlitlist] = useState([]);
+    // const [selectedpipelist, setselectedpipelist] = React.useState([]);
+        // const [selectedpipelist, setselectedpipelist] = React.useState(null); // Changed from []
+const [selectedpipelist, setselectedpipelist] = React.useState([]);
+
   const [reviewedBy, setReviewedBy] = useState("");
 
   const [GainA, setGainA] = useState("");
@@ -102,13 +108,15 @@ export default function LDCR002() {
   const [instrumentName4, setInstrumentName4] = useState("");
   const [instrumentId4, setInstrumentId4] = useState("");
 
-  const handleOrderNoChange = (e) => {
-    setOrderNo(e.target.value);
-  };
+const handleOrderNoChange = (e) => {
+  setOrderNo(e.target.value);
+  // GetPipenomulti(); // This call will now need to pass the token
+};
 
-  const handleitemChange = (e) => {
-    setitem(e.target.value);
-  };
+const handleitemChange = (e) => {
+  setitem(e.target.value);
+  // GetPipenomulti(); // This call will now need to pass the token
+};
 
   // const handlematnoChange = (e) => {
   //   setmatno(e.target.value);
@@ -139,6 +147,7 @@ export default function LDCR002() {
 
 
   var customerTable = React.createRef();
+
 
   const [selectedSpecimen, setSelectedSpecimen] = useState(null);
 
@@ -182,6 +191,24 @@ export default function LDCR002() {
     { label: "N", value: "N" },
   ];
 
+const hideCoatingFields =
+  selectedrepType?.value === "2C" ||
+  selectedrepType?.value === "2L";
+
+  const hidePrintingFields =
+  selectedrepType?.value === "2H" ||
+  selectedrepType?.value === "2I" ||
+  selectedrepType?.value === "2J" ||
+  selectedrepType?.value === "2K" ||
+  selectedrepType?.value === "2D" ||
+  selectedrepType?.value === "2E" ||
+  selectedrepType?.value === "2X" ||
+    selectedrepType?.value === "2B"  ;
+
+  console.log(hideCoatingFields);
+  console.log(hidePrintingFields);
+
+
   const UnitType = [
     { label: "N/mm", value: "N/mm" },
     { label: "Kg/cm", value: "Kg/cm" },
@@ -216,6 +243,86 @@ export default function LDCR002() {
     return true;
   };
 
+  // Define GetPipenomulti to accept accessToken
+    const GetPipenomulti = (accessToken) => {
+      return new Promise((resolve) => {
+        var defaultOptions = {
+          headers: {
+            Authorization: "Bearer " + accessToken,
+          },
+        };
+
+        var url = "api/LDCR002/GetPipenomulti";
+        let roundsectionmillValue = "4";
+
+        let data = {
+          plant: '0780',
+          crdate: crdate
+            ? crdate.toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            }).replace(/ /g, "-").replace("Sept", "Sep")
+            : "",
+          item: item,
+          orderNo: orderNo,
+          roundsectionmill: roundsectionmillValue
+        };
+
+        axiosAPI.post(url, data, defaultOptions)
+          .then(response => {
+            let formattedPipeList = [];
+            // Transform the data into { label: "...", value: "..." } format
+            response.data?.forEach((row) => {
+              if (row && row.length > 0) {
+                formattedPipeList.push({ label: row[0], value: row[0] });
+              }
+            });
+            setpipelist(formattedPipeList); // Update the pipelist state
+            console.log("Fetched and formatted pipe data:", formattedPipeList);
+          })
+          .catch(error => {
+            console.error("Error fetching pipe list:", error);
+            alertify.error("Failed to fetch pipe list.");
+          })
+          .finally(() => {
+            resolve();
+          });
+      });
+    };
+
+
+  useEffect(() => {
+    if(selectedrepType?.value === "2J" ){
+    if (crdate && orderNo && item ) {
+      GetAuthorization().then(token => {
+        GetPipenomulti(token.accessToken); // Pass the accessToken here
+      });
+    }
+  }
+  }, [crdate, orderNo, item]);
+
+
+const handlepipelistChange = (value) => {
+  setselectedpipelist(value);
+
+  // If you need all selected pipe numbers
+  const selectedPipeNos = value?.map(pipe => pipe.value) || [];
+
+  console.log("Selected Pipes:", selectedPipeNos);
+
+  // If getSlitnomill supports multiple calls
+  GetAuthorization().then((token) => {
+    Promise.all(
+      selectedPipeNos.map(pipeNo =>
+        getSlitnomill(pipeNo, token.accessToken)
+      )
+    ).finally(() => {
+      setLoading(false);
+    });
+  });
+};
+
   const handleOpenModal = () => {
     if (
       selectedrepType?.value === null ||
@@ -228,17 +335,17 @@ export default function LDCR002() {
           alertify.error("Please select Order No");
           return;
         }
-    
+
         if ( !item) {
           alertify.error("Please select  Item");
           return;
         }
-    
+
         if ( !crdate) {
           alertify.error("Please select  Date");
           return;
         }
-    
+
         if ( !reviewedBy) {
           alertify.error("Please Fill Revieved By");
           return;
@@ -268,7 +375,7 @@ export default function LDCR002() {
       setModalType("TRIAL");
     } else if (selectedrepType?.value === "2H") {
       // const errFlag = checkInlet();
-      // if (errFlag) 
+      // if (errFlag)
         setModalType("INLET");
     } else if (selectedrepType?.value === "2I") {
       setModalType("BLASTING");
@@ -365,7 +472,7 @@ export default function LDCR002() {
             "You are not authorized to make changes from this page",
           );
         }
-        // }
+        // }\
       } else {
         setRestricted(true);
         setAdmin(false);
@@ -530,6 +637,8 @@ export default function LDCR002() {
     // selectedEndFacingTable([]);
   };
 
+
+
     const handlepShiftChange = (value) => {
     setSelectedpShift(value);
   };
@@ -556,6 +665,8 @@ export default function LDCR002() {
     setInstrumentId2("");
     setWiNo("");
     setrepairmat("");
+          setpipelist([]); // Clear the pipe options list
+      setselectedpipelist(null); // Clear the selected pipe
   };
 
   return (
@@ -725,6 +836,8 @@ export default function LDCR002() {
                         />
                       </Grid> */}
 
+
+                      {!hideCoatingFields  && (
                       <Grid item xs={1}>
                         <MDTypography
                           fontWeight="regular"
@@ -742,6 +855,9 @@ export default function LDCR002() {
                           onChange={(date) => setcrdate(date)}
                         />
                       </Grid>
+                        )}
+
+                      {!hideCoatingFields  && (
                       <Grid item xs={1}>
                         <MDTypography
                           fontWeight="regular"
@@ -761,172 +877,11 @@ export default function LDCR002() {
                           value={selectedShift}
                         />
                       </Grid>
-
-                      {/* <Grid item xs={1} style={{ zIndex: 3 }}>
-                        <MDTypography
-                          fontWeight="regular"
-                          fontSize="small"
-                          textTransform="capitalize"
-                          variant="h6"
-                          color={"dark"}
-                          noWrap
-                        >
-                          Heat No
-                        </MDTypography>
-                        <MDInput
-                          name="HeatNo"
-                          iseditable="false"
-                          value={heatno}
-                          onChange={handleheatnoChange}
-                        />
-                      </Grid> */}
-
-                      {/* <Grid item xs={1.5} style={{ zIndex: 3 }}>
-                        <MDTypography
-                          fontWeight="regular"
-                          fontSize="small"
-                          textTransform="capitalize"
-                          variant="h6"
-                          color={"dark"}
-                          noWrap
-                        >
-                          Pipe No
-                        </MDTypography>
-                        <MDInput
-                          name="Pipeno"
-                          iseditable="false"
-                          value={pipeno}
-                          onChange={handlepipenoChange}
-                        />
-                      </Grid> */}
-
-                      {selectedrepType?.value === "2" && (
-                        <Grid item xs={6}>
-                          <FormControl>
-                            <FormLabel id="demo-row-radio-buttons-group-label-Test-Method">
-                              Test Method
-                            </FormLabel>
-                            <RadioGroup
-                              row
-                              aria-labelledby="demo-row-radio-buttons-group-label-Test-Method"
-                              name="row-radio-buttons-group-Test-Method"
-                              value={valueRadio}
-                              onChange={handleRadioChange}
-                              noWrap
-                            >
-                              <FormControlLabel
-                                value="1"
-                                control={<Radio />}
-                                label="ASTM A 370 Latest Edition"
-                              />
-                              <FormControlLabel
-                                value="2"
-                                control={<Radio />}
-                                label="IS 1608-1 Latest Edition"
-                              />
-                              <FormControlLabel
-                                value="3"
-                                control={<Radio />}
-                                label="ISO 6892-1 Latest Edition"
-                              />
-                            </RadioGroup>
-                          </FormControl>
-                        </Grid>
                       )}
 
-                      {selectedrepType?.value === "4" && (
-                        <Grid item xs={6}>
-                          <MDTypography
-                            fontWeight="regular"
-                            fontSize="small"
-                            textTransform="capitalize"
-                            variant="h6"
-                            color={"dark"}
-                            noWrap
-                          >
-                            Specimen Size
-                          </MDTypography>
-                          <ReactSelect
-                            id="Specimen"
-                            options={Specimen}
-                            value={selectedSpecimen}
-                            onChange={setSelectedSpecimen}
-                          />
-                        </Grid>
-                      )}
-                      {(selectedrepType?.value === "9" ||
-                        selectedrepType?.value === "18") && (
-                        <Grid item xs={6}>
-                          <FormControl>
-                            <FormLabel id="demo-row-radio-buttons-group-label-Printing-Option">
-                              Printing Option
-                            </FormLabel>
-                            <RadioGroup
-                              row
-                              aria-labelledby="demo-row-radio-buttons-group-label-Printing-Option"
-                              name="row-radio-buttons-group-Printing-Option"
-                              value={printoption}
-                              onChange={handleprintoptionchange}
-                              noWrap
-                            >
-                              <FormControlLabel
-                                value="R"
-                                control={<Radio />}
-                                label="Round Pipe"
-                              />
-                              <FormControlLabel
-                                value="S"
-                                control={<Radio />}
-                                label="Section Pipe"
-                              />
-                            </RadioGroup>
-                          </FormControl>
-                        </Grid>
-                      )}
 
-                      {(selectedrepType?.value === "13" ||
-                        selectedrepType?.value === "14") && (
-                        <Grid item xs={3}>
-                          <MDTypography
-                            fontWeight="regular"
-                            fontSize="small"
-                            textTransform="capitalize"
-                            variant="h6"
-                            color={"dark"}
-                            noWrap
-                          >
-                            Gain (AUT)
-                          </MDTypography>
-                          <MDInput
-                            name="GainA"
-                            iseditable="false"
-                            onChange={handleGainA}
-                          />
-                        </Grid>
-                      )}
 
-                      {(selectedrepType?.value === "13" ||
-                        selectedrepType?.value === "14") && (
-                        <Grid item xs={3}>
-                          <MDTypography
-                            fontWeight="regular"
-                            fontSize="small"
-                            textTransform="capitalize"
-                            variant="h6"
-                            color={"dark"}
-                            noWrap
-                          >
-                            Gain (MUT-Angle Probe)
-                          </MDTypography>
-                          <MDInput
-                            name="GainM"
-                            iseditable="false"
-                            onChange={handleGainM}
-                          />
-                        </Grid>
-                      )}
-                                   {(selectedrepType?.value !== "2H" ||
-                        selectedrepType?.value !== "2H") && (
+                                   {!hidePrintingFields && (
                                            <Grid item xs={1} style={{ zIndex: 3 }}>
                                               <MDTypography
                                                 fontWeight="regular"
@@ -945,8 +900,8 @@ export default function LDCR002() {
                                               />
                                             </Grid>
                                             )}
-                        {(selectedrepType?.value !== "2H" ||
-                        selectedrepType?.value !== "2H") && (
+
+                        {!hidePrintingFields && (
 
                                             <Grid item xs={1}>
                                               <MDTypography
@@ -987,6 +942,29 @@ export default function LDCR002() {
                           onChange={handleReviewedByChange}
                         />
                       </Grid>
+
+                                           {(selectedrepType.value === '2J')
+                                            && (
+                                              <Grid item xs={1.7} style={{ zIndex: 2 }}>
+                                              <MDTypography
+                                                fontWeight="regular"
+                                                fontSize="small"
+                                                textTransform="capitalize"
+                                                variant="h6"
+                                                color={"dark"}
+                                                noWrap
+                                              >
+                                                Pipe No
+                                              </MDTypography>
+<ReactSelect
+  id="pipeno1"
+  options={pipelist}
+  value={selectedpipelist}
+  onChange={handlepipelistChange}
+  isMulti
+/>
+                                            </Grid>
+                                            )}
 
                       {/* Instrument Name & Instrument ID */}
                       {(selectedrepType?.value !== "2C" && selectedrepType?.value !== "2I" && selectedrepType?.value !== "2L" )&& (
@@ -1106,7 +1084,7 @@ export default function LDCR002() {
                       )}
 
                       {/* Procedure / WI No */}
-                      {(selectedrepType?.value === "2I" || 
+                      {(selectedrepType?.value === "2I" ||
                       selectedrepType?.value === "2L"
                         ) && (
                         <Grid item xs={1.5}>
@@ -1691,6 +1669,7 @@ export default function LDCR002() {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                             selectedpipelist={selectedpipelist} 
                             // instrumentName={instrumentName}
                             // instrumentId={instrumentId}
                             wiNo={wiNo}

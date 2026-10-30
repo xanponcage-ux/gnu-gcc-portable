@@ -4,6 +4,21 @@ import LDCR002 from "../models/LDCR002Model";
 import { Post } from "../typed/typed";
 import { ResponceData } from "../utils";
 
+export const GetPipenomulti = async (req: Request, res: Response) => {
+    try {
+        let plant = req.body.plant;
+        let crdate = req.body.crdate;
+        let item = req.body.item;
+        let orderNo = req.body.orderNo;
+        let roundsectionmill = req.body.roundsectionmill;
+        console.log('Controller',plant);
+        const results: any = await LDCR002.prototype.GetPipenomulti(plant,crdate,item,orderNo,roundsectionmill);
+        return res.status(200).json(results.rows);
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+};
+
 export const getautomaticweld = async (req: Request, res: Response) => {
   try {
     var {
@@ -830,6 +845,7 @@ export const getapplicationdata = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
+      selectedpipelist,
       // rmno
     } = req.body;
 
@@ -840,7 +856,8 @@ export const getapplicationdata = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
+      pipeno,
+      selectedpipelist
       // rmno
     );
     const table: any = [];

@@ -4,6 +4,8 @@ import authenticationMiddleware from "../middlewares/authenticationMiddleware";
 
 const LDCR002Route = Router();
 
+LDCR002Route.route('/GetPipenomulti').post(authenticationMiddleware.bearer, controller.GetPipenomulti);
+
 LDCR002Route.route("/getAirdata").post(
   authenticationMiddleware.bearer,
   controller.getAirdata

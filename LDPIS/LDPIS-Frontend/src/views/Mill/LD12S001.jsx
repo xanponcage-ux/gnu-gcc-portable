@@ -4050,7 +4050,7 @@ return isNaN(num) ? value : num.toFixed(2);
                             color={"dark"}
                             noWrap
                           >
-                            Test on Pipe
+                            VISUAL OF COATED PIPE
                           </MDTypography>
                           <MDInput
                             label=""

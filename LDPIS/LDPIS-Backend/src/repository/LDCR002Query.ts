@@ -3,6 +3,36 @@ import { Post } from "../typed/typed";
 import Error from "../models/errors";
 import oracledb from "oracledb";
 
+export const GetPipenomulti = async (
+  plant: any,
+  crdate: any,
+  item: any,
+  orderNo: any,
+  roundsectionmill: any
+) => {
+  try {
+    let sql = "";
+
+    if (roundsectionmill === "4") {
+      sql = `SELECT DISTINCT T2.LOM_ID_BATCH
+              FROM V_bare_pdo t, V_LDP_PRODN T2
+              WHERE 
+                T.TBP_PROD_DATE = '${crdate}'
+                AND t.tbp_id_order_no = '${orderNo}'
+                AND t.tbp_item_no = '${item}'
+                AND t.tbp_cd_proc = 'C'
+                AND T.TBP_BATCH_NO = T2.LOM_ID_BATCH
+                AND LOM_CD_EPA = '${plant}'
+                order by LOM_ID_BATCH `;
+    }
+
+    console.log("------GetPipenomillround>", sql);
+    return await query.executeQuery(sql);
+  } catch (error) {
+    throw new Error.InternalServerErrorMsg(error);
+  }
+};
+
 export const getchemdata = async (
   plant: any,
   orderNo: any,
@@ -1552,7 +1582,8 @@ export const getapplicationdata = async (
   matno: any,
   crdate: any,
   heatno: any,
-  pipeno: any
+  pipeno: any,
+  selectedpipelist: any
   // ,rmno: any
 ) => {
   try {
@@ -1684,8 +1715,8 @@ SELECT
       // binds["heatno"] = heatno;
     }
 
-    if (pipeno && pipeno !== "" && pipeno !== null) {
-      sql += ` AND t3.tbp_batch_no = '${pipeno}' `; // changed BETWEEN to =
+    if (selectedpipelist && selectedpipelist !== "" && selectedpipelist !== null) {
+      sql += ` AND t3.tbp_batch_no IN (${selectedpipelist}) `; // changed BETWEEN to =
       // binds["pipeno"] = pipeno;
     }
 
@@ -1723,7 +1754,7 @@ export const getthickness = async (
 ) => {
   try {
     var sql = `
-       SELECT    
+       SELECT     A.TEST_ONPIPE,
        TO_CHAR (t3.tbp_prod_date, 'DD.MM.YYYY')
        || ' & '
        || t3.tbp_shift_DN date_shift,
@@ -1767,7 +1798,7 @@ export const getthickness = async (
        t3.tbp_coat_stas_120, 
        t3.tbp_test_pip_120,
        t3.tbp_prod_date, 
-        t3.tbp_result VISUAL,
+      t3.tbp_result ,
        t3.tbp_shift,
        t3.tbp_dia_end_10,
        t3.TBP_QTEMP_120,
@@ -1776,7 +1807,16 @@ where t4.elf_batch_no = t3.tbp_batch_no and t4.elf_prod_date=t3.tbp_prod_date an
   FROM v_process_sheet_ec t,
        v_end_cust_ord_epa t1,
        v_ldp_prodn t2,
-       v_bare_pdo t3
+       v_bare_pdo t3,
+       (
+    SELECT ELF_BATCH_NO,
+           ELF_PLANT_CD,
+           ELF_PROD_DATE,
+           LISTAGG(DISTINCT ELF_TEST_NAME, ', ')
+             WITHIN GROUP (ORDER BY ELF_TEST_NAME) AS TEST_ONPIPE
+    FROM V_lab_field_test_EC
+    GROUP BY ELF_BATCH_NO, ELF_PLANT_CD, ELF_PROD_DATE
+) A
  WHERE t.tpc_order_id = t1.enc_id_order
    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
    --AND t.tpc_order_id = t2.lom_id_order_cus
@@ -1785,6 +1825,9 @@ where t4.elf_batch_no = t3.tbp_batch_no and t4.elf_prod_date=t3.tbp_prod_date an
       AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
    AND t3.tbp_batch_no = t2.lom_id_batch
    AND t3.tbp_cd_proc = 'D'
+       and A.ELF_BATCH_NO = T3.tbp_batch_no
+    and A.ELF_PLANT_CD = T2.LOM_CD_EPA  
+    and A.ELF_PROD_DATE = T3.TBP_PROD_DATE
 --FILTER COND.
    --AND t.tpc_order_id = '0060977580'
    --AND TO_NUMBER (t.tpc_order_item) = 1

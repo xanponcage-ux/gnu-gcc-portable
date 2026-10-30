@@ -2,6 +2,11 @@ import * as repository from "../repository/LDCR002Query";
 import { Post } from "../typed/typed";
 import Error from "./errors";
 export default class LDCR002 {
+
+    GetPipenomulti(plant: any,crdate: any,item: any,orderNo: any,roundsectionmill: any) {
+      return repository.GetPipenomulti(plant,crdate,item,orderNo,roundsectionmill);
+    }
+    
   getVdidata(
     plant: any,
     orderNo: any,
@@ -361,7 +366,8 @@ export default class LDCR002 {
     matno: any,
     crdate: any,
     heatno: any,
-    pipeno: any
+    pipeno: any,
+    selectedpipelist: any
     //   ,rmno: any
   ) {
     return repository.getapplicationdata(
@@ -371,7 +377,8 @@ export default class LDCR002 {
       matno,
       crdate,
       heatno,
-      pipeno
+      pipeno,
+      selectedpipelist
       // ,rmno
     );
   }
