@@ -1,3 +1,5 @@
+import * as XLSX from "xlsx";
+import { inspectionHeaders, parseInspectionRows, mergeInspectionRow, validateInspectionRow } from "./ld13ExcelUpload";
 import React, { useEffect, useState, useRef, forwardRef } from "react";
 
 // @mui material components
@@ -112,6 +114,44 @@ export default function TubePlanning() {
   const [selectedLPETable, setSelectedLPETable] = useState(null);
   const [expanded, setExpanded] = useState(true);
   const [expanded1, setExpanded1] = useState(true);
+  const [excelRows, setExcelRows] = useState([]);
+  const [excelMessage, setExcelMessage] = useState("");
+  const excelFileRef = useRef(null);
+  const clearExcelUpload = () => {
+    setExcelRows([]);
+    setExcelMessage("");
+    setLPETable([]);
+    if (excelFileRef.current) excelFileRef.current.value = "";
+  };
+  const handleExcelUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setLoading(true);
+    clearExcelUpload();
+    try {
+      const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      if (!sheet) throw new Error("No worksheet found.");
+      const rows = parseInspectionRows(XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: "" }));
+      setExcelRows(rows);
+      setExcelMessage(`Loaded ${rows.length} pipes. Set production dates, final inspection date and shift and click Fill Data. Excel pipes take priority over Pipe/Order filters.`);
+    } catch (error) {
+      setExcelMessage(error.message);
+      alertify.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const downloadExcelTemplate = () => {
+    const sheet = XLSX.utils.aoa_to_sheet([inspectionHeaders]);
+    sheet["!cols"] = inspectionHeaders.map(() => ({ wch: 24 }));
+    for (let row = 2; row <= 1001; row++) sheet[`A${row}`] = { t: "s", v: "", z: "@" };
+    sheet["!ref"] = "A1:" + XLSX.utils.encode_col(inspectionHeaders.length - 1) + "1001";
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, sheet, "LD13 Inspection");
+    XLSX.writeFile(workbook, "LD13S001_Inspection_Template.xlsx");
+  };
+
 
   const fetchDetails = () => {
     setLoading(true);
@@ -449,6 +489,7 @@ const showErrorAlert = (errorMessage) => {
       });
 
       setSelectedLPETable(table);
+      return () => table.destroy();
     } else {
       setSelectedLPETable(null);
     }
@@ -706,6 +747,7 @@ const showErrorAlert = (errorMessage) => {
   };
 
   const updateData = async (newToken = false) => {
+    if (loading) return;
     const token = await GetAuthorization();
     const defaultOptions = {
       headers: {
@@ -713,11 +755,14 @@ const showErrorAlert = (errorMessage) => {
       },
     };
 
-    var selectedRows = selectedLPETable.getSelectedRows();
+    var selectedRows = selectedLPETable?.getSelectedRows() || [];
     if (selectedRows.length == 0) {
       alertify.error("Please select rows");
       return;
     }
+
+    const validationError = selectedRows.map(item => validateInspectionRow(item.getData(), true)).find(Boolean);
+    if (validationError) { alertify.error(validationError); return; }
 
     const missingFieldNo = selectedRows.find(
       (item) => !String(item._row.data.FIELD_NO ?? "").trim()
@@ -766,9 +811,9 @@ const showErrorAlert = (errorMessage) => {
         START_DT: prodstartdt,
         END_DT: prodenddt,
         RESULT: item._row.data.RESULT ?? null,
-        REMARK: item._row.data.REMARK ?? null,
+        REMARK: item._row.data.REMARKS ?? null,
         HEAT_NO: item._row.data.HEAT_NO ?? null,
-        INSP_NAME: item._row.data.INSPECTOR ?? null,
+        INSP_NAME: item._row.data.INSPECT_NAME ?? null,
         PIPE_LNG_10: item._row.data.LENGTH ?? null,
         CB_FEND_130: item._row.data.CUT_BACK_F_END ?? null,
         CB_TEND_130: item._row.data.CUT_BACK_T_END ?? null,
@@ -823,6 +868,7 @@ const showErrorAlert = (errorMessage) => {
   };
 
   const handleClearAll = (newToken = false) => {
+    clearExcelUpload();
     setInspectorName("");
     setSelectedResult("");
     setSalesOrd("");
@@ -891,6 +937,7 @@ const showErrorAlert = (errorMessage) => {
   };
 
   const bindLPEData = async () => {
+  if (loading) return;
   try {
     setLoading(true);
     setLPETable([]);
@@ -946,7 +993,7 @@ const showErrorAlert = (errorMessage) => {
     const hasOrderNo = Boolean(String(ordNo || "").trim());
     const hasOrderItem = Boolean(typeof ordItem === "string" ? ordItem.trim() : (ordItem && ordItem.value ? String(ordItem.value).trim() : String(ordItem || "").trim()));
 
-    if (!hasPipeNo && !hasOrderNo && !hasOrderItem) {
+    if (!excelRows.length && (!hasPipeNo && !hasOrderNo && !hasOrderItem)) {
       alertify.error(
         "Please select Pipe No or enter both Order No and Order Item"
       );
@@ -954,7 +1001,7 @@ const showErrorAlert = (errorMessage) => {
       return;
     }
 
-    if (!hasPipeNo && hasOrderNo !== hasOrderItem) {
+    if (!excelRows.length && (!hasPipeNo && hasOrderNo !== hasOrderItem)) {
       alertify.error("Both Order No and Order Item are required");
       setLoading(false);
       return;
@@ -968,30 +1015,15 @@ const showErrorAlert = (errorMessage) => {
     };
 
     // Mandatory field validation: Inspector and Result
-    if (data.Inspector == "" || data.Result == "") {
+    if (!excelRows.length && (data.Inspector == "" || data.Result == "")) {
       alertify.error("All fields marked * are mandatory. Kindly fill.");
       setLoading(false);
       return;
     }
 
-    // **UPDATED MANDATORY FIELD VALIDATION**
-    // Only the following fields are mandatory (as per your requirement):
-    // Result, Holiday, Final Station, Final Insp. Date, Remarks, Inspector, Shift
-    if (
-      !selectedResult ||
-      !selectedResult.value ||
-      !selectedHoliday ||
-      !selectedHoliday.value ||
-      !selectedFinalStation ||
-      !selectedFinalStation.value ||
-      !selectedInspDate ||
-      !remarks ||
-      !inspectorname ||
-      !selectedShift ||
-      !selectedShift.value
-    ) {
-      alertify.error("All fields marked * are mandatory. Kindly fill.");
-      setLoading(false);
+    // Dates and shift are shared by all uploaded rows; inspection values merge below.
+    if (!selectedInspDate || !selectedShift?.value) {
+      alertify.error("Final inspection date and shift are mandatory.");
       return;
     }
 
@@ -1031,11 +1063,27 @@ const showErrorAlert = (errorMessage) => {
       ORDITEM: hasPipeNo ? "" : (typeof ordItem === "string" ? ordItem.trim() : (ordItem && ordItem.value ? String(ordItem.value).trim() : String(ordItem || "").trim())),
     };
 
-    let response = await axiosAPI.post(
-      "api/LD13S001/getFillData",
-      requestData,
-      defaultOptions
-    );
+    let response;
+    if (excelRows.length) {
+      const data = [];
+      const skipped = [];
+      for (const uploaded of excelRows) {
+        const fetched = await axiosAPI.post("api/LD13S001/getFillData", {
+          STATUS: "EC", PIPE_NO: uploaded.pipeNo, RM_BATCH: "", ORDNO: "", ORDITEM: ""
+        }, defaultOptions);
+        if (!Array.isArray(fetched.data)) throw new Error("Invalid pipe lookup response.");
+        const matches = fetched.data.filter(row => String(row.TBP_BATCH_NO).trim() === uploaded.pipeNo);
+        if (!matches.length) { skipped.push(uploaded.pipeNo); continue; }
+        if (matches.length !== 1) throw new Error("Multiple records found for pipe " + uploaded.pipeNo);
+        data.push(matches[0]);
+      }
+      response = { status: 200, data };
+      setExcelMessage(`Fetched ${data.length}/${excelRows.length} pipes.` +
+        (skipped.length ? " Not found or not eligible: " + skipped.join(", ") : ""));
+    } else {
+      response = await axiosAPI.post("api/LD13S001/getFillData", requestData, defaultOptions);
+    }
+
 
     console.log("response", response);
     if (response.status !== 200 || !response.data) {
@@ -1050,7 +1098,7 @@ const showErrorAlert = (errorMessage) => {
 
     let LPEData = response.data.map((row) => ({
       C_PRC: nxtproc2 ? nxtproc2 : "",
-      N_PRC: row.NEXT_PROC || nxtproc || "",
+      N_PRC: row.NEXT_PROC || (excelRows.length ? "" : nxtproc) || "",
       PIPE_NO: row.TBP_BATCH_NO ? row.TBP_BATCH_NO : "",
       TBP_DIA_END_10: row.TBP_DIA_END_10 || "",
       LENGTH: row.TBP_PIPE_LNG_10 ? row.TBP_PIPE_LNG_10 : "0",
@@ -1065,23 +1113,21 @@ const showErrorAlert = (errorMessage) => {
       EPOXY_BAND_T_END: epoxybandtend ? epoxybandtend : "",
       CUT_ANGEL_F_END: cutbackanglefend ? cutbackanglefend : "",
       CUT_ANGEL_T_END: cutbackangletend ? cutbackangletend : "",
-      HOLIDAY_TEST: selectedHoliday.value ? selectedHoliday.value : "",
+      HOLIDAY_TEST: selectedHoliday?.value || "",
       RM_G1: rmg1 ? rmg1 : "",
       RM_G2: rmg2 ? rmg2 : "",
       RM_G3: rmg3 ? rmg3 : "",
       RM_G4: rmg4 ? rmg4 : "",
-      FINAL_STATION: selectedFinalStation.value
-        ? selectedFinalStation.value
-        : "",
+      FINAL_STATION: selectedFinalStation?.value || "",
       FINAL_STATION_DT: Finaldt ? Finaldt : "",
       INSPECT_NAME: inspectorname ? inspectorname : "",
-      RESULT: selectedResult.value ? selectedResult.value : "",
+      RESULT: selectedResult?.value || "",
       HEAT_NO: row.TBP_HEAT_NO ? row.TBP_HEAT_NO : "",
       MATERIAL: row.TBP_NO_MATNR ? row.TBP_NO_MATNR : "",
       TIME: formattedTime,
       ORDER_NO: row.ORDER_NO || "",
       ITEM: row.ITEM || "",
-      PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || rmBatchId?.value || "",
+      PARENT_BATCH: row.LOM_ID_PAR_COIL_NO || (excelRows.length ? "" : rmBatchId?.value) || "",
       CUST_NAME: row.CUST_NAME || "",
       PLAN_PROC: row.PLAN_PROC || "",
       ASL_NO: row.ASL_NO || "",
@@ -1090,10 +1136,16 @@ const showErrorAlert = (errorMessage) => {
     }));
 
     console.log("LPEData", LPEData);
+    const uploadedByPipe = new Map(excelRows.map(row => [row.pipeNo, row.values]));
+    LPEData = LPEData.map(row => mergeInspectionRow(row, uploadedByPipe.get(String(row.PIPE_NO).trim())));
+    const validationError = LPEData.map(row => validateInspectionRow(row)).find(Boolean);
+    if (validationError) throw new Error(validationError);
     setLPETable(LPEData);
   } catch (error) {
     console.error("Error fetching data:", error);
-    alertify.error("Error fetching data.");
+    setLPETable([]);
+    setExcelMessage(error.message || "Error fetching data.");
+    alertify.error(error.message || "Error fetching data.");
   } finally {
     setLoading(false);
   }
@@ -2186,11 +2238,22 @@ const showErrorAlert = (errorMessage) => {
                             style={{ marginTop: "1.5rem" }}
                             size="small"
                             color="info"
+                            disabled={loading}
                             onClick={() => bindLPEData()}
                           >
                             Fill Data
                           </MDButton>
                         </Grid>
+                      <Grid item xs={12}>
+                        <MDTypography variant="body2">Upload inspection Excel. Pipe_No must be Text. Blank inspection cells use screen defaults.</MDTypography>
+                        <input type="file" accept=".xlsx,.xls" ref={excelFileRef}
+                          onChange={handleExcelUpload} disabled={loading || isReadWriteAccess}
+                          aria-label="Upload LD13 inspection Excel" />
+                        <MDButton size="small" color="info" onClick={downloadExcelTemplate}>Download Template</MDButton>
+                        <MDButton size="small" color="secondary" disabled={loading} onClick={clearExcelUpload}>Clear Upload</MDButton>
+                        {excelMessage && <MDTypography variant="body2">{excelMessage}</MDTypography>}
+                      </Grid>
+
                         <Grid item xs={6}>
                                                                     <MDBox
                                                                       sx={{

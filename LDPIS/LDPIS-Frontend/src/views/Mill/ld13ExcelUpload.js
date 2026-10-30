@@ -1,0 +1,51 @@
+export const inspectionFields = ["FIELD_NO", "REMARKS", "INSPECT_NAME", "RESULT", "CUT_BACK_F_END", "CUT_BACK_T_END", "EPOXY_BAND_F_END", "EPOXY_BAND_T_END", "CUT_ANGEL_F_END", "CUT_ANGEL_T_END", "HOLIDAY_TEST", "RM_G1", "RM_G2", "RM_G3", "RM_G4", "FINAL_STATION"];
+export const inspectionHeaders = ["Pipe_No", ...inspectionFields];
+
+export function parseInspectionRows(rows) {
+  const headers = (rows[0] || []).map(value => String(value ?? "").trim().toUpperCase());
+  if (!headers.includes("PIPE_NO")) throw new Error("Excel requires a Pipe_No column.");
+  if (new Set(headers).size !== headers.length) throw new Error("Duplicate Excel headers are not allowed.");
+  const unknown = headers.filter(h => h && h !== "PIPE_NO" && !inspectionFields.includes(h));
+  if (unknown.length) throw new Error("Unknown Excel columns: " + unknown.join(", ") + ". Use the template.");
+  const result = [];
+  const seen = new Set();
+  rows.slice(1).forEach((row, index) => {
+    if (!row.some(v => String(v ?? "").trim())) return;
+    const pipe = row[headers.indexOf("PIPE_NO")];
+    if (typeof pipe !== "string" || !pipe.trim()) throw new Error(`Row ${index + 2}: Pipe_No must be Text and nonempty.`);
+    const pipeNo = pipe.trim();
+    if (seen.has(pipeNo)) throw new Error("Duplicate Pipe_No: " + pipeNo);
+    seen.add(pipeNo);
+    const values = {};
+    inspectionFields.forEach(field => {
+      const value = row[headers.indexOf(field)];
+      if (value != null && String(value).trim() !== "") values[field] = typeof value === "string" ? value.trim() : value;
+    });
+    for (const field of ["RESULT", "HOLIDAY_TEST", "FINAL_STATION"]) {
+      if (values[field] != null) values[field] = String(values[field]).toUpperCase();
+    }
+    result.push({ pipeNo, values });
+  });
+  if (!result.length) throw new Error("The workbook contains no data rows.");
+  return result;
+}
+
+export function mergeInspectionRow(base, uploaded) {
+  const merged = { ...base };
+  // Whitelist editable inspection values; never replace database identity/routing.
+  inspectionFields.forEach(field => {
+    if (uploaded && uploaded[field] != null && String(uploaded[field]).trim() !== "") merged[field] = uploaded[field];
+  });
+  return merged;
+}
+
+export function validateInspectionRow(row, requireFieldNo = false) {
+  const required = ["REMARKS", "INSPECT_NAME", "RESULT", "HOLIDAY_TEST", "FINAL_STATION"];
+  if (requireFieldNo) required.push("FIELD_NO");
+  const missing = required.filter(field => row[field] == null || String(row[field]).trim() === "");
+  if (missing.length) return "Pipe " + row.PIPE_NO + ": required " + missing.join(", ");
+  for (const [field, allowed] of Object.entries({RESULT:["OK"], HOLIDAY_TEST:["15_KV_OK","25_KV_OK"], FINAL_STATION:["VISUAL_OK","REPAIR","REJECT"]})) {
+    if (!allowed.includes(String(row[field]).trim())) return "Pipe " + row.PIPE_NO + ": " + field + " must be " + allowed.join(" or ") + ".";
+  }
+  return "";
+}

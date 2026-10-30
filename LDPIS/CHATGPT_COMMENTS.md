@@ -106,3 +106,49 @@ node LDPIS/tests/ld11-excel-upload.cjs
 
 Passed: parser/merge validation, text identifiers and zero values, protected database fields, bound SQL filters, actual multi-pipe fill including missing/ambiguous/failed lookups, and actual save payload with per-row inspector and epoxy/flow values. Source syntax checks passed. All three transfer patches passed apply/content comparison/reverse checks for LF and Windows CRLF files. Full application build, browser upload/save against Oracle and native Windows PowerShell execution remain office verification tasks.
 
+## 2026-10-30 — LD13S001 Excel upload completed after confirmation
+
+The user confirmed proceeding with LD13S001. All three requested screens (LD10, LD11, LD13) now have Excel upload implementations.
+
+### LD13 usage
+
+Download Template, populate it, upload an `.xlsx` or `.xls` workbook, then click Fill Data. Only the first worksheet is read. Pipe_No must be Excel Text; use Text for Field No too if leading zeros matter. Unknown/duplicate headers, duplicate pipes and numeric Pipe_No cells are rejected. Nonblank inspection cells override screen defaults; blank cells use those defaults, and numeric zero is preserved.
+
+Template columns:
+
+```text
+Pipe_No, FIELD_NO, REMARKS, INSPECT_NAME, RESULT,
+CUT_BACK_F_END, CUT_BACK_T_END, EPOXY_BAND_F_END, EPOXY_BAND_T_END,
+CUT_ANGEL_F_END, CUT_ANGEL_T_END, HOLIDAY_TEST, RM_G1, RM_G2, RM_G3, RM_G4,
+FINAL_STATION
+```
+
+Set production start/end dates, final inspection date and shift on screen; these retain the existing shared screen flow. Excel pipes take priority over Pipe/Order filters. Each pipe is looked up at EC status using the existing process 1 query. Missing/ineligible pipes are skipped and listed. A failed lookup or multiple database matches stops the fill and leaves the grid empty. Database-derived Field Test, coat weight, identity, order and routing cannot be overwritten by Excel.
+
+After merging, remarks, inspector, result, holiday test and final station are required. Allowed values match the screen: RESULT = OK; HOLIDAY_TEST = 15_KV_OK or 25_KV_OK; FINAL_STATION = VISUAL_OK, REPAIR or REJECT. Uploaded enum values are normalized to uppercase. Field No can be filled in Excel or edited in the grid, but is mandatory before saving. Review and select rows, then use Save. Upload/Fill Data do not save automatically. Required fields and allowed values are revalidated on save.
+
+Fixed the existing save field-name mismatches: remarks now come from grid REMARKS and inspector from grid INSPECT_NAME. Both screen defaults and Excel values therefore reach the save API correctly.
+
+### Office commands
+
+The script now defaults to `2026-10-30-ld13`, which transfers only LD13 application changes.
+
+```powershell
+git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
+```
+
+Destination defaults to `D:\LDP UAT MAY`; append `-OfficeRoot "your destination root"` to both invocations if needed. If LD10 or LD11 has not yet been transferred, run the same check/apply commands separately with `-ChangeSet "2026-10-30-ld10"` or `-ChangeSet "2026-10-30-ld11"`. Existing backups, temporary checks and already-applied detection remain available. No Azure commit or push is performed.
+
+### Verification
+
+```powershell
+# From the rough repository root; test harness requires Node 22.6+.
+node LDPIS/tests/ld13-excel-upload.cjs
+```
+
+Passed: parsing/merging, text identifiers, numeric zero, protected fields, mandatory and enum validation, bound SQL filters, actual multi-pipe fill with skipped/ambiguous/failed lookups, and actual save payload mapping including Field No, remarks and inspector. Transfer patches passed apply/content comparison/reverse checks for LF and CRLF. Syntax checks introduced no new parser diagnostics (the JSX parser still reports the pre-existing literal ampersand in a heading). Full application build, browser workbook upload/save against Oracle and native Windows PowerShell execution remain office verification tasks.
+
+
