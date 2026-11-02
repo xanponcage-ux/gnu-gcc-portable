@@ -1,7 +1,55 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const {spawnSync} = require('node:child_process');
+// Apply the bundled unified text patches to a copy in memory.
+function readHunks(patch) {
+  const hunks = [];
+  let hunk;
+  for (const line of patch.replace(/\r\n/g, '\n').split('\n')) {
+    const header = /^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/.exec(line);
+    if (header) {
+      hunk = { oldStart: Number(header[1]), newStart: Number(header[2]), before: [], after: [] };
+      hunks.push(hunk);
+    } else if (hunk && line.startsWith('\\ No newline')) {
+      for (const side of hunk.last) side[side.length - 1] = side.at(-1).slice(0, -1);
+    } else if (hunk && /^[ +\-]/.test(line)) {
+      hunk.last = [];
+      if (line[0] !== '+') hunk.last.push(hunk.before);
+      if (line[0] !== '-') hunk.last.push(hunk.after);
+      for (const side of hunk.last) side.push(line.slice(1) + '\n');
+    }
+  }
+  if (!hunks.length) throw new Error('Empty transfer patch');
+  return hunks;
+}
+
+function applyHunks(source, hunks, reverse) {
+  const eol = source.includes('\r\n') ? '\r\n' : '\n';
+  const lines = source.replace(/\r\n/g, '\n').match(/[^\n]*\n|[^\n]+$/g) || [];
+  let offset = 0;
+  let minimum = 0;
+  for (const hunk of hunks) {
+    const from = reverse ? hunk.after : hunk.before;
+    const to = reverse ? hunk.before : hunk.after;
+    const start = Math.max(0, (reverse ? hunk.newStart : hunk.oldStart) - 1);
+    const matches = i => i >= minimum && i + from.length <= lines.length && from.every((line, j) => lines[i + j] === line);
+    let index = start + offset;
+    if (!matches(index)) {
+      const candidates = [];
+      for (let i = minimum; i <= lines.length - from.length; i++) {
+        if (matches(i)) candidates.push(i);
+        if (candidates.length > 1) break;
+      }
+      if (candidates.length !== 1) return null;
+      index = candidates[0];
+    }
+    lines.splice(index, from.length, ...to);
+    minimum = index + to.length;
+    offset = index - start + to.length - from.length;
+  }
+  return lines.join('').replace(/\n/g, eol);
+}
+
 
 function run() {
   const [mode, target = 'D:\\AGRICO', ...extra] = process.argv.slice(2);
@@ -21,18 +69,15 @@ function run() {
       const stage = path.join(temp, 'stage', Project);
       const staged = path.join(stage, File);
       fs.mkdirSync(path.dirname(staged), {recursive:true});
-      fs.writeFileSync(staged, before);
-      const patch = (...flags) => {
-        const result = spawnSync('git', ['apply', '-p2', '--ignore-space-change', ...flags, path.join(bundle, Patch)], {cwd:stage, encoding:'utf8'});
-        if (result.error) throw result.error;
-        return result;
-      };
-      if (patch('--reverse', '--check').status === 0) {
+      const hunks = readHunks(fs.readFileSync(path.join(bundle, Patch), 'utf8'));
+      const source = before.toString('utf8');
+      if (applyHunks(source, hunks, true) !== null) {
         console.log('Already applied:', dest);
         continue;
       }
-      const result = patch();
-      if (result.status !== 0) throw new Error(dest + '\n' + result.stderr);
+      const result = applyHunks(source, hunks, false);
+      if (result === null) throw new Error('Office edits conflict with transfer: ' + dest);
+      fs.writeFileSync(staged, result);
       changes.push({dest, before, staged, backup:path.join(temp,'backup',Project,File)});
     }
     console.log(changes.length, 'files ready for', mode, 'in', path.resolve(target));

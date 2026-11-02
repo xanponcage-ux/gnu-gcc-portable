@@ -59,17 +59,15 @@ Reports:
 
 ## 2026-11-02 — Transfer AGRINXT changes to the office repositories
 
-Use Windows Command Prompt with Git and Node.js on PATH. Run from the root of your rough GitHub checkout. The destination defaults to `D:\AGRICO`, containing `Agrico_NODE` and `Agrico_UI`.
+Run Windows Command Prompt from the source checkout shown below. Node.js reads the transfer bundle from that checkout and applies only its listed changes to the corresponding files in `D:\AGRICO\Agrico_NODE` and `D:\AGRICO\Agrico_UI`. The transfer requires Node.js and uses no Git commands. Use an up-to-date source checkout.
 
 ```cmd
-git pull --ff-only origin main
+cd /d "D:\Office Work\Striver\gnu-gcc-portable"
 AGRICO\Apply-AGRINXT-To-Office.cmd check
 AGRICO\Apply-AGRINXT-To-Office.cmd apply
-git -C "D:\AGRICO\Agrico_NODE" status --short
-git -C "D:\AGRICO\Agrico_UI" status --short
 ```
 
-Check previews every patch on temporary copies. Apply repeats the checks, backs up the originals, and updates the working files. It skips patches already applied. Review and test the changes before committing in each office repository.
+Check previews the changes. If it reports zero files ready, the office copy already has the changes. Apply repeats the checks, saves backups and updates the office files. Conflicting edits stop the transfer before copying. Run check again to verify.
 
 AGSM003 receives selected in-transit material. AGSM004 is the read-only receiving report, AGSM006 the production report, and AGSM012 inventory. Use the existing screen authorization administration for these IDs. Production recording awaits the process definition.
 
