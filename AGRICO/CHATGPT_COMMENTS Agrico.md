@@ -113,3 +113,15 @@ Use the existing deployment's JWT, refresh, screen authorization, API, Oracle an
 For development use AGRINXT_ENV=dev and .env.dev. For production use AGRINXT_ENV=prd and .env.prd. Each profile has a matching .example. Local and dev support the EPATEST TNS alias or a private Oracle host/service or full descriptor. Set the allowed UI origin on dev and prd. Set the actual production service explicitly. Process variables override the selected file, which overrides the shared .env. Build with npm run build and start the compiled Node server with npm start.
 
 AGSM003, AGSM006 and AGSM012 now use matching filenames through the UI, route, controller, model and query modules. AGSM004 has its own read-only report component and reuses AGSM003's table. Its authorization lookup still uses AGSM004. The active server entry is src/agrinxtserver.ts.
+
+## 2026-11-02 — Explicit Agrico office configuration
+
+This change supersedes the earlier office .env setup. The transfer restores the original authorization values from the verified office env.ts backup and writes explicit local, devAgrico and prdAgrico objects. If the backup has moved, set AGRICO_PREVIOUS_ENV to its full env.ts path. Set AGRINXT_DB_HOST and AGRINXT_UI_ORIGIN to the office development values before apply if you want them written into env.ts. Without a host, local and dev use the EPATEST TNS alias. Production connection details are separate.
+
+```cmd
+cd /d "D:\Office Work\Striver\gnu-gcc-portable"
+AGRICO\Apply-AGRINXT-To-Office.cmd check --change-set 2026-11-02-explicit-env
+AGRICO\Apply-AGRINXT-To-Office.cmd apply --change-set 2026-11-02-explicit-env
+cd /d D:\AGRICO\Agrico_NODE
+npm run dev
+```

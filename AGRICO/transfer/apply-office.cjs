@@ -54,7 +54,7 @@ function applyHunks(source, hunks, reverse) {
 function run() {
   const [mode, ...args] = process.argv.slice(2);
   const flag = args.indexOf('--change-set');
-  let changeSet = '2026-11-02-agrico-env';
+  let changeSet = '2026-11-02-explicit-env';
   if (flag !== -1) {
     changeSet = args.splice(flag, 2)[1];
     if (!changeSet || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}[-a-z0-9]*$/.test(changeSet)) {
@@ -89,7 +89,13 @@ function run() {
         throw new Error('Conflicting rename: ' + original + ' -> ' + dest);
       }
       let after;
-      if (job.Content) {
+      if (job.OfficeEnv) {
+        if (!before) throw new Error('Missing office env.ts');
+        const template = fs.readFileSync(path.join(bundle, job.OfficeEnv), 'utf8');
+        const rendered = require('./office-env.cjs')(normal(before), template);
+        if (rendered === normal(before)) continue;
+        after = Buffer.from(before.includes(Buffer.from('\r\n')) ? rendered.replace(/\n/g, '\r\n') : rendered);
+      } else if (job.Content) {
         after = fs.readFileSync(path.join(bundle, job.Content));
         if (current && normal(current) === normal(after)) continue;
         if (job.BeforeHash) {
