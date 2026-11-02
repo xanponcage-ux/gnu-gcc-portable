@@ -52,11 +52,21 @@ function applyHunks(source, hunks, reverse) {
 
 
 function run() {
-  const [mode, target = 'D:\\AGRICO', ...extra] = process.argv.slice(2);
-  if (!['check', 'apply'].includes(mode) || extra.length) {
-    throw new Error('Usage: Apply-AGRINXT-To-Office.cmd check|apply [office-folder]');
+  const [mode, ...args] = process.argv.slice(2);
+  const flag = args.indexOf('--change-set');
+  let changeSet = '2026-11-02-agrinxt';
+  if (flag !== -1) {
+    changeSet = args.splice(flag, 2)[1];
+    if (!changeSet || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}[-a-z0-9]*$/.test(changeSet)) {
+      throw new Error('Supply a dated bundle name after --change-set');
+    }
   }
-  const bundle = path.join(__dirname, '2026-11-02-agrinxt');
+  if (!['check', 'apply'].includes(mode) || args.length > 1 || args[0]?.startsWith('--')) {
+    throw new Error('Usage: Apply-AGRINXT-To-Office.cmd check|apply [office-folder] [--change-set name]');
+  }
+  const target = args[0] || 'D:\\AGRICO';
+  const bundle = path.join(__dirname, changeSet);
+  console.log('Selected change set:', changeSet);
   const jobs = JSON.parse(fs.readFileSync(path.join(bundle, 'manifest.json'), 'utf8'));
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'agrico-'));
   const changes = [];

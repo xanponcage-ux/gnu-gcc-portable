@@ -72,3 +72,16 @@ Check previews the changes. If it reports zero files ready, the office copy alre
 AGSM003 receives selected in-transit material. AGSM004 is the read-only receiving report, AGSM006 the production report, and AGSM012 inventory. Use the existing screen authorization administration for these IDs. Production recording awaits the process definition.
 
 Configure AGRINXT_DB_CONNECT_STRING on the Node host or configure its EPATEST alias. Set AGRINXT_UI_ORIGIN to the office browser origin. Serve the UI under /agrigomes and proxy /agriapi/ to Node with the prefix stripped. For local UI development REACT_APP_AGRINXT_API_URL overrides the same-origin default. A fresh build of the rough repository requires the existing office login encryption input in REACT_APP_AGRINXT_LOGIN_KEY. The office transfer preserves the existing login input. REACT_APP_AGRICO_LOGO_URL can point to an internally hosted logo.
+
+## Per-prompt changes, following LDPIS
+
+For each prompt, edit the Agrico source files on main and put only that prompt’s changes in a dated transfer bundle. Make the new bundle the default and keep earlier bundles selectable. The office projects already contain the baseline. Run the transfer from the source checkout. Only matching edits in the selected bundle are applied to the office files.
+
+To check this specific prompt after newer bundles are added, run:
+
+```cmd
+cd /d "D:\Office Work\Striver\gnu-gcc-portable"
+AGRICO\Apply-AGRINXT-To-Office.cmd check --change-set 2026-11-02-agrinxt
+```
+
+Use `apply` in place of `check` when the check reports pending changes. If there are zero, this prompt is already applied.
