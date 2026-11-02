@@ -44,6 +44,8 @@ EPATEST=
 UI:  https://mesdev.corp.tatasteel.com/agrigomes
 API:  https://mesdev.corp.tatasteel.com/agriapi
 
+schema:AGRIDBA
+
 2. We need following screens:
 1.LOGIN PAGE (image is replaced with TATA Agrico logo)
 Planning module:
