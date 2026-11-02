@@ -1,9 +1,9 @@
-import * as repository from '../repository/TTSM006Query';
+import * as repository from '../repository/AGSM006Query';
 import { Post } from '../typed/typed';
 import Error from './errors'
 
 
-export default class TTSM006 {
+export default class AGSM006 {
 
     GetProcess(Plant: any) {
         return repository.GetProcess(Plant);

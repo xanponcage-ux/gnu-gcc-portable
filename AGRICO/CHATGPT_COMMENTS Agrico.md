@@ -85,3 +85,31 @@ AGRICO\Apply-AGRINXT-To-Office.cmd check --change-set 2026-11-02-agrinxt
 ```
 
 Use `apply` in place of `check` when the check reports pending changes. If there are zero, this prompt is already applied.
+
+## 2026-11-02 — Agrico Node environments and AGSM filenames
+
+This change set follows the initial Agrico bundle. Run from the source checkout in CMD. It updates Node configuration and performs the screen-file renames in the office copy. The transfer retains a backup of the previous env.ts and stops if that configuration contains unexpected local edits.
+
+```cmd
+cd /d "D:\Office Work\Striver\gnu-gcc-portable"
+AGRICO\Apply-AGRINXT-To-Office.cmd check --change-set 2026-11-02-agrico-env
+AGRICO\Apply-AGRINXT-To-Office.cmd apply --change-set 2026-11-02-agrico-env
+```
+
+In Agrico_NODE, keep actual values in ignored files or process variables. For a first local setup, run these commands and edit the files before starting the server.
+
+```cmd
+cd /d "D:\AGRICO\Agrico_NODE"
+if not exist .env copy .env.example .env
+if not exist .env.local copy .env.local.example .env.local
+notepad .env
+notepad .env.local
+set "AGRINXT_ENV=local"
+npm run dev
+```
+
+Use the existing deployment's JWT, refresh, screen authorization, API, Oracle and SOAP settings in the shared .env. The previous env.ts in the transfer backup contains the old values. For an environment with different credentials, put its values in the corresponding private profile file. Configure the Python URL if that service is used. Keep the existing UI and server authorization keys aligned.
+
+For development use AGRINXT_ENV=dev and .env.dev. For production use AGRINXT_ENV=prd and .env.prd. Each profile has a matching .example. Local and dev support the EPATEST TNS alias or a private Oracle host/service or full descriptor. Set the allowed UI origin on dev and prd. Set the actual production service explicitly. Process variables override the selected file, which overrides the shared .env. Build with npm run build and start the compiled Node server with npm start.
+
+AGSM003, AGSM006 and AGSM012 now use matching filenames through the UI, route, controller, model and query modules. AGSM004 has its own read-only report component and reuses AGSM003's table. Its authorization lookup still uses AGSM004. The active server entry is src/agrinxtserver.ts.

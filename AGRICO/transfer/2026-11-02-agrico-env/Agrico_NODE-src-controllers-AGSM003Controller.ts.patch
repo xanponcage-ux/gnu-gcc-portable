@@ -1,0 +1,143 @@
+--- Agrico_NODE/src/controllers/TTSM003Controller.ts
++++ Agrico_NODE/src/controllers/AGSM003Controller.ts
+@@ -1,12 +1,12 @@
+ import { Request, Response } from "express";
+ import moment from 'moment'
+-import TTSM003 from "../models/TTSM003Model";
++import AGSM003 from "../models/AGSM003Model";
+ import { Post } from "../typed/typed";
+ 
+ export const getRolePlant = async (req: Request, res: Response) => {
+     try {
+         let id = req.body.adid;
+-        const results: any = await TTSM003.prototype.getGroupPlant(id);
++        const results: any = await AGSM003.prototype.getGroupPlant(id);
+         return res.status(200).json(results.rows);
+     } catch (error) {
+         return res.status(400).json(error);
+@@ -40,7 +40,7 @@
+         let coilType = req.body.coilType;
+ 
+ 
+-        const results: any = await TTSM003.prototype.getCoils(Plant, Status, BATCH_ID, TDC, RECVDTFROM, RECVDTTO, PROCDTFROM, PROCDTTO, ProdCd, QltyCd, Thick1, Thick2, Width1, Width2, Material, INVOICE, INVOICE_DTFROM, INVOICE_DTTO, coilType, Length1, Length2);
++        const results: any = await AGSM003.prototype.getCoils(Plant, Status, BATCH_ID, TDC, RECVDTFROM, RECVDTTO, PROCDTFROM, PROCDTTO, ProdCd, QltyCd, Thick1, Thick2, Width1, Width2, Material, INVOICE, INVOICE_DTFROM, INVOICE_DTTO, coilType, Length1, Length2);
+         // const table: any = [];
+         // const header: any = [];
+         // const columns: any = [];
+@@ -98,7 +98,7 @@
+     try {
+         let Plant = req.body.Plant;
+         let MBATCH_ID = req.body.MBATCH_ID;
+-        const results: any = await TTSM003.prototype.getBatchDetails(Plant, MBATCH_ID);
++        const results: any = await AGSM003.prototype.getBatchDetails(Plant, MBATCH_ID);
+         const table: any = [];
+         const header: any = [];
+         const columns: any = [];
+@@ -143,7 +143,7 @@
+         for (var i = 0; i < dt.length; i++) {
+             //initalize variables
+             var ele = dt[i];
+-            var results: any = await TTSM003.prototype.CONFIRM(Plant, ele, userId);
++            var results: any = await AGSM003.prototype.CONFIRM(Plant, ele, userId);
+ 
+             var outBinds = results.outBinds.LS_OUT_FLAG;
+             if (outBinds.toString().startsWith("N-")) {
+@@ -167,7 +167,7 @@
+         var checkPass = "Y";
+         for (var i = 0; i < dt.length; i++) {
+             var ele = dt[i];
+-            var results: any = await TTSM003.prototype.CONFIRM_Wires(Plant, ele, userId);
++            var results: any = await AGSM003.prototype.CONFIRM_Wires(Plant, ele, userId);
+             //return res.status(200).json(results.rows);
+             var outBinds = results.outBinds.LS_OUT_FLAG;
+             if (outBinds.toString().startsWith("N-")) {
+@@ -189,7 +189,7 @@
+         var checkPass = "Y";
+         for (var i = 0; i < dt.length; i++) {
+             var ele = dt[i];
+-            var results: any = await TTSM003.prototype.RETURN_COIL(Plant, ele, userId);
++            var results: any = await AGSM003.prototype.RETURN_COIL(Plant, ele, userId);
+             var outBinds = results.outBinds.LS_OUT_FLAG;
+             if (outBinds.toString().startsWith("N-")) {
+                 checkPass = outBinds.toString();
+@@ -225,7 +225,7 @@
+         let INVOICE_DTTO = req.body.INVOICE_DTTO;
+         let Length1 = req.body.Length1;
+         let Length2 = req.body.Length2;
+-        const results: any = await TTSM003.prototype.getCoils_Wires(Plant, Status, BATCH_ID, TDC, RECVDTFROM, RECVDTTO, PROCDTFROM, PROCDTTO, ProdCd, QltyCd, Thick1, Thick2, Width1, Width2, Material, INVOICE, INVOICE_DTFROM, INVOICE_DTTO, Length1, Length2);
++        const results: any = await AGSM003.prototype.getCoils_Wires(Plant, Status, BATCH_ID, TDC, RECVDTFROM, RECVDTTO, PROCDTFROM, PROCDTTO, ProdCd, QltyCd, Thick1, Thick2, Width1, Width2, Material, INVOICE, INVOICE_DTFROM, INVOICE_DTTO, Length1, Length2);
+ 
+         const table: any = [];
+         const header: any = [];
+@@ -280,7 +280,7 @@
+         let INVOICE_DTTO = req.body.INVOICE_DTTO;
+         let Length1 = req.body.Length1;
+         let Length2 = req.body.Length2;
+-        const results: any = await TTSM003.prototype.getCoils_LP(Plant, Status, BATCH_ID, TDC, RECVDTFROM, RECVDTTO, PROCDTFROM, PROCDTTO, ProdCd, QltyCd, Thick1, Thick2, Width1, Width2, Material, INVOICE, INVOICE_DTFROM, INVOICE_DTTO, Length1, Length2);
++        const results: any = await AGSM003.prototype.getCoils_LP(Plant, Status, BATCH_ID, TDC, RECVDTFROM, RECVDTTO, PROCDTFROM, PROCDTTO, ProdCd, QltyCd, Thick1, Thick2, Width1, Width2, Material, INVOICE, INVOICE_DTFROM, INVOICE_DTTO, Length1, Length2);
+ 
+         const table: any = [];
+         const header: any = [];
+@@ -321,7 +321,7 @@
+ 
+         var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getOdiaFrm(plant);
++        const results: any = await AGSM003.prototype.getOdiaFrm(plant);
+         const list: any = [];
+         //create json
+         results.rows.map(function (x: any) {
+@@ -342,7 +342,7 @@
+ 
+         var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getOdiaTo(plant);
++        const results: any = await AGSM003.prototype.getOdiaTo(plant);
+         const list: any = [];
+         //create json
+         results.rows.map(function (x: any) {
+@@ -363,7 +363,7 @@
+ 
+         var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getOdia(plant);
++        const results: any = await AGSM003.prototype.getOdia(plant);
+         const list: any = [];
+         //create json
+         results.rows.map(function (x: any) {
+@@ -383,7 +383,7 @@
+ 
+         var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getThickList(plant);
++        const results: any = await AGSM003.prototype.getThickList(plant);
+         const list: any = [];
+         //create json
+         results.rows.map(function (x: any) {
+@@ -403,7 +403,7 @@
+ 
+         var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getlengthList(plant);
++        const results: any = await AGSM003.prototype.getlengthList(plant);
+         const list: any = [];
+         //create json
+         results.rows.map(function (x: any) {
+@@ -424,7 +424,7 @@
+ 
+         // var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getStatus();
++        const results: any = await AGSM003.prototype.getStatus();
+         const list: any = [];
+         //create json
+         results.rows.map(function (x: any) {
+@@ -444,7 +444,7 @@
+ 
+         // var plant = req.body.plant;
+ 
+-        const results: any = await TTSM003.prototype.getStoreLocation();
++        const results: any = await AGSM003.prototype.getStoreLocation();
+ 
+         return res.status(200).json(results.rows);
+ 

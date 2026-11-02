@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import moment from 'moment'
-import TTSM006 from '../models/TTSM006Model';
+import AGSM006 from '../models/AGSM006Model';
 import { Post } from "../typed/typed";
 
 export const GetProcess = async (req: Request, res: Response) => {
     try {
         let Plant = req.body.plant;
-        const results: any = await TTSM006.prototype.GetProcess(Plant);
+        const results: any = await AGSM006.prototype.GetProcess(Plant);
         return res.status(200).json(results.rows);
     } catch (error) {
         return res.status(400).json(error);
@@ -16,7 +16,7 @@ export const GetProcess = async (req: Request, res: Response) => {
 export const getMatGrp = async (req: Request, res: Response) => {
     try {
         let Plant = req.body.plant;
-        const results: any = await TTSM006.prototype.getMatGrp(Plant);
+        const results: any = await AGSM006.prototype.getMatGrp(Plant);
         return res.status(200).json(results.rows);
     } catch (error) {
         return res.status(400).json(error);
@@ -53,7 +53,7 @@ export const getProdInqData = async (req: Request, res: Response) => {
         // let ProdDtTo = req.body.ProdDtTo;
         // let Customer = req.body.Customer;
 
-        const results: any = await TTSM006.prototype.getProdInqData(plant, Process,pname, Batch_Id, MBatch_Id, ThickMin, ThickMax, widthMin, widthMax, ProdDateFrom, ProdDateTo, SchedDateFrom, SchedDateTo, prodType,MatGrp)
+        const results: any = await AGSM006.prototype.getProdInqData(plant, Process,pname, Batch_Id, MBatch_Id, ThickMin, ThickMax, widthMin, widthMax, ProdDateFrom, ProdDateTo, SchedDateFrom, SchedDateTo, prodType,MatGrp)
         const table: any = [];
         const header: any = [];
         const columns: any = [];

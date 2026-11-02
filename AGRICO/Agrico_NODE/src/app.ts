@@ -1,4 +1,3 @@
-import * as dotenv from "dotenv";
 import express = require("express");
 import * as bodyParser from "body-parser";
 import cors = require("cors");
@@ -8,13 +7,13 @@ import env from "./env";
 import usersRoute from "./routes/userRoutes";
 import commonRoute from "./routes/CommonRoute";
 import TTSM001Route from "./routes/TTSM001Route";
-import TTSM003Route from "./routes/TTSM003Route";
+import AGSM003Route from "./routes/AGSM003Route";
 import TTSM004Route from "./routes/TTSM004Route";
 import TTSM005Route from "./routes/TTSM005Route";
-import TTSM006Route from "./routes/TTSM006Route";
+import AGSM006Route from "./routes/AGSM006Route";
 import TTSM009Route from "./routes/TTSM009Route";
 import TTSM007Route from "./routes/TTSM007Route";
-import TTSM012Route from "./routes/TTSM012Route";
+import AGSM012Route from "./routes/AGSM012Route";
 import TTSM013Route from "./routes/TTSM013Route";
 import TTSM019Route from "./routes/TTSM019Route";
 import TTSM018Route from "./routes/TTSM018Route";
@@ -62,10 +61,6 @@ export class App {
   pool: any;
 
   constructor() {
-    env.dbUri = process.env.AGRINXT_DB_CONNECT_STRING || "EPATEST";
-    env.database = "EPATEST";
-    env.hashRoute = "agrigomes";
-    if (process.env.AGRINXT_UI_ORIGIN) env.whitelistdUrl = [process.env.AGRINXT_UI_ORIGIN];
     this.app = express();
     // this.getPool();
     //this.closePoolAndExit();
@@ -150,13 +145,13 @@ export class App {
     this.app.use("/api", usersRoute);
     this.app.use("/api/common/", commonRoute);
     this.app.use("/api/ttsm001/", TTSM001Route);
-    this.app.use("/api/agsm003/", TTSM003Route);
+    this.app.use("/api/agsm003/", AGSM003Route);
     this.app.use("/api/ttsm004/", TTSM004Route);
     this.app.use("/api/ttsm005/", TTSM005Route);
-    this.app.use("/api/agsm006/", TTSM006Route);
+    this.app.use("/api/agsm006/", AGSM006Route);
     this.app.use("/api/ttsm009/", TTSM009Route);
     this.app.use("/api/ttsm007/", TTSM007Route);
-    this.app.use("/api/agsm012/", TTSM012Route);
+    this.app.use("/api/agsm012/", AGSM012Route);
     this.app.use("/api/ttsm013/", TTSM013Route);
     this.app.use("/api/ttsm019/", TTSM019Route);
     this.app.use("/api/ttsm016/", TTSM016Route);

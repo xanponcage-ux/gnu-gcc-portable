@@ -54,7 +54,7 @@ function applyHunks(source, hunks, reverse) {
 function run() {
   const [mode, ...args] = process.argv.slice(2);
   const flag = args.indexOf('--change-set');
-  let changeSet = '2026-11-02-agrinxt';
+  let changeSet = '2026-11-02-agrico-env';
   if (flag !== -1) {
     changeSet = args.splice(flag, 2)[1];
     if (!changeSet || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}[-a-z0-9]*$/.test(changeSet)) {
@@ -73,40 +73,70 @@ function run() {
   const written = [];
   let keepBackup = false;
   try {
-    for (const {Project, File, Patch} of jobs) {
-      const dest = path.resolve(target, Project, File);
-      const before = fs.readFileSync(dest);
-      const stage = path.join(temp, 'stage', Project);
-      const staged = path.join(stage, File);
-      fs.mkdirSync(path.dirname(staged), {recursive:true});
-      const hunks = readHunks(fs.readFileSync(path.join(bundle, Patch), 'utf8'));
-      const source = before.toString('utf8');
-      if (applyHunks(source, hunks, true) !== null) {
-        console.log('Already applied:', dest);
-        continue;
+    const read = file => fs.existsSync(file) ? fs.readFileSync(file) : null;
+    const normal = bytes => bytes?.toString('utf8').replace(/\r\n/g, '\n');
+    const same = (a, b) => a === null ? b === null : b !== null && a.equals(b);
+    const queue = (dest, before, after) => changes.push({dest, before, after,
+      backup: path.join(temp, 'backup', path.relative(path.resolve(target), dest))});
+    for (const job of jobs) {
+      const dest = path.resolve(target, job.Project, job.File);
+      const current = read(dest);
+      const original = job.From ? path.resolve(target, job.Project, job.From) : dest;
+      const before = job.From ? read(original) : current;
+      const hunks = job.Patch && readHunks(fs.readFileSync(path.join(bundle, job.Patch), 'utf8'));
+      if (job.From && current !== null) {
+        if (before === null && (!hunks || applyHunks(normal(current), hunks, true) !== null)) continue;
+        throw new Error('Conflicting rename: ' + original + ' -> ' + dest);
       }
-      const result = applyHunks(source, hunks, false);
-      if (result === null) throw new Error('Office edits conflict with transfer: ' + dest);
-      fs.writeFileSync(staged, result);
-      changes.push({dest, before, staged, backup:path.join(temp,'backup',Project,File)});
+      let after;
+      if (job.Content) {
+        after = fs.readFileSync(path.join(bundle, job.Content));
+        if (current && normal(current) === normal(after)) continue;
+        if (job.BeforeHash) {
+          const hash = before && require('node:crypto').createHash('sha256').update(normal(before)).digest('hex');
+          if (hash !== job.BeforeHash) throw new Error('Office configuration differs: ' + original);
+        } else if (current !== null) throw new Error('New file already exists: ' + dest);
+        if (before?.includes(Buffer.from('\r\n'))) after = Buffer.from(normal(after).replace(/\n/g, '\r\n'));
+      } else {
+        if (before === null) throw new Error('Missing office file: ' + original);
+        after = before;
+        if (hunks) {
+          const source = before.toString('utf8');
+          if (!job.From && applyHunks(source, hunks, true) !== null) continue;
+          const result = applyHunks(source, hunks, false);
+          if (result === null) throw new Error('Office edits conflict with transfer: ' + original);
+          after = Buffer.from(result);
+        }
+      }
+      queue(dest, current, after);
+      if (job.From) queue(original, before, null);
     }
-    console.log(changes.length, 'files ready for', mode, 'in', path.resolve(target));
+    console.log(changes.length, 'file operations ready for', mode, 'in', path.resolve(target));
     if (mode === 'check' || !changes.length) return;
     for (const item of changes) {
-      if (!fs.readFileSync(item.dest).equals(item.before)) throw new Error('Changed during check: ' + item.dest);
-      fs.mkdirSync(path.dirname(item.backup), {recursive:true});
-      fs.writeFileSync(item.backup, item.before);
+      if (!same(read(item.dest), item.before)) throw new Error('Changed during check: ' + item.dest);
+      if (item.before !== null) {
+        fs.mkdirSync(path.dirname(item.backup), {recursive:true});
+        fs.writeFileSync(item.backup, item.before);
+      }
     }
     keepBackup = true;
     for (const item of changes) {
-      if (!fs.readFileSync(item.dest).equals(item.before)) throw new Error('Changed before copy: ' + item.dest);
+      if (!same(read(item.dest), item.before)) throw new Error('Changed before copy: ' + item.dest);
       written.push(item);
-      fs.copyFileSync(item.staged, item.dest);
-      if (!fs.readFileSync(item.dest).equals(fs.readFileSync(item.staged))) throw new Error('Copy failed: ' + item.dest);
+      if (item.after === null) fs.unlinkSync(item.dest);
+      else {
+        fs.mkdirSync(path.dirname(item.dest), {recursive:true});
+        fs.writeFileSync(item.dest, item.after);
+      }
+      if (!same(read(item.dest), item.after)) throw new Error('Write failed: ' + item.dest);
     }
   } catch (error) {
     for (const item of written.reverse()) {
-      try { fs.copyFileSync(item.backup, item.dest); } catch (e) { console.error('Restore failed:', e.message); }
+      try {
+        if (item.before === null) fs.rmSync(item.dest, {force:true});
+        else fs.copyFileSync(item.backup, item.dest);
+      } catch (e) { console.error('Restore failed:', e.message); }
     }
     throw error;
   } finally {

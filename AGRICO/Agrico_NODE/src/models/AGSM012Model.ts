@@ -1,7 +1,7 @@
-import * as repository from '../repository/TTSM012Query'
+import * as repository from '../repository/AGSM012Query'
 import { Post } from '../typed/typed';
 import Error from './errors'
-export default class TTSM012 {
+export default class AGSM012 {
     getInventoryData(
         DespFromDate: any,
         DespToDate: any,

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import moment from 'moment'
-import TTSM012 from '../models/TTSM012Model';
+import AGSM012 from '../models/AGSM012Model';
 import { Post } from "../typed/typed";
 
 export const getInventoryData = async (req: Request, res: Response) => {
@@ -28,7 +28,7 @@ export const getInventoryData = async (req: Request, res: Response) => {
 
         } = req.body;
 
-        const results: any = await TTSM012.prototype.getInventoryData(
+        const results: any = await AGSM012.prototype.getInventoryData(
             DespFromDate,
             DespToDate,
             ProdFromDate,
@@ -93,7 +93,7 @@ export const getMergedInv = async (req: Request, res: Response) => {
             mergedBatchMerg
         } = req.body;
 
-        const results: any = await TTSM012.prototype.getMergedInv(
+        const results: any = await AGSM012.prototype.getMergedInv(
             fromDt,
             mergedType,
             plant,
@@ -138,7 +138,7 @@ export const getOdiaFrm = async (req: Request, res: Response) => {
 
         var plant = req.body.plant;
 
-        const results: any = await TTSM012.prototype.getOdiaFrm(plant);
+        const results: any = await AGSM012.prototype.getOdiaFrm(plant);
         const list: any = [];
         //create json
         results.rows.map(function (x: any) {
@@ -158,7 +158,7 @@ export const getOdiaTo = async (req: Request, res: Response) => {
 
         var plant = req.body.plant;
 
-        const results: any = await TTSM012.prototype.getOdiaTo(plant);
+        const results: any = await AGSM012.prototype.getOdiaTo(plant);
         const list: any = [];
         //create json
         results.rows.map(function (x: any) {
@@ -181,7 +181,7 @@ export const getReversedBatchInfo = async (req: Request, res: Response) => {
             mergeBatch
         } = req.body;
     
-        const results: any = await TTSM012.prototype.getReversedBatchInfo(
+        const results: any = await AGSM012.prototype.getReversedBatchInfo(
             plant,
             batchId,
             mergeBatch

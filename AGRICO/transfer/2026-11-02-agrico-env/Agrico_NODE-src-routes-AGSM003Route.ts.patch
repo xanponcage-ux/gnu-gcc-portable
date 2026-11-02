@@ -1,0 +1,49 @@
+--- Agrico_NODE/src/routes/TTSM003Route.ts
++++ Agrico_NODE/src/routes/AGSM003Route.ts
+@@ -1,25 +1,25 @@
+ import { Router } from "express";
+-import * as controller from '../controllers/TTSM003Controller';
++import * as controller from '../controllers/AGSM003Controller';
+ import authenticationMiddleware from '../middlewares/authenticationMiddleware'
+ 
+-const TTSM003Route = Router()
++const AGSM003Route = Router()
+ 
+ 
+-// TTSM003Route.route('/getGroupPlant').post(authenticationMiddleware.bearer, authenticationMiddleware.reader, getGroupPlant); 
+-TTSM003Route.route('/getRolePlant').post(authenticationMiddleware.bearer, controller.getRolePlant);
+-TTSM003Route.route('/getCoils').post(authenticationMiddleware.bearer, controller.getCoils);
+-TTSM003Route.route('/getBatchDetails').post(authenticationMiddleware.bearer, controller.getBatchDetails);
+-TTSM003Route.route('/save').post( authenticationMiddleware.bearer,controller.CONFIRM);
+-TTSM003Route.route('/CONFIRM_Wires').post(authenticationMiddleware.bearer, controller.CONFIRM_Wires);
+-TTSM003Route.route('/getCoils_Wires').post(authenticationMiddleware.bearer, controller.getCoils_Wires);
+-TTSM003Route.route('/getCoils_LP').post(authenticationMiddleware.bearer, controller.getCoils_LP);
+-TTSM003Route.route('/odiafrm').post(authenticationMiddleware.bearer, controller.getOdiaFrm);
+-TTSM003Route.route('/odiato').post(authenticationMiddleware.bearer, controller.getOdiaTo);
+-TTSM003Route.route('/odiaList').post(authenticationMiddleware.bearer, controller.getOdia);
+-TTSM003Route.route('/thickList').post(authenticationMiddleware.bearer, controller.getThickList);
+-TTSM003Route.route('/lengthList').post(authenticationMiddleware.bearer, controller.getlengthList);
+-TTSM003Route.route('/status').post(authenticationMiddleware.bearer, controller.getStatus);
+-TTSM003Route.route('/getStoreLocation').get(authenticationMiddleware.bearer, controller.getStoreLocation);
+-TTSM003Route.route('/RETURN_COIL').post( authenticationMiddleware.bearer,controller.RETURN_COIL);
++// AGSM003Route.route('/getGroupPlant').post(authenticationMiddleware.bearer, authenticationMiddleware.reader, getGroupPlant); 
++AGSM003Route.route('/getRolePlant').post(authenticationMiddleware.bearer, controller.getRolePlant);
++AGSM003Route.route('/getCoils').post(authenticationMiddleware.bearer, controller.getCoils);
++AGSM003Route.route('/getBatchDetails').post(authenticationMiddleware.bearer, controller.getBatchDetails);
++AGSM003Route.route('/save').post( authenticationMiddleware.bearer,controller.CONFIRM);
++AGSM003Route.route('/CONFIRM_Wires').post(authenticationMiddleware.bearer, controller.CONFIRM_Wires);
++AGSM003Route.route('/getCoils_Wires').post(authenticationMiddleware.bearer, controller.getCoils_Wires);
++AGSM003Route.route('/getCoils_LP').post(authenticationMiddleware.bearer, controller.getCoils_LP);
++AGSM003Route.route('/odiafrm').post(authenticationMiddleware.bearer, controller.getOdiaFrm);
++AGSM003Route.route('/odiato').post(authenticationMiddleware.bearer, controller.getOdiaTo);
++AGSM003Route.route('/odiaList').post(authenticationMiddleware.bearer, controller.getOdia);
++AGSM003Route.route('/thickList').post(authenticationMiddleware.bearer, controller.getThickList);
++AGSM003Route.route('/lengthList').post(authenticationMiddleware.bearer, controller.getlengthList);
++AGSM003Route.route('/status').post(authenticationMiddleware.bearer, controller.getStatus);
++AGSM003Route.route('/getStoreLocation').get(authenticationMiddleware.bearer, controller.getStoreLocation);
++AGSM003Route.route('/RETURN_COIL').post( authenticationMiddleware.bearer,controller.RETURN_COIL);
+ 
+-export default TTSM003Route
+\ No newline at end of file
++export default AGSM003Route
+\ No newline at end of file

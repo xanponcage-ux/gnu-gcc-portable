@@ -1,0 +1,17 @@
+--- Agrico_NODE/package.json
++++ Agrico_NODE/package.json
+@@ -2,10 +2,11 @@
+   "name": "tsmtubesapi",
+   "version": "1.0.0",
+   "description": "",
+-  "main": "tsmtubesmesserverkhapoli.ts",
++  "main": "dist/agrinxtserver.js",
+   "scripts": {
+-    "serve": "nodemon src/tsmtubesmesserverkhapoli.ts",
+-    "dev": "ts-node-dev --respawn --transpile-only src/tsmtubesmesserverkhapoli.ts",
++    "start": "node dist/agrinxtserver.js",
++    "serve": "nodemon src/agrinxtserver.ts",
++    "dev": "ts-node-dev --respawn --transpile-only src/agrinxtserver.ts",
+     "test": "echo \"Error: no test specified\" && exit 1",
+     "build": "tsc"
+   },

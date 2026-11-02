@@ -1,189 +1,58 @@
-const qakhapoli = {
-  CHAVE_JWT: "4eab6260-ef82-46bb-9027-69fbbb31377f",
-  API_KEY: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  REFRESH_KEY: "9231f9cc-557c-4dd8-ac5c-babc20aad792",
-  SCREEN_AUTH_KEY: "8e38c77d-ec78-481d-8658-8911d5a1e142",
-  ORACLE: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  JWT_KEY: "secret",
-  appport: 5554,
-  dbUri: "10.152.98.191:1521/khtubeqa",
-  saltWorkFactor: "10",
-  accessTokenTtl: "15m",
-  refreshTokenTtl: "1y",
-  host: "10.152.98.191",
-  port: 1521,
-  database: "khtubeqa",
-  whitelistdUrl: ["https://tslweblinuat.corp.tatasteel.com"],
-  SOAP_URL: "https://tslapiadso.corp.tatasteel.com/FSSO/Service.asmx?WSDL",
-  hashRoute: "tubesnext_khop_hosr",
-  devMode: "N",
-  deploy: "Y",
-  appserver: "QA",
-  pythonURL: "https://tsldev19.corp.tatasteel.com:8226",
+import * as dotenv from "dotenv";
+import * as path from "path";
+import * as fs from "fs";
+import { networkInterfaces } from "os";
+
+// Process variables take precedence over the profile file and shared .env.
+const directory = path.resolve(__dirname, "..");
+const shared = dotenv.parse(fs.existsSync(path.join(directory, ".env"))
+  ? fs.readFileSync(path.join(directory, ".env")) : "");
+const profile = process.env.AGRINXT_ENV || shared.AGRINXT_ENV ||
+  (process.env.NODE_ENV === "production" ? "prd" : "local");
+const profiles = {
+  local: { appserver: "LOCAL", deploy: "N", appport: 5559, database: "EPATEST", origin: "http://localhost:3000" },
+  dev:   { appserver: "DEV",   deploy: "Y", appport: 5554, database: "EPATEST", origin: "" },
+  prd:   { appserver: "PRD",   deploy: "Y", appport: 5554, database: "", origin: "" },
 };
-
-const devkhapoli = {
-  CHAVE_JWT: "4eab6260-ef82-46bb-9027-69fbbb31377f",
-  API_KEY: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  REFRESH_KEY: "9231f9cc-557c-4dd8-ac5c-babc20aad792",
-  SCREEN_AUTH_KEY: "8e38c77d-ec78-481d-8658-8911d5a1e142",
-  ORACLE: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  JWT_KEY: "secret",
-  appport: 5554,
-  dbUri: "10.45.99.153:1521/khtubedev", //10.45.69.219
-  saltWorkFactor: "10",
-  accessTokenTtl: "15m",
-  refreshTokenTtl: "1y",
-  host: "10.45.99.153",
-  port: 1521,
-  database: "khtubedev",
-  whitelistdUrl: ["https://tslweblindev.corp.tatasteel.com"],
-  SOAP_URL: "https://tslapiadso.corp.tatasteel.com/FSSO/Service.asmx?WSDL",
-  hashRoute: "tubesnext_khop_hosr",
-  devMode: "N",
-  deploy: "Y",
-  appserver: "DEV",
-   pythonURL: "https://tsldev19.corp.tatasteel.com:8226",
-};
-
-const prd = {
-  CHAVE_JWT: "4eab6260-ef82-46bb-9027-69fbbb31377f",
-  API_KEY: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  REFRESH_KEY: "9231f9cc-557c-4dd8-ac5c-babc20aad792",
-  SCREEN_AUTH_KEY: "8e38c77d-ec78-481d-8658-8911d5a1e142",
-  ORACLE: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  JWT_KEY: "secret",
-  appport: 5554,
-  dbUri: "132.145.99.84:1521/tsmtubprdk",
-  saltWorkFactor: "10",
-  accessTokenTtl: "15m",
-  refreshTokenTtl: "1y",
-  host: "132.145.99.84",
-  port: 1521,
-  database: "tsmtubprdk",
-  whitelistdUrl: ["https://tsmwebappsk.corp.tatasteel.com"],
-  SOAP_URL: "https://tslapiadso.corp.tatasteel.com/FSSO/Service.asmx?WSDL",
-  hashRoute: "tsmtubesmes",
-  devMode: "N",
-  deploy: "Y",
-  appserver: "PRD",
-  pythonURL: "https://tslaiappprd01.corp.tatasteel.com/aimlfptb",//
-};
-
-const prdTst = {
-  CHAVE_JWT: "4eab6260-ef82-46bb-9027-69fbbb31377f",
-  API_KEY: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  REFRESH_KEY: "9231f9cc-557c-4dd8-ac5c-babc20aad792",
-  SCREEN_AUTH_KEY: "8e38c77d-ec78-481d-8658-8911d5a1e142",
-  ORACLE: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  JWT_KEY: "secret",
-  appport: 5554,
-  dbUri: "132.145.99.84:1521/tsmtubprdk",
-  saltWorkFactor: "10",
-  accessTokenTtl: "15m",
-  refreshTokenTtl: "1y",
-  host: "132.145.99.84",
-  port: 1521,
-  database: "tsmtubprdk",
-  whitelistdUrl: ['https://132.145.99.102'],
-  SOAP_URL: "https://tslapiadso.corp.tatasteel.com/FSSO/Service.asmx?WSDL",
-  hashRoute: "tsmtubesmes",
-  devMode: "N",
-  deploy: "Y",
-  appserver: "PRD",
-   pythonURL: "https://tsldev19.corp.tatasteel.com:8226",
-};
-
-const local = {
-  // DEVLOCAL
-  CHAVE_JWT: "4eab6260-ef82-46bb-9027-69fbbb31377f",
-  API_KEY: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  REFRESH_KEY: "9231f9cc-557c-4dd8-ac5c-babc20aad792",
-  SCREEN_AUTH_KEY: "8e38c77d-ec78-481d-8658-8911d5a1e142",
-  ORACLE: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-  JWT_KEY: "secret",
-  appport: 5559,
-  dbUri: "10.45.99.153:1521/khtubedev",
-  saltWorkFactor: "10",
-  accessTokenTtl: "15m",
-  refreshTokenTtl: "1y",
-  host: "10.45.99.153",
-  port: 1521,
-  database: "khtubedev", //"tsmtubprdk",//
-  whitelistdUrl: ["*"],
-  SOAP_URL: "https://tslapiadso.corp.tatasteel.com/FSSO/Service.asmx?WSDL",
-  hashRoute: "khtubedev",
-  devMode: "N",
-  deploy: "N",
-  appserver: "LOCAL",
-   pythonURL: "https://tsldev19.corp.tatasteel.com:8226",
-};
-
-// const local = {
-//   // PRDLOCAL
-//   CHAVE_JWT: "4eab6260-ef82-46bb-9027-69fbbb31377f",
-//   API_KEY: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-//   REFRESH_KEY: "9231f9cc-557c-4dd8-ac5c-babc20aad792",
-//   SCREEN_AUTH_KEY: "8e38c77d-ec78-481d-8658-8911d5a1e142",
-//   ORACLE: "6cc0a083-237c-4947-ba25-afeb388e54e9",
-//   JWT_KEY: "secret",
-//   appport: 5559,
-//   dbUri: "132.145.99.84:1521/tsmtubprdk",
-//   saltWorkFactor: "10",
-//   accessTokenTtl: "15m",
-//   refreshTokenTtl: "1y",
-//   host: "132.145.99.84",
-//   port: 1521,
-//   database: "tsmtubprdk", //"tsmtubprdk",//
-//   whitelistdUrl: ["*"],
-//   SOAP_URL: "https://tslapiadso.corp.tatasteel.com/FSSO/Service.asmx?WSDL",
-//   hashRoute: "khtubedev",
-//   devMode: "N",
-//   deploy: "N",
-//   appserver: "PRD",
-//   pythonURL: "https://tslaiappprd01.corp.tatasteel.com/aimlfptb",
-// };
-
+if (profile !== "local" && profile !== "dev" && profile !== "prd") {
+  throw new Error("AGRINXT_ENV must be local, dev or prd");
+}
+const defaults = profiles[profile as keyof typeof profiles];
+const settings: Record<string, string | undefined> = { ...shared, ...dotenv.config({path: path.join(directory, ".env." + profile)}).parsed, ...process.env };
+function value(name: string, fallback = "") {
+  return settings[name] || fallback;
+}
+function required(name: string, fallback = "") {
+  const result = value(name, fallback);
+  if (!result) throw new Error("Missing " + name + " for Agrico " + profile);
+  return result;
+}
+function port(name: string, fallback: number) {
+  const n = Number(value(name, String(fallback)));
+  if (!Number.isInteger(n) || n < 1 || n > 65535) throw new Error("Invalid " + name);
+  return n;
+}
+const database = required("AGRINXT_DB_SERVICE", defaults.database);
+const host = value("AGRINXT_DB_HOST");
+const dbPort = port("AGRINXT_DB_PORT", 1521);
 export const GetIp = () => {
-  var interfaces = require("os").networkInterfaces();
-  for (var devName in interfaces) {
-    var iface = interfaces[devName];
-
-    for (var i = 0; i < iface.length; i++) {
-      var alias = iface[i];
-      if (
-        alias.family === "IPv4" &&
-        alias.address !== "127.0.0.1" &&
-        !alias.internal
-      )
-        return alias.address;
-    }
+  for (const entries of Object.values(networkInterfaces())) {
+    const address = entries?.find(entry => entry.family === "IPv4" && !entry.internal);
+    if (address) return address.address;
   }
   return "0.0.0.0";
 };
-
-let varVal = "local";
-
-if (GetIp() === "176.0.15.164") {
-  varVal = "dev";
-}
-if (GetIp() === "176.0.15.247") {
-  varVal = "uat";
-}
-if (GetIp() === "132.145.99.102") {
-  // DB IP different from 132.145.99.84 in above prd
-  varVal = "prd";
-}
-// if (GetIp() === '132.145.99.102') {
-//   varVal = 'prdTst'
-// }
-console.log(GetIp());
-const env = {
-  ...(varVal === "prd" && prd),
-  ...(varVal === "dev" && devkhapoli),
-  ...(varVal === "uat" && qakhapoli),
-  ...(varVal === "local" && local),
-  //...varVal === 'prdTst' && prdTst
+export default {
+  ...defaults, database, host, port: dbPort,
+  appport: port("AGRINXT_APP_PORT", defaults.appport),
+  dbUri: value("AGRINXT_DB_CONNECT_STRING", host ? host + ":" + dbPort + "/" + database : database),
+  whitelistdUrl: required("AGRINXT_UI_ORIGIN", defaults.origin).split(",").map(origin => origin.trim()),
+  hashRoute: "agrigomes", devMode: "N",
+  CHAVE_JWT: required("CHAVE_JWT"), API_KEY: required("API_KEY"),
+  REFRESH_KEY: required("REFRESH_KEY"), SCREEN_AUTH_KEY: required("SCREEN_AUTH_KEY"),
+  ORACLE: required("ORACLE"), JWT_KEY: required("JWT_KEY"),
+  saltWorkFactor: value("AGRINXT_SALT_WORK_FACTOR", "10"),
+  accessTokenTtl: value("AGRINXT_ACCESS_TOKEN_TTL", "15m"),
+  refreshTokenTtl: value("AGRINXT_REFRESH_TOKEN_TTL", "1y"),
+  SOAP_URL: required("AGRINXT_SOAP_URL"), pythonURL: value("AGRINXT_PYTHON_URL"),
 };
-
-export default env;

@@ -1,0 +1,22 @@
+--- Agrico_NODE/src/routes/TTSM006Route.ts
++++ Agrico_NODE/src/routes/AGSM006Route.ts
+@@ -1,11 +1,11 @@
+ import { Router } from "express";
+-import * as controller from '../controllers/TTSM006Controller'
++import * as controller from '../controllers/AGSM006Controller'
+ import authenticationMiddleware from '../middlewares/authenticationMiddleware'
+ 
+-const TTSM006Route = Router()
++const AGSM006Route = Router()
+ 
+-TTSM006Route.route('/getProcess').post(authenticationMiddleware.bearer, controller.GetProcess);
+-TTSM006Route.route('/getMatGrp').post(authenticationMiddleware.bearer, controller.getMatGrp);
+-TTSM006Route.route('/getProdInqData').post(authenticationMiddleware.bearer, controller.getProdInqData);
++AGSM006Route.route('/getProcess').post(authenticationMiddleware.bearer, controller.GetProcess);
++AGSM006Route.route('/getMatGrp').post(authenticationMiddleware.bearer, controller.getMatGrp);
++AGSM006Route.route('/getProdInqData').post(authenticationMiddleware.bearer, controller.getProdInqData);
+ 
+-export default TTSM006Route
+\ No newline at end of file
++export default AGSM006Route
+\ No newline at end of file

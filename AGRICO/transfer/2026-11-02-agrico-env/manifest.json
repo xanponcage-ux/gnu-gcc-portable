@@ -1,0 +1,147 @@
+[
+  {
+    "Project": "Agrico_NODE",
+    "File": ".env.dev.example",
+    "Content": "Agrico_NODE-.env.dev.example"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": ".env.example",
+    "Content": "Agrico_NODE-.env.example"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": ".env.local.example",
+    "Content": "Agrico_NODE-.env.local.example"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": ".env.prd.example",
+    "Content": "Agrico_NODE-.env.prd.example"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": ".gitignore",
+    "Patch": "Agrico_NODE-.gitignore.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": ".vscode/launch.json",
+    "Patch": "Agrico_NODE-.vscode-launch.json.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "package.json",
+    "Patch": "Agrico_NODE-package.json.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/agrinxtserver.ts",
+    "From": "src/tsmtubesmesserverkhapoli.ts"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/app.ts",
+    "Patch": "Agrico_NODE-src-app.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/controllers/AGSM003Controller.ts",
+    "From": "src/controllers/TTSM003Controller.ts",
+    "Patch": "Agrico_NODE-src-controllers-AGSM003Controller.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/controllers/AGSM006Controller.ts",
+    "From": "src/controllers/TTSM006Controller.ts",
+    "Patch": "Agrico_NODE-src-controllers-AGSM006Controller.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/controllers/AGSM012Controller.ts",
+    "From": "src/controllers/TTSM012Controller.ts",
+    "Patch": "Agrico_NODE-src-controllers-AGSM012Controller.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/env.ts",
+    "Content": "Agrico_NODE-src-env.ts",
+    "BeforeHash": "f6b43ea69c1de47a7c5f5557fc5311f34a262a6655bac2efe96241b1ff2ca0f7"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/models/AGSM003Model.ts",
+    "From": "src/models/TTSM003Model.ts",
+    "Patch": "Agrico_NODE-src-models-AGSM003Model.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/models/AGSM006Model.ts",
+    "From": "src/models/TTSM006Model.ts",
+    "Patch": "Agrico_NODE-src-models-AGSM006Model.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/models/AGSM012Model.ts",
+    "From": "src/models/TTSM012Model.ts",
+    "Patch": "Agrico_NODE-src-models-AGSM012Model.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/AGSM003Query.ts",
+    "From": "src/repository/TTSM003Query.ts"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/AGSM006Query.ts",
+    "From": "src/repository/TTSM006Query.ts"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/AGSM012Query.ts",
+    "From": "src/repository/TTSM012Query.ts"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/routes/AGSM003Route.ts",
+    "From": "src/routes/TTSM003Route.ts",
+    "Patch": "Agrico_NODE-src-routes-AGSM003Route.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/routes/AGSM006Route.ts",
+    "From": "src/routes/TTSM006Route.ts",
+    "Patch": "Agrico_NODE-src-routes-AGSM006Route.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/routes/AGSM012Route.ts",
+    "From": "src/routes/TTSM012Route.ts",
+    "Patch": "Agrico_NODE-src-routes-AGSM012Route.ts.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/routes.js",
+    "Patch": "Agrico_UI-src-routes.js.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Planning/AGSM003.jsx",
+    "From": "src/views/Planning/TTSM003.jsx"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Reports/AGSM004.jsx",
+    "Content": "Agrico_UI-src-views-Reports-AGSM004.jsx"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Reports/AGSM006.jsx",
+    "From": "src/views/Reports/TTSM006.jsx"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Reports/AGSM012.jsx",
+    "From": "src/views/Reports/TTSM012.jsx"
+  }
+]

@@ -1,0 +1,12 @@
+--- Agrico_NODE/.gitignore
++++ Agrico_NODE/.gitignore
+@@ -101,4 +101,7 @@
+ .dynamodb/
+ 
+ # TernJS port file
+-.tern-port
+\ No newline at end of file
++.tern-port
++.env.local
++.env.dev
++.env.prd
