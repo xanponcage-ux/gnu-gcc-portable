@@ -1,0 +1,763 @@
+--- a/Agrico_NODE/src/repository/TTSM006Query.ts
++++ b/Agrico_NODE/src/repository/TTSM006Query.ts
+@@ -5,7 +5,7 @@
+ 
+ export const GetProcess = async (Plant: any) => {
+   try {
+-    let sql = `Select EPL_CD_PROCESS, EPL_CD_PROCESS||' - '||EPL_PROC_LINE_DESC EPL_PROC_LINE_DESC FROM V_EPA_PROC_LINE WHERE EPL_CD_EPA= :0 AND EPL_CD_PROCESS <>'V' ORDER BY EPL_NO_PROC_SEQ, EPL_CD_PROCESS`;
++    let sql = `Select EPL_CD_PROCESS, EPL_CD_PROCESS||' - '||EPL_PROC_LINE_DESC EPL_PROC_LINE_DESC FROM AGRIDBA.V_EPA_PROC_LINE_AG WHERE EPL_CD_EPA= :0 AND EPL_CD_PROCESS <>'V' ORDER BY EPL_NO_PROC_SEQ, EPL_CD_PROCESS`;
+     let binds = [`${Plant}`];
+     return await query.executeQuery(sql, binds);
+   } catch (error) {
+@@ -15,7 +15,7 @@
+ 
+ export const getMatGrp = async (Plant: any) => {
+   try {
+-    var sql = `select distinct(ENC_PRINT_SPEC) MAT_GRP from V_END_CUST_ORD_EPA WHERE ENC_CD_EPA=:plant AND ENC_PRINT_SPEC IS NOT NULL`;
++    var sql = `select distinct(ENC_PRINT_SPEC) MAT_GRP from AGRIDBA.V_END_CUST_ORD_EPA_AG WHERE ENC_CD_EPA=:plant AND ENC_PRINT_SPEC IS NOT NULL`;
+ 
+     let binds = {
+       plant: Plant,
+@@ -61,11 +61,11 @@
+         nvl(eom_uom, 'Ton') uom,
+         (
+             SELECT
+-                f_scrappdi_tub(eom_cd_epa, eom_id_first_par, epr_cd_process,(
++                AGRIDBA.F_SCRAPPDI_TUB_AG(eom_cd_epa, eom_id_first_par, epr_cd_process,(
+                     SELECT
+                         substr(cd_desc, 1, 18)
+                     FROM
+-                        v_codes
++                        AGRIDBA.V_CODES_AG
+                     WHERE
+                         cd_type = 'EPA196'
+                         AND cd_value = eom_cd_epa
+@@ -81,7 +81,7 @@
+             SELECT
+                 cd_desc
+             FROM
+-                v_codes
++                AGRIDBA.V_CODES_AG
+             WHERE
+                 cd_value = eom_cd_status
+                 AND cd_type = 'E0001'
+@@ -115,7 +115,7 @@
+             SELECT
+                 enc_order_type
+             FROM
+-                v_end_cust_ord_epa
++                AGRIDBA.V_END_CUST_ORD_EPA_AG
+             WHERE
+                 enc_cd_epa = eom_cd_epa
+                 AND enc_id_order = eom_id_order_cus
+@@ -128,7 +128,7 @@
+             SELECT
+                 enc_cust_name
+             FROM
+-                v_end_cust_ord_epa
++                AGRIDBA.V_END_CUST_ORD_EPA_AG
+             WHERE
+                 enc_cd_epa = eom_cd_epa
+                 AND enc_id_order = eom_id_order_cus
+@@ -138,7 +138,7 @@
+             SELECT
+                 enc_no_tracking
+             FROM
+-                v_end_cust_ord_epa
++                AGRIDBA.V_END_CUST_ORD_EPA_AG
+             WHERE
+                 enc_cd_epa = eom_cd_epa
+                 AND enc_id_order = eom_id_order_cus
+@@ -164,7 +164,7 @@
+             SELECT DISTINCT
+                 eic_cd_qlty_actl
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -173,7 +173,7 @@
+             SELECT DISTINCT
+                 eic_tdc_actl
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -182,7 +182,7 @@
+             SELECT DISTINCT
+                 eic_sec1
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -191,7 +191,7 @@
+             SELECT DISTINCT
+                 eic_sec2
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -200,7 +200,7 @@
+             SELECT DISTINCT
+                 eic_ms_piece_actl
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -209,7 +209,7 @@
+             SELECT DISTINCT
+                 eic_mk_customer
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -220,7 +220,7 @@
+             SELECT
+                 enc_ship_to_prty_desc
+             FROM
+-                v_end_cust_ord_epa
++                AGRIDBA.V_END_CUST_ORD_EPA_AG
+             WHERE
+                 enc_cd_epa = eom_cd_epa
+                 AND enc_id_order = eom_id_order_cus
+@@ -233,7 +233,7 @@
+             SELECT
+                 maktx
+             FROM
+-                v_makt
++                AGRIDBA.V_MAKT_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = eom_no_matnr
+@@ -242,7 +242,7 @@
+             SELECT
+                 nvl(length, 0)
+             FROM
+-                v_ympct_tub_matl
++                AGRIDBA.V_YMPCT_TUB_MATL_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = b.ewi_sfg_matnr
+@@ -253,7 +253,7 @@
+             SELECT
+                 maktx
+             FROM
+-                v_ympct_tub_matl
++                AGRIDBA.V_YMPCT_TUB_MATL_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = b.ewi_sfg_matnr
+@@ -262,7 +262,7 @@
+             SELECT
+                 SUM(eom_ms_gross_cal)
+             FROM
+-                v_epa_prodn d
++                AGRIDBA.V_EPA_PRODN_AG d
+             WHERE
+                 eom_cd_epa = c.eom_cd_epa
+                 AND eom_id_batch = c.eom_id_batch
+@@ -271,7 +271,7 @@
+                     SELECT
+                         substr(cd_desc, 1, 18)
+                     FROM
+-                        v_codes
++                        AGRIDBA.V_CODES_AG
+                     WHERE
+                         cd_type = 'EPA196'
+                         AND cd_value = d.eom_cd_epa
+@@ -282,7 +282,7 @@
+             SELECT
+                 SUM(eom_ms_gross_cal)
+             FROM
+-                v_epa_prodn d
++                AGRIDBA.V_EPA_PRODN_AG d
+             WHERE
+                 eom_cd_epa = c.eom_cd_epa
+                 AND eom_id_batch = c.eom_id_batch
+@@ -291,7 +291,7 @@
+                     SELECT
+                         substr(cd_desc, 1, 18)
+                     FROM
+-                        v_codes
++                        AGRIDBA.V_CODES_AG
+                     WHERE
+                         cd_type = 'EPA196'
+                         AND cd_value = d.eom_cd_epa
+@@ -302,7 +302,7 @@
+             SELECT
+                 SUM(eom_ms_gross_cal)
+             FROM
+-                v_epa_prodn d
++                AGRIDBA.V_EPA_PRODN_AG d
+             WHERE
+                 eom_cd_epa = c.eom_cd_epa
+                 AND eom_id_batch = c.eom_id_batch
+@@ -311,7 +311,7 @@
+                     SELECT
+                         substr(cd_desc, 1, 18)
+                     FROM
+-                        v_codes
++                        AGRIDBA.V_CODES_AG
+                     WHERE
+                         cd_type = 'EPA196'
+                         AND cd_value = d.eom_cd_epa
+@@ -326,7 +326,7 @@
+             SELECT
+                 maktx
+             FROM
+-                v_makt
++                AGRIDBA.V_MAKT_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = ewi_sfg_matnr
+@@ -336,7 +336,7 @@
+             SELECT DISTINCT
+                 eic_no_matnr
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -344,7 +344,7 @@
+             SELECT
+                 eom_no_matnr
+             FROM
+-                v_epa_prodn
++                AGRIDBA.V_EPA_PRODN_AG
+             WHERE
+                 eom_id_batch = c.EOM_ID_BATCH
+         )
+@@ -352,7 +352,7 @@
+             SELECT DISTINCT
+                 eic_no_matnr
+             FROM
+-                v_input_coil
++                AGRIDBA.V_INPUT_COIL_AG
+             WHERE
+                 eic_cd_epa = epr_cd_epa
+                 AND eic_id_coil = eom_id_first_par
+@@ -362,7 +362,7 @@
+             SELECT
+                 maktx
+             FROM
+-                v_makt
++                AGRIDBA.V_MAKT_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = (
+@@ -371,7 +371,7 @@
+                                 SELECT DISTINCT
+                                     eic_no_matnr
+                                 FROM
+-                                    v_input_coil
++                                    AGRIDBA.V_INPUT_COIL_AG
+                                 WHERE
+                                     eic_cd_epa = epr_cd_epa
+                                     AND eic_id_coil = eom_id_first_par
+@@ -380,7 +380,7 @@
+                                 SELECT
+                                     eom_no_matnr
+                                 FROM
+-                                    v_epa_prodn
++                                    AGRIDBA.V_EPA_PRODN_AG
+                                 WHERE
+                                     eom_id_batch = c.EOM_ID_BATCH
+                                     AND ROWNUM = 1
+@@ -389,7 +389,7 @@
+                                 SELECT DISTINCT
+                                     eic_no_matnr
+                                 FROM
+-                                    v_input_coil
++                                    AGRIDBA.V_INPUT_COIL_AG
+                                 WHERE
+                                     eic_cd_epa = epr_cd_epa
+                                     AND eic_id_coil = eom_id_first_par
+@@ -406,7 +406,7 @@
+             SELECT
+                 maktx
+             FROM
+-                v_makt
++                AGRIDBA.V_MAKT_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = (
+@@ -420,7 +420,7 @@
+               SELECT
+                   enc_no_matnr
+               FROM
+-                  v_end_cust_ord_epa
++                  AGRIDBA.V_END_CUST_ORD_EPA_AG
+               WHERE
+                   enc_cd_epa = eom_cd_epa
+                   AND enc_id_order = eom_id_order_cus
+@@ -430,14 +430,14 @@
+               SELECT
+                   maktx
+               FROM
+-                  v_makt
++                  AGRIDBA.V_MAKT_AG
+               WHERE
+                   mandt = '600'
+                   AND matnr = (
+                       SELECT
+                           enc_no_matnr
+                       FROM
+-                          v_end_cust_ord_epa
++                          AGRIDBA.V_END_CUST_ORD_EPA_AG
+                       WHERE
+                           enc_cd_epa = eom_cd_epa
+                           AND enc_id_order = eom_id_order_cus
+@@ -449,7 +449,7 @@
+             SELECT
+                 pph_product
+             FROM
+-                v_epa_proc_path
++                AGRIDBA.V_EPA_PROC_PATH_AG
+             WHERE
+                 pph_cd_epa = eom_cd_epa
+                 AND pph_cd_proc_path = eom_planned_proc
+@@ -460,7 +460,7 @@
+             SELECT
+                 eic_ms_gross_actl
+             FROM
+-                v_input_coil d
++                AGRIDBA.V_INPUT_COIL_AG d
+             WHERE
+                 c.eom_id_first_par = d.eic_id_coil
+         ) mother_batch_wt,
+@@ -472,18 +472,18 @@
+                NVL(DECODE(EOM_UOM,'KG',ROUND((EPR_MS_GROSS_ACTL/1000),3),EPR_MS_GROSS_ACTL),0) Mill_Wt
+                ,TO_CHAR(EPR_TS_REC_CREATE, 'DD-MM-YYYY HH24:MI:SS') REC_CRT_DT
+                ,EPR_WORK_CENT,EPR_ID_ORDER, EPR_SEC1, EPR_SEC2, EPR_IDIA, EPR_NO_ITEM,ROUND(EPR_LENGTH,3) EPR_LENGTH
+-               ,substr((F_WIP_MATNR (c.eom_cd_epa , c.eom_id_batch)),1,18) WIP_MAT,
+-               substr((F_WIP_MATNR (c.eom_cd_epa , c.eom_id_batch)),20,200) WIP_MAT_DESC,
++               ,substr((AGRIDBA.F_WIP_MATNR_AG (c.eom_cd_epa , c.eom_id_batch)),1,18) WIP_MAT,
++               substr((AGRIDBA.F_WIP_MATNR_AG (c.eom_cd_epa , c.eom_id_batch)),20,200) WIP_MAT_DESC,
+                EOM_OPER_COMMENT OP_REMARK,
+                EOM_SCRAP_REMARKS COMM_REMARK,
+                ENC_PRINT_SPEC MatGrp,
+-               NVL ((SELECT spec FROM v_ympct_tub_matl WHERE mandt = '600' AND matnr = eom_no_matnr AND ROWNUM = 1), '') spec,
+-               (SELECT  EIC_TDC_ACTL FROM v_input_coil WHERE eic_cd_epa = epr_cd_epa AND eic_id_coil = eom_id_first_par) EIC_TDC_ACTL
++               NVL ((SELECT spec FROM AGRIDBA.V_YMPCT_TUB_MATL_AG WHERE mandt = '600' AND matnr = eom_no_matnr AND ROWNUM = 1), '') spec,
++               (SELECT  EIC_TDC_ACTL FROM AGRIDBA.V_INPUT_COIL_AG WHERE eic_cd_epa = epr_cd_epa AND eic_id_coil = eom_id_first_par) EIC_TDC_ACTL
+                FROM
+-        v_epa_line_prodn   a,
+-        v_work_inst        b,
+-        v_epa_prodn        c,
+-        v_END_CUST_ORD_EPA d                
++        AGRIDBA.V_EPA_LINE_PRODN_AG   a,
++        AGRIDBA.V_WORK_INST_AG        b,
++        AGRIDBA.V_EPA_PRODN_AG        c,
++        AGRIDBA.V_END_CUST_ORD_EPA_AG d                
+     WHERE
+         epr_id_batch = eom_id_batch
+         AND epr_cd_epa = eom_cd_epa
+@@ -505,7 +505,7 @@
+ 
+     if (pname && pname != "") {
+       sql +=
+-        " AND eom_planned_proc IN ( SELECT pph_cd_proc_path FROM v_epa_proc_path WHERE pph_cd_epa = eom_cd_epa AND pph_product_nm = :Pname )";
++        " AND eom_planned_proc IN ( SELECT pph_cd_proc_path FROM AGRIDBA.V_EPA_PROC_PATH_AG WHERE pph_cd_epa = eom_cd_epa AND pph_product_nm = :Pname )";
+       Object.assign(binds, { Pname: pname });
+     }
+     if (Process && Process != "") {
+@@ -552,10 +552,10 @@
+         } else if (prodType === 1) {
+           //sql += " AND eom_cd_qlty_actl = 'SCRP' " Comment on 07-02-2024 for Commercial
+           sql +=
+-            " AND eom_cd_qlty_actl = 'SCRP' AND eom_cd_st_actl != '6' AND EOM_NO_MATNR NOT IN ( SELECT CD_DESC FROM V_CODES WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) ";
++            " AND eom_cd_qlty_actl = 'SCRP' AND eom_cd_st_actl != '6' AND EOM_NO_MATNR NOT IN ( SELECT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) ";
+         } else if (prodType === 3) {
+           sql +=
+-            " AND ((EOM_CD_st_ACTL = '6' and epr_slit_sec='C') OR (EOM_NO_MATNR IN (SELECT CD_DESC FROM V_CODES WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) AND EOM_CD_st_ACTL <> '6'))";
++            " AND ((EOM_CD_st_ACTL = '6' and epr_slit_sec='C') OR (EOM_NO_MATNR IN (SELECT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) AND EOM_CD_st_ACTL <> '6'))";
+         }
+       }
+     }
+@@ -626,11 +626,11 @@
+           nvl(eom_uom, 'Ton') uom,
+           (
+               SELECT
+-                  f_scrappdi_tub(eom_cd_epa, eom_id_first_par, epr_cd_process,(
++                  AGRIDBA.F_SCRAPPDI_TUB_AG(eom_cd_epa, eom_id_first_par, epr_cd_process,(
+                       SELECT
+                           substr(cd_desc, 1, 18)
+                       FROM
+-                          v_codes
++                          AGRIDBA.V_CODES_AG
+                       WHERE
+                           cd_type = 'EPA196'
+                           AND cd_value = eom_cd_epa
+@@ -646,7 +646,7 @@
+               SELECT
+                   cd_desc
+               FROM
+-                  v_codes
++                  AGRIDBA.V_CODES_AG
+               WHERE
+                   cd_value = eom_cd_status
+                   AND cd_type = 'E0001'
+@@ -680,7 +680,7 @@
+               SELECT
+                   enc_order_type
+               FROM
+-                  v_end_cust_ord_epa
++                  AGRIDBA.V_END_CUST_ORD_EPA_AG
+               WHERE
+                   enc_cd_epa = eom_cd_epa
+                   AND enc_id_order = eom_id_order_cus
+@@ -693,7 +693,7 @@
+               SELECT
+                   enc_cust_name
+               FROM
+-                  v_end_cust_ord_epa
++                  AGRIDBA.V_END_CUST_ORD_EPA_AG
+               WHERE
+                   enc_cd_epa = eom_cd_epa
+                   AND enc_id_order = eom_id_order_cus
+@@ -703,7 +703,7 @@
+               SELECT
+                   enc_no_tracking
+               FROM
+-                  v_end_cust_ord_epa
++                  AGRIDBA.V_END_CUST_ORD_EPA_AG
+               WHERE
+                   enc_cd_epa = eom_cd_epa
+                   AND enc_id_order = eom_id_order_cus
+@@ -729,7 +729,7 @@
+               SELECT DISTINCT
+                   eic_cd_qlty_actl
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -738,7 +738,7 @@
+               SELECT DISTINCT
+                   eic_tdc_actl
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -747,7 +747,7 @@
+               SELECT DISTINCT
+                   eic_sec1
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -756,7 +756,7 @@
+               SELECT DISTINCT
+                   eic_sec2
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -765,7 +765,7 @@
+               SELECT DISTINCT
+                   eic_ms_piece_actl
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -774,7 +774,7 @@
+               SELECT DISTINCT
+                   eic_mk_customer
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -785,7 +785,7 @@
+               SELECT
+                   enc_ship_to_prty_desc
+               FROM
+-                  v_end_cust_ord_epa
++                  AGRIDBA.V_END_CUST_ORD_EPA_AG
+               WHERE
+                   enc_cd_epa = eom_cd_epa
+                   AND enc_id_order = eom_id_order_cus
+@@ -798,7 +798,7 @@
+               SELECT
+                   maktx
+               FROM
+-                  v_makt
++                  AGRIDBA.V_MAKT_AG
+               WHERE
+                   mandt = '600'
+                   AND matnr = eom_no_matnr
+@@ -807,7 +807,7 @@
+               SELECT
+                   nvl(length, 0)
+               FROM
+-                  v_ympct_tub_matl
++                  AGRIDBA.V_YMPCT_TUB_MATL_AG
+               WHERE
+                   mandt = '600'
+                   AND matnr = b.ewi_sfg_matnr
+@@ -818,7 +818,7 @@
+               SELECT
+                   maktx
+               FROM
+-                  v_ympct_tub_matl
++                  AGRIDBA.V_YMPCT_TUB_MATL_AG
+               WHERE
+                   mandt = '600'
+                   AND matnr = b.ewi_sfg_matnr
+@@ -827,7 +827,7 @@
+               SELECT
+                   SUM(eom_ms_gross_cal)
+               FROM
+-                  v_epa_prodn d
++                  AGRIDBA.V_EPA_PRODN_AG d
+               WHERE
+                   eom_cd_epa = c.eom_cd_epa
+                   AND eom_id_batch = c.eom_id_batch
+@@ -836,7 +836,7 @@
+                       SELECT
+                           substr(cd_desc, 1, 18)
+                       FROM
+-                          v_codes
++                          AGRIDBA.V_CODES_AG
+                       WHERE
+                           cd_type = 'EPA196'
+                           AND cd_value = d.eom_cd_epa
+@@ -847,7 +847,7 @@
+               SELECT
+                   SUM(eom_ms_gross_cal)
+               FROM
+-                  v_epa_prodn d
++                  AGRIDBA.V_EPA_PRODN_AG d
+               WHERE
+                   eom_cd_epa = c.eom_cd_epa
+                   AND eom_id_batch = c.eom_id_batch
+@@ -856,7 +856,7 @@
+                       SELECT
+                           substr(cd_desc, 1, 18)
+                       FROM
+-                          v_codes
++                          AGRIDBA.V_CODES_AG
+                       WHERE
+                           cd_type = 'EPA196'
+                           AND cd_value = d.eom_cd_epa
+@@ -867,7 +867,7 @@
+               SELECT
+                   SUM(eom_ms_gross_cal)
+               FROM
+-                  v_epa_prodn d
++                  AGRIDBA.V_EPA_PRODN_AG d
+               WHERE
+                   eom_cd_epa = c.eom_cd_epa
+                   AND eom_id_batch = c.eom_id_batch
+@@ -876,7 +876,7 @@
+                       SELECT
+                           substr(cd_desc, 1, 18)
+                       FROM
+-                          v_codes
++                          AGRIDBA.V_CODES_AG
+                       WHERE
+                           cd_type = 'EPA196'
+                           AND cd_value = d.eom_cd_epa
+@@ -891,7 +891,7 @@
+               SELECT
+                   maktx
+               FROM
+-                  v_makt
++                  AGRIDBA.V_MAKT_AG
+               WHERE
+                   mandt = '600'
+                   AND matnr = ewi_sfg_matnr
+@@ -901,7 +901,7 @@
+               SELECT DISTINCT
+                   eic_no_matnr
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -909,7 +909,7 @@
+               SELECT
+                   eom_no_matnr
+               FROM
+-                  v_epa_prodn
++                  AGRIDBA.V_EPA_PRODN_AG
+               WHERE
+                   eom_id_batch = c.EOM_ID_BATCH
+           )
+@@ -917,7 +917,7 @@
+               SELECT DISTINCT
+                   eic_no_matnr
+               FROM
+-                  v_input_coil
++                  AGRIDBA.V_INPUT_COIL_AG
+               WHERE
+                   eic_cd_epa = epr_cd_epa
+                   AND eic_id_coil = eom_id_first_par
+@@ -927,7 +927,7 @@
+               SELECT
+                   maktx
+               FROM
+-                  v_makt
++                  AGRIDBA.V_MAKT_AG
+               WHERE
+                   mandt = '600'
+                   AND matnr = (
+@@ -936,7 +936,7 @@
+                                   SELECT DISTINCT
+                                       eic_no_matnr
+                                   FROM
+-                                      v_input_coil
++                                      AGRIDBA.V_INPUT_COIL_AG
+                                   WHERE
+                                       eic_cd_epa = epr_cd_epa
+                                       AND eic_id_coil = eom_id_first_par
+@@ -945,7 +945,7 @@
+                                   SELECT
+                                       eom_no_matnr
+                                   FROM
+-                                      v_epa_prodn
++                                      AGRIDBA.V_EPA_PRODN_AG
+                                   WHERE
+                                       eom_id_batch = c.EOM_ID_BATCH
+                                       AND ROWNUM = 1
+@@ -954,7 +954,7 @@
+                                   SELECT DISTINCT
+                                       eic_no_matnr
+                                   FROM
+-                                      v_input_coil
++                                      AGRIDBA.V_INPUT_COIL_AG
+                                   WHERE
+                                       eic_cd_epa = epr_cd_epa
+                                       AND eic_id_coil = eom_id_first_par
+@@ -971,7 +971,7 @@
+             SELECT
+                 maktx
+             FROM
+-                v_makt
++                AGRIDBA.V_MAKT_AG
+             WHERE
+                 mandt = '600'
+                 AND matnr = (
+@@ -985,7 +985,7 @@
+                 SELECT
+                     enc_no_matnr
+                 FROM
+-                    v_end_cust_ord_epa
++                    AGRIDBA.V_END_CUST_ORD_EPA_AG
+                 WHERE
+                     enc_cd_epa = eom_cd_epa
+                     AND enc_id_order = eom_id_order_cus
+@@ -995,14 +995,14 @@
+                 SELECT
+                     maktx
+                 FROM
+-                    v_makt
++                    AGRIDBA.V_MAKT_AG
+                 WHERE
+                     mandt = '600'
+                     AND matnr = (
+                         SELECT
+                             enc_no_matnr
+                         FROM
+-                            v_end_cust_ord_epa
++                            AGRIDBA.V_END_CUST_ORD_EPA_AG
+                         WHERE
+                             enc_cd_epa = eom_cd_epa
+                             AND enc_id_order = eom_id_order_cus
+@@ -1014,7 +1014,7 @@
+               SELECT
+                   pph_product
+               FROM
+-                  v_epa_proc_path
++                  AGRIDBA.V_EPA_PROC_PATH_AG
+               WHERE
+                   pph_cd_epa = eom_cd_epa
+                   AND pph_cd_proc_path = eom_planned_proc
+@@ -1025,7 +1025,7 @@
+               SELECT
+                   eic_ms_gross_actl
+               FROM
+-                  v_input_coil d
++                  AGRIDBA.V_INPUT_COIL_AG d
+               WHERE
+                   c.eom_id_first_par = d.eic_id_coil
+           ) mother_batch_wt,
+@@ -1037,15 +1037,15 @@
+                  NVL(DECODE(EOM_UOM,'KG',ROUND((EPR_MS_GROSS_ACTL/1000),3),EPR_MS_GROSS_ACTL),0) Mill_Wt
+                  ,TO_CHAR(EPR_TS_REC_CREATE, 'DD-MM-YYYY HH24:MI:SS') REC_CRT_DT
+                  ,EPR_WORK_CENT,EPR_ID_ORDER, EPR_SEC1, EPR_SEC2, EPR_IDIA, EPR_NO_ITEM,ROUND(EPR_LENGTH,3) EPR_LENGTH
+-                 ,substr((F_WIP_MATNR (c.eom_cd_epa , c.eom_id_batch)),1,18) WIP_MAT,
+-                 substr((F_WIP_MATNR (c.eom_cd_epa , c.eom_id_batch)),20,200) WIP_MAT_DESC,
++                 ,substr((AGRIDBA.F_WIP_MATNR_AG (c.eom_cd_epa , c.eom_id_batch)),1,18) WIP_MAT,
++                 substr((AGRIDBA.F_WIP_MATNR_AG (c.eom_cd_epa , c.eom_id_batch)),20,200) WIP_MAT_DESC,
+                  EOM_OPER_COMMENT OP_REMARK,
+                  EOM_SCRAP_REMARKS COMM_REMARK,
+                   '' MatGrp
+                  FROM
+-          v_epa_line_prodn   a,
+-          v_work_inst        b,
+-          v_epa_prodn        c               
++          AGRIDBA.V_EPA_LINE_PRODN_AG   a,
++          AGRIDBA.V_WORK_INST_AG        b,
++          AGRIDBA.V_EPA_PRODN_AG        c               
+       WHERE
+           epr_id_batch = eom_id_batch
+           AND epr_cd_epa = eom_cd_epa
+@@ -1064,7 +1064,7 @@
+ 
+       if (pname && pname != "") {
+         sql +=
+-          " AND eom_planned_proc IN ( SELECT pph_cd_proc_path FROM v_epa_proc_path WHERE pph_cd_epa = eom_cd_epa AND pph_product_nm = :Pname )";
++          " AND eom_planned_proc IN ( SELECT pph_cd_proc_path FROM AGRIDBA.V_EPA_PROC_PATH_AG WHERE pph_cd_epa = eom_cd_epa AND pph_product_nm = :Pname )";
+         Object.assign(binds, { Pname: pname });
+       }
+ 
+@@ -1100,10 +1100,10 @@
+       ) {
+         if (prodType === 1) {
+           sql +=
+-            " AND eom_cd_qlty_actl = 'SCRP' AND eom_cd_st_actl != '6' AND EOM_NO_MATNR NOT IN ( SELECT CD_DESC FROM V_CODES WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) ";
++            " AND eom_cd_qlty_actl = 'SCRP' AND eom_cd_st_actl != '6' AND EOM_NO_MATNR NOT IN ( SELECT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) ";
+         } else if (prodType === 3) {
+           sql +=
+-            "AND ((EOM_CD_st_ACTL = '6' and epr_slit_sec='C') OR (EOM_NO_MATNR IN (SELECT CD_DESC FROM V_CODES WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) AND EOM_CD_st_ACTL <> '6'))";
++            "AND ((EOM_CD_st_ACTL = '6' and epr_slit_sec='C') OR (EOM_NO_MATNR IN (SELECT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) AND EOM_CD_st_ACTL <> '6'))";
+         } else sql += " AND eom_cd_qlty_actl= 'SCRP' ";
+       }
+       //   if (prodType && prodType != "") {
+@@ -1112,10 +1112,10 @@
+       //     } else if (prodType === 1) {
+       //       //sql += " AND eom_cd_qlty_actl = 'SCRP' " Comment on 07-02-2024 for Commercial
+       //       sql +=
+-      //         " AND eom_cd_qlty_actl = 'SCRP' AND eom_cd_st_actl != '6' AND EOM_NO_MATNR NOT IN ( SELECT CD_DESC FROM V_CODES WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) ";
++      //         " AND eom_cd_qlty_actl = 'SCRP' AND eom_cd_st_actl != '6' AND EOM_NO_MATNR NOT IN ( SELECT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) ";
+       //     } else if (prodType === 3) {
+       //       sql +=
+-      //         " AND ((EOM_CD_st_ACTL = '6' and epr_slit_sec='C') OR (EOM_NO_MATNR IN (SELECT CD_DESC FROM V_CODES WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) AND EOM_CD_st_ACTL <> '6'))";
++      //         " AND ((EOM_CD_st_ACTL = '6' and epr_slit_sec='C') OR (EOM_NO_MATNR IN (SELECT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE CD_TYPE='TB045' AND CD_VALUE =EOM_CD_EPA) AND EOM_CD_st_ACTL <> '6'))";
+       //     }
+       //   }
+       if (ThickMin == "" && ThickMax && ThickMax != "") {

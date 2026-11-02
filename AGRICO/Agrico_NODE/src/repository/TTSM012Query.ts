@@ -121,7 +121,7 @@ FROM
                 SELECT
                     ewi_wrk_center_no
                 FROM
-                    v_work_inst
+                    AGRIDBA.V_WORK_INST_AG
                 WHERE
                     ewi_cd_epa = eom_cd_epa
                     AND ewi_id_batch = eom_id_first_par
@@ -134,7 +134,7 @@ FROM
                 SELECT
                     plm_wcnt_code
                 FROM
-                    v_proc_line_machine
+                    AGRIDBA.V_PROC_LINE_MACHINE_AG
                 WHERE
                     plm_cd_epa = eom_cd_epa
                     AND plm_cd_process = eom_cd_next_proc
@@ -166,13 +166,13 @@ FROM
                 SELECT
                     grade
                 FROM
-                    v_ympct_tub_matl
+                    AGRIDBA.V_YMPCT_TUB_MATL_AG
                 WHERE
                     mandt = '600'
                     AND matnr = enc_no_matnr
                     AND ROWNUM = 1
             ) so_grade,
-            NVL ((SELECT spec FROM v_ympct_tub_matl
+            NVL ((SELECT spec FROM AGRIDBA.V_YMPCT_TUB_MATL_AG
               WHERE mandt = '600' AND matnr = eom_no_matnr AND ROWNUM = 1), '') spec,
             eom_tdc_actl          actual_tdc,
             eom_cd_prod           prod_cd,
@@ -185,7 +185,7 @@ FROM
                 SELECT
                     maktx
                 FROM
-                    v_makt
+                    AGRIDBA.V_MAKT_AG
                 WHERE
                     mandt = '600'
                     AND matnr = nvl(a.eom_no_matnr, enc_no_matnr)
@@ -217,10 +217,10 @@ FROM
             eom_cd_status         status,
             (
               SELECT TRUNC(SYSDATE - STB_TIMESTAMP)
-              FROM V_STATUS_BKUP x
+              FROM AGRIDBA.V_STATUS_BKUP_AG x
               WHERE STB_ID_COIL = a.EOM_ID_BATCH
               AND STB_NEW_STATUS = a.EOM_CD_STATUS
-              AND STB_TIMESTAMP = (SELECT MAX(STB_TIMESTAMP) FROM V_STATUS_BKUP WHERE STB_ID_COIL=x.STB_ID_COIL AND STB_NEW_STATUS=x.STB_NEW_STATUS )
+              AND STB_TIMESTAMP = (SELECT MAX(STB_TIMESTAMP) FROM AGRIDBA.V_STATUS_BKUP_AG WHERE STB_ID_COIL=x.STB_ID_COIL AND STB_NEW_STATUS=x.STB_NEW_STATUS )
               )  STATUSAGE,
             eom_id_par_coil_no    parent_batch,
             eom_id_first_par      mother_batch,
@@ -231,7 +231,7 @@ FROM
                 SELECT
                     maktx
                 FROM
-                    v_makt
+                    AGRIDBA.V_MAKT_AG
                 WHERE
                     mandt = '600'
                     AND matnr = eic_no_matnr
@@ -242,7 +242,7 @@ FROM
                 SELECT DISTINCT
                     epl_epa_desc
                 FROM
-                    v_epa_proc_line
+                    AGRIDBA.V_EPA_PROC_LINE_AG
                 WHERE
                     epl_active_plant_fl = 'A'
                     AND epl_cd_epa = eom_cd_epa
@@ -256,15 +256,15 @@ FROM
             decode(eom_cd_st_actl, '1', 'Prime', 2, 'Partial Scrapped',
                    '3', 'Downgraded', '5', 'Additional Process', '8',
                    'Diverted', '9', 'Scrapped', 'Prime') processing_flag,
-                   (SELECT DISTINCT CD_DESC FROM V_CODES WHERE  CD_TYPE = 'E0001' AND  CD_VALUE = EOM_CD_STATUS AND ROWNUM = 1) STATUS_DESC 
-                   ,substr((F_WIP_MATNR (a.eom_cd_epa , a.eom_id_batch)),1,18) WIP_MAT,
-                   substr((F_WIP_MATNR (a.eom_cd_epa , a.eom_id_batch)),20,200) WIP_MAT_DESC,
+                   (SELECT DISTINCT CD_DESC FROM AGRIDBA.V_CODES_AG WHERE  CD_TYPE = 'E0001' AND  CD_VALUE = EOM_CD_STATUS AND ROWNUM = 1) STATUS_DESC 
+                   ,substr((AGRIDBA.F_WIP_MATNR_AG (a.eom_cd_epa , a.eom_id_batch)),1,18) WIP_MAT,
+                   substr((AGRIDBA.F_WIP_MATNR_AG (a.eom_cd_epa , a.eom_id_batch)),20,200) WIP_MAT_DESC,
                    enc_no_matnr fg_mat_no,
                     (
                         SELECT
                             maktx
                         FROM
-                            v_makt
+                            AGRIDBA.V_MAKT_AG
                         WHERE
                             mandt = '600'
                             AND matnr = enc_no_matnr
@@ -273,9 +273,9 @@ FROM
                     EOM_OPER_COMMENT,
                     EIC_TDC_ACTL
         FROM
-            v_epa_prodn          a,
-            v_input_coil         b,
-            v_end_cust_ord_epa   c
+            AGRIDBA.V_EPA_PRODN_AG          a,
+            AGRIDBA.V_INPUT_COIL_AG         b,
+            AGRIDBA.V_END_CUST_ORD_EPA_AG   c
         WHERE
             eom_cd_epa = eic_cd_epa (+)
             AND eom_id_first_par = eic_id_coil (+)
@@ -332,7 +332,7 @@ FROM
     }
 
     if (customer && customer !== undefined) {
-      sql += ` and ( eom_cd_epa||EOM_ID_ORDER_CUS ||EOM_ID_ORD_ITEM_CUS) in (select enc_cd_epa||enc_id_order||enc_no_item from v_End_cust_ord_Epa where 
+      sql += ` and ( eom_cd_epa||EOM_ID_ORDER_CUS ||EOM_ID_ORD_ITEM_CUS) in (select enc_cd_epa||enc_id_order||enc_no_item from AGRIDBA.V_END_CUST_ORD_EPA_AG where 
           enc_cd_epa=a.eom_cd_epa And enc_id_order = a.EOM_ID_ORDER_CUS And enc_no_item =a.EOM_ID_ORD_ITEM_CUS And enc_cD_END_CUST =:Customer) `;
       binds["Customer"] = customer;
     }
@@ -355,7 +355,7 @@ FROM
     }
 
     if (orderType && orderType !== undefined) {
-      sql += ` and ( eom_cd_epa||EOM_ID_ORDER_CUS ||EOM_ID_ORD_ITEM_CUS) in (select enc_cd_epa||enc_id_order||enc_no_item from v_End_cust_ord_Epa where 
+      sql += ` and ( eom_cd_epa||EOM_ID_ORDER_CUS ||EOM_ID_ORD_ITEM_CUS) in (select enc_cd_epa||enc_id_order||enc_no_item from AGRIDBA.V_END_CUST_ORD_EPA_AG where 
        enc_cd_epa=a.eom_cd_epa And enc_id_order = a.EOM_ID_ORDER_CUS And enc_no_item =a.EOM_ID_ORD_ITEM_CUS And ENC_ORDER_TYPE =:orderType) `;
       binds["orderType"] = orderType;
     }
@@ -367,46 +367,46 @@ FROM
 
     // if (stockType && stockType !== undefined && stockType == 'RM') {
     //   sql += ` AND (EOM_CD_STATUS IN ('VF','VM','MC') OR EOM_CD_STATUS Like '%M' OR EOM_CD_STATUS Like 'V%')
-    //   AND EOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
+    //   AND EOM_NO_MATNR NOT IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
     //   `;
     // }
     if (stockType && stockType !== undefined && stockType == "RM") {
-      sql += ` AND (EOM_CD_STATUS IN ( SELECT CD_DESC FROM V_CODES
+      sql += ` AND (EOM_CD_STATUS IN ( SELECT CD_DESC FROM AGRIDBA.V_CODES_AG
         WHERE CD_TYPE='TB040'
         AND CD_DESC1='RM STOCK'))
-      AND EOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
+      AND EOM_NO_MATNR NOT IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
       `;
     }
 
     // if (stockType && stockType !== undefined && stockType == 'FG') {
     //   sql += ` AND EOM_CD_STATUS IN ('WB' , 'WS' , 'WT' ,'WC','WD','KB','KF','WF') AND EOM_CD_QLTY_ACTL != 'SCRP'
-    //   AND EOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
+    //   AND EOM_NO_MATNR NOT IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
     //   `;
     // }
     if (stockType && stockType !== undefined && stockType == "FG") {
-      sql += ` AND EOM_CD_STATUS IN (SELECT CD_DESC FROM V_CODES
+      sql += ` AND EOM_CD_STATUS IN (SELECT CD_DESC FROM AGRIDBA.V_CODES_AG
         WHERE CD_TYPE='TB040'
         AND CD_DESC1='FG STOCK') AND EOM_CD_QLTY_ACTL <> 'SCRP'
-      AND EOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
+      AND EOM_NO_MATNR NOT IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)
       `;
     }
 
     if (stockType && stockType !== undefined && stockType == "SCRAP") {
       sql += ` AND EOM_CD_QLTY_ACTL = 'SCRP' 
-      AND EOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)`;
+      AND EOM_NO_MATNR NOT IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)`;
     }
 
     // if (stockType && stockType !== undefined && stockType == 'WIP') {
     //   sql += ` AND
     //   ((EOM_CD_STATUS NOT IN ('VF','VM','MC','WB','WS','WT','WC','WL','WD','KB','KF','WF') AND EOM_CD_STATUS NOT Like '%M' AND EOM_CD_STATUS NOT Like 'V%'  AND EOM_CD_QLTY_ACTL != 'SCRP')
-    //   or (EOM_NO_MATNR IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)))`;
+    //   or (EOM_NO_MATNR IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)))`;
     // }
     if (stockType && stockType !== undefined && stockType == "WIP") {
       sql += ` AND 
-      ((EOM_CD_STATUS IN ( SELECT CD_DESC FROM V_CODES
+      ((EOM_CD_STATUS IN ( SELECT CD_DESC FROM AGRIDBA.V_CODES_AG
         WHERE CD_TYPE='TB040'
         AND CD_DESC1 NOT in ('RM STOCK','FG STOCK'))   AND EOM_CD_QLTY_ACTL <> 'SCRP')
-      or (EOM_NO_MATNR IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)))`;
+      or (EOM_NO_MATNR IN(select cd_value from AGRIDBA.V_CODES_AG where cd_type = 'TB019' and cd_desc1 =eom_cd_epa)))`;
     }
 
     sql += `)
@@ -429,9 +429,9 @@ export const getMergedInv = async (
 ) => {
   try {
     var sql = `SELECT ERD_CD_EPA PLANT, ERD_ID_BATCH SLIT_COIL,ERD_BATCH_QTY SLIT_COIL_QTY, ERD_ID_NEW_BATCH MERGED_BATCH , ERD_NEW_BATCH_QTY MERGED_BATCH_QTY
-        ,ERD_NO_MATNR FG_MATERIAL_NO , (SELECT MAKTX FROM V_MAKT WHERE MANDT='600' AND MATNR=A.ERD_NO_MATNR AND ROWNUM=1)FG_MATERIAL_DESC
+        ,ERD_NO_MATNR FG_MATERIAL_NO , (SELECT MAKTX FROM AGRIDBA.V_MAKT_AG WHERE MANDT='600' AND MATNR=A.ERD_NO_MATNR AND ROWNUM=1)FG_MATERIAL_DESC
         ,TO_CHAR(ERD_REC_CRT_DT) MERGE_DT ,ERD_REC_CRT_UID MERGED_BY_USER , decode(ERD_MOV_IND , 'B','COIL','F','FG','S','SFG','') MERGED_TYPE
-        FROM V_EPA_RANDOM_DTLS A
+        FROM AGRIDBA.V_EPA_RANDOM_DTLS_AG A
         WHERE ERD_CD_EPA=:plant
         --AND ERD_REC_STATUS = NVL('A', ERD_REC_STATUS)
         `;
@@ -476,7 +476,7 @@ export const getMergedInv = async (
 
 export const getOdiaFrm = async (plant: any) => {
   try {
-    const sql = `SELECT DISTINCT round(ENC_SEC2_MAX,3) ENC_SEC2_MAX FROM V_END_CUST_ORD_ePA
+    const sql = `SELECT DISTINCT round(ENC_SEC2_MAX,3) ENC_SEC2_MAX FROM AGRIDBA.V_END_CUST_ORD_EPA_AG
         WHERE ENC_CD_EPA=:plant
         AND ENC_ST_ORDER='A'
         ORDER BY 1 DESC`;
@@ -492,7 +492,7 @@ export const getOdiaFrm = async (plant: any) => {
 export const getOdiaTo = async (plant: any) => {
   try {
     const sql = `SELECT DISTINCT  round(ENC_IDIA,3) ENC_IDIA
-        FROM V_END_CUST_ORD_ePA
+        FROM AGRIDBA.V_END_CUST_ORD_EPA_AG
         WHERE ENC_CD_EPA= :plant
         AND ENC_ST_ORDER='A'
         ORDER BY 1 DESC`;
@@ -533,7 +533,7 @@ export const getReversedBatchInfo = async (
     eom_no_matnr          material_no,
     eom_oper_id           production_done_by_usr
 FROM
-    v_epa_prodn_reverse
+    AGRIDBA.V_EPA_PRODN_REVERSE_AG
 WHERE
     eom_cd_epa = :plant
     AND eom_id_batch = nvl(:batchId, eom_id_batch)

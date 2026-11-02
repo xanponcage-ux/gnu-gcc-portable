@@ -1,0 +1,10 @@
+--- a/Agrico_UI/src/axiosAPI.js
++++ b/Agrico_UI/src/axiosAPI.js
+@@ -2,6 +2,7 @@
+ import serverDetails from "./variables/serverDetails";
+ import moment from "moment";
+ 
++serverDetails.baseURL = process.env.REACT_APP_AGRINXT_API_URL || window.location.origin + "/agriapi/";
+ const HttpClient = axios.create({
+   baseURL: serverDetails.baseURL,
+ });

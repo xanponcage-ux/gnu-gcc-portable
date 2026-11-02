@@ -43,46 +43,10 @@ export default function FullScreenNavBar(props) {
   const [open, setOpen] = useState(false);
 
   const Routs = [
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm022",
-      text: "Data Exchange",
-      icon: <ManageAccountsIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm003",
-      text: "Planning & Scheduling",
-      icon: <PrecisionManufacturingIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm004",
-      text: "Mill",
-      icon: <FactoryIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm005",
-      text: "Dispatch",
-      icon: <AvTimerIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm034",
-      text: "Quality",
-      icon: <BalanceIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm012",
-      text: "Reports",
-      icon: <InventoryIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/TTSC015",
-      text: "Common",
-      icon: <EventRepeatIcon fontSize="large" color="info" />,
-    },
-    {
-      link: "/tubesnext_khop_hosr/#/ttsm008D",
-      text: "Tube Plant  - 0788 DMS",
-      icon: <LockClockIcon fontSize="large" color="info" />,
-    },
+    { link: "#/agsm003", text: "Receive Raw Material", icon: <PrecisionManufacturingIcon fontSize="large" color="info" /> },
+    { link: "#/agsm006", text: "Production Report", icon: <FactoryIcon fontSize="large" color="info" /> },
+    { link: "#/agsm004", text: "In-transit / RM Receiving Report", icon: <AvTimerIcon fontSize="large" color="info" /> },
+    { link: "#/agsm012", text: "Inventory", icon: <InventoryIcon fontSize="large" color="info" /> },
   ];
 
   async function check() {
@@ -194,7 +158,7 @@ export default function FullScreenNavBar(props) {
               justifyContent="center"
               alignItems="center"
             >
-              <h1 style={{ margin: "auto", color: "white" }}>TSM TUBES MES</h1>
+              <h1 style={{ margin: "auto", color: "white" }}>AGRINXT MES</h1>
             </Grid> */}
             <Grid
               container

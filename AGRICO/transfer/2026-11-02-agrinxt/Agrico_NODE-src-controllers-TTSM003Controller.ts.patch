@@ -1,0 +1,13 @@
+--- a/Agrico_NODE/src/controllers/TTSM003Controller.ts
++++ b/Agrico_NODE/src/controllers/TTSM003Controller.ts
+@@ -135,6 +135,10 @@
+         let Plant = req.body.Plant;
+         let dt = req.body.dt;
+         let userId = req.body.userId;
++        if (Plant !== "4603" || !Array.isArray(dt) || !dt.length ||
++            dt.some(row => !row || !row.EIC_ID_COIL || row.EIC_CD_STATUS !== "VA")) {
++            return res.status(400).json("Select in-transit material for plant 4603");
++        }
+         var checkPass = "Y";
+         for (var i = 0; i < dt.length; i++) {
+             //initalize variables

@@ -1,0 +1,127 @@
+# Run in Windows PowerShell from the copied rough repository.
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)][string]$OfficeRoot,
+    [switch]$CheckOnly
+)
+$ChangeSet = "2026-11-02-agrinxt"
+$ErrorActionPreference = "Stop"
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    throw "Git is not available. Run in the VS Code PowerShell terminal where Git works."
+}
+$bundle = Join-Path $PSScriptRoot ("transfer\" + $ChangeSet)
+$manifest = Join-Path $bundle "manifest.json"
+if (-not (Test-Path -LiteralPath $manifest)) { throw "Transfer bundle missing. Pull origin main first." }
+# Windows PowerShell 5.1 emits the JSON array as one pipeline object.
+# Assign it directly; wrapping that pipeline in @() can create a nested array.
+$jobs = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+if (-not $jobs) { throw "Transfer manifest contains no application files." }
+foreach ($job in $jobs) {
+    foreach ($field in @("Project", "File", "Patch")) {
+        if ($job.$field -isnot [string] -or [string]::IsNullOrWhiteSpace($job.$field)) {
+            throw "Invalid transfer manifest: each entry must have a single nonempty $field string."
+        }
+    }
+}
+$workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("AGRINXT-" + [guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $workDir | Out-Null
+Write-Host "Change set: $ChangeSet. Preview files and backups: $workDir"
+$prepared = @()
+
+function Test-Patch([string]$Root, [string]$Patch, [switch]$Reverse) {
+    $ErrorActionPreference = "Continue" # Expected nonzero checks must not terminate Windows PowerShell 5.1.
+    if ($Reverse) { & git -C $Root apply --reverse --check --ignore-space-change "-p2" $Patch 2>$null }
+    else { & git -C $Root apply --check --ignore-space-change "-p2" $Patch 2>$null }
+    return ($LASTEXITCODE -eq 0)
+}
+function Apply-Patch([string]$Root, [string]$Patch) {
+    & git -C $Root apply --ignore-space-change "-p2" $Patch
+    if ($LASTEXITCODE -ne 0) { throw "Patch failed on temporary copy: $Patch. Office files unchanged." }
+}
+
+# All application files are prepared and validated before ANY office file is written.
+foreach ($job in $jobs) {
+    $target = Join-Path $OfficeRoot $job.Project
+    $targetFile = Join-Path $target $job.File
+    $existed = Test-Path -LiteralPath $targetFile -PathType Leaf
+    if ((Test-Path -LiteralPath $targetFile) -and -not $existed) { throw "Target is not a file: $targetFile" }
+    if (-not $existed -and -not $job.NewFile) { throw "Target file not found: $targetFile" }
+    & git -C $target rev-parse --is-inside-work-tree | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Not a Git working tree: $target" }
+    $stage = Join-Path $workDir ("stage\" + $job.Project)
+    if (-not (Test-Path -LiteralPath $stage)) {
+        New-Item -ItemType Directory -Path $stage -Force | Out-Null
+        & git -C $stage init --quiet
+        if ($LASTEXITCODE -ne 0) { throw "Cannot prepare temporary Git directory: $stage" }
+    }
+    $stageFile = Join-Path $stage $job.File
+    New-Item -ItemType Directory -Path (Split-Path -Parent $stageFile) -Force | Out-Null
+    $originalHash = $null
+    if ($existed) {
+        $originalHash = (Get-FileHash -LiteralPath $targetFile -Algorithm SHA256).Hash
+        Copy-Item -LiteralPath $targetFile -Destination $stageFile
+        if ((Get-FileHash -LiteralPath $stageFile -Algorithm SHA256).Hash -ne $originalHash) {
+            throw "Office file changed while preparing: $targetFile. Run again."
+        }
+    }
+    $patch = Join-Path $bundle $job.Patch
+    if (Test-Patch $stage $patch -Reverse) {
+        Write-Host "$($job.Project)/$($job.File): already applied."
+        continue
+    }
+    if (-not (Test-Patch $stage $patch)) {
+        throw "Conflict in $targetFile. No office files changed. Merge the patch manually while preserving office edits: $patch"
+    }
+    Apply-Patch $stage $patch
+    $backup = Join-Path $workDir ("backup\" + $job.Project + "\" + $job.File)
+    $prepared += @{ TargetFile = $targetFile; StageFile = $stageFile; Backup = $backup; OriginalHash = $originalHash; Existed = $existed }
+    Write-Host "$($job.Project)/$($job.File): check passed."
+}
+if ($CheckOnly) {
+    Write-Host "Checks passed for all files. $($prepared.Count) file(s) need updating. No office files changed."
+    return
+}
+# Recheck originals and back up every target before applying.
+foreach ($item in $prepared) {
+    if (-not $item.Existed) {
+        if (Test-Path -LiteralPath $item.TargetFile) {
+            throw "New target appeared after preview: $($item.TargetFile). No files changed. Run again."
+        }
+        continue
+    }
+    if ((Get-FileHash -LiteralPath $item.TargetFile -Algorithm SHA256).Hash -ne $item.OriginalHash) {
+        throw "Office file changed after preview: $($item.TargetFile). No files changed by this script. Run again."
+    }
+    New-Item -ItemType Directory -Path (Split-Path -Parent $item.Backup) -Force | Out-Null
+    Copy-Item -LiteralPath $item.TargetFile -Destination $item.Backup
+}
+$written = @()
+try {
+    foreach ($item in $prepared) {
+        $written += $item
+        New-Item -ItemType Directory -Path (Split-Path -Parent $item.TargetFile) -Force | Out-Null
+        Copy-Item -LiteralPath $item.StageFile -Destination $item.TargetFile
+        if ((Get-FileHash -LiteralPath $item.TargetFile -Algorithm SHA256).Hash -ne
+            (Get-FileHash -LiteralPath $item.StageFile -Algorithm SHA256).Hash) {
+            throw "Copy verification failed: $($item.TargetFile)"
+        }
+    }
+} catch {
+    $applyError = $_
+    foreach ($item in $written) {
+        try {
+            if ($item.Existed) { Copy-Item -LiteralPath $item.Backup -Destination $item.TargetFile }
+            elseif (Test-Path -LiteralPath $item.TargetFile -PathType Leaf) {
+                Remove-Item -LiteralPath $item.TargetFile -Force
+            }
+        }
+        catch { Write-Warning "Rollback failed for $($item.TargetFile). Existing-file backup: $($item.Backup)" }
+    }
+    throw "Transfer failed; attempted rollback. $applyError. Backups: $workDir"
+}
+Write-Host "Transfer complete: $($prepared.Count) file(s) updated. Review Source Control and test the affected screens."
+Write-Host "Restart the backend to load the updated handlers. No Azure commit or push performed. Backups: $workDir"
+
+
+
+

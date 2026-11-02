@@ -2,6 +2,7 @@ import axios from "axios";
 import serverDetails from "./variables/serverDetails";
 import moment from "moment";
 
+serverDetails.baseURL = process.env.REACT_APP_AGRINXT_API_URL || window.location.origin + "/agriapi/";
 const HttpClient = axios.create({
   baseURL: serverDetails.baseURL,
 });

@@ -1,0 +1,38 @@
+--- a/Agrico_NODE/src/repository/TTSM007Query.ts
++++ b/Agrico_NODE/src/repository/TTSM007Query.ts
+@@ -7,7 +7,7 @@
+   try {
+     var sql;
+     sql = `SELECT DISTINCT EPL_CD_COMP COMP_CODE , EPL_BUSINESS_UNIT BUSI_UNIT
+-     FROM V_EPA_PROC_LINE
++     FROM AGRIDBA.V_EPA_PROC_LINE_AG
+      WHERE EPL_cD_EPA=:plant
+      AND ROWNUM=1`;
+     let binds = {
+@@ -33,7 +33,7 @@
+ 
+ export const GetOrdTyp = async (plant: any) => {
+   try {
+-    const sql = `SELECT DISTINCT ENC_ORDER_TYPE FROM V_END_CUST_ORD_EPA WHERE ENC_CD_EPA = :0`;
++    const sql = `SELECT DISTINCT ENC_ORDER_TYPE FROM AGRIDBA.V_END_CUST_ORD_EPA_AG WHERE ENC_CD_EPA = :0`;
+     let binds = [`${plant}`];
+     return await query.executeQuery(sql, binds);
+   } catch (error) {
+@@ -43,7 +43,7 @@
+ 
+ export const GetProdCat = async (req: any) => {
+   try {
+-    const sql = `Select distinct CD_DESC From v_codes Where cd_type='EPA339' ORDER BY 1`;
++    const sql = `Select distinct CD_DESC From AGRIDBA.V_CODES_AG Where cd_type='EPA339' ORDER BY 1`;
+     return await query.executeQuery(sql);
+   } catch (error) {
+     throw new Error.InternalServerError("Error!");
+@@ -52,7 +52,7 @@
+ 
+ export const GetCustDesc = async (plant: any) => {
+   try {
+-    const sql = `SELECT DISTINCT ENC_CD_END_CUST,ENC_CD_END_CUST||' - '||ENC_CUST_NAME ENC_CUST_NAME FROM V_END_CUST_ORD_EPA WHERE ENC_CD_EPA= :0 AND  ENC_ST_ORDER='A' AND TRIM(ENC_CD_END_CUST) IS NOT NULL ORDER BY 1`;
++    const sql = `SELECT DISTINCT ENC_CD_END_CUST,ENC_CD_END_CUST||' - '||ENC_CUST_NAME ENC_CUST_NAME FROM AGRIDBA.V_END_CUST_ORD_EPA_AG WHERE ENC_CD_EPA= :0 AND  ENC_ST_ORDER='A' AND TRIM(ENC_CD_END_CUST) IS NOT NULL ORDER BY 1`;
+     let binds = [`${plant}`];
+     return await query.executeQuery(sql, binds);
+   } catch (error) {

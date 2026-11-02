@@ -1,0 +1,425 @@
+--- a/Agrico_UI/src/views/Planning/TTSM003.jsx
++++ b/Agrico_UI/src/views/Planning/TTSM003.jsx
+@@ -57,7 +57,7 @@
+ import MultipleSelect from "components/Select/MultiSelect";
+ import { GetAuthorization } from "../../utils";
+ 
+-export default function TTSM003() {
++export default function AGSM003({ reportOnly = false }) {
+   const [state, setState] = React.useState({
+     checkedA: true,
+   });
+@@ -185,10 +185,7 @@
+           // pagination: "local", //enable local pagination.
+           // paginationSize: 12,
+           data: getCustomerTable,
+-          columns:
+-            selectedPlant?.value === "0788" && selectStatus.value === "VA"
+-              ? customerOrderColumn0788(storeLocation)
+-              : customerOrderColumn,
++          columns: customerOrderColumn.filter(column => !column.editor && (!reportOnly || column.formatter !== "rowSelection")),
+           height: 400,
+           layout: "fitDataFill",
+         })
+@@ -218,7 +215,7 @@
+       }
+ 
+       var userId = serverDetails.PersonalNo;
+-      var pageName = "TTSM003";
++      var pageName = reportOnly ? "AGSM004" : "AGSM003";
+ 
+       var authDetails = await getScreenAuth(
+         plant,
+@@ -323,13 +320,14 @@
+             //reject(response.statusText);
+           } else {
+             var items = [];
+-            response.data.map((row) => {
++            response.data.filter(row => String(row[1]) === "4603").map((row) => {
+               var obj = new Object();
+               obj.label = row[0];
+-              obj.value = row[1];
++              obj.value = String(row[1]);
+               items.push(obj);
+             });
+             setPlant(items);
++            if (!items.length) { resolve(); return; }
+             setSelectedPlant(items[0]);
+             Promise.all([
+               getBusinessCd(items[0], accessToken),
+@@ -358,9 +356,9 @@
+         plant: value.value,
+       };
+       Promise.all([
+-        axiosAPI.post("api/ttsm003/odiaList", data, defaultOptions),
+-        axiosAPI.post("api/ttsm003/lengthList", data, defaultOptions),
+-        axiosAPI.post("api/ttsm003/thickList", data, defaultOptions),
++        axiosAPI.post("api/agsm003/odiaList", data, defaultOptions),
++        axiosAPI.post("api/agsm003/lengthList", data, defaultOptions),
++        axiosAPI.post("api/agsm003/thickList", data, defaultOptions),
+       ])
+         .then(([odia, length, thick]) => {
+           if (odia.statusText != "" && odia.statusText != "OK") {
+@@ -473,7 +471,7 @@
+           Authorization: "Bearer " + accessToken,
+         },
+       };
+-      var url = "api/ttsm003/status";
++      var url = "api/agsm003/status";
+       axiosAPI
+         .post(url, {}, defaultOptions)
+         .then((response) => {
+@@ -506,7 +504,7 @@
+           Authorization: "Bearer " + accessToken,
+         },
+       };
+-      var url = "api/ttsm003/getStoreLocation";
++      var url = "api/agsm003/getStoreLocation";
+       axiosAPI
+         .get(url, defaultOptions)
+         .then((response) => {
+@@ -670,7 +668,7 @@
+       Plant: selectedPlant.value ? selectedPlant.value : "",
+       MBATCH_ID: allValues.batchId,
+     };
+-    var url = "api/ttsm003/getBatchDetails";
++    var url = "api/agsm003/getBatchDetails";
+ 
+     axiosAPI.post(url, d, defaultOptions).then((response) => {
+       if (response.statusText != "" && response.statusText != "OK") {
+@@ -686,225 +684,35 @@
+   };
+ 
+   const receiveCoil = async () => {
+-    if (selectedPlant.value != undefined) {
+-      var selectedRows = selectedCustomerTable.getSelectedRows();
+-      var newData = [];
+-      var tempArr = [];
+-      var flag = false;
+-      var flag1 = false;
+-      selectedRows.forEach(function (item) {
+-        newData.push(item._row.data);
+-        if (
+-          item._row.data.EIC_ID_POS &&
+-          item._row.data.EIC_ID_POS.toString().length > 1
+-        ) {
+-          flag = true;
++    if (reportOnly || isReadWriteAccess || loading) return;
++    if (selectedPlant?.value === "4603") {
++      const rows = selectedCustomerTable?.getSelectedData() || [];
++      if (!rows.length) return alertify.error("Select at least one row to receive");
++      if (rows.some(row => row.EIC_CD_STATUS !== "VA")) {
++        return alertify.error("Only in-transit rows can be received");
++      }
++      const url = "api/agsm003/save";
++      const data = { Plant: selectedPlant.value, dt: rows, userId: serverDetails.PersonalNo };
++      setLoading(true);
++      try {
++        const token = await GetAuthorization();
++        const response = await axiosAPI.post(url, data, {
++          headers: { Authorization: "Bearer " + token.accessToken },
++        });
++        if (response.data === "Y") {
++          alertify.success("Selected material received");
++        } else {
++          alertify.error(typeof response.data === "string" ? response.data : "Save failed. Refresh before retrying.");
+         }
+-        if (
+-          selectedPlant?.value === "0788" &&
+-          selectStatus.value === "VA" &&
+-          !item._row.data.STORE_LOCATION?.toString().length > 0
+-        ) {
+-          flag1 = true;
+-        }
+-
+-        if (item._row.data.EIC_NO_INVOICE) {
+-          tempArr.push(item._row.data.EIC_NO_INVOICE);
+-          if (selectedPlant?.value === "0789") {
+-            item._row.data.STORE_LOCATION = item._row.data.EIC_NO_INVOICE;
+-          }
+-        }
+-      });
+-      if (flag) {
+-        alertify.error("Loc Z cannot have more than 1 character");
+-        return;
++        // The legacy receipt procedure processes each batch separately.
++        setSelectedCustomerTable(null);
++        setCustomerTable([]);
++        await getDataBtnSubmit();
++      } catch {
++        alertify.error("Unable to save. Refresh the list before retrying.");
++      } finally {
++        setLoading(false);
+       }
+-      if (flag1) {
+-        alertify.error("Please select Storelocation for selected row!");
+-        return;
+-      }
+-
+-      if (selectStatus.value != "VA") {
+-        alertify.error("Receive facility is only applicable for VA coils");
+-        return;
+-      }
+-
+-      if (selectedRows.length == 0) {
+-        alertify.error("No Rows Selected");
+-        return;
+-      }
+-
+-      if (allValues.invoiceNo == "" && selectedPlant?.value !== "0788") {
+-        alertify.error("Invoice number is required for receving");
+-        return;
+-      } else if (
+-        !(selectedPlant?.value === "0788" && selectStatus.value === "VA")
+-      ) {
+-        var d = tempArr.every((val, i, arr) => val === arr[0]);
+-
+-        if (d != true) {
+-          alertify.error(
+-            "Invoice number should be same for selected rows for receiving"
+-          );
+-          return;
+-        } else {
+-          var flag = false;
+-          newData.forEach((row) => {
+-            if (allValues.invoiceNo != row.EIC_NO_INVOICE) {
+-              flag = true;
+-            }
+-          });
+-
+-          if (flag) {
+-            alertify.error(
+-              "Entered Invoice Number and Selected invoice number are different"
+-            );
+-            return;
+-          }
+-
+-          if (newData.length != invoiceNoCount[allValues.invoiceNo]) {
+-            alertify.error(
+-              "Select all batches of the given invoice number and then receive"
+-            );
+-            return;
+-          }
+-        }
+-      }
+-
+-      if (selectedRows.length == 0 && getCustomerTable.length == 1) {
+-        alertify.error("No data available in the screen for receiving");
+-        return;
+-      }
+-      var d = tempArr.every((val, i, arr) => val === arr[0]);
+-      if (d == false) {
+-        if (selectedRows.length == getCustomerTable.length) {
+-          alertify.error(
+-            "Selected rows with different invoices can not be received"
+-          );
+-          return;
+-        }
+-      }
+-
+-      // if(allValues.invoiceNo == ""){
+-      //     if(selectedRows.length == getCustomerTable.length){
+-      //         alertify.error("All rows with different invoices can not be received")
+-      //         return;
+-      //     }
+-      // }
+-
+-      // setLoading(true);
+-      var url;
+-      var data = {
+-        Plant: selectedPlant.value ? selectedPlant.value : "",
+-        dt: newData,
+-        userId: serverDetails.PersonalNo,
+-      };
+-
+-      if (bUnit.label == "WIRE") {
+-        url = "api/ttsm003/CONFIRM_Wires";
+-      } else if (bUnit.label == "LP") {
+-        url = "api/ttsm003/CONFIRM_Wires";
+-      } else if (bUnit.label == "FP") {
+-        url = "api/ttsm003/CONFIRM";
+-      } else if (bUnit.label == "TUBES") {
+-        url = "api/ttsm003/CONFIRM";
+-      }
+-
+-      setLoading(true);
+-      GetAuthorization().then((token) => {
+-        var defaultOptions = {
+-          headers: {
+-            Authorization: "Bearer " + token.accessToken,
+-          },
+-        };
+-        axiosAPI
+-          .post(url, data, defaultOptions)
+-          .then((response) => {
+-            if (response.statusText != "" && response.statusText != "OK") {
+-              //reject(response.statusText);
+-            } else {
+-              if (response.data == "Y") {
+-                alertify.success("Coil/Batch received successfully");
+-                setCustomerTable([,]);
+-                getDataBtnSubmit();
+-              } else {
+-                alertify.error(response.data);
+-              }
+-            }
+-          })
+-          .finally(() => {
+-            setLoading(false);
+-          });
+-      });
+-    } else {
+-      alertify.error("No data available in the screen for receiving");
+-    }
+-  };
+-
+-  const returnCoil = async () => {
+-    if (selectedPlant.value != undefined) {
+-      var selectedRows = selectedCustomerTable.getSelectedRows();
+-      var newData = [];
+-      var tempArr = [];
+-      var flag = false;
+-      var flag1 = false;
+-      
+-      selectedRows.forEach(function (item) {
+-        newData.push(item._row.data);
+-      });
+-
+-      if (selectedRows.length == 0) {
+-        alertify.error("No Rows Selected");
+-        return;
+-      }
+-
+-      // if (selectStatus.value != "VA") {
+-      //   alertify.error("Receive facility is only applicable for VA coils");
+-      //   return;
+-      // }
+-
+-      if (selectedRows.length == 0 && selectedCustomerTable.length == 1) {
+-        alertify.error("No data available in the screen for receiving");
+-        return;
+-      }
+-      var url;
+-      var data = {
+-        Plant: selectedPlant.value ? selectedPlant.value : "",
+-        dt: newData,
+-        userId: serverDetails.PersonalNo,
+-      };
+-      console.log("data ==>", data);
+-      if (bUnit.label == "TUBES") {
+-        url = "api/ttsm003/RETURN_COIL";
+-      } 
+-
+-      setLoading(true);
+-      GetAuthorization().then((token) => {
+-        var defaultOptions = {
+-          headers: {
+-            Authorization: "Bearer " + token.accessToken,
+-          },
+-        };
+-        axiosAPI
+-          .post(url, data, defaultOptions)
+-          .then((response) => {
+-            if (response.statusText != "" && response.statusText != "OK") {
+-              //reject(response.statusText);
+-            } else {
+-              debugger
+-              if (response.data == "Y") {
+-                alertify.success(response.data);
+-                setCustomerTable([,]);
+-                getDataBtnSubmit();
+-              } else {
+-                alertify.error(response.data);
+-              }
+-            }
+-          })
+-          .finally(() => {
+-            setLoading(false);
+-          });
+-      });
+     } else {
+       alertify.error("No data available in the screen for receiving");
+     }
+@@ -1065,19 +873,7 @@
+           : "",
+     };
+ 
+-    if (bUnit.label == "WIRE") {
+-      if (selectStatus.value == "VA") {
+-        alertify.error("Status other than VA is not applicable for Wires SPC");
+-        return;
+-      }
+-      url = "api/ttsm003/getCoils_Wires";
+-    } else if (bUnit.label == "LP") {
+-      url = "api/ttsm003/getCoils_LP";
+-    } else if (bUnit.label == "FP") {
+-      url = "api/ttsm003/getCoils";
+-    } else if (bUnit.label == "TUBES") {
+-      url = "api/ttsm003/getCoils";
+-    }
++    url = "api/agsm003/getCoils";
+     setLoading(true);
+     GetAuthorization().then((token) => {
+       var defaultOptions = {
+@@ -2094,7 +1890,7 @@
+       return;
+     }
+     var date = new Date();
+-    var fileName = "TTSM003 " + date.toString() + ".xlsx";
++    var fileName = "AGSM003 " + date.toString() + ".xlsx";
+     selectedCustomerTable.download("xlsx", fileName, {
+       sheetName: "Sheet1",
+     });
+@@ -2138,8 +1934,8 @@
+     <DashboardLayout>
+       <DefaultNavbar
+         routes={routes}
+-        module="Planning & Scheduling"
+-        page="Receive Raw Material"
++        module={reportOnly ? "Reports" : "Planning & Scheduling"}
++        page={reportOnly ? "In-transit / RM Receiving Report" : "Receive Raw Material"}
+       />
+       <Grid
+         container
+@@ -2687,20 +2483,21 @@
+                     >
+                       <Grid item xs={2}>
+                         <MDTypography variant="h6" color="white">
+-                          Receive Raw Material
++                          {reportOnly ? "In-transit / RM Receiving Report" : "Receive Raw Material"}
+                         </MDTypography>
+                       </Grid>
+                       {/* <Grid item xs={2}></Grid> */}
+                       <Grid item xs={2}>
+-                        <Tooltip title="Receive Coil" arrow>
++                        {!reportOnly && <Tooltip title="Save selected receipts" arrow>
+                           <IconButton
+                             color="white"
+                             disabled={isReadWriteAccess}
+-                            onClick={() => receiveCoil(true)}
++                            aria-label="Save selected receipts"
++                            onClick={receiveCoil}
+                           >
+                             <SaveIcon />
+                           </IconButton>
+-                        </Tooltip>
++                        </Tooltip>}
+                         <Tooltip title="Download" arrow>
+                           <IconButton
+                             color="white"
+@@ -2709,15 +2506,6 @@
+                             <DownloadForOfflineIcon />
+                           </IconButton>
+                         </Tooltip>
+-                        <Tooltip title="Return Coil" arrow>
+-                                <IconButton
+-                                  color="white"
+-                                  disabled={isReadWriteAccess}
+-                                  onClick={() => returnCoil(true)}
+-                                >
+-                                  <DeleteIcon />
+-                                </IconButton>
+-                          </Tooltip>
+                       </Grid>
+                     </Grid>
+                   </MDBox>

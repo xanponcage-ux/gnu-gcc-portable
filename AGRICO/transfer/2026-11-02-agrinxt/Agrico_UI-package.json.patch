@@ -1,0 +1,13 @@
+--- a/Agrico_UI/package.json
++++ b/Agrico_UI/package.json
+@@ -1,8 +1,8 @@
+ {
+-  "name": "tubesnext_khop_hosr",
++  "name": "agrinxt",
+   "version": "1.0.0",
+   "private": true,
+-  "homepage": "tubesnext_khop_hosr",
++  "homepage": "/agrigomes",
+   "author": "TATA STEEL",
+   "description": "MES for TSM",
+   "engines": {

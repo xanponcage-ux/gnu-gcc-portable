@@ -1,0 +1,82 @@
+[
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/app.ts",
+    "Patch": "Agrico_NODE-src-app.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/controllers/TTSM003Controller.ts",
+    "Patch": "Agrico_NODE-src-controllers-TTSM003Controller.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/TTSM003Query.ts",
+    "Patch": "Agrico_NODE-src-repository-TTSM003Query.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/TTSM005Query.ts",
+    "Patch": "Agrico_NODE-src-repository-TTSM005Query.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/TTSM006Query.ts",
+    "Patch": "Agrico_NODE-src-repository-TTSM006Query.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/TTSM007Query.ts",
+    "Patch": "Agrico_NODE-src-repository-TTSM007Query.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/repository/TTSM012Query.ts",
+    "Patch": "Agrico_NODE-src-repository-TTSM012Query.ts.patch"
+  },
+  {
+    "Project": "Agrico_NODE",
+    "File": "src/routes/TTSM003Route.ts",
+    "Patch": "Agrico_NODE-src-routes-TTSM003Route.ts.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "package.json",
+    "Patch": "Agrico_UI-package.json.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/examples/Navbars/FullScreenNavbar.jsx",
+    "Patch": "Agrico_UI-src-examples-Navbars-FullScreenNavbar.jsx.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/routes.js",
+    "Patch": "Agrico_UI-src-routes.js.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/LoginPage/LoginPage.js",
+    "Patch": "Agrico_UI-src-views-LoginPage-LoginPage.js.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Planning/TTSM003.jsx",
+    "Patch": "Agrico_UI-src-views-Planning-TTSM003.jsx.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Reports/TTSM006.jsx",
+    "Patch": "Agrico_UI-src-views-Reports-TTSM006.jsx.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/views/Reports/TTSM012.jsx",
+    "Patch": "Agrico_UI-src-views-Reports-TTSM012.jsx.patch"
+  },
+  {
+    "Project": "Agrico_UI",
+    "File": "src/axiosAPI.js",
+    "Patch": "Agrico_UI-src-axiosAPI.js.patch"
+  }
+]

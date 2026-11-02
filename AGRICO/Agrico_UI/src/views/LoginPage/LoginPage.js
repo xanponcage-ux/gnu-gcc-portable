@@ -24,7 +24,7 @@ import "../alertifyjs.css";
 import axiosAPI from "../../axiosAPI";
 import serverDetails from "../../variables/serverDetails";
 import logo from "../../assets/img/Tata_White.png";
-import logoTube from "../../assets/Logo/logo.jpeg";
+const agricoLogo = process.env.REACT_APP_AGRICO_LOGO_URL || "https://images.seeklogo.com/logo-png/30/1/tata-agrico-logo-png_seeklogo-302741.png";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 import ReactSelect from "components/Select/ReactSelect";
@@ -131,7 +131,8 @@ export default function LoginPage(props) {
       sessionId: sId,
       ...(isNewReq && { newPasscode: newPin.join("") }),
     };
-    var t = "21144S3984CEF5c659C44ZCK37299B4208375IG7DC792A30";
+    var t = process.env.REACT_APP_AGRINXT_LOGIN_KEY;
+    if (!t) { setLoading(false); alertify.error("Login configuration is missing"); return; }
     var CryptoJS = require("crypto-js");
     var key = CryptoJS.MD5(t).toString();
     var encrypted = CryptoJS.TripleDES.encrypt(JSON.stringify(paramData), key);
@@ -184,7 +185,7 @@ export default function LoginPage(props) {
             if (resp.statusText != "" && resp.statusText != "OK") {
             } else {
               if (resp.data.rows[0][0] == 1) {
-                window.location.href = "/tubesnext_khop_hosr/#/navigate";
+                window.location.href = "/agrigomes/#/navigate";
               } else {
                 window.location.href = "#/undermaintenance";
               }
@@ -274,7 +275,8 @@ export default function LoginPage(props) {
     setLoading(true);
     var url = "api/users/genaratePasscode";
     var text = username + ":" + password;
-    var t = "21144S3984CEF5c659C44ZCK37299B4208375IG7DC792A30";
+    var t = process.env.REACT_APP_AGRINXT_LOGIN_KEY;
+    if (!t) { setLoading(false); alertify.error("Login configuration is missing"); return; }
     var CryptoJS = require("crypto-js");
     var key = CryptoJS.MD5(t).toString();
     var encrypted = CryptoJS.TripleDES.encrypt(text, key);
@@ -379,8 +381,9 @@ export default function LoginPage(props) {
             <CardMedia
               component="img"
               height="194"
-              image={logoTube}
-              alt="Logo"
+              image={agricoLogo}
+              sx={{ objectFit: "contain" }}
+              alt="Tata Agrico"
             />
             <CardContent>
               <MDTypography
@@ -389,7 +392,7 @@ export default function LoginPage(props) {
                 color="dark"
                 mt={1}
               >
-                TUBES NXT MES
+                AGRINXT MES
               </MDTypography>
               <MDTypography variant="h6" fontWeight="light" color="dark" mt={1}>
                 Please enter your credentials

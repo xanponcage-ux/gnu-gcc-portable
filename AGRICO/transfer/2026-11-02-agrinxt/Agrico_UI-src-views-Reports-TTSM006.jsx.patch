@@ -1,0 +1,73 @@
+--- a/Agrico_UI/src/views/Reports/TTSM006.jsx
++++ b/Agrico_UI/src/views/Reports/TTSM006.jsx
+@@ -55,7 +55,7 @@
+ import "../../tabulatorCss.scss";
+ import { GetAuthorization } from "utils";
+ 
+-export default function TTSM006() {
++export default function AGSM006() {
+   const [state, setState] = React.useState({
+     checkedA: true,
+   });
+@@ -167,7 +167,7 @@
+       }
+ 
+       var userId = serverDetails.PersonalNo;
+-      var pageName = "TTSM006";
++      var pageName = "AGSM006";
+ 
+       var authDetails = await getScreenAuth(
+         plant,
+@@ -270,13 +270,14 @@
+             resolve();
+           } else {
+             var items = [];
+-            response.data.map((row) => {
++            response.data.filter(row => String(row[1]) === "4603").map((row) => {
+               var obj = new Object();
+               obj.label = row[0];
+-              obj.value = row[1];
++              obj.value = String(row[1]);
+               items.push(obj);
+             });
+             setPlant(items);
++            if (!items.length) { resolve(); return; }
+             setSelectedPlant(items[0]);
+             Promise.all([getProcessList(items[0], accessToken), getProductName(items[0], accessToken),getMatGrp(items[0], accessToken)]).finally(() => {
+               resolve();
+@@ -298,7 +299,7 @@
+       };
+ 
+       // var url = "api/ttsm007/GetCustDesc";
+-      var url = "api/ttsm006/getProcess";
++      var url = "api/agsm006/getProcess";
+       let data = {
+         plant: value.value,
+       };
+@@ -332,7 +333,7 @@
+         },
+       };
+ 
+-      var url = "api/ttsm006/getMatGrp";
++      var url = "api/agsm006/getMatGrp";
+       let data = {
+         plant: value.value,
+       };
+@@ -455,7 +456,7 @@
+         // SchedDtFrom: SchedDtFrm,
+         // SchedDtTo: SchedDtTo,
+       };
+-      url = "api/ttsm006/getProdInqData";
++      url = "api/agsm006/getProdInqData";
+ 
+       axiosAPI
+         .post(url, data, defaultOptions)
+@@ -1149,7 +1150,7 @@
+       return;
+     }
+     var date = new Date();
+-    var fileName = "TTSM006 " + date.toString() + ".xlsx";
++    var fileName = "AGSM006 " + date.toString() + ".xlsx";
+     prodInquiryTable.download("xlsx", fileName, {
+       sheetName: "Sheet1",
+     });

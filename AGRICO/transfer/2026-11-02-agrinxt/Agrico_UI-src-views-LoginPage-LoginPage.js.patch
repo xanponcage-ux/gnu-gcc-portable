@@ -1,0 +1,41 @@
+--- a/Agrico_UI/src/views/LoginPage/LoginPage.js
++++ b/Agrico_UI/src/views/LoginPage/LoginPage.js
+@@ -24,7 +24,7 @@
+ import axiosAPI from "../../axiosAPI";
+ import serverDetails from "../../variables/serverDetails";
+ import logo from "../../assets/img/Tata_White.png";
+-import logoTube from "../../assets/Logo/logo.jpeg";
++const agricoLogo = process.env.REACT_APP_AGRICO_LOGO_URL || "https://images.seeklogo.com/logo-png/30/1/tata-agrico-logo-png_seeklogo-302741.png";
+ import BasicLayout from "layouts/authentication/components/BasicLayout";
+ 
+ import ReactSelect from "components/Select/ReactSelect";
+@@ -184,7 +184,7 @@
+             if (resp.statusText != "" && resp.statusText != "OK") {
+             } else {
+               if (resp.data.rows[0][0] == 1) {
+-                window.location.href = "/tubesnext_khop_hosr/#/navigate";
++                window.location.href = "/agrigomes/#/navigate";
+               } else {
+                 window.location.href = "#/undermaintenance";
+               }
+@@ -379,8 +379,9 @@
+             <CardMedia
+               component="img"
+               height="194"
+-              image={logoTube}
+-              alt="Logo"
++              image={agricoLogo}
++              sx={{ objectFit: "contain" }}
++              alt="Tata Agrico"
+             />
+             <CardContent>
+               <MDTypography
+@@ -389,7 +390,7 @@
+                 color="dark"
+                 mt={1}
+               >
+-                TUBES NXT MES
++                AGRINXT MES
+               </MDTypography>
+               <MDTypography variant="h6" fontWeight="light" color="dark" mt={1}>
+                 Please enter your credentials

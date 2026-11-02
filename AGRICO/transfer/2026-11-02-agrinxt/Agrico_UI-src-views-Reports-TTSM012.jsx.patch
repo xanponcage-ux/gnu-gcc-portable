@@ -1,0 +1,111 @@
+--- a/Agrico_UI/src/views/Reports/TTSM012.jsx
++++ b/Agrico_UI/src/views/Reports/TTSM012.jsx
+@@ -54,7 +54,7 @@
+ import "../../tabulatorCss.scss";
+ import { GetAuthorization } from "utils";
+ 
+-export default function TTSM012() {
++export default function AGSM012() {
+   const [state, setState] = React.useState({
+     checkedA: true,
+   });
+@@ -240,7 +240,7 @@
+       }
+ 
+       var userId = serverDetails.PersonalNo;
+-      var pageName = "TTSM012";
++      var pageName = "AGSM012";
+ 
+       var authDetails = await getScreenAuth(
+         plant,
+@@ -346,13 +346,14 @@
+             resolve();
+           } else {
+             var items = [];
+-            response.data.map((row) => {
++            response.data.filter(row => String(row[1]) === "4603").map((row) => {
+               var obj = new Object();
+               obj.label = row[0];
+-              obj.value = row[1];
++              obj.value = String(row[1]);
+               items.push(obj);
+             });
+             setPlant(items);
++            if (!items.length) { resolve(); return; }
+ 
+             //page_load plant setup for ground inventory
+             setSelectedPlant(items[0]);
+@@ -553,7 +554,7 @@
+         },
+       };
+ 
+-      var url = "api/ttsm003/odiafrm";
++      var url = "api/agsm003/odiafrm";
+       let data = {
+         plant: value?.value,
+       };
+@@ -587,7 +588,7 @@
+         },
+       };
+ 
+-      var url = "api/ttsm003/odiato";
++      var url = "api/agsm003/odiato";
+       let data = {
+         plant: value?.value,
+       };
+@@ -714,8 +715,8 @@
+ 
+       data = { ...data, ...allValues };
+ 
+-      if (bUnit.label === "TUBES") {
+-        url = "api/ttsm012/getInventoryData";
++      if (selectedPlant?.value === "4603") {
++        url = "api/agsm012/getInventoryData";
+       }
+ 
+       axiosAPI
+@@ -1769,7 +1770,7 @@
+       data = { ...data, ...allValuesMerg };
+ 
+       // if (bUnit.label === "TUBES") {
+-      url = "api/ttsm012/mergedinv";
++      url = "api/agsm012/mergedinv";
+       // }
+ 
+       axiosAPI
+@@ -1835,7 +1836,7 @@
+         mergeBatch: allValuesRev.mergeBatch
+       };
+ 
+-      var url = "api/ttsm012/getReversedBatchInfo";
++      var url = "api/agsm012/getReversedBatchInfo";
+ 
+       axiosAPI
+         .post(url, data, defaultOptions)
+@@ -1878,7 +1879,7 @@
+     }
+ 
+     var date = new Date();
+-    var fileName = "TTSM012_GroundInventory " + date.toString() + ".xlsx";
++    var fileName = "AGSM012_GroundInventory " + date.toString() + ".xlsx";
+     inventoryDataTable.download("xlsx", fileName, {
+       sheetName: "Sheet1",
+     });
+@@ -1897,7 +1898,7 @@
+     }
+ 
+     var date = new Date();
+-    var fileName = "TTSM012_MergedInventory " + date.toString() + ".xlsx";
++    var fileName = "AGSM012_MergedInventory " + date.toString() + ".xlsx";
+     mergedInvTableData.download("xlsx", fileName, {
+       sheetName: "Sheet1",
+     });
+@@ -1916,7 +1917,7 @@
+     }
+ 
+     var date = new Date();
+-    var fileName = "TTSM012_ReversedInfo " + date.toString() + ".xlsx";
++    var fileName = "AGSM012_ReversedInfo " + date.toString() + ".xlsx";
+     reversedInfoTableData.download("xlsx", fileName, {
+       sheetName: "Sheet1",
+     });

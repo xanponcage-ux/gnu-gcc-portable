@@ -1,0 +1,48 @@
+--- a/Agrico_NODE/src/app.ts
++++ b/Agrico_NODE/src/app.ts
+@@ -62,6 +62,10 @@
+   pool: any;
+ 
+   constructor() {
++    env.dbUri = process.env.AGRINXT_DB_CONNECT_STRING || "EPATEST";
++    env.database = "EPATEST";
++    env.hashRoute = "agrigomes";
++    if (process.env.AGRINXT_UI_ORIGIN) env.whitelistdUrl = [process.env.AGRINXT_UI_ORIGIN];
+     this.app = express();
+     // this.getPool();
+     //this.closePoolAndExit();
+@@ -97,7 +101,7 @@
+     };
+ 
+     https.createServer(https_options, this.app).listen(`${env.appport}`, () => {
+-      console.log(`${"TSM TUBES MES"} running → PORT ${env.appport}`);
++      console.log(`${"AGRINXT MES"} running → PORT ${env.appport}`);
+       console.log(`Server Run Port: ${env.appport}`);
+       this.middler();
+       this.routes();
+@@ -106,7 +110,7 @@
+ 
+   localhost_listen() {
+     this.app.listen(env.appport, () => {
+-      console.log(`${"TSM TUBES MES"} running → PORT ${env.appport}`);
++      console.log(`${"AGRINXT MES"} running → PORT ${env.appport}`);
+       console.log(`Server Run Port: ${env.appport}`);
+       this.middler();
+       this.routes();
+@@ -146,13 +150,13 @@
+     this.app.use("/api", usersRoute);
+     this.app.use("/api/common/", commonRoute);
+     this.app.use("/api/ttsm001/", TTSM001Route);
+-    this.app.use("/api/ttsm003/", TTSM003Route);
++    this.app.use("/api/agsm003/", TTSM003Route);
+     this.app.use("/api/ttsm004/", TTSM004Route);
+     this.app.use("/api/ttsm005/", TTSM005Route);
+-    this.app.use("/api/ttsm006/", TTSM006Route);
++    this.app.use("/api/agsm006/", TTSM006Route);
+     this.app.use("/api/ttsm009/", TTSM009Route);
+     this.app.use("/api/ttsm007/", TTSM007Route);
+-    this.app.use("/api/ttsm012/", TTSM012Route);
++    this.app.use("/api/agsm012/", TTSM012Route);
+     this.app.use("/api/ttsm013/", TTSM013Route);
+     this.app.use("/api/ttsm019/", TTSM019Route);
+     this.app.use("/api/ttsm016/", TTSM016Route);

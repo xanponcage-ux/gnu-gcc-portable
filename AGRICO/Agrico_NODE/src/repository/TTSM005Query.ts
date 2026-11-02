@@ -1310,7 +1310,7 @@ export const GetPieceActl = async (req: any) => {
 
 export const getProductName = async (req: any) => {
     try {
-        let sql = `select DISTINCT PPH_PRODUCT_NM from v_epa_proc_path
+        let sql = `select DISTINCT PPH_PRODUCT_NM from AGRIDBA.V_EPA_PROC_PATH_AG
         where PPH_CD_EPA= :plant`
         let binds = {
             plant: req.body.plant
