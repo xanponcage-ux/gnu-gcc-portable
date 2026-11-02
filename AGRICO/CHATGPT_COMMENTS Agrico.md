@@ -1,10 +1,10 @@
 # ChatGPT Comments — Agrico
 
-This file is the shared scratchpad for ChatGPT instructions, runnable commands, one-off scripts, SQL, PowerShell, Git commands, and other code related to the Agrico project that is **not itself part of the requested application/source-code change**.
+This file is the shared scratchpad for ChatGPT instructions, runnable commands, one-off scripts, SQL, Windows CMD, Git commands, and other code related to the Agrico project that is **not itself part of the requested application/source-code change**.
 
 ## Working rule
 
-- Actual requested LDPIS source changes should be made in the appropriate project files.
+- Actual requested Agrico source changes should be made in the appropriate project files.
 - Any extra command/code that the user needs to run manually should be written here.
 - Prefer appending a new dated/topic section instead of overwriting older useful instructions.
 - Keep commands copy-paste ready and mention where they should be run when relevant.
@@ -31,7 +31,7 @@ EPATEST=
   (DESCRIPTION=
     (ADDRESS=
       (PROTOCOL=TCP)
-      (HOST=176.0.7.18)
+      (HOST=<office Oracle host>)
       (PORT=1521)
     )
     (CONNECT_DATA=
@@ -41,8 +41,8 @@ EPATEST=
   )
 
 
-UI:  https://mesdev.corp.tatasteel.com/agrigomes
-API:  https://mesdev.corp.tatasteel.com/agriapi
+UI:  <office UI origin>/agrigomes
+API:  <office UI origin>/agriapi
 
 schema:AGRIDBA
 
@@ -56,3 +56,21 @@ Reports:
 5.IN transit/RM recieiving Report
 6.Inventory Screen (TTSM012)
 ```
+
+## 2026-11-02 — Transfer AGRINXT changes to the office repositories
+
+Use Windows Command Prompt with Git and Node.js on PATH. Run from the root of your rough GitHub checkout. The destination defaults to `D:\AGRICO`, containing `Agrico_NODE` and `Agrico_UI`.
+
+```cmd
+git pull --ff-only origin main
+AGRICO\Apply-AGRINXT-To-Office.cmd check
+AGRICO\Apply-AGRINXT-To-Office.cmd apply
+git -C "D:\AGRICO\Agrico_NODE" status --short
+git -C "D:\AGRICO\Agrico_UI" status --short
+```
+
+Check previews every patch on temporary copies. Apply repeats the checks, backs up the originals, and updates the working files. It skips patches already applied. Review and test the changes before committing in each office repository.
+
+AGSM003 receives selected in-transit material. AGSM004 is the read-only receiving report, AGSM006 the production report, and AGSM012 inventory. Use the existing screen authorization administration for these IDs. Production recording awaits the process definition.
+
+Configure AGRINXT_DB_CONNECT_STRING on the Node host or configure its EPATEST alias. Set AGRINXT_UI_ORIGIN to the office browser origin. Serve the UI under /agrigomes and proxy /agriapi/ to Node with the prefix stripped. For local UI development REACT_APP_AGRINXT_API_URL overrides the same-origin default. A fresh build of the rough repository requires the existing office login encryption input in REACT_APP_AGRINXT_LOGIN_KEY. The office transfer preserves the existing login input. REACT_APP_AGRICO_LOGO_URL can point to an internally hosted logo.
