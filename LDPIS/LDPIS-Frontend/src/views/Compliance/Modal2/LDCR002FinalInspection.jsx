@@ -48,7 +48,8 @@ export default function MaxWidthDialogFinalinsp(props) {
   const [getfinalINSP, setgetfinalINSP] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  // const [maxWidth, setMaxWidth] = React.useState("md");
+    const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -82,13 +83,14 @@ export default function MaxWidthDialogFinalinsp(props) {
             });
         }
 
+        console.log('props.crdate',props.crdate);
         const data = {
           plant: props?.plant?.value ? props.plant.value : "",
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
           shift: props.shift ? props.shift : "",
-          // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
+          crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate
               .toLocaleDateString("en-GB", {
@@ -190,6 +192,11 @@ export default function MaxWidthDialogFinalinsp(props) {
   
     const rowsPerPage = 12;
     const numPages = Math.max(1, Math.ceil(getfinalINSP?.length / rowsPerPage));
+
+      const formattedPrintDate = props?.printdate
+  ?.split(".")
+  ?.reverse()
+  ?.join("");
 
 //   const qrValue = () => {
 //     var val = "";
@@ -345,7 +352,12 @@ export default function MaxWidthDialogFinalinsp(props) {
                               {/* <p>Date of Coating   </p> */}
                             </Grid>
                             <Grid item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getfinalINSP?.length > 0  ? `${getfinalINSP[0].REP_NO}-${pageIndex + 1}`: ' '} </p>
+                              {/* <p>: {getfinalINSP?.length > 0  ? `${getfinalINSP[0].REP_NO}-${pageIndex + 1}`: ' '} </p> */}
+                              <p>
+  : {getfinalINSP?.length > 0
+      ? `FIR/${formattedPrintDate}-${pageIndex + 1}`
+      : ' '}
+</p>
                               {/* <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].DATE_SHIFT : ' '} </p> */}
                               <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].ACCEPTANCE_CRITERIA : ' '} </p>

@@ -48,7 +48,8 @@ export default function MaxWidthDialogREPAIR(props) {
   const [getREPAIRdata, setgetREPAIRdata] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  // const [maxWidth, setMaxWidth] = React.useState("md");
+    const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -84,13 +85,13 @@ export default function MaxWidthDialogREPAIR(props) {
 
         const data = {
           plant: props?.plant?.value ? props.plant.value : "",
-          orderNo: props.orderNo ? props.orderNo : "",
-          item: props.item ? props.item : "",
-          matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          orderNo: props?.orderNo ? props?.orderNo : "",
+          item: props?.item ? props?.item : "",
+          // matno: props.matno ? props.matno : "",
+          matno: props?.shift ? props?.shift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
-          crdate: props.crdate
-          ? props.crdate
+          crdate: props?.crdate
+          ? props?.crdate
               .toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short",
@@ -99,8 +100,11 @@ export default function MaxWidthDialogREPAIR(props) {
               .replace(/ /g, "-")
               .replace("Sept", "Sep")
           : "",  
-          heatno: props.heatno ? props.heatno : "",
+          heatno: props?.heatno ? props?.heatno : "",
           pipeno: props.pipeno ? props.pipeno : "",
+          selectedpipelist: props.selectedpipelist
+    ?.map(item => `'${item.value}'`)
+    .join(",") || ""
           // rmno: props.rmno ? props.rmno : "",  //
         };
 
@@ -190,6 +194,11 @@ export default function MaxWidthDialogREPAIR(props) {
   
     const rowsPerPage = 15;
     const numPages = Math.max(1, Math.ceil(getREPAIRdata?.length / rowsPerPage));
+
+      const formattedPrintDate = props?.printdate
+  ?.split(".")
+  ?.reverse()
+  ?.join("");
 
 //   const qrValue = () => {
 //     var val = "";
@@ -345,7 +354,12 @@ export default function MaxWidthDialogREPAIR(props) {
                               {/* <p>Date of Coating   </p> */}
                             </Grid>
                             <Grid item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getREPAIRdata?.length > 0  ? `${getREPAIRdata[0].REP_NO}-${pageIndex + 1}`: ' '} </p>
+                              {/* <p>: {getREPAIRdata?.length > 0  ? `${getREPAIRdata[0].REP_NO}-${pageIndex + 1}`: ' '} </p> */}
+                             <p>
+  : {getREPAIRdata?.length > 0
+      ? `RR/${formattedPrintDate}-${pageIndex + 1}`
+      : ' '}
+</p>
                               {/* <p>: {getREPAIRdata?.length > 0  ? getREPAIRdata[0].DATE_SHIFTQ : ' '} </p> */}
                                                             <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getREPAIRdata?.length > 0  ? getREPAIRdata[0].ACCEPTANCE_CRITERIA : ' '} </p>

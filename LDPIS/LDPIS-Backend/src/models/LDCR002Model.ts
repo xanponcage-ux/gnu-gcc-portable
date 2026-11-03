@@ -3,8 +3,8 @@ import { Post } from "../typed/typed";
 import Error from "./errors";
 export default class LDCR002 {
 
-    GetPipenomulti(plant: any,crdate: any,item: any,orderNo: any,roundsectionmill: any) {
-      return repository.GetPipenomulti(plant,crdate,item,orderNo,roundsectionmill);
+    GetPipenomulti(plant: any,crdate: any,item: any,orderNo: any,reptypepipe: any) {
+      return repository.GetPipenomulti(plant,crdate,item,orderNo,reptypepipe);
     }
     
   getVdidata(
@@ -187,7 +187,7 @@ export default class LDCR002 {
     plant: any,
     orderNo: any,
     item: any,
-    matno: any,
+    shift: any,
     crdate: any,
     heatno: any,
     pipeno: any
@@ -197,7 +197,7 @@ export default class LDCR002 {
       plant,
       orderNo,
       item,
-      matno,
+      shift,
       crdate,
       heatno,
       pipeno
@@ -234,7 +234,8 @@ export default class LDCR002 {
     matno: any,
     crdate: any,
     heatno: any,
-    pipeno: any
+    pipeno: any,
+    selectedpipelist: any,
     //   ,rmno: any
   ) {
     return repository.getREPAIRdata(
@@ -244,7 +245,8 @@ export default class LDCR002 {
       matno,
       crdate,
       heatno,
-      pipeno
+      pipeno,
+      selectedpipelist
       // ,rmno
     );
   }
@@ -322,8 +324,9 @@ export default class LDCR002 {
     matno: any,
     crdate: any,
     heatno: any,
-    pipeno: any
-    //   ,rmno: any
+    pipeno: any,
+    selectedpipelist: any,
+    // shift: any
   ) {
     return repository.getpeeldata(
       plant,
@@ -332,8 +335,9 @@ export default class LDCR002 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+      selectedpipelist,
+      // shift
     );
   }
 
@@ -407,7 +411,7 @@ export default class LDCR002 {
     plant: any,
     orderNo: any,
     item: any,
-    matno: any,
+    shift: any,
     crdate: any,
     heatno: any,
     pipeno: any
@@ -417,7 +421,7 @@ export default class LDCR002 {
       plant,
       orderNo,
       item,
-      matno,
+      shift,
       crdate,
       heatno,
       pipeno
@@ -535,67 +539,7 @@ export default class LDCR002 {
     );
   }
 
-  getInventoryData(
-    DespFromDate: any,
-    DespToDate: any,
-    ProdFromDate: any,
-    ProdToDate: any,
-    batch: any,
-    customer: any,
-    item: any,
-    materialNo: any,
-    mbatch: any,
-    order: any,
-    orderType: any,
-    plant: any,
-    process: any,
-    status: any,
-    thikFrm: any,
-    thikTo: any,
-    widthFrm: any,
-    widthTo: any,
-    stockType: any
-  ) {
-    return repository.getInventoryData(
-      DespFromDate,
-      DespToDate,
-      ProdFromDate,
-      ProdToDate,
-      batch,
-      customer,
-      item,
-      materialNo,
-      mbatch,
-      order,
-      orderType,
-      plant,
-      process,
-      status,
-      thikFrm,
-      thikTo,
-      widthFrm,
-      widthTo,
-      stockType
-    );
-  }
 
-  getMergedInv(
-    fromDt: any,
-    mergedType: any,
-    plant: any,
-    toDt: any,
-    batchMerg: any,
-    mergedBatchMerg: any
-  ) {
-    return repository.getMergedInv(
-      fromDt,
-      mergedType,
-      plant,
-      toDt,
-      batchMerg,
-      mergedBatchMerg
-    );
-  }
 
   GetreportTyp(plant: any) {
     return repository.GetreportTyp(plant);

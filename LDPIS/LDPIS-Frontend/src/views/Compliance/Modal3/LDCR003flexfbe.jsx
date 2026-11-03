@@ -288,7 +288,7 @@ export default function MaxWidthFlexfbe(props) {
                             style={{ textAlign: 'center', marginTop: '45px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
-                            FLEXIBILITY TEST REPORT
+                            FLEXIBILITY TEST REPORT.
                           </MDTypography>
                           <MDTypography
                             textTransform="capitalize"
@@ -344,8 +344,8 @@ export default function MaxWidthFlexfbe(props) {
                     <Grid container xs = {12} >
 
                       <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={3}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO.</Grid>
-                      <Grid item xs={3}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIRED VALUE</Grid>
+                      <Grid item xs={1}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO.</Grid>
+                      <Grid item xs={5}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIRED VALUE</Grid>
                       <Grid item xs={3}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ACHIEVED VALUE</Grid>
                       <Grid item xs={2.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
@@ -356,8 +356,8 @@ export default function MaxWidthFlexfbe(props) {
                               <React.Fragment key={`data-fragment-${pageIndex}-${i}`}>
                                 <Grid key={`data-${pageIndex}-${i}`} container>
                                   <Grid item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{(i % 3) + 1}</Grid>
-                                  <Grid item xs={3}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
-                                  <Grid item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>
+                                  <Grid item xs={1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
+                                  <Grid item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>
   {dataRow.REQUIREMENT !== null ? (
     <>
       {dataRow.REQUIREMENT}
@@ -387,10 +387,10 @@ export default function MaxWidthFlexfbe(props) {
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )} 
                                 {(i + 1) % 3 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={1} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )}
                                 {(i + 1) % 3 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )}
                                 {(i + 1) % 3 === 0 && (
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
@@ -406,8 +406,8 @@ export default function MaxWidthFlexfbe(props) {
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
                             <Grid item xs={0.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={1}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
                             <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
                             <Grid item xs={2.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
 

@@ -44,9 +44,7 @@ export const getInventoryData = async (
      * ==========================================================
      */
 
-    if (
-      allStockTypes || stockType === "RM(without Inspection)"
-    ) {
+    if (allStockTypes || stockType === "RM(without Inspection)") {
       let sql = `
         SELECT
           NVL(
@@ -626,7 +624,10 @@ export const getInventoryData = async (
        */
 
       if (!allStockTypes) {
-        return await query.executeQuery(sql + " ORDER BY PLANT, BATCH_ID", binds);
+        return await query.executeQuery(
+          sql + " ORDER BY PLANT, BATCH_ID",
+          binds
+        );
       }
       uninspectedSql = sql;
       uninspectedBinds = binds;
@@ -1481,7 +1482,7 @@ export const getMergedInv = async (
         WHERE ERD_CD_EPA=:plant
         --AND ERD_REC_STATUS = NVL('A', ERD_REC_STATUS)
         `;
-    const binds = {
+    const binds: any = {
       plant: plant,
     };
 

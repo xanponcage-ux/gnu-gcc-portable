@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react"; // Import useMemo
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -43,12 +43,15 @@ import TableRow from '@mui/material/TableRow';
 import QRCode from "react-qr-code";
 import { GetAuthorization } from "utils";
 import { Zoom } from "@mui/material";
+// Assuming DateTime is imported from 'luxon' or similar
+import { DateTime } from "luxon";
+
 
 export default function MaxWidthDialogThick(props) {
   const [getthick, setgetthick] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -98,7 +101,7 @@ export default function MaxWidthDialogThick(props) {
               })
               .replace(/ /g, "-")
               .replace("Sept", "Sep")
-          : "",  
+          : "",
           heatno: props.heatno ? props.heatno : "",
           pipeno: props.pipeno ? props.pipeno : "",
           // rmno: props.rmno ? props.rmno : "",  //
@@ -116,7 +119,7 @@ export default function MaxWidthDialogThick(props) {
           ]).then(([getthickResponse]) => {
             setgetthick(getthickResponse.data);
                 console.log(getthick);
-                
+
                 setInitialLoad(true);
             }).finally(() => {
                 setLoading(false);
@@ -133,7 +136,7 @@ export default function MaxWidthDialogThick(props) {
   };
 
   const handleClose = () => {
-    //setOpen(false); 
+    //setOpen(false);
     props.close(false);
   };
 
@@ -167,49 +170,77 @@ export default function MaxWidthDialogThick(props) {
 
   const componentRef = React.useRef();
 
-  //const pageStyle = `
   const pageStyle = `
   @page {
     size: A4 landscape;
     margin: 4mm;
   }
-  @media print {
-    body {
-      -webkit-print-color-adjust: exact;
-      zoom: 100%;
+  @media print {    body {      -webkit-print-color-adjust: exact;      zoom: 100%;    }    .print-page {      page-break-after: always; /* Forces a page break after each .print-page div */      position: relative; /* Add this to make it a positioning context for absolute children */    }    .print-page:last-child {      page-break-after: avoid; /* Prevents an extra blank page at the end */    }  }  `;
+
+  // Define constants for row limits
+  const normalPageRows = 14;
+  const lastPageMaxRows = 12;
+
+  // Memoize the calculation of page data
+  const allPagesData = useMemo(() => {
+    const pages = [];
+    if (getthick && getthick.length > 0) {
+      let currentDataIndex = 0;
+      let globalRowCounter = 0;
+
+      while (currentDataIndex < getthick.length) {
+        const remainingDataCount = getthick.length - currentDataIndex;
+        let rowsForThisPage;
+        let maxRowsForThisPage; // This will be used for padding
+
+        if (remainingDataCount <= lastPageMaxRows) {
+          // Case 1: All remaining data fits on a single "last page" (<= 8 rows)
+          rowsForThisPage = remainingDataCount;
+          maxRowsForThisPage = lastPageMaxRows;
+        } else if (remainingDataCount > lastPageMaxRows && remainingDataCount <= normalPageRows) {
+          // Case 2: Remaining data is > 8 but <= 10.
+          // This means it needs to be split into two "last pages".
+          // The current page will take 8 rows, and the remainder will go to the next page.
+          rowsForThisPage = lastPageMaxRows;
+          maxRowsForThisPage = lastPageMaxRows;
+        } else {
+          // Case 3: Remaining data is > 10. This is a normal page.
+          rowsForThisPage = normalPageRows;
+          maxRowsForThisPage = normalPageRows;
+        }
+
+        pages.push({
+          data: getthick.slice(currentDataIndex, currentDataIndex + rowsForThisPage),
+          maxRows: maxRowsForThisPage,
+          globalStartIndex: globalRowCounter,
+        });
+        currentDataIndex += rowsForThisPage;
+        globalRowCounter += rowsForThisPage;
+      }
     }
-    .print-page {
-      page-break-after: always; /* Forces a page break after each .print-page div */
-      position: relative; /* Add this to make it a positioning context for absolute children */
-    }
-    .print-page:last-child {
-      page-break-after: avoid; /* Prevents an extra blank page at the end */
-    }
-  }
-  `;
-  
-    const rowsPerPage = 10;
-    const numPages = Math.max(1, Math.ceil(getthick?.length / rowsPerPage));
+    return pages;
+  }, [getthick]);
+
 
 //   const qrValue = () => {
 //     var val = "";
 //     val = props.inputValues().EOM_ID_BATCH + "," + Number(props.inputValues().EOM_ODIA).toFixed(2) + "," + Number(props.inputValues().EOM_IDIA).toFixed(2)
 //       + "," + Number(props.inputValues().EOM_SEC1).toFixed(2).toFixed(2)
 //       + "," + Number(props.inputValues().EOM_LENGTH).toFixed(2).toFixed(2)
-//       + Number(props.inputValues().EOM_ID_ORDER);
+//       + Number(props.inputValues().EOM_ID_ORDER);\\
 
 //     return val;
-//   }
+//   }\\
 
 //   const cDate = () => {
-//     let varDate = new Date()
-//     return varDate.getDate()?.toString() + '/' + (varDate.getMonth()?.toString()?.length > 1 ? varDate.getMonth() : '0' + varDate.getMonth()) + '/' + varDate.getFullYear()?.toString()
-//   }
-//   console.log(props?.inputValues())
+//     let varDate = new Date()\\
+//     return varDate.getDate()?.toString() + '/' + (varDate.getMonth()?.toString()?.length > 1 ? varDate.getMonth() : '0' + varDate.getMonth()) + '/' + varDate.getFullYear()?.toString()\\
+//   }\\
+//   console.log(props?.inputValues())\\
   return (
     <React.Fragment>
       <Dialog
-        fullWidth={fullWidth}
+        fullWidth={true}
         maxWidth={maxWidth}
         open={props.open}
         onClose={handleClose}
@@ -217,7 +248,7 @@ export default function MaxWidthDialogThick(props) {
         {/* <DialogTitle>{props.type} Print Label</DialogTitle> */}
         <DialogContent>
           {loading && <Preloader />}
-          {getthick?.length === 0 && !loading ? (
+          {allPagesData.length === 0 && !loading ? (
             <MDBox
            sx={{
              display: 'flex',
@@ -253,12 +284,12 @@ export default function MaxWidthDialogThick(props) {
            </MDTypography>
          </MDBox>
           ) : (
-          <MDBox px={3} py={1} 
-          
+          <MDBox px={3} py={1}
+
           ref={componentRef}
           style={{ display: 'block' }}>
-         {Array.from({ length: numPages }).map((_, pageIndex) => (
-<div key={pageIndex} className="print-page">
+         {allPagesData.map((page, pageIndex) => (
+            <div key={pageIndex} className="print-page">
              <div className="print-container">
               <div style={{ display: 'flex', justifyContent: 'center' }}>
               <img
@@ -287,7 +318,7 @@ export default function MaxWidthDialogThick(props) {
 
 
 <Grid container style={{ height: 'auto', width: '100%', justifyContent: 'center', display: 'flex', border: '1px solid black', padding: 'px' }}>
-                      
+
 
                         <Grid item xs={12}>
                           <MDTypography
@@ -295,7 +326,7 @@ export default function MaxWidthDialogThick(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '55px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '37px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             COATING THICKNESS INSPECTION REPORT
@@ -307,13 +338,13 @@ export default function MaxWidthDialogThick(props) {
                             noWrap
                             style={{ textAlign: 'Right', marginTop: '5px',fontSize: '12px', color: 'black', fontFamily: "Times New Roman" }}
                           >
-                           FORMAT.NO : TSL/COAT/QC/F-53 Rev 02,Date 13.11.2021            _
+                           FORMAT.NO : TSL/COAT/QC/F-53 Rev 02,Date 13.11.2021
                           </MDTypography>
                         </Grid>
                         <Grid item xs={12}>
                           <Grid container>
                             <Grid item xs={1.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',borderLeft: '1px solid black',padding: '3px' }}>
-                              <p>Client        </p>  
+                              <p>Client        </p>
                               <p>PO.No.         </p>
                               <p>Specification  </p>
                               <p>Acceptance Criteria</p>
@@ -322,18 +353,18 @@ export default function MaxWidthDialogThick(props) {
                               {/* <p>Acceptance Criteria</p>
                               <p>Process Sheet No</p> */}
                               {/* <p>Pipe Size           </p>  */}
-                              
+
                               {/* <p>Type of Coating  </p> */}
                             </Grid>
-                            <Grid item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
+                            <Grid item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px' }}>
                               <p>: {getthick?.length > 0 ? getthick[0].CLIENT : ' '} </p>
-                              <p>: {getthick?.length > 0 ? getthick[0].PO_REF_NO : ' '}</p>
+                              <p>: {getthick?.length > 0 ? getthick[0].PO_REF_NO : ''}</p>
                               <p>: {getthick?.length > 0 ? getthick[0].SPEC : ' '}  </p>
                               <p>: {getthick?.length > 0 ? getthick[0].ACCEPTANCE_CRITERIA : ' '}  </p>
                               <p>: {getthick?.length > 0  ? getthick[0].PROCESS_SHEET_NO : ' '} </p>
                               {/* <p>: {getthick?.length > 0  ? getthick[0].ACCEPTANCE_CRITERIA : ' '} </p>
                               <p>: {getthick?.length > 0 ? getthick[0].PROCESS_SHEET_NO : ' '} </p> */}
-                              
+
                               {/* <p>: {getthick?.length > 0 ? getthick[0].TYPE_OF_COATING : ' '}  </p> */}
                             </Grid>
 
@@ -350,17 +381,17 @@ export default function MaxWidthDialogThick(props) {
                               <p>: {getthick?.length > 0  ? getthick[0].DATE_SHIFT : ' '} </p>
                               <p>: {getthick?.length > 0  ? getthick[0].PIPE_SIZE : ' '} </p>
                               <p>: {getthick?.length > 0  ? getthick[0].TYPE_OF_COATING : ' '} </p>
-                               <p>: {props?.wiNo} </p> 
+                               <p>: {props?.wiNo} </p>
                               {/* <p>: {getthick?.length > 0  ? getthick[0].PROCEDURE_WI_NO : ' '} </p> */}
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
-                    
-                    <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>     
+
+                    <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>
                     <Grid container xs = {12} >
                       <Grid item xs={0.40}     style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.<br />NO.</Grid>
                       <Grid item xs={0.75}       style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO</Grid>
                       <Grid item xs={0.65}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ASL NO</Grid>
-            
+
                                             <Grid item xs={4.8} colSpan={6} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
@@ -371,21 +402,19 @@ export default function MaxWidthDialogThick(props) {
                                                     <Grid item xs={3} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>9 O'CLOCK</Grid>
                                                     <Grid item xs={3} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>12 O'CLOCK</Grid>
                                               </Grid>
-                                             </Grid>                                           
+                                             </Grid>
 
                       <Grid item xs={0.65}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>VISUAL OF COATED PIPE</Grid>
-                      <Grid item xs={0.65}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>COATING STATUS</Grid>
-                      <Grid item xs={3.35}      style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST ON PIPE</Grid>
+                      <Grid item xs={0.85}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>COATING STATUS</Grid>
+                      <Grid item xs={3.15}      style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST ON PIPE</Grid>
                       <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS / <br /> QUENCHING TEMP (°C)</Grid>
 
-                      {getthick
-                            .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
-                            .map((dataRow, i) => (
-<Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{pageIndex * rowsPerPage + i + 1}</Grid>
+                      {page.data.map((dataRow, i) => (
+                        <Grid key={`data-${pageIndex}-${i}`} container>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{page.globalStartIndex + i + 1}</Grid>
                             <Grid item xs={0.75}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_BATCH_NO !== null ? dataRow.TBP_BATCH_NO : <br />}</Grid>
                             <Grid item xs={0.65} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_ASL_NO_80 !== null ? dataRow.TBP_ASL_NO_80 : <br />}</Grid>
-                            
+
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_1_120 !== null ? Number(dataRow.TBP_COT_THK_1_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_2_120 !== null ? Number(dataRow.TBP_COT_THK_2_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_3_120 !== null ? Number(dataRow.TBP_COT_THK_3_120).toFixed(2) : <br />}</Grid>
@@ -394,26 +423,27 @@ export default function MaxWidthDialogThick(props) {
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_6_120 !== null ? Number(dataRow.TBP_COT_THK_6_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_7_120 !== null ? Number(dataRow.TBP_COT_THK_7_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_8_120 !== null ? Number(dataRow.TBP_COT_THK_8_120).toFixed(2) : <br />}</Grid>
-                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COT_THK_9_120 !== null ? Number(dataRow.TBP_COT_THK_9_120).toFixed(2) : <br />}</Grid>
+                            <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_9_120 !== null ? Number(dataRow.TBP_COT_THK_9_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_10_120 !== null ? Number(dataRow.TBP_COT_THK_10_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_11_120 !== null ? Number(dataRow.TBP_COT_THK_11_120).toFixed(2) : <br />}</Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>{dataRow.TBP_COT_THK_12_120 !== null ? Number(dataRow.TBP_COT_THK_12_120).toFixed(2) : <br />}</Grid>
-                            
+
                             <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_TEST_PIP_120 !== null ? dataRow.TBP_TEST_PIP_120 : <br />}</Grid>
-                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
-                            <Grid item xs={3.35} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_ONPIPE !== null ? dataRow.TEST_ONPIPE : <br />}</Grid>
+                            <Grid item xs={0.85}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
+                            <Grid item xs={3.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_ONPIPE !== null ? dataRow.TEST_ONPIPE : <br />}</Grid>
                             <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_QTEMP_120 !== null ? dataRow.TBP_QTEMP_120 : <br />}</Grid>
                          </Grid>
                       ))}
 
 
-{Array.from({ length: Math.max(0, rowsPerPage - getthick.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
+                      {/* Empty rows to fill the page */}
+                      {Array.from({ length: Math.max(0, page.maxRows - page.data.length) }).map((_, i) => (
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
                             <Grid item xs={0.4}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
-                            
+
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
@@ -428,14 +458,14 @@ export default function MaxWidthDialogThick(props) {
                             <Grid item xs={0.4}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
 
                             <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
-                            <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
-                            <Grid item xs={3.35}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={0.85}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
+                            <Grid item xs={3.15}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
                             <Grid item xs={0.75}  style={{ fontSize: '7px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '7px' }}>  {<br />} </Grid>
-                            
+
                          </Grid>
                       ))}
 
-                    </Grid>  
+                    </Grid>
                     </Grid>
                     <Grid>
  </Grid>
@@ -445,14 +475,21 @@ export default function MaxWidthDialogThick(props) {
                                <Grid item xs = {0.1}>{<br/>}</Grid>
                                <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getthick?.length > 0 ? getthick[0].SPEC : '  '} & QAPNO:{getthick?.length > 0 ? getthick[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
-                      {/* <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                               <Grid item xs = {0.1}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>REMARKS : 1.PIPE MARKING DETAILS AS PER PIPE MILL TALLY SHEET EXCEPT CUTTING PIPE LENGTH AFTER COATING.</Grid>
-                               <Grid item xs = {0.1}>{<br/>}</Grid>
-                               <Grid item xs = {11.9}>2.VISUAL INSPECTION ,MARKING OF PIPES,BARCODE STICKER ,CUT BACK,BAVEL ANGLE,INSIDE CLEANING,PIPE NUMBER,EACH PIPE HOLIDAY TESTING & LOW STRESSHARD PUNCG CHECKED ALSO VERIFY BY TPI & FOUND SATISFACTORY AS PER APPROVED QAP.</Grid>
-                       </Grid> */}
 
-                     <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
+                      {/* Conditional rendering for the Abbreviations Grid */}
+                      {pageIndex === allPagesData.length - 1 && (
+                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
+                               <Grid item xs = {0.1}>{<br/>}</Grid>
+                               <Grid item xs = {11.9}>Abbreviations- </Grid>
+                               <Grid item xs = {0.1}>{<br/>}</Grid>
+<Grid item xs = {11.9}>Field Test : TP-Trial Pipe, EHT-Epoxy Holiday Test, CCT-Cross Cut Test, IT-Impact Test, PT-Peel Test, MPT-Middle Peel test, AET-Air Entrapment Test ,REPAIR - Repair Test Report </Grid>
+ <Grid item xs = {0.1}>{<br/>}</Grid>
+<Grid item xs = {11.9}>Lab Test : DOC-Degree of Cure, 24AT-24 Hour Adhesion Test, PST-Porosity Test, FTFBE-Flexibility Test for FBE, CD24/48-Cathodic Disbondment Test 24H/48H, FT3LPE-Flexibility Test for 3LPE Pipe, IDT-Indentation Test, ET-Elongnation Test, CD28/30-Cathodic Disbondment Test 28D/30D, TT-Tensile Test, HT-Hardness Test, PST-Product Stability Test, 48HT-48 Hour Hot water Immersion Test</Grid>
+                       </Grid>
+                      )}
+
+
+                     <Grid container style={{  textAlign: 'left',fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
                       <Grid item xs={12}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',  textAlign: 'Center' }}>INSTRUMENT USED</Grid>
                       {/* <Grid item xs={0.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>SR No.</Grid> */}
                       <Grid item xs={3} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
@@ -461,26 +498,26 @@ export default function MaxWidthDialogThick(props) {
                       <Grid item xs={3} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center' }}>INSTRUMENT ID</Grid>
                       {/* <Grid item xs={1.5} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
                       <Grid item xs={1.5} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>INSTRUMENT ID</Grid>
+
                       <Grid item xs={1.5} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
                       <Grid item xs={1.5} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>INSTRUMENT ID</Grid> */}
-                       
 
                       <Grid item xs={3} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center'  }}>{props?.instrumentName}  {<br/>} </Grid>
                       <Grid item xs={3} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center'  }}>{props?.instrumentId} </Grid>
-                      
+
                       <Grid item xs={3} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center'  }}>{props?.instrumentName2}</Grid>
                       <Grid item xs={3} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center'  }}>{props?.instrumentId2}</Grid>
-                      
+
                       {/* <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center'  }}>{props?.instrumentName3}</Grid>
                       <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center'  }}>{props?.instrumentId3}</Grid>
-                      
+
                       <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center'  }}>{props?.instrumentName4}</Grid>
                       <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center'  }}>{props?.instrumentId4}</Grid> */}
                       </Grid>
-                       
+
 
                     <Grid container style={{  textAlign: 'left',fontSize: '11px', color: 'black', fontFamily: "Times New Roman",fontWeight: "bold"}}>
-                      
+
                           <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold' }}>
                                <Grid item xs={6}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
                                <Grid item xs={6}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>ACCEPTED BY</Grid>
@@ -494,13 +531,13 @@ export default function MaxWidthDialogThick(props) {
                        <Grid item xs = {6} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '2px'  ,  textAlign: 'Center'  }}> TPIA / CLIENT<br/></Grid>
                     </Grid>
 
-                  </Grid>       
-                            
+                  </Grid>
+
                             <Grid item xs={1}></Grid>
                           </Grid>
                         </Grid>
                       </Grid>
-                    
+
 
               </div>
                </div>
@@ -526,7 +563,7 @@ export default function MaxWidthDialogThick(props) {
             />
           </Grid>
         </DialogContent>
-        
+
       </Dialog>
     </React.Fragment >
   );

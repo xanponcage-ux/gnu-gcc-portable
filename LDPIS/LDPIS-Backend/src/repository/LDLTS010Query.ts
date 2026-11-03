@@ -31,11 +31,12 @@ export const getCoils = async (data: any) => {
        FROM V_LDP_PRODN
        WHERE LOM_CD_EPA = :plant AND LOM_CD_STATUS = :status`;
 
-
     const binds: any = { plant: String(data.plant ?? "").trim(), status: "HQ" };
     const filters = [
-      ["batchId", "LOM_ID_BATCH"], ["mBatch", "LOM_ID_FIRST_PAR"],
-      ["ordNo", "LOM_ID_ORDER_CUS"], ["ordItem", "LOM_ID_ORD_ITEM_CUS"],
+      ["batchId", "LOM_ID_BATCH"],
+      ["mBatch", "LOM_ID_FIRST_PAR"],
+      ["ordNo", "LOM_ID_ORDER_CUS"],
+      ["ordItem", "LOM_ID_ORD_ITEM_CUS"],
     ];
     for (const [key, column] of filters) {
       const value = String(data[key] ?? "").trim();
@@ -54,7 +55,7 @@ export const getCoils = async (data: any) => {
 
 export const saveData = async (data: any) => {
   try {
-    var sql = `call LDPDBA.LDLTB005(
+    var sql = `call LDPDBA.LDLTB006(
       ls_batch         => :ls_batch,
       ls_decision      => :ls_decision,
       ls_coatig_type   => :ls_coatig_type, 

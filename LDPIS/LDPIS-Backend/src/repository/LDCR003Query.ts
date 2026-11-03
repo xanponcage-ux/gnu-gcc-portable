@@ -54,6 +54,7 @@ T.TCP_LD_REF_STD,
       ELSE TCP_LD_OPR_TEMP end )ld_opr_temp,
 TCP_LD_TEST_DUR,
 'Max. radius of disbondment  '||T.TCP_LD_DH_MAX||' mm' Acceptance_Criteria,
+TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t3.LP3_CDTEST_24H_48H result,
 ' '  remarks,
 t3.LP3_RAW_MAT1,
@@ -141,6 +142,7 @@ SELECT t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
        || t1.enc_sec1_max
        || ' mm WT' pipe_size,
        t.TCP_CP1_CO_APPLI PROJECTNAME,
+       t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
        t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
        'CDT' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no, t.tpc_order_id,
        t.tpc_order_item, t3.prd_date_120 || ' & ' || t3.prd_shift_120,
@@ -278,9 +280,10 @@ export const getCROSSSECTIONINTERFACEPOROSITY = async (
        t.tpc_sd_proc_sheet process_sheet_no,
 --==================
        'FBE COATED PIPE (2 SAMPLE)' mat_desc,
-       'PIPE NO: ' || t3.charg batch_no, 'CROSS SECTION POROSITY' test_dec1,
+       t3.charg batch_no, 'CROSS SECTION POROSITY' test_dec1,
        'INTERFACE POROSITY' test_dec2, t.tcp_ld_cs_refstd test_method1,
        t.tcp_ld_interporo_refstd test_method2, t.tcp_ld_cs_min requirement1,
+       t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
        t.tcp_ld_interporo_min requirement2,
        t3.lcp_cross_section1 test_result_cross1,
        t3.lcp_cross_section2 test_result_cross2,
@@ -365,6 +368,7 @@ export const getdegreeofcure = async (
        t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
        'LTR/DOC' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
        t.tpc_order_id, t.tpc_order_item,
+       t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
        t3.prd_date_120 || ' & ' || t3.prd_shift_120, SYSDATE, 'D' shift,
        t.tpc_sd_proc_sheet process_sheet_no, t.tpc_sd_qap_no1 qap_no,
        'CURED EPOXY FROM COATED PIPE' mat_desc,
@@ -470,6 +474,7 @@ export const getelongationrep = async (
        SELECT
     Client,
     PO_ref_no,
+    ACCEPTANCE_CRT,
     PROJECTNAME,
     pipe_size,
     SPEC,
@@ -492,6 +497,7 @@ FROM
      SELECT
         T1.ENC_MARK_CUST_NAME                                          AS Client,
         t.TCP_SD_POREF_NO                                              AS PO_ref_no,
+        t.TPC_SD_QAP_NO1 AS                                          ACCEPTANCE_CRT,
         t.TCP_CP1_CO_APPLI AS PROJECTNAME,
         t1.enc_sec2_max || ' mm OD X ' || t1.enc_sec1_max || ' mm WT'  AS pipe_size,
         t.TCP_SD_TECH_SPEC                                             AS SPEC,
@@ -499,7 +505,7 @@ FROM
         'ETR' || '/' || TO_CHAR(SYSDATE, 'YYYYMMDD')                  AS REP_NO,
         t.tpc_order_id,
         t.tpc_order_item,
-        TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT'            AS COATING_DATE,
+        TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120             AS COATING_DATE,
         t3.prd_shift_120                                               AS COATING_SHIFT,
         t.tpc_sd_proc_sheet                                            AS process_sheet_no,
         t.tpc_sd_qap_no1                                               AS qap_no,
@@ -538,7 +544,7 @@ UNPIVOT (
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {
-      sql += ` AND t.tpc_order_id = '${orderNo}' `;
+      sql += ` WHERE tpc_order_id = '${orderNo}' `;
       // binds["orderNo"] = orderNo;
     }
 
@@ -587,6 +593,7 @@ export const getFLEXIBILITYTEST3LPE = async (
     PO_ref_no,
     PROJECTNAME,
     pipe_size,
+    ACCEPTANCE_CRT,
     SPEC,
     type_of_coating,
     REP_NO,
@@ -608,12 +615,13 @@ FROM
 select T1.ENC_MARK_CUST_NAME Client,
 t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
 'LTR/DOC'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
@@ -650,7 +658,7 @@ UNPIVOT (
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {
-      sql += ` AND t.tpc_order_id = '${orderNo}' `;
+      sql += `  WHERE tpc_order_id = '${orderNo}' `;
       // binds["orderNo"] = orderNo;
     }
 
@@ -697,12 +705,13 @@ export const getFLEXIBILITYTESTREPORTFBE = async (
        select T1.ENC_MARK_CUST_NAME Client,
 t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
 'FTR/DOC'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120 COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
@@ -780,18 +789,19 @@ export const getHARDNESSTEST = async (
        select T1.ENC_MARK_CUST_NAME Client,
 t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/DOC'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
+'LTR/HT'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
 t.tpc_sd_qap_no1 qap_no,
 --=====================================
-'PIPE No.'||T3.CHARG Mat_desc ,
+T3.CHARG Mat_desc ,
 t3.CDT_HRD_INS_NAME Batch_no,
 'Hardness Test' Test_desc,
 t.TCP_LD_HARDH_REFSTD	Test_method,
@@ -862,10 +872,11 @@ t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/HWI'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
+'LTR/HWA'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
@@ -880,8 +891,13 @@ t3.LCP_ADHT_MIN	test_result1,
 t3.LCP_ADHT_MIN_1	test_result2,
 t3.LCP_ADHT_MIN_2	test_result3,
 ' ' remarks,
-t3.LCP_SDATE_24H1 strt_dt_time,
-t3.LCP_EDATE_24H1 end_dt_time
+TO_CHAR(t3.LCP_SDATE_24H1, 'DD-MM-YYYY') ||
+' & Time - ' ||
+TO_CHAR(t3.LCP_SDATE_24H1, 'HH24:MI') AS strt_dt_time,
+
+TO_CHAR(t3.LCP_EDATE_24H1, 'DD-MM-YYYY') ||
+' & Time - ' ||
+TO_CHAR(t3.LCP_EDATE_24H1, 'HH24:MI') AS end_dt_time
 --=======================================
 from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
 where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
@@ -944,6 +960,7 @@ export const getproductstablilty = async (
        select T1.ENC_MARK_CUST_NAME Client,
 t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
@@ -1024,6 +1041,7 @@ export const gettensile = async (
        select T1.ENC_MARK_CUST_NAME Client,
 t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
@@ -1104,12 +1122,13 @@ export const getHOTWATERIMMERSION48 = async (
        select T1.ENC_MARK_CUST_NAME Client,
 t.TCP_SD_POREF_NO PO_ref_no,
 t.TCP_CP1_CO_APPLI PROJECTNAME,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
 t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
 t.TCP_SD_TECH_SPEC SPEC,
 t.TCP_SD_IC_TYPE type_of_coating,
 'LTR/HWI'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
 t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' COATING_DATE,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
 t3.prd_shift_120 COATING_SHIFT,
 sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
@@ -1124,8 +1143,13 @@ t3.ACP_TEST_RESULT  test_result1,
 t3.ACP_TEST_RESULT1  test_result2,
 t3.ACP_TEST_RESULT2  test_result3,
 ' ' remarks,
-t3.ACP_SDATE_48H2	strt_dt_time,
-t3.ACP_EDATE_48H2 end_dt_time
+TO_CHAR(t3.ACP_SDATE_48H2, 'DD-MM-YYYY') ||
+' & Time - ' ||
+TO_CHAR(t3.ACP_SDATE_48H2, 'HH24:MI') AS strt_dt_time,
+
+TO_CHAR(t3.ACP_EDATE_48H2, 'DD-MM-YYYY') ||
+' & Time - ' ||
+TO_CHAR(t3.ACP_EDATE_48H2, 'HH24:MI') AS end_dt_time
 --=======================================
 from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
 where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
@@ -1188,6 +1212,7 @@ export const getINDENTATIONTEST = async (
        
 SELECT t1.enc_mark_cust_name client,
        t.tcp_sd_poref_no po_ref_no,
+       t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
        t.tcp_cp1_co_appli projectname,
           t1.enc_sec2_max
        || ' mm OD '
@@ -1195,13 +1220,15 @@ SELECT t1.enc_mark_cust_name client,
        || t1.enc_sec1_max
        || ' mm WT' pipe_size,
        t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
-       'LTR/HWI' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
+       'LTR/ITR' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
        t.tpc_order_id, t.tpc_order_item,
-       TO_CHAR (t3.prd_date_120, 'DD.MM.YYYY') || ' & PQT' coating_date,
+       TO_CHAR (t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  coating_date,
        t3.prd_shift_120 coating_shift, SYSDATE, 'D' shift,
        t.tpc_sd_proc_sheet process_sheet_no, t.tpc_sd_qap_no1 qap_no,
-       t3.lp3_sdate_indt strt_dt_time, 
-       t3.lp3_edate_indt end_dt_time,
+       --t3.lp3_sdate_indt strt_dt_time, 
+        TO_CHAR (t3.lp3_sdate_indt, 'DD.MM.YYYY') strt_dt_time,
+         TO_CHAR (t3.lp3_edate_indt, 'DD.MM.YYYY') end_dt_time,
+       --t3.lp3_edate_indt end_dt_time,
        --TO_CHAR (t3.lp3_sdate_indt, 'DD.MM.YYYY') strt_dt_time,
        --TO_CHAR (t3.lp3_edate_indt, 'DD.MM.YYYY') end_dt_time,
         t3.LP3_STIME_INDT START_time,

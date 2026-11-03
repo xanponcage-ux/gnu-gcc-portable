@@ -49,6 +49,7 @@ export default function MaxWidthDialogDUST(props) {
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("md");
+  
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -165,6 +166,11 @@ export default function MaxWidthDialogDUST(props) {
     });
 
   const componentRef = React.useRef();
+
+  const formattedPrintDate = props?.printdate
+  ?.split(".")
+  ?.reverse()
+  ?.join("");
 
   //const pageStyle = `
   const pageStyle = `
@@ -336,8 +342,15 @@ export default function MaxWidthDialogDUST(props) {
                               <p><br />  </p>
                             </Grid>
                             <Grid item xs={4.3} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getdustdata?.length > 0  ? `${getdustdata[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getdustdata?.length > 0  ? `${getdustdata[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                               {/* <p>: {props?.printdate} & {props?.selectedpShift?.value} </p> */}
+                                {/* DLR/20261030-1 */}
                               {/* <p>: {getdustdata?.length > 0  ? getdustdata[0].DATE_SHIFTQ : ' '} </p> */}
+                              <p>
+  : {getdustdata?.length > 0
+      ? `DLR/${formattedPrintDate}-${pageIndex + 1}`
+      : ' '}
+</p>
                                                             <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getdustdata?.length > 0  ? getdustdata[0].QAP_NO : ' '} </p>
                               <p>: {getdustdata?.length > 0  ? getdustdata[0].PROCESS_SHEET_NO : ' '} </p>

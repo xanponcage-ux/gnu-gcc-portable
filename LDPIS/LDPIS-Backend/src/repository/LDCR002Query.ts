@@ -8,12 +8,12 @@ export const GetPipenomulti = async (
   crdate: any,
   item: any,
   orderNo: any,
-  roundsectionmill: any
+  reptypepipe: any
 ) => {
   try {
     let sql = "";
 
-    if (roundsectionmill === "4") {
+    if (reptypepipe === "APP") {
       sql = `SELECT DISTINCT T2.LOM_ID_BATCH
               FROM V_bare_pdo t, V_LDP_PRODN T2
               WHERE 
@@ -24,6 +24,138 @@ export const GetPipenomulti = async (
                 AND T.TBP_BATCH_NO = T2.LOM_ID_BATCH
                 AND LOM_CD_EPA = '${plant}'
                 order by LOM_ID_BATCH `;
+
+    } else     if (reptypepipe === "REPAIR") {
+      sql = `SELECT 
+       t3.charg pipe_no
+  FROM v_process_sheet_ec t,
+       v_end_cust_ord_epa t1,
+       v_ldp_prodn t2,
+       v_zcoat_lab t3
+ WHERE t.tpc_order_id = t1.enc_id_order
+   AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
+   AND t.tpc_order_id = t2.lom_id_order_cus
+   AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+   AND t3.charg = t2.lom_id_batch
+   and t3.prt_repair_holiday is not null
+    AND t.tpc_order_id = '${orderNo}'
+    AND TO_NUMBER (t.tpc_order_item) = '${item}'
+    AND t3.prd_date_120 = '${crdate}'
+    AND t2.LOM_CD_EPA = '${plant}'
+    order by t2.LOM_ID_BATCH
+       `;
+    }else     if (reptypepipe === "PEEL") {
+      sql = `SELECT   
+         DISTINCT CHARG AS pipe_no
+    FROM (SELECT t3.charg, prt_fend1 achieve_value, 'F-END' remarks,
+    'F-END-COLD' remarks_in,
+                 t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
+                 t3.prd_date_120, t3.prd_shift_120,
+                    'Minimum'
+                 || t.tcp_fd_peel_cold_test required_value1,
+                  '@'
+                 || t.tcp_fd_peel_temp_cold || ' °C' required_value2,
+                 prt_pel_srno1, prt_pel_ins_name1, prt_pel_ins_id1,
+                 prt_peel_wino
+            FROM v_zcoat_lab t3, v_ldp_prodn t2, v_process_sheet_ec t
+           WHERE t3.charg = t2.lom_id_batch
+             AND t2.lom_id_order_cus = t.tpc_order_id
+             AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
+             AND t.tpc_order_id = '${orderNo}'
+             AND TO_NUMBER (t.tpc_order_item) = '${item}'
+          UNION ALL
+          SELECT t3.charg, prt_fend2 achieve_value, 'F-END' remarks,
+              'F-END-HOT' remarks_in,
+                 t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
+                 t3.prd_date_120, t3.prd_shift_120,
+                    'Minimum'
+                 || t.tcp_fd_peel_test_hot required_value1,
+                  ' @'
+                 || t.tcp_fd_peel_temp_hot || ' °C' required_value2,
+                 prt_pel_srno1, prt_pel_ins_name1, prt_pel_ins_id1,
+                 prt_peel_wino
+            FROM v_zcoat_lab t3, v_ldp_prodn t2, v_process_sheet_ec t
+           WHERE t3.charg = t2.lom_id_batch
+             AND t2.lom_id_order_cus = t.tpc_order_id
+             AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
+             AND t.tpc_order_id = '${orderNo}'
+             AND TO_NUMBER (t.tpc_order_item) = '${item}'
+          UNION ALL
+          SELECT t3.charg, prt_midle1 achieve_value, 'MIDDLE' remarks,
+          'MIDDLE-COLD' remarks_in,
+                 t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
+                 t3.prd_date_120, t3.prd_shift_120,
+                    'Minimum'
+                 || t.tcp_fd_peel_cold_test required_value1,
+                  ' @'
+                 || t.tcp_fd_peel_temp_cold || ' °C' required_value2,
+                 prt_pel_srno1, prt_pel_ins_name1, prt_pel_ins_id1,
+                 prt_peel_wino
+            FROM v_zcoat_lab t3, v_ldp_prodn t2, v_process_sheet_ec t
+           WHERE t3.charg = t2.lom_id_batch
+             AND t2.lom_id_order_cus = t.tpc_order_id
+             AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
+             AND t.tpc_order_id = '${orderNo}'
+             AND TO_NUMBER (t.tpc_order_item) = '${item}'
+          UNION ALL
+          SELECT t3.charg, prt_midle2 achieve_value, 'MIDDLE' remarks,
+          'MIDDLE-HOT' remarks_in,
+                 t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
+                 t3.prd_date_120, t3.prd_shift_120,
+                    'Minimum'
+                 || t.tcp_fd_peel_test_hot required_value1,
+                  ' @'
+                 || t.tcp_fd_peel_temp_hot || ' °C' required_value2,
+                 prt_pel_srno1, prt_pel_ins_name1, prt_pel_ins_id1,
+                 prt_peel_wino
+            FROM v_zcoat_lab t3, v_ldp_prodn t2, v_process_sheet_ec t
+           WHERE t3.charg = t2.lom_id_batch
+             AND t2.lom_id_order_cus = t.tpc_order_id
+             AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
+             AND t.tpc_order_id = '${orderNo}'
+             AND TO_NUMBER (t.tpc_order_item) = '${item}'
+          UNION ALL
+          SELECT t3.charg, prt_tend1 achieve_value, 'T-END' remarks,
+          'T-END-COLD' remarks_in,
+                 t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
+                 t3.prd_date_120, t3.prd_shift_120,
+                    'Minimum'
+                 || t.tcp_fd_peel_cold_test required_value1,
+                  '@'
+                 || t.tcp_fd_peel_temp_cold || ' °C' required_value2,
+                 prt_pel_srno1, prt_pel_ins_name1, prt_pel_ins_id1,
+                 prt_peel_wino
+            FROM v_zcoat_lab t3, v_ldp_prodn t2, v_process_sheet_ec t
+           WHERE t3.charg = t2.lom_id_batch
+             AND t2.lom_id_order_cus = t.tpc_order_id
+             AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
+             AND t.tpc_order_id = '${orderNo}'
+             AND TO_NUMBER (t.tpc_order_item) = '${item}'
+          UNION ALL
+          SELECT t3.charg, prt_tend2 achieve_value, 'T-END' remarks,
+          'T-END-HOT' remarks_in,
+                 t2.lom_id_order_cus, t2.lom_id_ord_item_cus, t3.zcl_crt_dt,
+                 t3.prd_date_120, t3.prd_shift_120,
+                    'Minimum'
+                 || t.tcp_fd_peel_test_hot required_value1,
+                  ' @'
+                 || t.tcp_fd_peel_temp_hot || ' °C' required_value2,
+                 prt_pel_srno1, prt_pel_ins_name1, prt_pel_ins_id1,
+                 prt_peel_wino
+            FROM v_zcoat_lab t3, v_ldp_prodn t2, v_process_sheet_ec t
+           WHERE t3.charg = t2.lom_id_batch
+             AND t2.lom_id_order_cus = t.tpc_order_id
+             AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
+             AND t.tpc_order_id = '${orderNo}'
+             AND TO_NUMBER (t.tpc_order_item) = '${item}') q,
+         v_process_sheet_ec t11,
+         v_end_cust_ord_epa t1
+   WHERE q.lom_id_order_cus = t11.tpc_order_id
+     AND q.lom_id_ord_item_cus = TO_NUMBER (t11.tpc_order_item)
+     AND t11.tpc_order_id = t1.enc_id_order
+     AND TO_NUMBER (t11.tpc_order_item) = t1.enc_no_item
+     and  t1.ENC_CD_EPA = '${plant}'
+and Achieve_value is not null  and TRUNC(q.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY')    order by charg  `;
     }
 
     console.log("------GetPipenomillround>", sql);
@@ -633,7 +765,7 @@ export const getAirdata = async (
   plant: any,
   orderNo: any,
   item: any,
-  matno: any,
+  shift: any,
   crdate: any,
   heatno: any,
   pipeno: any
@@ -646,7 +778,7 @@ export const getAirdata = async (
        t.tpc_sd_proc_sheet process_sheet_no, t1.enc_mark_cust, t.tpc_order_id,
        t.tpc_order_item, 'AETR' || '/'
                          || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
-       t3.prd_date_120 || ' & ' || t3.prd_shift_120 DATE_SHIFT,
+       TO_CHAR (t3.prd_date_120, 'DD-MM-YYYY') || ' & ' || t3.prd_shift_120 DATE_SHIFT,
           t1.enc_sec2_max
        || 'mm OD'
        || ' '
@@ -700,8 +832,8 @@ export const getAirdata = async (
       // binds["item"] = item;
     }
 
-    if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
+    if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 IN ('${shift}')  `;
       // binds["matno"] = matno;
     }
 
@@ -851,7 +983,8 @@ export const getREPAIRdata = async (
   matno: any,
   crdate: any,
   heatno: any,
-  pipeno: any
+  pipeno: any,
+  selectedpipelist: any,
   // ,rmno: any
 ) => {
   try {
@@ -917,7 +1050,7 @@ export const getREPAIRdata = async (
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND t3.prd_shift_120 IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -933,6 +1066,11 @@ export const getREPAIRdata = async (
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
+      // binds["pipeno"] = pipeno;
+    }
+
+    if (selectedpipelist && selectedpipelist !== "" && selectedpipelist !== null) {
+      sql += ` AND t2.LOM_ID_BATCH IN (${selectedpipelist}) `; // changed BETWEEN to =
       // binds["pipeno"] = pipeno;
     }
 
@@ -1242,13 +1380,14 @@ export const getpeeldata = async (
   matno: any,
   crdate: any,
   heatno: any,
-  pipeno: any
-  // ,rmno: any
+  pipeno: any,
+  selectedpipelist: any,
 ) => {
   try {
-    var sql = `
-SELECT   t1.enc_mark_cust,
- t1.enc_mark_cust_name client,
+
+
+     var sql = `SELECT   t1.enc_mark_cust,
+t1.enc_mark_cust_name client,
          t11.tpc_order_id || '/' || tcp_sd_poref_no so_po_ref_no,
             t1.enc_sec2_max
          || 'mm OD'
@@ -1271,7 +1410,7 @@ SELECT   t1.enc_mark_cust,
          --q.prd_date_120 || ' & ' || q.prd_shift_120 date_shift,
          TO_CHAR (q.prd_date_120, 'DD.MM.YYYY') || ' & ' || q.prd_shift_120 date_shift,
          SYSDATE || ' & ' || 'D' shift1, q.prd_date_120 date_coating22,
-        TO_CHAR (TRUNC (prd_date_120), 'DD.MM.YYYY') date_coating,
+        TO_CHAR (TRUNC (prd_date_120), 'DD.MM.YYYY') || ' & ' || q.prd_shift_120  date_coating ,
          t11.tpc_sd_proc_sheet process_sheet_no, t11.tpc_order_id,
          t11.tpc_order_item,
          'TSL/COAT/' || t11.tpc_sd_qap_no1 acceptance_criteria, prt_pel_srno1,
@@ -1294,9 +1433,6 @@ SELECT   t1.enc_mark_cust,
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
-AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
-    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
-             AND prt_fend1 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_fend2 achieve_value, 'F-END' remarks,
               'F-END-HOT' remarks_in,
@@ -1314,9 +1450,6 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
-AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
-    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
-             AND prt_fend2 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_midle1 achieve_value, 'MIDDLE' remarks,
           'MIDDLE-COLD' remarks_in,
@@ -1334,9 +1467,6 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
-AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
-    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
-             AND prt_midle1 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_midle2 achieve_value, 'MIDDLE' remarks,
           'MIDDLE-HOT' remarks_in,
@@ -1354,9 +1484,6 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
-AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
-    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
-             AND prt_midle2 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_tend1 achieve_value, 'T-END' remarks,
           'T-END-COLD' remarks_in,
@@ -1374,9 +1501,6 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
              AND TO_NUMBER (t.tpc_order_item) = '${item}'
-AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
-    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
-             AND prt_tend1 IS NOT NULL
           UNION ALL
           SELECT t3.charg, prt_tend2 achieve_value, 'T-END' remarks,
           'T-END-HOT' remarks_in,
@@ -1393,18 +1517,15 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
              AND t2.lom_id_order_cus = t.tpc_order_id
              AND t2.lom_id_ord_item_cus = TO_NUMBER (t.tpc_order_item)
              AND t.tpc_order_id = '${orderNo}'
-AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
-    TO_CHAR(TO_DATE('${crdate}', 'DD-MON-YYYY'), 'DD/MM/YYYY')
-             AND prt_tend2 IS NOT NULL
-                          AND t2.LOM_CD_EPA = ${plant}
              AND TO_NUMBER (t.tpc_order_item) = '${item}') q,
          v_process_sheet_ec t11,
          v_end_cust_ord_epa t1
    WHERE q.lom_id_order_cus = t11.tpc_order_id
      AND q.lom_id_ord_item_cus = TO_NUMBER (t11.tpc_order_item)
      AND t11.tpc_order_id = t1.enc_id_order
-     AND TO_NUMBER (t11.tpc_order_item) = t1.enc_no_item 
-     `;
+     AND TO_NUMBER (t11.tpc_order_item) = t1.enc_no_item
+     and  t1.ENC_CD_EPA = ${plant}
+and Achieve_value is not null `;
 
      //9519363503/9  -- TO be Removed after testing of the screen
 
@@ -1413,20 +1534,24 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
     //   // binds["orderNo"] = orderNo;
     // }
 
-    // if (item && item !== "" && item !== null) {
-    //   sql += ` AND TO_NUMBER(t.tps_order_item) = '${item}' `;
+    // if (shift && shift !== "" && shift !== null) {
+    //   sql += ` AND TO_NUMBER(t.tps_order_item) = '${shift}' `;
     //   // binds["item"] = item;
     // }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t1.LOM_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND q.prd_shift_120 IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
-    // if (crdate && crdate !== "" && crdate !== null) {
-    //   // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-    //   sql += ` AND TRUNC(q.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
-    // }
+        if (selectedpipelist && selectedpipelist !== "" && selectedpipelist !== null) {
+      sql += ` AND CHARG IN (${selectedpipelist}) `; // changed BETWEEN to =
+      // binds["pipeno"] = pipeno;
+    }
+
+    if (crdate && crdate !== "" && crdate !== null) {
+      sql += ` and TRUNC(q.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+    }
 
     if (heatno && heatno !== "" && heatno !== null) {
       sql += ` AND t1.lom_no_cast IN ('${heatno}')  `;
@@ -1438,7 +1563,7 @@ AND SUBSTR(t3.PRT_PEEL_DATE,1,10) =
       // binds["pipeno"] = pipeno;
     }
 
-    sql += `  order by charg ,remarks_in`;
+    sql += `   order by charg ,remarks_in`;
 
     // if (DespFromDate && DespFromDate !== "" && DespToDate !== "") {
     //   sql += ` And trunc(LOM_DT_LOADING) BETWEEN :DespFromDate AND :DespToDate`;
@@ -1754,11 +1879,12 @@ export const getthickness = async (
 ) => {
   try {
     var sql = `
-       SELECT     A.TEST_ONPIPE,
+       SELECT A.TEST_ONPIPE,
        TO_CHAR (t3.tbp_prod_date, 'DD.MM.YYYY')
        || ' & '
        || t3.tbp_shift_DN date_shift,
-       t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
+       t1.enc_mark_cust_name client,
+       t.tcp_sd_poref_no po_ref_no,
        t.tcp_sd_tech_spec spec,
        'TSL/COAT/' || t.tpc_sd_qap_no1 acceptance_criteria,
        t.tpc_sd_proc_sheet process_sheet_no,
@@ -1771,17 +1897,21 @@ export const getthickness = async (
        || 'mm WT' pipe_size,
        t.tcp_sd_ic_type type_of_coating,
        'CTIR' || '/' || TO_CHAR (t3.tbp_prod_date, 'YYYYMMDD') rep_no,
-        t.tcp_id_applipro_m procedure_wi_no,
+       t.tcp_id_applipro_m procedure_wi_no,
 --INSTRUMENT NAME
        t.tcp_id_ins_appli1_m instrument_name1,
        t.tcp_id_ins_appli2_m instrument_name2,
-       t.tcp_id_ins_appli3_m instrument_name3,      
+       t.tcp_id_ins_appli3_m instrument_name3,
 --INSTRUMENT ID SRNO
        t.tcp_id_ins_appli_id1_m instrument_id_sno1,
        t.tcp_id_ins_appli_id2_m instrument_id_sno2,
-       t.tcp_id_ins_appli_id3_m instrument_id_sno3, t.tcp_cp2_tot_cthick_min,
-       t.tcp_cp2_tot_cthick_max, t3.tbp_batch_no, t2.lom_no_cast heat_no,
-       ROUND (t2.lom_length / 1000, 2) LENGTH, t3.tbp_asl_no_80,
+       t.tcp_id_ins_appli_id3_m instrument_id_sno3,
+       t.tcp_cp2_tot_cthick_min,
+       t.tcp_cp2_tot_cthick_max,
+       t3.tbp_batch_no,
+       t2.lom_no_cast heat_no,
+       ROUND (t2.lom_length / 1000, 2) LENGTH,
+       t3.tbp_asl_no_80,
        ROUND (t3.tbp_cot_thk_1_120,2) TBP_COT_THK_1_120,
        ROUND (t3.tbp_cot_thk_2_120,2) TBP_COT_THK_2_120,
        ROUND (t3.tbp_cot_thk_3_120,2) TBP_COT_THK_3_120, --3'OCLOCK
@@ -1794,16 +1924,44 @@ export const getthickness = async (
        ROUND (t3.tbp_cot_thk_10_120,2) TBP_COT_THK_10_120,
        ROUND (t3.tbp_cot_thk_11_120,2) TBP_COT_THK_11_120,
        ROUND (t3.tbp_cot_thk_12_120,2) TBP_COT_THK_12_120,--12'OCLOCK
-       t3.tbp_remark REMARK, 
-       t3.tbp_coat_stas_120, 
+       t3.tbp_remark REMARK,
+       t3.tbp_coat_stas_120,
        t3.tbp_test_pip_120,
-       t3.tbp_prod_date, 
-      t3.tbp_result ,
+       t3.tbp_prod_date,
+       t3.tbp_result,
        t3.tbp_shift,
        t3.tbp_dia_end_10,
        t3.TBP_QTEMP_120,
-       (select LISTAGG(t4.elf_test_name, ',') test_nm from V_LAB_FIELD_TEST_EC t4
-where t4.elf_batch_no = t3.tbp_batch_no and t4.elf_prod_date=t3.tbp_prod_date and t4.elf_shift=t3.tbp_shift ) test_name
+       (SELECT LISTAGG(
+                   CASE t4.elf_test_name
+                       WHEN 'Trial Pipe' THEN 'TP'
+                       WHEN 'Epoxy Holiday Test' THEN 'EHT'
+                       WHEN 'Cross Cut Test' THEN 'CCT'
+                       WHEN 'Impact Test' THEN 'IT'
+                       WHEN 'Peel Test' THEN 'PT'
+                       WHEN 'Middle Peel test' THEN 'MPT'
+                       WHEN 'Air Entrapment Test' THEN 'AET'
+                       WHEN 'Degree of Cure' THEN 'DOC'
+                       WHEN '24 Hour Adhesion Test' THEN '24AT'
+                       WHEN 'Porosity Test' THEN 'PST'
+                       WHEN 'Flexibility Test for FBE' THEN 'FTFBE'
+                       WHEN 'Cathodic Disbondment Test 24H /48H' THEN 'CD24/48'
+                       WHEN 'Flexibility Test for 3LPE Pipe' THEN 'FT3LPE'
+                       WHEN 'Indentation Test' THEN 'IDT'
+                       WHEN 'Elongnation Test' THEN 'ET'
+                       WHEN 'Cathodic Disbondment Test 28D/30D' THEN 'CD28/30'
+                       WHEN 'Tensile Test' THEN 'TT'
+                       WHEN 'Hardness Test' THEN 'HT'
+                       WHEN 'Product Stability Test' THEN 'PST' -- Assuming PST for both Porosity and Product Stability
+                       WHEN '48 Hour Hot water Immersion Test' THEN '48HT'
+                      WHEN 'Repair Test Report' THEN 'REPAIR'
+                       ELSE t4.elf_test_name -- Keep original if no match
+                   END, ',') WITHIN GROUP (ORDER BY t4.elf_test_name) test_nm
+        FROM V_LAB_FIELD_TEST_EC t4
+        WHERE t4.elf_batch_no = t3.tbp_batch_no
+          AND t4.elf_prod_date = t3.tbp_prod_date
+          AND t4.elf_shift = t3.tbp_shift
+       ) test_name
   FROM v_process_sheet_ec t,
        v_end_cust_ord_epa t1,
        v_ldp_prodn t2,
@@ -1812,22 +1970,43 @@ where t4.elf_batch_no = t3.tbp_batch_no and t4.elf_prod_date=t3.tbp_prod_date an
     SELECT ELF_BATCH_NO,
            ELF_PLANT_CD,
            ELF_PROD_DATE,
-           LISTAGG(DISTINCT ELF_TEST_NAME, ', ')
-             WITHIN GROUP (ORDER BY ELF_TEST_NAME) AS TEST_ONPIPE
+           LISTAGG(DISTINCT
+                       CASE ELF_TEST_NAME
+                           WHEN 'Trial Pipe' THEN 'TP'
+                           WHEN 'Epoxy Holiday Test' THEN 'EHT'
+                           WHEN 'Cross Cut Test' THEN 'CCT'
+                           WHEN 'Impact Test' THEN 'IT'
+                           WHEN 'Peel Test' THEN 'PT'
+                           WHEN 'Middle Peel Test' THEN 'MPT'
+                           WHEN 'Air Entrapment Test' THEN 'AET'
+                           WHEN 'Degree of Cure' THEN 'DOC'
+                           WHEN '24 Hour Adhesion Test' THEN '24AT'
+                           WHEN 'Porosity Test' THEN 'PST'
+                           WHEN 'Flexibility Test for FBE' THEN 'FTFBE'
+                           WHEN 'Cathodic Disbondment Test 24H /48H' THEN 'CD24/48'
+                           WHEN 'Flexibility Test for 3LPE Pipe' THEN 'FT3LPE'
+                           WHEN 'Indentation Test' THEN 'IDT'
+                           WHEN 'Elongnation Test' THEN 'ET'
+                           WHEN 'Cathodic Disbondment Test 28D/30D' THEN 'CD28/30'
+                           WHEN 'Tensile Test' THEN 'TT'
+                           WHEN 'Hardness Test' THEN 'HT'
+                           WHEN 'Product Stability Test' THEN 'PST' -- Assuming PST for both Porosity and Product Stability
+                           WHEN '48 Hour Hot water Immersion Test' THEN '48HT'
+                           WHEN 'Repair Test Report' THEN 'REPAIR'
+                           ELSE ELF_TEST_NAME -- Keep original if no match
+                       END, ', ') WITHIN GROUP (ORDER BY ELF_TEST_NAME) AS TEST_ONPIPE
     FROM V_lab_field_test_EC
     GROUP BY ELF_BATCH_NO, ELF_PLANT_CD, ELF_PROD_DATE
 ) A
  WHERE t.tpc_order_id = t1.enc_id_order
    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-   --AND t.tpc_order_id = t2.lom_id_order_cus
-   --AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
-             AND T.TPC_ORDER_ID = t3.tbp_id_order_no
-      AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
+   AND T.TPC_ORDER_ID = t3.tbp_id_order_no
+   AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
    AND t3.tbp_batch_no = t2.lom_id_batch
-   AND t3.tbp_cd_proc = 'D'
-       and A.ELF_BATCH_NO = T3.tbp_batch_no
-    and A.ELF_PLANT_CD = T2.LOM_CD_EPA  
-    and A.ELF_PROD_DATE = T3.TBP_PROD_DATE
+   AND t3.tbp_cd_proc IN ('D')
+   AND A.ELF_BATCH_NO = T3.tbp_batch_no
+   AND A.ELF_PLANT_CD = T2.LOM_CD_EPA
+   AND A.ELF_PROD_DATE = T3.TBP_PROD_DATE
 --FILTER COND.
    --AND t.tpc_order_id = '0060977580'
    --AND TO_NUMBER (t.tpc_order_item) = 1
@@ -1891,7 +2070,7 @@ export const getfinalinspection = async (
   plant: any,
   orderNo: any,
   item: any,
-  matno: any,
+  shift: any,
   crdate: any,
   heatno: any,
   pipeno: any
@@ -1981,14 +2160,14 @@ export const getfinalinspection = async (
       // binds["item"] = item;
     }
 
-    if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.LOM_NO_MATNR IN ('${matno}')  `;
+    if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.TBP_SHIFT IN ('${shift}')  `;
       // binds["matno"] = matno;
     }
 
     if (crdate && crdate !== "" && crdate !== null) {
       // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-      sql += ` AND TRUNC(t3.tbp_prod_date) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+      sql += ` AND TRUNC(t3.TBP_PROD_DATE) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
     if (heatno && heatno !== "" && heatno !== null) {
@@ -3163,412 +3342,6 @@ export const getVdirSdata = async (
     return await query.executeQuery(sql);
   } catch (error) {
     // console.log(error);
-    throw new Error.InternalServerErrorMsg(error);
-  }
-};
-
-export const getInventoryData = async (
-  DespFromDate: any,
-  DespToDate: any,
-  ProdFromDate: any,
-  ProdToDate: any,
-  batch: any,
-  customer: any,
-  item: any,
-  materialNo: any,
-  mbatch: any,
-  order: any,
-  orderType: any,
-  plant: any,
-  process: any,
-  status: any,
-  thikFrm: any,
-  thikTo: any,
-  widthFrm: any,
-  widthTo: any,
-  stockType: any
-) => {
-  try {
-    var sql = `SELECT
-    batch_age,
-    creation_date,
-    plant,
-    nvl(storage_loc, ' ') storage_loc,
-    nvl(current_work_center, ' ') current_work_center,
-    nvl(planned_work_center, ' ') planned_work_center,
-    nvl(planned_cust_name, ' ') planned_cust_name,
-    batch_id,
-    thick,
-    width,
-    nvl(idia, 0) idia,
-    length,
-    net_wt,
-    gross_wt,
-    cust_order,
-    cust_item,
-    age_days,
-    enc_id_order,
-    enc_no_item,
-    enc_order_type,
-    nvl(so_thick, 0) so_thick,
-    nvl(so_odia, 0) so_odia,
-    nvl(so_idia, 0) so_idia,
-    nvl(so_length, 0) so_length,
-    so_od_tolerance,
-    so_thick_tolerance,
-    so_length_tolerance,
-    nvl(so_grade, ' '),
-    actual_tdc,
-    prod_cd,
-    qlty,
-    nvl(planned_route, ' ') planned_route,
-    fg_material_no,
-    nvl(fg_material_desc, ' ') fg_material_desc,
-    unrestricted_stock,
-    nvl(material_group, ' ') material_group,
-    cast_no,
-    no_of_pieces,
-    uom,
-    nvl(prev_proc, ' ') prev_proc,
-    curr_proc,
-    nvl(next_proc, ' ') next_proc,
-    status,
-    STATUSAGE,
-    parent_batch,
-    mother_batch,
-    mother_batch_age,
-    mother_batch_wt,
-    rm_matrl_no,
-    nvl(rm_material_desc, ' ') rm_material_desc,
-    actual_route,
-    plant_nm,
-    nvl(processing_flag, ' ') processing_flag,
-    STATUS_DESC,
-    nvl(FG_MAT_NO, ' ') FG_MAT_NO,
-    nvl(FG_MAT_DESC, ' ') FG_MAT_DESC
-FROM
-    (
-        SELECT
-            nvl(round((sysdate - LOM_ts_creation), 0), 0) batch_age,
-            to_char(LOM_ts_creation, 'DD-MON-YY HH24:MI:SS') creation_date,
-            LOM_cd_epa            plant,
-            LOM_cd_pack           storage_loc,
-            (
-                SELECT
-                    ewi_wrk_center_no
-                FROM
-                    v_work_inst
-                WHERE
-                    ewi_cd_epa = LOM_cd_epa
-                    AND ewi_id_batch = LOM_id_first_par
-                    AND ewi_cd_status = 'CN'
-                    AND ewi_cd_process = SUBSTR(LOM_CD_STATUS,1,1)
-                    AND ROWNUM = 1
-            ) planned_work_center,
-            LOM_work_center       current_work_center,
-            enc_mark_cust_name    planned_cust_name,
-            LOM_id_batch          batch_id,
-            LOM_sec1              thick,
-            LOM_sec2              width,
-            LOM_idia              idia,
-            LOM_length            length,
-            LOM_ms_gross_cal      net_wt,
-            LOM_ms_gross_actl     gross_wt,
-            LOM_id_order_cus      cust_order,
-            LOM_id_ord_item_cus   cust_item,
-            nvl(round((sysdate - LOM_ts_creation), 0), 0) age_days,
-            enc_id_order,
-            enc_no_item,
-            enc_order_type,
-            enc_sec1_min          so_thick,
-            enc_odia              so_odia,
-            enc_idia              so_idia,
-            enc_length_min        so_length,
-            '' so_od_tolerance,
-            '' so_thick_tolerance,
-            '' so_length_tolerance,
-            (
-                SELECT
-                    grade
-                FROM
-                    v_ympct_tub_matl
-                WHERE
-                    mandt = '600'
-                    AND matnr = enc_no_matnr
-                    AND ROWNUM = 1
-            ) so_grade,
-            LOM_tdc_actl          actual_tdc,
-            LOM_cd_prod           prod_cd,
-            LOM_cd_qlty_actl      qlty,
-            LOM_planned_proc      planned_route,
-            nvl(a.LOM_no_matnr, enc_no_matnr) fg_material_no,
-            (
-                SELECT
-                    maktx
-                FROM
-                    v_makt
-                WHERE
-                    mandt = '600'
-                    AND matnr = nvl(a.LOM_no_matnr, enc_no_matnr)
-                    AND ROWNUM = 1
-            ) fg_material_desc,
-            LOM_ms_gross_cal      unrestricted_stock,
-            enc_print_spec        material_group,
-            nvl(eic_no_cast, LOM_no_cast) cast_no,
-            LOM_no_pieces         no_of_pieces,
-            nvl(LOM_uom, 'Ton') uom,
-            LOM_cd_prev_proc      prev_proc,
-            LOM_cd_curr_proc      curr_proc,
-            LOM_cd_next_proc      next_proc,
-            LOM_cd_status         status,
-            (
-              SELECT TRUNC(SYSDATE - STB_TIMESTAMP)
-              FROM V_STATUS_BKUP x
-              WHERE STB_ID_COIL = a.LOM_ID_BATCH
-              AND STB_NEW_STATUS = a.LOM_CD_STATUS
-              AND STB_TIMESTAMP = (SELECT MAX(STB_TIMESTAMP) FROM V_STATUS_BKUP WHERE STB_ID_COIL=x.STB_ID_COIL AND STB_NEW_STATUS=x.STB_NEW_STATUS )
-              )  STATUSAGE,
-            LOM_id_par_coil_no    parent_batch,
-            LOM_id_first_par      mother_batch,
-            nvl(round((sysdate - eic_dt_loading), 0), 0) mother_batch_age,
-            eic_ms_gross_actl     mother_batch_wt,
-            eic_no_matnr          rm_matrl_no,
-            (
-                SELECT
-                    maktx
-                FROM
-                    v_makt
-                WHERE
-                    mandt = '600'
-                    AND matnr = eic_no_matnr
-                    AND ROWNUM = 1
-            ) rm_material_desc,
-            nvl(LOM_passed_proc, ' ') actual_route,
-            (
-                SELECT DISTINCT
-                    epl_epa_desc
-                FROM
-                    v_epa_proc_line
-                WHERE
-                    epl_active_plant_fl = 'A'
-                    AND epl_cd_epa = LOM_cd_epa
-                    AND ROWNUM = 1
-            ) plant_nm,
-            decode(LOM_cd_st_actl, '1', 'Prime', 2, 'Partial Scrapped',
-                   '3', 'Downgraded', '5', 'Additional Process', '8',
-                   'Diverted', '9', 'Scrapped', 'Prime') processing_flag,
-                   (SELECT DISTINCT CD_DESC FROM V_CODES WHERE  CD_TYPE = 'E0001' AND  CD_VALUE = LOM_CD_STATUS AND ROWNUM = 1) STATUS_DESC,
-                   enc_no_matnr fg_mat_no,
-                    (
-                        SELECT
-                            maktx
-                        FROM
-                            v_makt
-                        WHERE
-                            mandt = '600'
-                            AND matnr = enc_no_matnr
-                            AND ROWNUM = 1
-                    ) fg_mat_desc
-        FROM
-            v_LDP_PRODN          a,
-            v_input_coil         b,
-            v_end_cust_ord_epa   c
-        WHERE
-            LOM_cd_epa = eic_cd_epa (+)
-            AND LOM_id_first_par = eic_id_coil (+)
-            AND a.LOM_cd_epa = c.enc_cd_epa (+)
-            AND a.LOM_id_order_cus = c.enc_id_order (+)
-            AND a.LOM_id_ord_item_cus = c.enc_no_item (+)
-            AND LOM_cd_epa =  ${plant} `;
-
-    let binds = {
-      Plant: plant,
-    };
-
-    if (DespFromDate && DespFromDate !== "" && DespToDate !== "") {
-      sql += ` And trunc(LOM_DT_LOADING) BETWEEN :DespFromDate AND :DespToDate`;
-      binds["DespFromDate"] = DespFromDate;
-      binds["DespToDate"] = DespToDate;
-    }
-
-    if (ProdFromDate && ProdFromDate !== "" && ProdToDate !== "") {
-      sql += ` And trunc(LOM_TS_CREATION) BETWEEN :ProdFromDate AND :ProdToDate `;
-      binds["ProdFromDate"] = ProdFromDate;
-      binds["ProdToDate"] = ProdToDate;
-    }
-
-    if (item && item !== "") {
-      sql += ` And LOM_ID_ORD_ITEM_CUS=NVL(:item, LOM_ID_ORD_ITEM_CUS)`;
-      binds["item"] = item;
-    }
-
-    var chkwidthTo = widthTo ? widthTo : widthFrm;
-    var chkwidthFrm = widthFrm ? widthFrm : widthTo;
-    if (chkwidthFrm && chkwidthFrm !== "" && chkwidthTo !== "") {
-      sql += ` And LOM_SEC2 BETWEEN NVL(:widthFrm, LOM_SEC2) And NVL(:widthTo, LOM_SEC2)`;
-      binds["widthFrm"] = chkwidthFrm;
-      binds["widthTo"] = chkwidthTo;
-    }
-
-    if (status && status !== "") {
-      sql += ` And LOM_CD_STATUS =nvl(:Status,LOM_CD_STATUS)`;
-      binds["Status"] = status;
-    }
-
-    var chkThickTo = thikTo ? thikTo : thikFrm;
-    var chkThickFrm = thikFrm ? thikFrm : thikTo;
-    if (chkThickFrm && chkThickFrm !== "" && chkThickTo !== "") {
-      sql += ` And LOM_SEC1 BETWEEN NVL(:thikFrm, LOM_SEC1) And NVL(:thikTo, LOM_SEC1)`;
-      binds["thikFrm"] = chkThickFrm;
-      binds["thikTo"] = chkThickTo;
-    }
-
-    if (batch && batch !== "") {
-      sql += ` And LOM_ID_BATCH = NVL(:batch,LOM_ID_BATCH)`;
-      binds["batch"] = batch;
-    }
-
-    if (customer && customer !== undefined) {
-      sql += ` and ( LOM_cd_epa||LOM_ID_ORDER_CUS ||LOM_ID_ORD_ITEM_CUS) in (select enc_cd_epa||enc_id_order||enc_no_item from v_End_cust_ord_Epa where 
-          enc_cd_epa=a.LOM_cd_epa And enc_id_order = a.LOM_ID_ORDER_CUS And enc_no_item =a.LOM_ID_ORD_ITEM_CUS And enc_cD_END_CUST =:Customer) `;
-      binds["Customer"] = customer;
-    }
-
-    if (materialNo && materialNo !== "") {
-      sql += ` And LOM_NO_MATNR=NVL(LPAD(:materialNo, 18,'0'),LOM_NO_MATNR)`;
-      binds["materialNo"] = materialNo;
-    }
-
-    if (mbatch && mbatch !== "") {
-      sql += ` And LOM_ID_FIRST_PAR = NVL(:mbatch, LOM_ID_FIRST_PAR) `;
-      binds["mbatch"] = mbatch;
-    } else {
-      sql += ` And LOM_CD_STATUS Not Like '%L' AND LOM_CD_STATUS NOT LIKE '%U' `;
-    }
-
-    if (order && order !== "") {
-      sql += ` And LOM_ID_ORDER_CUS=NVL(:ordr, LOM_ID_ORDER_CUS)`;
-      binds["ordr"] = order;
-    }
-
-    if (orderType && orderType !== undefined) {
-      sql += ` and ( LOM_cd_epa||LOM_ID_ORDER_CUS ||LOM_ID_ORD_ITEM_CUS) in (select enc_cd_epa||enc_id_order||enc_no_item from v_End_cust_ord_Epa where 
-       enc_cd_epa=a.LOM_cd_epa And enc_id_order = a.LOM_ID_ORDER_CUS And enc_no_item =a.LOM_ID_ORD_ITEM_CUS And ENC_ORDER_TYPE =:orderType) `;
-      binds["orderType"] = orderType;
-    }
-
-    if (process && process !== "") {
-      sql += ` And LOM_CD_CURR_PROC =NVL(:process, LOM_CD_CURR_PROC)`;
-      binds["process"] = process;
-    }
-
-    // if (stockType && stockType !== undefined && stockType == 'RM') {
-    //   sql += ` AND (LOM_CD_STATUS IN ('VF','VM','MC') OR LOM_CD_STATUS Like '%M' OR LOM_CD_STATUS Like 'V%')
-    //   AND LOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)
-    //   `;
-    // }
-    if (stockType && stockType !== undefined && stockType == "RM") {
-      sql += ` AND (LOM_CD_STATUS IN ( SELECT CD_DESC FROM V_CODES
-        WHERE CD_TYPE='TB040'
-        AND CD_DESC1='RM STOCK'))
-      AND LOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)
-      `;
-    }
-
-    // if (stockType && stockType !== undefined && stockType == 'FG') {
-    //   sql += ` AND LOM_CD_STATUS IN ('WB' , 'WS' , 'WT' ,'WC','WD','KB','KF','WF') AND LOM_CD_QLTY_ACTL != 'SCRP'
-    //   AND LOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)
-    //   `;
-    // }
-    if (stockType && stockType !== undefined && stockType == "FG") {
-      sql += ` AND LOM_CD_STATUS IN (SELECT CD_DESC FROM V_CODES
-        WHERE CD_TYPE='TB040'
-        AND CD_DESC1='FG STOCK') AND LOM_CD_QLTY_ACTL <> 'SCRP'
-      AND LOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)
-      `;
-    }
-
-    if (stockType && stockType !== undefined && stockType == "SCRAP") {
-      sql += `AND LOM_CD_ST_ACTL = '9' `;
-      // sql += ` AND LOM_CD_QLTY_ACTL = 'SCRP'
-      // AND LOM_NO_MATNR NOT IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)`;
-    }
-
-    // if (stockType && stockType !== undefined && stockType == 'WIP') {
-    //   sql += ` AND
-    //   ((LOM_CD_STATUS NOT IN ('VF','VM','MC','WB','WS','WT','WC','WL','WD','KB','KF','WF') AND LOM_CD_STATUS NOT Like '%M' AND LOM_CD_STATUS NOT Like 'V%'  AND LOM_CD_QLTY_ACTL != 'SCRP')
-    //   or (LOM_NO_MATNR IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)))`;
-    // }
-    if (stockType && stockType !== undefined && stockType == "WIP") {
-      sql += ` AND 
-      ((LOM_CD_STATUS IN ( SELECT CD_DESC FROM V_CODES
-        WHERE CD_TYPE='TB040'
-        AND CD_DESC1 NOT in ('RM STOCK','FG STOCK'))   AND LOM_CD_QLTY_ACTL <> 'SCRP')
-      or (LOM_NO_MATNR IN(select cd_value from V_CODES where cd_type = 'TB019' and cd_desc1 =LOM_cd_epa)))`;
-    }
-
-    sql += `)
-        ORDER by plant,batch_id`;
-    console.error("inventory", sql);
-    console.error("binds", binds);
-    return await query.executeQuery(sql, binds);
-  } catch (error) {
-    // console.log(error);
-    throw new Error.InternalServerErrorMsg(error);
-  }
-};
-
-export const getMergedInv = async (
-  fromDt: any,
-  mergedType: any,
-  plant: any,
-  toDt: any,
-  batchMerg: any,
-  mergedBatchMerg: any
-) => {
-  try {
-    var sql = `SELECT ERD_CD_EPA PLANT, ERD_ID_BATCH SLIT_COIL,ERD_BATCH_QTY SLIT_COIL_QTY, ERD_ID_NEW_BATCH MERGED_BATCH , ERD_NEW_BATCH_QTY MERGED_BATCH_QTY
-        ,ERD_NO_MATNR FG_MATERIAL_NO , (SELECT MAKTX FROM V_MAKT WHERE MANDT='600' AND MATNR=A.ERD_NO_MATNR AND ROWNUM=1)FG_MATERIAL_DESC
-        ,TO_CHAR(ERD_REC_CRT_DT) MERGE_DT ,ERD_REC_CRT_UID MERGED_BY_USER , decode(ERD_MOV_IND , 'B','COIL','F','FG','S','SFG','') MERGED_TYPE
-        FROM V_EPA_RANDOM_DTLS A
-        WHERE ERD_CD_EPA=:plant
-        --AND ERD_REC_STATUS = NVL('A', ERD_REC_STATUS)
-        `;
-    const binds = {
-      plant: plant,
-    };
-
-    if (mergedType && mergedType != "") {
-      if (mergedType == "ALL") {
-        sql += ` AND ERD_MOV_IND IN ('B' , 'F' , 'S')`;
-      } else {
-        sql += ` AND ERD_MOV_IND = NVL(:mergedType, ERD_REC_STATUS)`;
-        binds["mergedType"] = mergedType;
-      }
-    } else {
-      sql += ` AND ERD_MOV_IND = NVL('B', ERD_REC_STATUS)`;
-    }
-
-    if (batchMerg && batchMerg != "") {
-      sql += ` AND ERD_ID_BATCH = :batchMerg`;
-      binds["batchMerg"] = batchMerg;
-    }
-
-    if (mergedBatchMerg && mergedBatchMerg != "") {
-      sql += ` AND ERD_ID_NEW_BATCH = :mergedBatchMerg`;
-      binds["mergedBatchMerg"] = mergedBatchMerg;
-    }
-
-    if (fromDt && toDt && fromDt != "" && toDt != "") {
-      sql += ` AND trunc(ERD_REC_CRT_DT) BETWEEN :fromDt AND :toDt `;
-      binds["fromDt"] = fromDt;
-      binds["toDt"] = toDt;
-    }
-
-    sql += ` ORDER BY ERD_ID_NEW_BATCH , ERD_ID_BATCH , ERD_MOV_IND`;
-
-    return await query.executeQuery(sql, binds);
-  } catch (error) {
     throw new Error.InternalServerErrorMsg(error);
   }
 };

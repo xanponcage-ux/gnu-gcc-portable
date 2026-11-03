@@ -435,7 +435,7 @@ export const getFillData = async (data: any) => {
   try {
     const binds: any = { status: data.STATUS };
     let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,lom_ms_piece_actl TBP_WEIGHT,TBP_ASL_NO_80,
-         TBP_NO_MATNR,TBP_HEAT_NO, TBP_ID_ORDER_NO ORDER_NO, TBP_ITEM_NO ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
+         LOM_NO_MATNR TBP_NO_MATNR,LOM_NO_CAST TBP_HEAT_NO, LOM_ID_ORDER_CUS ORDER_NO, LOM_ID_ORD_ITEM_CUS ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
          (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'C') as nxtproc from dual) NEXT_PROC,
          (select CASE WHEN REGEXP_LIKE(A.TBP_DIA_END_10, '^[0-9]+$') THEN TO_NUMBER(A.TBP_DIA_END_10) ELSE NULL END FROM V_BARE_PDO A
                 where A.TBP_BATCH_NO = LOM_ID_BATCH
@@ -446,10 +446,8 @@ export const getFillData = async (data: any) => {
                       AND x.TBP_CD_PROC = 'A'
                   )
                 and rownum = 1) TBP_DIA_END_10, LOM_ID_PAR_COIL_NO
-            FROM V_BARE_PDO, V_END_CUST_ORD_EPA, V_LDP_PRODN
-           WHERE TBP_ID_ORDER_NO = ENC_ID_ORDER
-             AND TBP_ITEM_NO = ENC_NO_ITEM
-             AND TBP_BATCH_NO = LOM_ID_BATCH
+            FROM V_BARE_PDO b, V_END_CUST_ORD_EPA, V_LDP_PRODN
+           WHERE TBP_BATCH_NO = LOM_ID_BATCH
              AND TBP_PLANT_CD = LOM_CD_EPA
              AND LOM_CD_EPA = ENC_CD_EPA
              AND LOM_ID_ORDER_CUS = ENC_ID_ORDER
@@ -457,17 +455,17 @@ export const getFillData = async (data: any) => {
              AND LOM_CD_STATUS = :status
              AND TBP_BATCH_PROC_NO = (
                SELECT MAX(t2.TBP_BATCH_PROC_NO) FROM V_BARE_PDO t2
-               WHERE TBP_BATCH_NO = t2.TBP_BATCH_NO
-                 AND t2.TBP_CD_PROC = '1'
+               WHERE t2.TBP_BATCH_NO = b.TBP_BATCH_NO
+                 AND t2.TBP_CD_PROC = '8'
              )`;
     // Apply filters: prefer PIPE_NO, then RM_BATCH, then ORDER/ITEM (LD08 behaviour)
     if (data.PIPE_NO && data.PIPE_NO !== "") {
       binds.pipeNo = data.PIPE_NO;
-      sql += ` AND TBP_BATCH_NO = :pipeNo AND TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_BATCH_NO = :pipeNo AND TBP_CD_PROC = '8'`;
     } else if (data.RM_BATCH && data.RM_BATCH !== "") {
       binds.rmBatch = data.RM_BATCH;
       sql += ` AND TBP_BATCH_NO IN (select t.lom_id_batch from v_ldp_prodn t where t.lom_cd_status=:status
-                     AND t.lom_id_par_coil_no = :rmBatch) AND TBP_CD_PROC = '1'`;
+                     AND t.lom_id_par_coil_no = :rmBatch) AND TBP_CD_PROC = '8'`;
     } else if (
       data.ORDNO &&
       data.ORDNO !== "" &&
@@ -476,7 +474,7 @@ export const getFillData = async (data: any) => {
     ) {
       binds.orderNo = data.ORDNO;
       binds.orderItem = data.ORDITEM;
-      sql += ` AND TBP_ID_ORDER_NO = :orderNo AND TBP_ITEM_NO = :orderItem AND TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_ID_ORDER_NO = :orderNo AND TBP_ITEM_NO = :orderItem AND TBP_CD_PROC = '8'`;
     } else {
       sql += ` AND 1=0`;
     }
@@ -504,4 +502,3 @@ export const getTataDate = async (prodEndDt: any) => {
     throw new Error.InternalServerErrorMsg(error);
   }
 };
-

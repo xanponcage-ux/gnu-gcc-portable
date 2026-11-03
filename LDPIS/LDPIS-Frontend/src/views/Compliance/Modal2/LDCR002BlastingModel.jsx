@@ -372,7 +372,7 @@ const displayValue = (value, fallback = "-") => {
       <TableCell rowSpan={2} sx={{ width: '3%' }}>SR.NO.</TableCell>
       <TableCell rowSpan={2} sx={{ width: '4%' }}>PIPE NO</TableCell>
       <TableCell rowSpan={2} sx={{ width: '4%' }}>ASL NO</TableCell>
-      <TableCell colSpan={2} sx={{ width: '8%' }}>PIPE TEMP. BEFORE</TableCell>
+      <TableCell colSpan={2} sx={{ width: '8%' }}>PIPE TEMP. BEFORE (°C)</TableCell>
       <TableCell rowSpan={2} sx={{ width: '3%' }}>DWELL TIME (Sec.)</TableCell> {/* Decreased */}
       <TableCell colSpan={2} sx={{ width: '6%' }}>pH of PIPE SURFACE</TableCell>
       <TableCell rowSpan={2} sx={{ width: '5%' }}>
@@ -388,7 +388,7 @@ const displayValue = (value, fallback = "-") => {
       <TableCell rowSpan={2} sx={{ width: '4%' }}>Dew Point(°C)</TableCell>
       <TableCell rowSpan={2} sx={{ width: '4%' }}>Pipe Surf. Temp(°C)</TableCell>
       <TableCell rowSpan={2} sx={{ width: '5%' }}>Degree Of Cleanliness</TableCell>
-      <TableCell rowSpan={2} sx={{ width: '4%' }}>Roughness(µm-Rz)</TableCell> {/* Decreased */}
+      <TableCell rowSpan={2} sx={{ width: '4%' }}>Roughness<br />(µm-Rz)</TableCell> {/* Decreased */}
       <TableCell colSpan={2} sx={{ width: '6%' }}>Degree Of Dust</TableCell>
       <TableCell rowSpan={2} sx={{ width: '4%' }}>Salt Cont.(µg/cm2)</TableCell>
       <TableCell rowSpan={2} sx={{ width: '8%' }}>Remarks</TableCell> {/* Increased */}
@@ -396,7 +396,7 @@ const displayValue = (value, fallback = "-") => {
 
     {/* HEADER ROW 2 - These cells will automatically divide the width of their respective colSpan parents */}
     <TableRow>
-      <TableCell>BLASTING(°C)</TableCell>
+      <TableCell>BLASTING</TableCell>
       <TableCell>ACID WASH</TableCell>
       <TableCell>Before Water Wash</TableCell>
       <TableCell>After Water Wash</TableCell>
@@ -411,7 +411,7 @@ const displayValue = (value, fallback = "-") => {
     {/* Spcified Row */}
     <TableRow>
       {/* S.NO */}
-      <TableCell>Specified</TableCell>
+      <TableCell sx={{ fontWeight: "bold" }}>Specified</TableCell>
 
       {/* PIPE NO */}
       <TableCell />
@@ -505,7 +505,7 @@ const displayValue = (value, fallback = "-") => {
     {/* Requirement Row */}
     <TableRow>
       {/* S.NO */}
-      <TableCell>Requirement</TableCell>
+      <TableCell sx={{ fontWeight: "bold" }}>Requirement</TableCell>
 
       {/* PIPE NO */}
       <TableCell />
@@ -584,7 +584,7 @@ const displayValue = (value, fallback = "-") => {
 
       {/* ROUGHNESS */}
       <TableCell>
-        {blastingData?.[0]?.ROUGHNESS_MAX}*{" "}
+        {blastingData?.[0]?.ROUGHNESS_MAX}{" "}
       </TableCell>
 
       {/* DUST RATING */}
@@ -694,7 +694,7 @@ const displayValue = (value, fallback = "-") => {
 
           {/* SALT CONTENT */}
           <TableCell>
-            {displayValue(Number(row.TBP_SALT_CONTA_100).toFixed(1))}
+            {displayValue(Number(row.TBP_SALT_CONTA_100).toFixed(0))}
           </TableCell>
 
           {/* REMARK */}

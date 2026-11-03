@@ -82,6 +82,14 @@ export default function LDLTS005ED(props) {
     PRT_REPAIR_WINO    :"",
   });
 
+  const peelShiftOptions = [
+  { value: "A", label: "A" },
+  { value: "B", label: "B" },
+  { value: "C", label: "C" },
+  { value: "D", label: "D" },
+  { value: "N", label: "N" },
+];
+
   
 
   useEffect(() => {
@@ -249,6 +257,15 @@ const handleDisplay = async (ordId, itemNo) => {
   const seconds = String(dt.getSeconds()).padStart(2, "0");
 
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
+const formatDateForInput = (value) => {
+  if (!value) return "";
+
+  const [datePart] = value.split(" ");
+  const [day, month, year] = datePart.split("/");
+
+  return `${year}-${month}-${day}`;
 };
 
   return (
@@ -600,55 +617,68 @@ const handleDisplay = async (ordId, itemNo) => {
                               }}
                               style={{ marginLeft: "8px" }}
                             /> */}
-                                                        <MDInput
-                                                          type="datetime-local"
-                                                          fullWidth
-                                                          value={formatDateTimeLocal(holDetData?.PRT_PEEL_DATE)}
-onChange={(e) => {
-  const formattedDate = formatForBackend(e.target.value);
+<MDInput
+  type="date"
+  fullWidth
+  value={
+    holDetData?.PRT_PEEL_DATE
+      ? (() => {
+          const parts = holDetData.PRT_PEEL_DATE.split(" ")[0].split("/");
+          return `${parts[2]}-${parts[1]}-${parts[0]}`; // yyyy-MM-dd
+        })()
+      : ""
+  }
+  onChange={(e) => {
+    const value = e.target.value; // yyyy-MM-dd
 
-  setHolDetData((prev) => ({
-    ...prev,
-    PRT_PEEL_DATE: formattedDate,
-  }));
-}}
+    if (value) {
+      const [year, month, day] = value.split("-");
 
-                                                        />
+      setHolDetData((prev) => ({
+        ...prev,
+        PRT_PEEL_DATE: `${day}/${month}/${year}`,
+      }));
+    }
+  }}
+/>
                           </Grid>
                         </Grid>
                       </Grid>
-                        <Grid item xs={12} md={3}>
-                         <Grid container alignItems="center" spacing={1}>
-                           <Grid item xs={5}>
-                            <MDTypography
-                              fontWeight="regular"
-                              fontSize="small"
-                              textTransform="capitalize"
-                              variant="h6"
-                              color={"dark"}
-                              style={{ marginTop: "8px", fontSize: "0.9rem" }}
-                              noWrap
-                            >
-                              Peel Shift
-                            </MDTypography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <MDInput
-                              fullWidth
-                              id="PRT_PEEL_SHIFT"
-                              value={holDetData?.PRT_PEEL_SHIFT}
-                              disabled={false}
-                              onChange={(e) => {
-                                setHolDetData({
-                                  ...holDetData,
-                                  PRT_PEEL_SHIFT: e.target.value?.toUpperCase(),
-                                });
-                              }}
-                              style={{ marginLeft: "8px" }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Grid>
+<Grid item xs={12} md={3}>
+  <Grid container alignItems="center" spacing={1}>
+    <Grid item xs={5}>
+      <MDTypography
+        fontWeight="regular"
+        fontSize="small"
+        textTransform="capitalize"
+        variant="h6"
+        color={"dark"}
+        style={{ marginTop: "8px", fontSize: "0.9rem" }}
+        noWrap
+      >
+        Peel Shift
+      </MDTypography>
+    </Grid>
+
+    <Grid item xs={6}>
+      <ReactSelect
+        options={peelShiftOptions}
+        value={
+          peelShiftOptions.find(
+            (option) => option.value === holDetData?.PRT_PEEL_SHIFT
+          ) || null
+        }
+        onChange={(selectedOption) => {
+          setHolDetData((prev) => ({
+            ...prev,
+            PRT_PEEL_SHIFT: selectedOption?.value || "",
+          }));
+        }}
+        isDisabled={false}
+      />
+    </Grid>
+  </Grid>
+</Grid>
                                               <Grid item xs={12} md={6}>
                          <Grid container alignItems="center" spacing={1}>
                            <Grid item xs={3}>

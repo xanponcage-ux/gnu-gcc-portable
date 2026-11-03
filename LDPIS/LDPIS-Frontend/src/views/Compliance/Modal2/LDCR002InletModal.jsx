@@ -23,7 +23,8 @@ export default function DialogINLETModel(props) {
   const [inletdata, setInletData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  // const [maxWidth, setMaxWidth] = React.useState("md");
+    const [maxWidth, setMaxWidth] = React.useState("xl");
   const [loading, setLoading] = React.useState(false);
   const [initialLoad, setInitialLoad] = useState(false);
 

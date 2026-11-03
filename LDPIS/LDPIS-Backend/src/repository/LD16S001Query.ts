@@ -262,8 +262,10 @@ export const insertScrapTempData = async (data: any) => {
 
 export const insertTempData = async (data: any) => {
   try {
-    if (!String(data?.TBP_DFT_F1_160 ?? "").trim() ||
-        !String(data?.TBP_DFT_T1_160 ?? "").trim()) {
+    if (
+      !String(data?.TBP_DFT_F1_160 ?? "").trim() ||
+      !String(data?.TBP_DFT_T1_160 ?? "").trim()
+    ) {
       throw new TypeError("DFT F1 and DFT T1 are required");
     }
     const sql = `
@@ -472,8 +474,8 @@ export const deleteTempData = async (data: any) => {
 
 export const getFillData = async (data: any) => {
   try {
-    let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,TBP_NO_MATNR,TBP_HEAT_NO,
-                TBP_ID_ORDER_NO ORDER_NO,LOM_MS_PIECE_ACTL,LOM_ID_PAR_COIL_NO, TBP_ITEM_NO ITEM,LOM_NO_CAST,LOM_WORK_CENTER, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
+    let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,LOM_NO_MATNR TBP_NO_MATNR,LOM_NO_CAST TBP_HEAT_NO,
+                LOM_ID_ORDER_CUS ORDER_NO,LOM_MS_PIECE_ACTL,LOM_ID_PAR_COIL_NO, LOM_ID_ORD_ITEM_CUS ITEM,LOM_NO_CAST,LOM_WORK_CENTER, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
                (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'D') as nxtproc from dual) NEXT_PROC,
                (select D.TBP_ASL_NO_80 FROM V_BARE_PDO D
                       where D.TBP_BATCH_NO = LOM_ID_BATCH
@@ -507,10 +509,8 @@ export const getFillData = async (data: any) => {
                (SELECT GEOMETRY
                   FROM V_YMPCT_TUB_MATL
                  WHERE MANDT = '600' AND MATNR = LOM_NO_MATNR) GEO
-                   FROM V_BARE_PDO, V_END_CUST_ORD_EPA, V_LDP_PRODN
-                  WHERE TBP_ID_ORDER_NO = ENC_ID_ORDER
-                    AND TBP_ITEM_NO = ENC_NO_ITEM
-                    AND TBP_BATCH_NO = LOM_ID_BATCH
+                   FROM V_BARE_PDO b, V_END_CUST_ORD_EPA, V_LDP_PRODN
+                  WHERE  TBP_BATCH_NO = LOM_ID_BATCH
                     AND TBP_PLANT_CD = LOM_CD_EPA
                     AND LOM_CD_EPA = ENC_CD_EPA
                     AND LOM_ID_ORDER_CUS = ENC_ID_ORDER
@@ -518,23 +518,23 @@ export const getFillData = async (data: any) => {
                     AND LOM_CD_STATUS = '${data.STATUS}'
                     AND TBP_BATCH_PROC_NO = (
                       SELECT MAX(t1.TBP_BATCH_PROC_NO) FROM V_BARE_PDO t1
-                      WHERE TBP_BATCH_NO = t1.TBP_BATCH_NO
-                        AND t1.TBP_CD_PROC = '1'
+                      WHERE t1.TBP_BATCH_NO = b.TBP_BATCH_NO
+                        AND t1.TBP_CD_PROC = '8'
                     )`;
 
     // Apply filters: prefer PIPE_NO, then RM_BATCH, then ORDER/ITEM (LD08 behaviour)
     if (data.PIPE_NO && data.PIPE_NO !== "") {
-      sql += ` AND TBP_BATCH_NO = '${data.PIPE_NO}' AND  TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_BATCH_NO = '${data.PIPE_NO}' AND  TBP_CD_PROC = '8'`;
     } else if (data.RM_BATCH && data.RM_BATCH !== "") {
       sql += ` AND TBP_BATCH_NO IN (select t.lom_id_batch from v_ldp_prodn t where t.lom_cd_status='${data.STATUS}'
-                     AND t.lom_id_par_coil_no = '${data.RM_BATCH}') AND TBP_CD_PROC = '1'`;
+                     AND t.lom_id_par_coil_no = '${data.RM_BATCH}') AND TBP_CD_PROC = '8'`;
     } else if (
       data.ORDNO &&
       data.ORDNO !== "" &&
       data.ORDITEM &&
       data.ORDITEM !== ""
     ) {
-      sql += ` AND TBP_ID_ORDER_NO = '${data.ORDNO}' AND TBP_ITEM_NO = '${data.ORDITEM}' AND TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_ID_ORDER_NO = '${data.ORDNO}' AND TBP_ITEM_NO = '${data.ORDITEM}' AND TBP_CD_PROC = '8'`;
     } else {
       // No filter provided: return empty result set to avoid large queries
       sql += ` AND 1=0`;

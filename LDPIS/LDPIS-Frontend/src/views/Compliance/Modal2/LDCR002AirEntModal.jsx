@@ -48,7 +48,8 @@ export default function MaxWidthDialogAir(props) {
   const [getAIRdata, setgetAIRdata] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  // const [maxWidth, setMaxWidth] = React.useState("md");
+    const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -83,12 +84,12 @@ export default function MaxWidthDialogAir(props) {
 
         const data = {
           plant: props?.plant?.value ? props.plant.value : "",
-          orderNo: props.orderNo ? props.orderNo : "",
-          item: props.item ? props.item : "",
-          matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          orderNo: props?.orderNo ? props?.orderNo : "",
+          item: props?.item ? props?.item : "",
+          matno: props?.matno ? props?.matno : "",
+          shift: props?.shift ? props?.shift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
-          crdate: props.crdate
+          crdate: props?.crdate
           ? props.crdate
               .toLocaleDateString("en-GB", {
                 day: "2-digit",
@@ -98,8 +99,8 @@ export default function MaxWidthDialogAir(props) {
               .replace(/ /g, "-")
               .replace("Sept", "Sep")
           : "",  
-          heatno: props.heatno ? props.heatno : "",
-          pipeno: props.pipeno ? props.pipeno : "",
+          heatno: props?.heatno ? props?.heatno : "",
+          pipeno: props?.pipeno ? props?.pipeno : "",
           // rmno: props.rmno ? props.rmno : "",  //
         };
 
@@ -189,6 +190,11 @@ export default function MaxWidthDialogAir(props) {
   
     const rowsPerPage = 15;
     const numPages = Math.max(1, Math.ceil(getAIRdata?.length / rowsPerPage));
+
+      const formattedPrintDate = props?.printdate
+  ?.split(".")
+  ?.reverse()
+  ?.join("");
 
 //   const qrValue = () => {
 //     var val = "";
@@ -334,12 +340,17 @@ export default function MaxWidthDialogAir(props) {
                               <p>Date of Coating   </p>
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getAIRdata?.length > 0  ? `${getAIRdata[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getAIRdata?.length > 0  ? `${getAIRdata[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>
+  : {getAIRdata?.length > 0
+      ? `AETR/${formattedPrintDate}-${pageIndex + 1}`
+      : ' '}
+</p>
                               {/* <p>: {getAIRdata?.length > 0  ? getAIRdata[0].DATE_SHIFTQ : ' '} </p> */}
                               <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getAIRdata?.length > 0  ? getAIRdata[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
-                              <p>: {getAIRdata?.length > 0  ? getAIRdata[0].DATE_OF_COATING : ' '} </p>
+                              <p>: {getAIRdata?.length > 0  ? getAIRdata[0].DATE_SHIFT : ' '} </p>
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
                     

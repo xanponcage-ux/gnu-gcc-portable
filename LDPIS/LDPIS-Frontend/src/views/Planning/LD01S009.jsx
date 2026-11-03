@@ -593,6 +593,12 @@ export default function LD01S009() {
       headerFilterPlaceholder: "search...",
     },
     {
+      title: "FG Material",
+      field: "FG_MAT",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
       title: "Ord Qnty",
       field: "ORD_QNTY",
       formatter: function (cell, formatterParams) {
@@ -715,12 +721,7 @@ export default function LD01S009() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-    {
-      title: "FG Material",
-      field: "FG_MAT",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
+    
     {
       title: "FG Desc",
       field: "FG_DESC",
@@ -803,6 +804,24 @@ export default function LD01S009() {
       cellClick: function (e, cell) {
         setSelectedBatchVal(cell.getRow().getData().BATCH1);
       },
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+     {
+      title: "Order",
+      field: "ORD",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Item",
+      field: "ITEM",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "FG Mat",
+      field: "ENC_NO_MATNR",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -901,18 +920,7 @@ export default function LD01S009() {
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
     },
-    {
-      title: "Order",
-      field: "ORD",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Item",
-      field: "ITEM",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
+   
     {
       title: "Mill No",
       field: "MILL_NO",

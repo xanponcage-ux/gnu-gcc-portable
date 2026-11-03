@@ -464,7 +464,7 @@ export const getFillData = async (data: any) => {
     // Build base SQL with bind placeholders to avoid SQL injection and ORA-01722 (invalid number)
     let sql = `SELECT b.tbp_batch_no, l.lom_sec2 AS tbp_pipe_od_10,
        l.lom_sec1 AS tbp_pipe_thk_10, l.lom_length AS tbp_pipe_lng_10,
-       b.tbp_no_matnr, b.tbp_heat_no,
+       l.LOM_NO_MATNR tbp_no_matnr,l.LOM_NO_CAST tbp_heat_no,
        TO_CHAR(
 (
 SELECT ldpdba.f_get_coat_wt(
@@ -632,7 +632,7 @@ FROM dual
 ),
 'FM9999999990.000'
 ) AS coat_wt,
-       b.tbp_id_order_no AS order_no, b.tbp_item_no AS item, b.tbp_rbt_10,
+       l.LOM_ID_ORDER_CUS AS order_no, l.LOM_ID_ORD_ITEM_CUS AS item, b.tbp_rbt_10,
        e.enc_cust_name AS cust_name, l.lom_planned_proc AS plan_proc,
        (SELECT f_get_nextproc (l.lom_planned_proc,
                                l.lom_passed_proc,
@@ -711,7 +711,7 @@ FROM dual
    AND b.tbp_batch_proc_no =
             (SELECT MAX (t1.tbp_batch_proc_no)
                FROM v_bare_pdo t1
-              WHERE t1.tbp_batch_no = b.tbp_batch_no AND t1.tbp_cd_proc = '1')`;
+              WHERE t1.tbp_batch_no = b.tbp_batch_no AND t1.tbp_cd_proc = '8')`;
 
     // Prepare binds and coerce coating thickness values to numbers (default 0 if not parseable)
     const safeNumber = (v: any) => {
@@ -738,10 +738,10 @@ FROM dual
 
     // Apply filters: prefer PIPE_NO, then RM_BATCH, then ORDER/ITEM (LD08 behaviour)
     if (data.PIPE_NO && data.PIPE_NO !== "") {
-      sql += ` AND b.TBP_BATCH_NO = :pipe_no AND  b.TBP_CD_PROC = '1'`;
+      sql += ` AND b.TBP_BATCH_NO = :pipe_no AND  b.TBP_CD_PROC = '8'`;
       binds.pipe_no = data.PIPE_NO;
     } else if (data.RM_BATCH && data.RM_BATCH !== "") {
-      sql += ` AND b.TBP_BATCH_NO IN (select t.lom_id_batch from v_ldp_prodn t where t.lom_cd_status= :status and t.lom_id_par_coil_no = :rm_batch) AND b.TBP_CD_PROC = '1'`;
+      sql += ` AND b.TBP_BATCH_NO IN (select t.lom_id_batch from v_ldp_prodn t where t.lom_cd_status= :status and t.lom_id_par_coil_no = :rm_batch) AND b.TBP_CD_PROC = '8'`;
       binds.rm_batch = data.RM_BATCH;
       // status bind already present
     } else if (
@@ -750,7 +750,7 @@ FROM dual
       data.ORDITEM &&
       data.ORDITEM !== ""
     ) {
-      sql += ` AND b.TBP_ID_ORDER_NO = :ordno AND b.TBP_ITEM_NO = :orditem  AND b.TBP_CD_PROC='1'`;
+      sql += ` AND b.TBP_ID_ORDER_NO = :ordno AND b.TBP_ITEM_NO = :orditem  AND b.TBP_CD_PROC='8'`;
       binds.ordno = data.ORDNO;
       binds.orditem = data.ORDITEM;
     }

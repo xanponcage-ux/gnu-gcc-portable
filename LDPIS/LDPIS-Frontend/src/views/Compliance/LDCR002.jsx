@@ -77,6 +77,7 @@ export default function LDCR002() {
 const [selectedpipelist, setselectedpipelist] = React.useState([]);
 
   const [reviewedBy, setReviewedBy] = useState("");
+  const [reptypepipeValue, setreptypepipeValue] = useState("");
 
   const [GainA, setGainA] = useState("");
   const [GainM, setGainM] = useState("");
@@ -203,7 +204,11 @@ const hideCoatingFields =
   selectedrepType?.value === "2D" ||
   selectedrepType?.value === "2E" ||
   selectedrepType?.value === "2X" ||
-    selectedrepType?.value === "2B"  ;
+    selectedrepType?.value === "2B" ||
+     selectedrepType?.value === "2L" ;
+
+      const hidefinalinspectionFields =
+  selectedrepType?.value === "2L" ;
 
   console.log(hideCoatingFields);
   console.log(hidePrintingFields);
@@ -244,63 +249,89 @@ const hideCoatingFields =
   };
 
   // Define GetPipenomulti to accept accessToken
-    const GetPipenomulti = (accessToken) => {
-      return new Promise((resolve) => {
-        var defaultOptions = {
-          headers: {
-            Authorization: "Bearer " + accessToken,
-          },
-        };
-
-        var url = "api/LDCR002/GetPipenomulti";
-        let roundsectionmillValue = "4";
-
-        let data = {
-          plant: '0780',
-          crdate: crdate
-            ? crdate.toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            }).replace(/ /g, "-").replace("Sept", "Sep")
-            : "",
-          item: item,
-          orderNo: orderNo,
-          roundsectionmill: roundsectionmillValue
-        };
-
-        axiosAPI.post(url, data, defaultOptions)
-          .then(response => {
-            let formattedPipeList = [];
-            // Transform the data into { label: "...", value: "..." } format
-            response.data?.forEach((row) => {
-              if (row && row.length > 0) {
-                formattedPipeList.push({ label: row[0], value: row[0] });
-              }
-            });
-            setpipelist(formattedPipeList); // Update the pipelist state
-            console.log("Fetched and formatted pipe data:", formattedPipeList);
-          })
-          .catch(error => {
-            console.error("Error fetching pipe list:", error);
-            alertify.error("Failed to fetch pipe list.");
-          })
-          .finally(() => {
-            resolve();
-          });
-      });
+const GetPipenomulti = (accessToken) => {
+  return new Promise((resolve) => {
+    const defaultOptions = {
+      headers: {
+        Authorization: "Bearer " + accessToken,
+      },
     };
 
+    const url = "api/LDCR002/GetPipenomulti";
 
-  useEffect(() => {
-    if(selectedrepType?.value === "2J" ){
-    if (crdate && orderNo && item ) {
-      GetAuthorization().then(token => {
-        GetPipenomulti(token.accessToken); // Pass the accessToken here
-      });
+    // Determine value based on selected Report Type
+    let reptypepipeValue = "";
+
+    switch (selectedrepType?.value) {
+      case "2J":
+        reptypepipeValue = "APP";
+        break;
+      case "2G":
+        reptypepipeValue = "REPAIR";
+        break;
+      case "2F":
+        reptypepipeValue = "PEEL";
+        break;
+      default:
+        reptypepipeValue = "";
     }
+
+    const data = {
+      plant: "0780",
+      crdate: crdate
+        ? moment(crdate).format("DD-MMM-YYYY").toUpperCase()
+        : "",
+      item: item,
+      orderNo: orderNo,
+      reptypepipe: reptypepipeValue,
+    };
+
+    console.log("Request Data:", data);
+
+    axiosAPI
+      .post(url, data, defaultOptions)
+      .then((response) => {
+        const formattedPipeList = [];
+
+        response.data?.forEach((row) => {
+          if (row && row.length > 0) {
+            formattedPipeList.push({
+              label: row[0],
+              value: row[0],
+            });
+          }
+        });
+
+        setpipelist(formattedPipeList);
+      })
+      .catch((error) => {
+        console.error(error);
+        alertify.error("Failed to fetch pipe list.");
+      })
+      .finally(() => {
+        resolve();
+      });
+  });
+};
+
+
+useEffect(() => {
+  const validReportTypes = ["2J", "2G", "2F"];
+
+  if (
+    validReportTypes.includes(selectedrepType?.value) &&
+    orderNo?.trim() &&
+    item?.trim() &&
+    crdate
+  ) {
+    GetAuthorization().then((token) => {
+      GetPipenomulti(token.accessToken);
+    });
+  } else {
+    setpipelist([]);
+    setselectedpipelist([]);
   }
-  }, [crdate, orderNo, item]);
+}, [selectedrepType?.value, orderNo, item, crdate]);
 
 
 const handlepipelistChange = (value) => {
@@ -350,6 +381,14 @@ const handlepipelistChange = (value) => {
           alertify.error("Please Fill Revieved By");
           return;
         }}
+
+        
+    if (selectedrepType?.value === "2A") {
+        if ( !selectedShift) {
+          alertify.error("Please Fill Coating Shift*");
+          return;
+        }}
+    
 
 
     console.log("selectedrepType?.value", selectedrepType?.value);
@@ -613,22 +652,28 @@ const handlepipelistChange = (value) => {
     }
   };
 
-  const handlerepTypeChange = (value) => {
-    setSelectrepType(value);
-     setselectedunit("");
-     setInstrumentName("");
-     setInstrumentName1("");
-     setInstrumentName2("");
-     setInstrumentName3("");
-     setInstrumentName4("");
-     setInstrumentId("");
-     setInstrumentId1("");
-     setInstrumentId2("");
-     setInstrumentId3("");
-     setInstrumentId4("");
-     setWiNo("");
+const handlerepTypeChange = (value) => {
+  handleClearAll();
 
-  };
+  setSelectrepType(value);
+
+  // Clear old pipe data
+  setpipelist([]);
+  setselectedpipelist([]);
+
+  setselectedunit("");
+  setInstrumentName("");
+  setInstrumentName1("");
+  setInstrumentName2("");
+  setInstrumentName3("");
+  setInstrumentName4("");
+  setInstrumentId("");
+  setInstrumentId1("");
+  setInstrumentId2("");
+  setInstrumentId3("");
+  setInstrumentId4("");
+  setWiNo("");
+};
 
   const handleRadioChange = (event) => {
     setValueRadio(event.target.value);
@@ -651,9 +696,9 @@ const handlepipelistChange = (value) => {
   };
 
   const handleClearAll = () => {
-    console.log("Inside handleClearAll");
-    setSelectedPlant([]);
-    setSelectrepType([]);
+    // console.log("Inside handleClearAll");
+    // setSelectedPlant([]);
+    // setSelectrepType([]);
     setcrdate(null);
     setOrderNo("");
     setitem("");
@@ -777,7 +822,7 @@ const handlepipelistChange = (value) => {
                         />
                       </Grid>
 
-                      <Grid item xs={1.5} style={{ zIndex: 3 }}>
+                      <Grid item xs={1.2} style={{ zIndex: 3 }}>
                         <MDTypography
                           fontWeight="regular"
                           fontSize="small"
@@ -901,6 +946,50 @@ const handlepipelistChange = (value) => {
                                             </Grid>
                                             )}
 
+                                          {hidefinalinspectionFields && (
+                                           <Grid item xs={1} style={{ zIndex: 3 }}>
+                                              <MDTypography
+                                                fontWeight="regular"
+                                                fontSize="small"
+                                                textTransform="capitalize"
+                                                variant="h6"
+                                                color={"dark"}
+                                                noWrap
+                                              >
+                                                Final Insp Date<span style={{ color: "red" }}>*</span>
+                                              </MDTypography>
+                        <MonthPicker
+                          name="crdate"
+                          value={crdate}
+                          onChange={(date) => setcrdate(date)}
+                        />
+                                            </Grid>
+                                            )}
+
+                                            
+                        {hidefinalinspectionFields && (
+
+                                            <Grid item xs={1}>
+                                              <MDTypography
+                                                fontWeight="regular"
+                                                fontSize="small"
+                                                textTransform="capitalize"
+                                                variant="h6"
+                                                color={"dark"}
+                                                noWrap
+                                              >
+                                                Final Insp Shift*
+                                              </MDTypography>
+                        <ReactSelect
+                          options={ShiftType}
+                          onChange={(e) => {
+                            handleShiftChange(e);
+                          }}
+                          value={selectedShift}
+                        />
+                                            </Grid>
+                                            )}
+
                         {!hidePrintingFields && (
 
                                             <Grid item xs={1}>
@@ -924,26 +1013,9 @@ const handlepipelistChange = (value) => {
                                             </Grid>
                                             )}
 
-                      <Grid item xs={1.5}>
-                        <MDTypography
-                          fontWeight="regular"
-                          fontSize="small"
-                          textTransform="capitalize"
-                          variant="h6"
-                          color={"dark"}
-                          noWrap
-                        >
-                          Reviewed By<span style={{ color: "red" }}>*</span>
-                        </MDTypography>
-                        <MDInput
-                          name="RevievedBy"
-                          // iseditable="false"
-                          value={reviewedBy}
-                          onChange={handleReviewedByChange}
-                        />
-                      </Grid>
+                     
 
-                                           {(selectedrepType.value === '2J')
+                                           {(selectedrepType.value === '2G' || selectedrepType.value === '2J'|| selectedrepType.value === '2F')
                                             && (
                                               <Grid item xs={1.7} style={{ zIndex: 2 }}>
                                               <MDTypography
@@ -965,6 +1037,25 @@ const handlepipelistChange = (value) => {
 />
                                             </Grid>
                                             )}
+
+                       <Grid item xs={1.5}>
+                        <MDTypography
+                          fontWeight="regular"
+                          fontSize="small"
+                          textTransform="capitalize"
+                          variant="h6"
+                          color={"dark"}
+                          noWrap
+                        >
+                          Reviewed By<span style={{ color: "red" }}>*</span>
+                        </MDTypography>
+                        <MDInput
+                          name="RevievedBy"
+                          // iseditable="false"
+                          value={reviewedBy}
+                          onChange={handleReviewedByChange}
+                        />
+                      </Grid>
 
                       {/* Instrument Name & Instrument ID */}
                       {(selectedrepType?.value !== "2C" && selectedrepType?.value !== "2I" && selectedrepType?.value !== "2L" )&& (
@@ -1376,7 +1467,7 @@ const handlepipelistChange = (value) => {
                             testMethod={valueRadio}
                             orderNo={orderNo}
                             item={item}
-                            //matno={matno}
+                            shift={selectedShift?.value}
                             //heatno={heatno}
                             //pipeno={pipeno}
                             rmno={rmno}
@@ -1490,6 +1581,7 @@ const handlepipelistChange = (value) => {
                             //matno={matno}
                             //heatno={heatno}
                             //pipeno={pipeno}
+                            selectedpipelist={selectedpipelist} 
                             rmno={rmno}
                             crdate={crdate}
                             instrumentName={instrumentName}
@@ -1532,11 +1624,13 @@ const handlepipelistChange = (value) => {
                             testMethod={valueRadio}
                             orderNo={orderNo}
                             item={item}
+                            shift={selectedShift?.value}
                             //matno={matno}
                             //heatno={heatno}
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            selectedpipelist={selectedpipelist} 
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
@@ -1604,7 +1698,7 @@ const handlepipelistChange = (value) => {
                             testMethod={valueRadio}
                             orderNo={orderNo}
                             item={item}
-                            //matno={matno}
+                            shift={selectedShift.value}
                             //heatno={heatno}
                             //pipeno={pipeno}
                             rmno={rmno}
@@ -1621,7 +1715,7 @@ const handlepipelistChange = (value) => {
                             instrumentId3={instrumentId3}
                             instrumentName4={instrumentName4}
                             instrumentId4={instrumentId4}
-                           printdate={formattedPrintDate}
+                            printdate={formattedPrintDate}
                             selectedpShift={selectedpShift}
                           />
                         )}

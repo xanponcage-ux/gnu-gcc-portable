@@ -67,12 +67,16 @@ export const getList = async (props: any) => {
       ,LOM_SAMPL_TAG Sample_Tag
       ,To_char(LOM_TS_CREATION,'yyyy-MM-dd HH24:MI:SS') Batch_crt_dt
       ,LOM_NO_MATNR MAT_NO
-      from v_ldp_prodn
+      ,ENC_NO_MATNR
+      from v_ldp_prodn,V_END_CUST_ORD_EPA
       WHERE ${statusCondition}
       and lom_id_batch= NVL('${props.coilId ?? null}',lom_id_batch)
       AND LOM_ID_PAR_COIL_NO =NVL('${
         props.parentBatch ?? null
       }',LOM_ID_PAR_COIL_NO)
+      AND LOM_CD_EPA = ENC_CD_EPA(+)
+      AND LOM_ID_ORDER_CUS = ENC_ID_ORDER(+)
+      AND LOM_ID_ORD_ITEM_CUS = ENC_NO_ITEM(+)
       AND LOM_ID_FIRST_PAR = NVL('${
         props.motherBatch ?? null
       }',LOM_ID_FIRST_PAR)

@@ -240,7 +240,16 @@ export const insertTempData = async (data: any) => {
       let insertValueString: string;
       let updateSetString: string;
 
-      if (
+      if (columnName === "PRT_PEEL_DATE") {
+  if (value) {
+    insertValueString = `TO_DATE('${value}','DD/MM/YYYY')`;
+    updateSetString = `${columnName} = TO_DATE('${value}','DD/MM/YYYY')`;
+  } else {
+    insertValueString = "NULL";
+    updateSetString = `${columnName} = NULL`;
+  }
+}
+      else if (
         columnName === "LCP_SDATE_24H1" ||
         columnName === "LCP_EDATE_24H1" ||
         columnName === "LP3_SDATE_CATH" ||
@@ -383,6 +392,7 @@ export const getOrdDetailGD = async (data: any) => {
     let sql = `SELECT *  
     FROM V_ZCOAT_LAB WHERE
     CHARG = '${data?.orderId}'`;
+    
     console.log("sql: ", sql);
     return await query.executeQuery(sql);
   } catch (error) {

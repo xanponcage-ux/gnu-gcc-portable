@@ -352,7 +352,7 @@ export const getFillData = async (data: any) => {
   try {
     // Only the latest G record can activate the rework path, as in LD120.
     let sql = `SELECT b.TBP_BATCH_NO, l.LOM_ODIA as TBP_PIPE_OD_10, l.LOM_SEC1 as TBP_PIPE_THK_10,
-      l.LOM_LENGTH as TBP_PIPE_LNG_10, b.TBP_NO_MATNR, b.TBP_ID_FIRST_PAR,
+      l.LOM_LENGTH as TBP_PIPE_LNG_10, l.LOM_NO_MATNR TBP_NO_MATNR, b.TBP_ID_FIRST_PAR,
       b.TBP_QUALITY_CD, b.TBP_CD_FLAG,
              TO_CHAR(
 (
@@ -469,7 +469,7 @@ FROM dual
 ),
 'FM9999999990.000'
 ) AS coat_wt,
-      b.TBP_ID_ORDER_NO AS ORDER_NO, b.TBP_ITEM_NO AS ITEM,
+      l.LOM_ID_ORDER_CUS AS ORDER_NO, l.LOM_ID_ORD_ITEM_CUS AS ITEM,
       l.LOM_ID_PAR_COIL_NO,
       F_GET_NEXTPROC(l.LOM_PLANNED_PROC, l.LOM_PASSED_PROC, 'G') AS NEXT_PROC,
       (SELECT COUNT(1) FROM V_BARE_PDO t
@@ -568,12 +568,12 @@ FROM dual
             AND x.TBP_PLANT_CD = d150.TBP_PLANT_CD
             AND x.TBP_CD_PROC = 'G')
       WHERE l.LOM_CD_STATUS = :status AND l.LOM_CD_EPA = :plant
-        AND b.TBP_CD_PROC = '1'
+        AND b.TBP_CD_PROC = '8'
         AND b.TBP_BATCH_PROC_NO = (
           SELECT MAX(x.TBP_BATCH_PROC_NO) FROM V_BARE_PDO x
            WHERE x.TBP_BATCH_NO = b.TBP_BATCH_NO
              AND x.TBP_PLANT_CD = b.TBP_PLANT_CD
-             AND x.TBP_CD_PROC = '1')`;
+             AND x.TBP_CD_PROC = '8')`;
 
     const safeNumber = (v: any) => {
       const n = Number(v);

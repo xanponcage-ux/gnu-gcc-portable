@@ -111,10 +111,10 @@ LDCR002Route.route("/getHYSdata").post(
   controller.getHYSdata
 );
 
-LDCR002Route.route("/getInventoryData").post(
-  authenticationMiddleware.bearer,
-  controller.getInventoryData
-);
+// LDCR002Route.route("/getInventoryData").post(
+//   authenticationMiddleware.bearer,
+//   controller.getInventoryData
+// );
 LDCR002Route.route("/GetreportTyp").post(
   authenticationMiddleware.bearer,
   controller.GetreportTyp
@@ -127,10 +127,10 @@ LDCR002Route.route("/odiato").post(
   authenticationMiddleware.bearer,
   controller.getOdiaTo
 );
-LDCR002Route.route("/mergedinv").post(
-  authenticationMiddleware.bearer,
-  controller.getMergedInv
-);
+// LDCR002Route.route("/mergedinv").post(
+//   authenticationMiddleware.bearer,
+//   controller.getMergedInv
+// );
 LDCR002Route.route("/getReversedBatchInfo").post(
   authenticationMiddleware.bearer,
   controller.getReversedBatchInfo

@@ -10,9 +10,9 @@ export const GetPipenomulti = async (req: Request, res: Response) => {
         let crdate = req.body.crdate;
         let item = req.body.item;
         let orderNo = req.body.orderNo;
-        let roundsectionmill = req.body.roundsectionmill;
+        let reptypepipe = req.body.reptypepipe;
         console.log('Controller',plant);
-        const results: any = await LDCR002.prototype.GetPipenomulti(plant,crdate,item,orderNo,roundsectionmill);
+        const results: any = await LDCR002.prototype.GetPipenomulti(plant,crdate,item,orderNo,reptypepipe);
         return res.status(200).json(results.rows);
     } catch (error) {
         return res.status(400).json(error);
@@ -433,7 +433,7 @@ export const getAirdata = async (req: Request, res: Response) => {
       plant,
       orderNo,
       item,
-      matno,
+      shift,
       crdate,
       heatno,
       pipeno,
@@ -444,7 +444,7 @@ export const getAirdata = async (req: Request, res: Response) => {
       plant,
       orderNo,
       item,
-      matno,
+      shift,
       crdate,
       heatno,
       pipeno
@@ -539,6 +539,7 @@ export const getREPAIRdata = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
+      selectedpipelist,
       // rmno
     } = req.body;
 
@@ -549,7 +550,8 @@ export const getREPAIRdata = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
+      pipeno,
+      selectedpipelist
       // rmno
     );
     const table: any = [];
@@ -743,7 +745,8 @@ export const getpeeldata = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      selectedpipelist,
+      // shift
     } = req.body;
 
     const results: any = await LDCR002.prototype.getpeeldata(
@@ -753,8 +756,9 @@ export const getpeeldata = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      selectedpipelist,
+      // shift
     );
     const table: any = [];
     const header: any = [];
@@ -945,22 +949,22 @@ export const getfinalinspection = async (req: Request, res: Response) => {
       plant,
       orderNo,
       item,
-      matno,
+      shift,
       crdate,
       heatno,
       pipeno,
-      // rmno
+      // shift
     } = req.body;
 
     const results: any = await LDCR002.prototype.getfinalinspection(
       plant,
       orderNo,
       item,
-      matno,
+      shift,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      // shift
     );
     const table: any = [];
     const header: any = [];
@@ -1246,80 +1250,7 @@ export const getHYSdata = async (req: Request, res: Response) => {
   }
 };
 
-export const getInventoryData = async (req: Request, res: Response) => {
-  try {
-    var {
-      DespFromDate,
-      DespToDate,
-      ProdFromDate,
-      ProdToDate,
-      batch,
-      customer,
-      item,
-      materialNo,
-      mbatch,
-      order,
-      orderType,
-      plant,
-      process,
-      status,
-      thikFrm,
-      thikTo,
-      widthFrm,
-      widthTo,
-      stockType,
-    } = req.body;
 
-    const results: any = await LDCR002.prototype.getInventoryData(
-      DespFromDate,
-      DespToDate,
-      ProdFromDate,
-      ProdToDate,
-      batch,
-      customer,
-      item,
-      materialNo,
-      mbatch,
-      order,
-      orderType,
-      plant,
-      process,
-      status,
-      thikFrm,
-      thikTo,
-      widthFrm,
-      widthTo,
-      stockType
-    );
-    const table: any = [];
-    const header: any = [];
-    const columns: any = [];
-
-    for (let i = 0; i < results.metaData.length; i++) {
-      header.push((results.metaData[i].name as string).replace(/ /g, ""));
-    }
-
-    for (let i = 0; i < results.metaData.length; i++) {
-      var obj: any = {};
-      obj.title = results.metaData[i].name as string;
-      obj.field = header[i];
-      columns.push(obj);
-    }
-
-    for (let i = 0; i < results.rows.length; i++) {
-      const arr = results.rows[i];
-      var jsonObj: any = {};
-      header.forEach((key: any, i: any) => (jsonObj[key] = arr[i]));
-      table.push(jsonObj);
-    }
-    //  fullData.push(columns);
-    //  fullData.push(table);
-
-    return res.status(200).json(table);
-  } catch (error) {
-    return res.status(400).json(error);
-  }
-};
 
 export const GetreportTyp = async (req: Request, res: Response) => {
   try {
@@ -1332,48 +1263,7 @@ export const GetreportTyp = async (req: Request, res: Response) => {
   }
 };
 
-export const getMergedInv = async (req: Request, res: Response) => {
-  try {
-    var { fromDt, mergedType, plant, toDt, batchMerg, mergedBatchMerg } =
-      req.body;
 
-    const results: any = await LDCR002.prototype.getMergedInv(
-      fromDt,
-      mergedType,
-      plant,
-      toDt,
-      batchMerg,
-      mergedBatchMerg
-    );
-    const table: any = [];
-    const header: any = [];
-    const columns: any = [];
-
-    for (let i = 0; i < results.metaData.length; i++) {
-      header.push((results.metaData[i].name as string).replace(/ /g, ""));
-    }
-
-    for (let i = 0; i < results.metaData.length; i++) {
-      var obj: any = {};
-      obj.title = results.metaData[i].name as string;
-      obj.field = header[i];
-      columns.push(obj);
-    }
-
-    for (let i = 0; i < results.rows.length; i++) {
-      const arr = results.rows[i];
-      var jsonObj: any = {};
-      header.forEach((key: any, i: any) => (jsonObj[key] = arr[i]));
-      table.push(jsonObj);
-    }
-    //  fullData.push(columns);
-    //  fullData.push(table);
-
-    return res.status(200).json(table);
-  } catch (error) {
-    return res.status(400).json(error);
-  }
-};
 
 export const getOdiaFrm = async (req: Request, res: Response) => {
   try {

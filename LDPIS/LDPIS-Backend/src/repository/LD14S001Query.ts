@@ -193,7 +193,7 @@ export const getFillData = async (data: any) => {
     const pipeno = data.PIPE_NO ? String(data.PIPE_NO) : "";
     const status = data.STATUS ? String(data.STATUS) : "";
 
-    let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,TBP_NO_MATNR,TBP_HEAT_NO,LOM_ID_PAR_COIL_NO,
+    let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,LOM_NO_MATNR TBP_NO_MATNR,LOM_NO_CAST TBP_HEAT_NO,LOM_ID_PAR_COIL_NO,
              (SELECT f130.TBP_FLD_NO_130 FROM V_BARE_PDO f130
                 WHERE f130.TBP_BATCH_NO = LOM_ID_BATCH
                   AND f130.TBP_PLANT_CD = LOM_CD_EPA
@@ -204,7 +204,7 @@ export const getFillData = async (data: any) => {
                       AND x130.TBP_PLANT_CD = f130.TBP_PLANT_CD
                       AND x130.TBP_CD_PROC = 'E')
                   AND ROWNUM = 1) AS TBP_FLD_NO_130,
-              TBP_ID_ORDER_NO ORDER_NO, TBP_ITEM_NO ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC, LOM_MS_PIECE_ACTL WEIGHT,
+              LOM_ID_ORDER_CUS ORDER_NO, LOM_ID_ORD_ITEM_CUS ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC, LOM_MS_PIECE_ACTL WEIGHT,
              (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'F') as nxtproc from dual) NEXT_PROC,
              (select D.TBP_ASL_NO_80 FROM V_BARE_PDO D
                     where D.TBP_BATCH_NO = LOM_ID_BATCH
@@ -242,10 +242,8 @@ export const getFillData = async (data: any) => {
                           AND x.TBP_CD_PROC = 'D'
                       )
                     and rownum = 1) FIELD_TEST
-              FROM V_BARE_PDO, V_END_CUST_ORD_EPA, V_LDP_PRODN
-            WHERE TBP_ID_ORDER_NO = ENC_ID_ORDER
-              AND TBP_ITEM_NO = ENC_NO_ITEM
-              AND TBP_BATCH_NO = LOM_ID_BATCH
+              FROM V_BARE_PDO b, V_END_CUST_ORD_EPA, V_LDP_PRODN
+            WHERE TBP_BATCH_NO = LOM_ID_BATCH
               AND TBP_PLANT_CD = LOM_CD_EPA
               AND LOM_CD_EPA = ENC_CD_EPA
               AND LOM_ID_ORDER_CUS = ENC_ID_ORDER
@@ -253,22 +251,22 @@ export const getFillData = async (data: any) => {
               AND LOM_CD_STATUS = '${status}'
               AND TBP_BATCH_PROC_NO = (
                 SELECT MAX(t1.TBP_BATCH_PROC_NO) FROM V_BARE_PDO t1
-                WHERE TBP_BATCH_NO = t1.TBP_BATCH_NO
-                  AND t1.TBP_CD_PROC = '1'
+                WHERE t1.TBP_BATCH_NO = b.TBP_BATCH_NO
+                  AND t1.TBP_CD_PROC = '8'
               )`;
 
     // Apply filter priority: PIPE_NO > RM_BATCH > ORDNO+ORDITEM
     if (pipeno && pipeno !== "") {
-      sql += ` AND TBP_BATCH_NO = '${pipeno}' AND TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_BATCH_NO = '${pipeno}' AND TBP_CD_PROC = '8'`;
     } else if (rmBatch && rmBatch !== "") {
-      sql += ` AND TBP_BATCH_NO IN (select t.lom_id_batch from v_ldp_prodn t where t.lom_cd_status='${status}' AND t.lom_id_par_coil_no = '${rmBatch}') AND TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_BATCH_NO IN (select t.lom_id_batch from v_ldp_prodn t where t.lom_cd_status='${status}' AND t.lom_id_par_coil_no = '${rmBatch}') AND TBP_CD_PROC = '8'`;
     } else if (
       data.ORDNO &&
       data.ORDNO !== "" &&
       data.ORDITEM &&
       data.ORDITEM !== ""
     ) {
-      sql += ` AND TBP_ID_ORDER_NO = '${data.ORDNO}' AND TBP_ITEM_NO = '${data.ORDITEM}' AND TBP_CD_PROC = '1'`;
+      sql += ` AND TBP_ID_ORDER_NO = '${data.ORDNO}' AND TBP_ITEM_NO = '${data.ORDITEM}' AND TBP_CD_PROC = '8'`;
     } else {
       // No filter provided: return empty result set to avoid large queries
       sql += ` AND 1=0`;

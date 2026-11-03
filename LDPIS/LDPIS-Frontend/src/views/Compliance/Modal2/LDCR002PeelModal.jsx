@@ -51,7 +51,8 @@ export default function MaxWidthDialogPeel(props) {
   const [getpeeldata, setgetpeeldata] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  // const [maxWidth, setMaxWidth] = React.useState("md");
+    const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -103,6 +104,9 @@ export default function MaxWidthDialogPeel(props) {
           : "",  
           heatno: props.heatno ? props.heatno : "",
           pipeno: props.pipeno ? props.pipeno : "",
+                    selectedpipelist: props.selectedpipelist
+    ?.map(item => `'${item.value}'`)
+    .join(",") || ""
         };
 
         GetAuthorization().then((token) => {
@@ -204,8 +208,13 @@ export default function MaxWidthDialogPeel(props) {
   }
   `;
   
-    const rowsPerPage = 15;
+    const rowsPerPage = 18;
     const numPages = Math.max(1, Math.ceil(getpeeldata?.length / rowsPerPage));
+
+      const formattedPrintDate = props?.printdate
+  ?.split(".")
+  ?.reverse()
+  ?.join("");
 
   return (
     <React.Fragment>
@@ -296,7 +305,7 @@ export default function MaxWidthDialogPeel(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '55px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '35px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             PEEL TEST REPORT
@@ -337,7 +346,12 @@ export default function MaxWidthDialogPeel(props) {
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
                           {/* <p>: {getpeeldata?.length > 0  ? getpepeeldata[0].REP_NO + "-" + numPages: ' '} </p> */}
-                              <p>: {getpeeldata?.length > 0 ? `${getpeeldata[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getpeeldata?.length > 0 ? `${getpeeldata[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>
+  : {getpeeldata?.length > 0
+      ? `PTR/${formattedPrintDate}-${pageIndex + 1}`
+      : ' '}
+</p>
                               {/* <p>: {getpeeldata?.length > 0  ? getpeeldata[0].DATE_SHIFTQ : ' '} </p> */}
                                                             <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
                               <p>: {getpeeldata?.length > 0  ? getpeeldata[0].PROCESS_SHEET_NO : ' '} </p>
@@ -349,26 +363,26 @@ export default function MaxWidthDialogPeel(props) {
                     
                     <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>     
                     <Grid container xs = {12} >
-                      <Grid item xs={0.5}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.No.</Grid>
-                      <Grid item xs={1.25}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO.</Grid>
-                      <Grid item xs={5}       style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIRED VALUE</Grid>
-                      <Grid item xs={2.75}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ACHIEVED VALUE</Grid>
-                      <Grid item xs={2.5}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
+                      <Grid item xs={0.5}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.No.</Grid>
+                      <Grid item xs={1.25}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO.</Grid>
+                      <Grid item xs={5}       style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIRED VALUE</Grid>
+                      <Grid item xs={2.75}    style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ACHIEVED VALUE</Grid>
+                      <Grid item xs={2.5}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
                     
                       {getpeeldata
                             .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
                             .map((dataRow, i) => (
 <Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>
+                            <Grid item xs={0.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>
                                 {dataRow.displaySrNo !== null ? dataRow.displaySrNo : <br />}
                             </Grid>
-                            <Grid item xs={1.25}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>
+                            <Grid item xs={1.25}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>
                                 {dataRow.displayCharg !== null ? dataRow.displayCharg : <br />}
                             </Grid>
-                            <Grid item xs={5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.REQUIRED_VALUE1 !== null ? dataRow.REQUIRED_VALUE1 +" "+selectedunit?.value +" "+ dataRow.REQUIRED_VALUE2 : <br />}</Grid>
-                            <Grid item xs={2.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.ACHIEVE_VALUE !== null ? dataRow.ACHIEVE_VALUE +" "+selectedunit?.value : <br />}</Grid>
-                            <Grid item xs={2.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'    }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
+                            <Grid item xs={5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.REQUIRED_VALUE1 !== null ? dataRow.REQUIRED_VALUE1 +" "+selectedunit?.value +" "+ dataRow.REQUIRED_VALUE2 : <br />}</Grid>
+                            <Grid item xs={2.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.ACHIEVE_VALUE !== null ? dataRow.ACHIEVE_VALUE +" "+selectedunit?.value : <br />}</Grid>
+                            <Grid item xs={2.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                          </Grid>
                       ))}
 
@@ -376,11 +390,11 @@ export default function MaxWidthDialogPeel(props) {
 {Array.from({ length: Math.max(0, rowsPerPage - getpeeldata.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
-                            <Grid item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.25} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />}</Grid>
-                            <Grid item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}>  {<br />}</Grid>
-                            <Grid item xs={2.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}> {<br />}</Grid>
-                            <Grid item xs={2.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px' }}> {<br />}</Grid>
+                            <Grid item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={1.25} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={2.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={2.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}> {<br />}</Grid>
                          </Grid>
                       ))}
 
