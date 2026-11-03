@@ -70,7 +70,7 @@ export const getList = async (props: any) => {
       ,ENC_NO_MATNR
       from v_ldp_prodn,V_END_CUST_ORD_EPA
       WHERE ${statusCondition}
-      and lom_id_batch= NVL('${props.coilId ?? null}',lom_id_batch)
+      and lom_id_batch= NVL(:coilId,lom_id_batch)
       AND LOM_ID_PAR_COIL_NO =NVL('${
         props.parentBatch ?? null
       }',LOM_ID_PAR_COIL_NO)
@@ -85,7 +85,7 @@ export const getList = async (props: any) => {
       ORDER BY Batch_crt_dt DESC
       `;
       // console.log("sqlCoil : ", sql);
-      return await query.executeQuery(sql);
+      return await query.executeQuery(sql, {coilId: props.coilId || null});
     } else if (props.param == "GetOrder") {
       // Removing join from v_tub_matl_mapping, no longer need of fitting order in WIP
       sql = `

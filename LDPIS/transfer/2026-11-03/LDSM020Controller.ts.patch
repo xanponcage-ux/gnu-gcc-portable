@@ -1,0 +1,22 @@
+diff --git a/LDPIS/LDPIS-Backend/src/controllers/LDSM020Controller.ts b/LDPIS/LDPIS-Backend/src/controllers/LDSM020Controller.ts
+index d43bf06..8e57b94 100644
+--- a/LDPIS/LDPIS-Backend/src/controllers/LDSM020Controller.ts
++++ b/LDPIS/LDPIS-Backend/src/controllers/LDSM020Controller.ts
+@@ -1,4 +1,5 @@
+ import { Request, Response } from "express";
++import { updateSignoff as writeSignoff } from "../repository/LDSM020Query";
+ import moment from 'moment'
+ import TubePlanning from "../models/LDSM020Model";
+ import { Post } from "../typed/typed";
+@@ -131,3 +132,11 @@ export const getRefresh = async (req: Request, res: Response) => {
+ };
+ 
+ //added
++
++export const updateSignoff = async (req: Request, res: Response) => {
++  try {
++    const result = await writeSignoff(req.body);
++    if (!result.rowsAffected) return res.status(404).json({message:"Order item not found."});
++    return res.status(200).json({updated:result.rowsAffected});
++  } catch(e) { return res.status(400).json({message:e instanceof TypeError ? e.message : "Sign-off update failed."}); }
++};

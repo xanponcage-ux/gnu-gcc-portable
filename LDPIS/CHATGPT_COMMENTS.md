@@ -33,3 +33,17 @@ ENC_INSPECTION_FLAG  (Column name Inspection and only allowed values Y or N)  (n
 
 give a button beside download upon clicking which an api is called which has an update query which updates the V_END_CUST_ORD_EPA with values of ENC_SIGNOF_MONTH,ENC_SIGNOF_QTY and ENC_GRN_GAP_SIGNOF where given order and item and plant (also any of ENC_SIGNOF_MONTH,ENC_SIGNOF_QTY and ENC_GRN_GAP_SIGNOF which is null or blank will not be updated )
 ```
+
+## 2026-11-03 — Batch linking and order sign-off uploads
+
+LD01S009: on the Link tab download the batch template, enter BATCH_NO as Text, then upload. Eligible batches appear in Batch Details. Missing batches are listed. Use the header checkbox for select-all. LINK checks every selected batch against the selected order's FG material before sending the update.
+
+LDSM020: use the template, keep plant/order/item identifiers as Text (including leading zeros), and supply only the sign-off values to change. Upload looks up each key with the Submit API. Review the grid and click Update sign-off beside Download. Blank cells leave the current database value unchanged. Each successful update is committed separately; retry updates only remaining pending rows. Per user clarification Inspection is ENC_INSPECTION_FLAG in both Excel and Oracle, with values Y or N.
+
+Run in office PowerShell:
+~~~powershell
+git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
+~~~

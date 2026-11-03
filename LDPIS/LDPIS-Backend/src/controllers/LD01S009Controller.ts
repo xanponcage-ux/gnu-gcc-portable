@@ -12,7 +12,13 @@ export const getList = async (req: Request, res: Response) => {
 
     // Changed on 05.01.26, To allow multi select for WIP linking
     if (props?.param.includes("Update")) {
-      // && props?.type === "DELINK") {
+      if (props.type === "LINK") {
+        const fg = String(props.newDataOrder?.[0]?.FG_MAT ?? "").trim();
+        if (!fg || props.newDataOrder?.length !== 1 || !props.newDataDelink?.length ||
+            props.newDataDelink.some((r: any) => String(r.ENC_NO_MATNR ?? "").trim() !== fg)) {
+          return res.status(400).json({message:"All selected batches must match the order FG material."});
+        }
+      }
       for (var i = 0; i < props?.newDataDelink.length; i++) {
         //props.selectedBatch = props.delinkCoils[i];
         props.DelinkRow = props?.newDataDelink[i];

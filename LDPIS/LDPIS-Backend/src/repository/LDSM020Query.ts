@@ -20,6 +20,7 @@ export const getTubePlanData = async (
     select EOP_CD_EPA,
     EOP_ID_ORDER,
     EOP_NO_ITEM,
+    ENC_SIGNOF_MONTH, ENC_SIGNOF_QTY, ENC_INSPECTION_FLAG,
     EOP_QTY,
     EOP_BTR,
     EOP_BTP,
@@ -197,3 +198,20 @@ export const getRefresh = async () => {
 };
 
 //added
+
+export const updateSignoff = async (row: any) => {
+  const binds: any = {}, sets: string[] = [];
+  for (const key of ["plant","Order1","Item"]) {
+    if (typeof row[key] !== "string" || !row[key].trim()) throw new TypeError("Plant, order and item are required.");
+    binds[key] = row[key].trim();
+  }
+  for (const col of ["ENC_SIGNOF_MONTH","ENC_SIGNOF_QTY","ENC_INSPECTION_FLAG"]) {
+    if (row[col] == null || !String(row[col]).trim()) continue;
+    const value = String(row[col]).trim();
+    if (col === "ENC_INSPECTION_FLAG" && !["Y","N"].includes(value)) throw new TypeError("Inspection must be Y or N.");
+    sets.push(col + " = :" + col); binds[col] = value;
+  }
+  if (!sets.length) throw new TypeError("No sign-off values supplied.");
+  return query.executeQuery("UPDATE V_END_CUST_ORD_EPA SET " + sets.join(", ") +
+    " WHERE ENC_CD_EPA=:plant AND ENC_ID_ORDER=:Order1 AND ENC_NO_ITEM=:Item", binds);
+};

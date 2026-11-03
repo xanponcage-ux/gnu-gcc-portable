@@ -1,3 +1,4 @@
+import { readUpload, downloadTemplate } from "../readLdUpload";
 import React, { useEffect, useState, useRef, forwardRef } from "react";
 
 // @mui material components
@@ -545,6 +546,44 @@ export default function TubePlanning() {
     setSelectPcat(value);
   };
 
+  const uploadKeys = ["ENC_CD_EPA","ENC_ID_ORDER","ENC_NO_ITEM"], signoffFields = ["ENC_SIGNOF_MONTH","ENC_SIGNOF_QTY","ENC_INSPECTION_FLAG"];
+  const uploadOrders = async event => {
+    const file = event.target.files[0]; event.target.value = "";
+    if (!file) return;
+    setLoading(true); setTubesData([]); setTubesDataTable(null);
+    try {
+      const rows = await readUpload(file,uploadKeys,[...uploadKeys,...signoffFields]);
+      const {accessToken} = await GetAuthorization();
+      const result = [];
+      for (const row of rows) {
+        const [plant,Order1,Item] = uploadKeys.map(k => row[k]);
+        const changes = Object.fromEntries(signoffFields.filter(k => row[k]).map(k => [k,row[k]]));
+        if (changes.ENC_INSPECTION_FLAG && !["Y","N"].includes(changes.ENC_INSPECTION_FLAG)) throw new Error("Inspection must be Y or N: "+Order1+"/"+Item);
+        const {data} = await axiosAPI.post("api/LDSM020/getTubePlanData",{plant,Order1,Item,MatNo:"",tdc:"",thickFrm:"",thickTo:"",widthFrm:"",widthTo:"",cust:""},{headers:{Authorization:"Bearer "+accessToken}});
+        if (!Array.isArray(data) || data.length !== 1) throw new Error("Expected one order detail for "+plant+"/"+Order1+"/"+Item);
+        result.push({...data[0],...changes,_upload:{plant,Order1,Item,...changes}});
+      }
+      setTubesData(result);
+    } catch(e) {window.alert(e.message);} finally {setLoading(false);}
+  };
+  const updateSignoff = async () => {
+    const pending = tubesData.filter(r => r?._upload && signoffFields.some(k => r._upload[k]));
+    if (!pending.length) {alertify.error("Upload sign-off values first.");return;}
+    setLoading(true);
+    let saved = 0;
+    try {
+      const {accessToken} = await GetAuthorization();
+      for (const row of pending) {
+        await axiosAPI.post("api/LDSM020/updateSignoff",row._upload,{headers:{Authorization:"Bearer "+accessToken}});
+        saved++;
+      }
+      alertify.success("Updated " + saved + " order items.");
+    } catch(e) {window.alert("Updated "+saved+" order items. "+(e.response?.data?.message || e.message));}
+    finally {
+      const done = new Set(pending.slice(0,saved));
+      setTubesData(rows => rows.map(r => done.has(r) ? {...r,_upload:null} : r)); setLoading(false);
+    }
+  };
   const getData = () => {
     setLoading(true);
     GetAuthorization().then((token) => {
@@ -659,6 +698,9 @@ export default function TubePlanning() {
   };
 
   const TubePlanColumn = [
+    {title:"Sign-off Month",field:"ENC_SIGNOF_MONTH"},
+    {title:"Sign-off Qty",field:"ENC_SIGNOF_QTY"},
+    {title:"Inspection",field:"ENC_INSPECTION_FLAG"},
    
     {
       title: "Plant",
@@ -1426,6 +1468,9 @@ export default function TubePlanning() {
                       </Grid>
                       <Grid item xs={2}></Grid>
                       <Grid item xs={1}>
+                        <input aria-label="Upload order sign-off" type="file" accept=".xlsx,.xls" disabled={loading || isReadWriteAccess} onChange={uploadOrders}/>
+                        <button onClick={() => downloadTemplate("LDSM020_Signoff",[...uploadKeys,...signoffFields])}>Template</button>
+                        <button disabled={loading || isReadWriteAccess} onClick={updateSignoff}>Update sign-off</button>
                         <Tooltip title="Download">
                           <IconButton
                             color="white"

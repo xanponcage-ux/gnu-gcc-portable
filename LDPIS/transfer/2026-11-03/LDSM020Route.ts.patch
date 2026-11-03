@@ -1,0 +1,12 @@
+diff --git a/LDPIS/LDPIS-Backend/src/routes/LDSM020Route.ts b/LDPIS/LDPIS-Backend/src/routes/LDSM020Route.ts
+index c2679c9..46e8acb 100644
+--- a/LDPIS/LDPIS-Backend/src/routes/LDSM020Route.ts
++++ b/LDPIS/LDPIS-Backend/src/routes/LDSM020Route.ts
+@@ -8,6 +8,7 @@ TubePlanningRoute.route('/getPlanModalData').post(authenticationMiddleware.beare
+ TubePlanningRoute.route('/odiafrm').post(authenticationMiddleware.bearer, controller.getOdiaFrm);
+ TubePlanningRoute.route('/odiato').post(authenticationMiddleware.bearer, controller.getOdiaTo);
+ TubePlanningRoute.route('/getRefresh').post(authenticationMiddleware.bearer, controller.getRefresh);
++TubePlanningRoute.route("/updateSignoff").post(authenticationMiddleware.bearer, controller.updateSignoff);
+ export default TubePlanningRoute
+ 
+ //added

@@ -8,6 +8,7 @@ TubePlanningRoute.route('/getPlanModalData').post(authenticationMiddleware.beare
 TubePlanningRoute.route('/odiafrm').post(authenticationMiddleware.bearer, controller.getOdiaFrm);
 TubePlanningRoute.route('/odiato').post(authenticationMiddleware.bearer, controller.getOdiaTo);
 TubePlanningRoute.route('/getRefresh').post(authenticationMiddleware.bearer, controller.getRefresh);
+TubePlanningRoute.route("/updateSignoff").post(authenticationMiddleware.bearer, controller.updateSignoff);
 export default TubePlanningRoute
 
 //added

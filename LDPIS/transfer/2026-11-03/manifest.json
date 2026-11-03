@@ -1,0 +1,43 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD01S009Controller.ts",
+    "Patch": "LD01S009Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LDSM020Controller.ts",
+    "Patch": "LDSM020Controller.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD01S009Query.ts",
+    "Patch": "LD01S009Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LDSM020Query.ts",
+    "Patch": "LDSM020Query.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/routes/LDSM020Route.ts",
+    "Patch": "LDSM020Route.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Planning/LD01S009.jsx",
+    "Patch": "LD01S009.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Reports/LDSM020.jsx",
+    "Patch": "LDSM020.jsx.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/readLdUpload.js",
+    "Patch": "readLdUpload.js.patch",
+    "NewFile": true
+  }
+]
