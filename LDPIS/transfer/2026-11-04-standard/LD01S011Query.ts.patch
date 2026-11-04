@@ -1,0 +1,152 @@
+diff --git a/LDPIS/LDPIS-Backend/src/repository/LD01S011Query.ts b/LDPIS/LDPIS-Backend/src/repository/LD01S011Query.ts
+index 63c1157..da51c29 100644
+--- a/LDPIS/LDPIS-Backend/src/repository/LD01S011Query.ts
++++ b/LDPIS/LDPIS-Backend/src/repository/LD01S011Query.ts
+@@ -1,5 +1,6 @@
+ import oracledb from "oracledb";
+-import {getValue} from "express-ctx";
++import query from "../infrastructure/database/querys";
++
+ const batchSQL = `select lom_id_batch Batch1,LOM_SEC1 Thk
+       ,LOM_SEC2 Odia
+       ,LOM_NO_CAST Cast
+@@ -50,44 +51,100 @@ const orderSQL = `SELECT TO_CHAR(ENC_DT_ORD_CREATE, 'YYYY-MM-DD HH24:MI:SS') Ord
+       AND ENC_SLIT_PLAN='TUBE'
+       AND ENC_ST_ORDER='A'
+       AND ENC_ID_ORDER=:ord AND ENC_NO_ITEM=:itm`;
+-export async function handleSwap(action:string, body:any){
+-  const ids:string[]=body.ids;
+-  if(!Array.isArray(ids)||!ids.length||ids.length>1000||ids.some(id=>typeof id!=="string"||!id.trim())||new Set(ids).size!==ids.length) throw new Error("Enter 1–1000 distinct batch IDs.");
+-  const ord=body.order,itm=body.item;
+-  if(action!=="batches" && (!ord || !itm))throw new Error("Enter order and item.");
+-  const conn=await oracledb.getPool(getValue("user")).getConnection();
+-  try{
+-    const binds:any={};
+-    const list=ids.map((id,i)=>{binds["b"+i]=id;return ":b"+i;}).join(",");
+-    const target="(LOM_ID_ORDER_CUS=:ord AND LOM_ID_ORD_ITEM_CUS=:itm)";
+-    if(action!=="batches"){binds.ord=ord;binds.itm=itm;}
+-    const sql=batchSQL+" AND (lom_id_batch IN ("+list+")"+(action==="batches"?"":" OR "+target)+") ORDER BY lom_id_batch"+(action==="swap"?" FOR UPDATE NOWAIT":"");
+-    const rows:any[]=(await conn.execute(sql,binds,{outFormat:oracledb.OUT_FORMAT_OBJECT})).rows as any[];
+-    const byId=new Map<string,any>(rows.map(r=>[String(r.BATCH1),r] as [string,any]));
+-    if(byId.size!==rows.length)throw new Error("Ambiguous batch IDs.");
+-    if(action==="batches")return ids.filter(id=>byId.has(id)).map(id=>byId.get(id));
+-    const source=ids.map(id=>{const r=byId.get(id);if(!r)throw new Error("Missing or not WB: "+id);return r;});
+-    const orders=(await conn.execute(orderSQL,{ord,itm},{outFormat:oracledb.OUT_FORMAT_OBJECT})).rows as any[];
+-    if(orders.length!==1)throw new Error("Expected one active TUBE order/item in plant 0780.");
+-    const onTarget=(r:any)=>String(r.ORD)===String(orders[0].ORD)&&String(r.ITEM)===String(orders[0].ITEM);
+-    const dest=rows.filter(onTarget);
+-    if(dest.length!==ids.length)throw new Error("Target has "+dest.length+" WB batches; expected "+ids.length+".");
+-    const incoming=source.filter(r=>!onTarget(r)),outgoing=dest.filter(r=>!ids.includes(String(r.BATCH1)));
+-    if(incoming.some(r=>r.ORD==null||r.ITEM==null))throw new Error("Every incoming batch must have an existing order and item.");
+-    const pairs=incoming.map((r,i)=>[r.BATCH1,outgoing[i].BATCH1]);
+-    const snapshot=JSON.stringify(rows.map(r=>[r.BATCH1,r.ORD,r.ITEM]));
+-    const skipped=ids.length-incoming.length;
+-    if(action==="order")return {orders,pairs,skipped,snapshot};
+-    if(body.snapshot!==snapshot)throw new Error("Assignments changed. Fetch order details again.");
+-    async function link(batch:any,order:any,item:any,op:string){
+-      const result:any=await conn.execute("BEGIN LDPDBA.LDLTB007(LS_BATCH=>:b, LS_ORDER=>:o, LS_ITEM=>:i, LS_LINK_TYPE=>:op, LS_OUT_FLAG=>:flag); END;",{b:batch,o:order,i:item,op,flag:{dir:oracledb.BIND_OUT,type:oracledb.STRING,maxSize:4000}},{autoCommit:false});
+-      if(!String(result.outBinds.flag).startsWith("Y"))throw new Error(op+" failed for "+batch+": "+result.outBinds.flag);
+-    }
+-    for(let i=0;i<incoming.length;i++){
+-      const a=incoming[i],b=outgoing[i];
+-      await link(a.BATCH1,a.ORD,a.ITEM,"DELINK");await link(a.BATCH1,ord,itm,"LINK");
+-      await link(b.BATCH1,ord,itm,"DELINK");await link(b.BATCH1,a.ORD,a.ITEM,"LINK");
++
++type Database = Pick<typeof query, "executeQuery">;
++type RequestData = { ids: string[]; order: string; item: string; snapshot?: string };
++
++function validateIds(ids: string[]) {
++  if (!Array.isArray(ids) || !ids.length || ids.length > 1000 ||
++      ids.some(id => typeof id !== "string" || !id.trim()) || new Set(ids).size !== ids.length) {
++    throw new Error("Enter 1–1000 distinct batch IDs.");
++  }
++}
++
++async function fetchRows(db: Database, sql: string, binds: any): Promise<any[]> {
++  const result = await db.executeQuery(sql, binds);
++  return result.rows.map((row: any) => {
++    const record: any = {};
++    result.metaData.forEach((col: any, i: number) => { record[col.name] = row[i]; });
++    return record;
++  });
++}
++
++async function fetchBatches(db: Database, ids: string[], target?: RequestData, lock = false) {
++  validateIds(ids);
++  const binds: any = {};
++  const placeholders = ids.map((id, i) => {
++    binds["batch" + i] = id;
++    return ":batch" + i;
++  });
++  let filter = "lom_id_batch IN (" + placeholders.join(", ") + ")";
++  if (target) {
++    filter += " OR (LOM_ID_ORDER_CUS = :ord AND LOM_ID_ORD_ITEM_CUS = :itm)";
++    binds.ord = target.order;
++    binds.itm = target.item;
++  }
++  const sql = batchSQL + " AND (" + filter + ") ORDER BY lom_id_batch" + (lock ? " FOR UPDATE NOWAIT" : "");
++  const rows = await fetchRows(db, sql, binds);
++  const byId = new Map(rows.map(row => [String(row.BATCH1), row] as [string, any]));
++  if (byId.size !== rows.length) throw new Error("Ambiguous batch IDs.");
++  return { rows, byId };
++}
++
++export async function getBatches(data: RequestData) {
++  const { byId } = await fetchBatches(query, data.ids);
++  return data.ids.filter(id => byId.has(id)).map(id => byId.get(id));
++}
++
++async function prepareSwap(db: Database, data: RequestData, lock = false) {
++  if (!data.order || !data.item) throw new Error("Enter order and item.");
++  const { rows, byId } = await fetchBatches(db, data.ids, data, lock);
++  const source = data.ids.map(id => {
++    if (!byId.has(id)) throw new Error("Missing or not WB: " + id);
++    return byId.get(id);
++  });
++  const orders = await fetchRows(db, orderSQL, { ord: data.order, itm: data.item });
++  if (orders.length !== 1) throw new Error("Expected one active TUBE order/item in plant 0780.");
++  const onTarget = (row: any) => String(row.ORD) === String(orders[0].ORD) && String(row.ITEM) === String(orders[0].ITEM);
++  const target = rows.filter(onTarget);
++  if (target.length !== source.length) throw new Error("Target has " + target.length + " WB batches; expected " + source.length + ".");
++  const incoming = source.filter(row => !onTarget(row));
++  const outgoing = target.filter(row => !data.ids.includes(String(row.BATCH1)));
++  if (incoming.some(row => row.ORD == null || row.ITEM == null)) throw new Error("Every incoming batch must have an existing order and item.");
++  const preview = {
++    orders,
++    pairs: incoming.map((row, i) => [row.BATCH1, outgoing[i].BATCH1]),
++    skipped: source.length - incoming.length,
++    snapshot: JSON.stringify(rows.map(row => [row.BATCH1, row.ORD, row.ITEM]))
++  };
++  return { incoming, outgoing, preview };
++}
++
++export async function getOrder(data: RequestData) {
++  const { preview } = await prepareSwap(query, data);
++  return preview;
++}
++
++async function changeLink(db: Database, batch: string, order: string, item: string, op: "LINK" | "DELINK") {
++  const sql = "BEGIN LDPDBA.LDLTB007(LS_BATCH=>:b, LS_ORDER=>:o, LS_ITEM=>:i, LS_LINK_TYPE=>:op, LS_OUT_FLAG=>:flag); END;";
++  const result = await db.executeQuery(sql, {
++    b: batch, o: order, i: item, op,
++    flag: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 }
++  });
++  if (!String(result.outBinds.flag).startsWith("Y")) throw new Error(op + " failed for " + batch + ": " + result.outBinds.flag);
++}
++
++export async function swap(data: RequestData) {
++  return query.withTransaction(async db => {
++    const { incoming, outgoing, preview } = await prepareSwap(db, data, true);
++    if (data.snapshot !== preview.snapshot) throw new Error("Assignments changed. Fetch order details again.");
++    for (let i = 0; i < incoming.length; i++) {
++      const from = incoming[i], replacement = outgoing[i];
++      await changeLink(db, from.BATCH1, from.ORD, from.ITEM, "DELINK");
++      await changeLink(db, from.BATCH1, data.order, data.item, "LINK");
++      await changeLink(db, replacement.BATCH1, data.order, data.item, "DELINK");
++      await changeLink(db, replacement.BATCH1, from.ORD, from.ITEM, "LINK");
+     }
+-    await conn.commit();return {swapped:pairs.length,skipped};
+-  }catch(e){await conn.rollback();throw e;}finally{await conn.close();}
++    return { swapped: incoming.length, skipped: preview.skipped };
++  });
+ }

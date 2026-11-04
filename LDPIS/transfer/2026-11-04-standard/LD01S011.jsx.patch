@@ -1,0 +1,13 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Planning/LD01S011.jsx b/LDPIS/LDPIS-Frontend/src/views/Planning/LD01S011.jsx
+index 0486c20..4c8ddc4 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Planning/LD01S011.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Planning/LD01S011.jsx
+@@ -565,7 +565,7 @@ export default function LD01S011() {
+     {loading && <Preloader/>}{isRestricted ? <p>You are not authorized to view this page.</p> :
+     <Grid container spacing={2} mt={2}>
+       <Grid item xs={12} md={6} sx={{minWidth:0}}>
+-        <Card>{ribbon("Batch Filters","batches",!ids.trim(),<ManageSearchIcon/>)}<MDBox p={2}><MDInput multiline label="Batch IDs (comma or newline separated)" fullWidth value={ids} disabled={loading} onChange={e=>{setIds(e.target.value);setBatches([]);setPreview(null);setMessage("");}}/></MDBox></Card>
++        <Card>{ribbon("Batch Filters","batches",!ids.trim(),<ManageSearchIcon/>)}<MDBox p={2}><MDInput multiline minRows={3} maxRows={10} sx={{ "& textarea:not([aria-hidden])": { overflowY: "auto !important" } }} label="Batch IDs (comma or newline separated)" fullWidth value={ids} disabled={loading} onChange={e=>{setIds(e.target.value);setBatches([]);setPreview(null);setMessage("");}}/></MDBox></Card>
+         <MDBox mt={2}><Card>{ribbon("Batch Details")}<div id="swapBatch" key={batches.length ? "rows":"empty"}/></Card></MDBox>
+       </Grid>
+       <Grid item xs={12} md={6} sx={{minWidth:0}}>

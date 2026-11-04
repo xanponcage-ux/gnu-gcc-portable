@@ -1,0 +1,28 @@
+diff --git a/LDPIS/LDPIS-Backend/src/infrastructure/database/querys.ts b/LDPIS/LDPIS-Backend/src/infrastructure/database/querys.ts
+index cda8047..1dcf243 100644
+--- a/LDPIS/LDPIS-Backend/src/infrastructure/database/querys.ts
++++ b/LDPIS/LDPIS-Backend/src/infrastructure/database/querys.ts
+@@ -104,4 +104,22 @@ const testExecuteQuery = async (query: string, parameters = {}) => {
+   }
+ };
+ 
+-export default { executeQuery, testExecuteQuery, executeMany };
++// A swap must keep its row locks and all procedure calls on one connection.
++async function withTransaction<T>(work: (db: { executeQuery: typeof executeQuery }) => Promise<T>) {
++  const conn = await oracledb.getPool(getValue("user")).getConnection();
++  try {
++    const db = {
++      executeQuery: (sql: string, binds = {}) => conn.execute(sql, binds, { autoCommit: false })
++    };
++    const result = await work(db);
++    await conn.commit();
++    return result;
++  } catch (error) {
++    await conn.rollback();
++    throw error;
++  } finally {
++    await conn.close();
++  }
++}
++
++export default { executeQuery, testExecuteQuery, executeMany, withTransaction };

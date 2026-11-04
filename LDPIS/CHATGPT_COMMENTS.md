@@ -114,3 +114,5 @@ Default bundle: 2026-11-04. Configure LD01S011 screen permissions in UAT. Verify
 LD01S011 backend correction: route → controller → model → repository, following LD01S005. Pull main and rerun the same 2026-11-04 check/apply commands above, even if the earlier bundle was already applied. Restart the backend after applying.
 
 LD01S011 WB lookup/layout fix: pull main and rerun the 2026-11-04 check/apply commands above. Missing and non-WB batches are ignored. Preview and swap use only displayed WB batches. Batch and order panels are side by side on desktop.
+
+LD01S011 standard backend and scrollable batch input: on fresh installs apply 2026-11-04 first. Then run the same office check and apply commands with -ChangeSet "2026-11-04-standard". Restart the backend. Batch input grows from 3 to 10 rows and then scrolls. Route bearer and existing screen access remain; controller no longer repeats the permission lookup.
