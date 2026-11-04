@@ -48,7 +48,7 @@ export default function MaxWidthDialog2448(props) {
   const [getcathodic, setgetcathodic] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -296,7 +296,7 @@ export default function MaxWidthDialog2448(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '45px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '35px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             CATHODIC DISBONDMENT TEST REPORT
@@ -403,7 +403,7 @@ export default function MaxWidthDialog2448(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getcathodic?.length > 0 ? getcathodic[0].SPEC : '  '} & QAPNO:{getcathodic?.length > 0 ? getcathodic[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getcathodic?.length > 0 ? getcathodic[0].SPEC : '  '} & QAPNO: TSL/COAT/{getcathodic?.length > 0 ? getcathodic[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 

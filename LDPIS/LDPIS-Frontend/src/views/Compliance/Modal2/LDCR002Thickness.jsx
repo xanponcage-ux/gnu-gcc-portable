@@ -89,8 +89,8 @@ export default function MaxWidthDialogThick(props) {
           plant: props?.plant?.value ? props.plant.value : "",
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
-          matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          // matno: props.shift ? props.matno : "",
+          matno: props?.shift ? props?.shift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate
@@ -430,7 +430,7 @@ export default function MaxWidthDialogThick(props) {
 
                             <Grid item xs={0.65}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_TEST_PIP_120 !== null ? dataRow.TBP_TEST_PIP_120 : <br />}</Grid>
                             <Grid item xs={0.85}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_COAT_STAS_120 !== null ? dataRow.TBP_COAT_STAS_120 : <br />}</Grid>
-                            <Grid item xs={3.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_ONPIPE !== null ? dataRow.TEST_ONPIPE : <br />}</Grid>
+                            <Grid item xs={3.15} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TEST_NAME !== null ? dataRow.TEST_NAME : <br />}</Grid>
                             <Grid item xs={0.75}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '5px'  }}>{dataRow.TBP_QTEMP_120 !== null ? dataRow.TBP_QTEMP_120 : <br />}</Grid>
                          </Grid>
                       ))}

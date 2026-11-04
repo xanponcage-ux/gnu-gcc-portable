@@ -49,7 +49,7 @@ export default function MaxWidthDialogelongation(props) {
   const [getelongation, setgetelongation] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -165,11 +165,6 @@ export default function MaxWidthDialogelongation(props) {
         });
     });
 
-      const formattedPrintDateShift = props?.printdate
-  ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
-       props?.printShift?.value || ""
-    }`
-  : "";
 
   const componentRef = React.useRef();
 
@@ -183,6 +178,23 @@ export default function MaxWidthDialogelongation(props) {
   
     const rowsPerPage = 24;
     const numPages = Math.max(1, Math.ceil(getelongation?.length / rowsPerPage));
+
+              const formattedPrintDateShift = props?.printdate
+  ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
+       props?.printShift?.value || ""
+    }`
+  : "";
+
+
+    const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
 
   return (
     <React.Fragment>
@@ -300,7 +312,7 @@ export default function MaxWidthDialogelongation(props) {
                               {/* <p>Test Start Date </p>
                               <p>Test Finish Date  </p> */}
                             </Grid>
-                            <Grid item xs={5.4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
+                            <Grid item xs={6} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
                               <p>: {getelongation?.length > 0 ? getelongation[0].CLIENT : ' '} </p>
                               {/* <p>: {getelongation?.length > 0 ? getelongation[0].PROJECTNAME : ' '}</p> */}
                               <p>: {getelongation?.length > 0 ? getelongation[0].PO_REF_NO : ' '} </p>
@@ -318,12 +330,13 @@ export default function MaxWidthDialogelongation(props) {
                               <p>Coating Date</p>
                               {/* <p>Test Finish Time  </p> */}
                             </Grid>
-                            <Grid item xs={3.4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getelongation?.length > 0  ? `${getelongation[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                            <Grid item xs={2.8} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
+                              {/* <p>: {getelongation?.length > 0  ? `${getelongation[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getelongation?.length > 0  ? `   ETR/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {getelongation?.length > 0  ? getelongation[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
-                              <p>: {getelongation?.length > 0  ? getelongation[0].COATING_DT : ' '} </p>
+                              <p>: {getelongation?.length > 0  ? getelongation[0].COATING_DATE : ' '} </p>
                               {/* <p>: {getelongation?.length > 0  ? getelongation[0].TEST_ED_TIME : ' '} </p> */}
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
@@ -343,11 +356,11 @@ export default function MaxWidthDialogelongation(props) {
                             .map((dataRow, i) => (
                               <React.Fragment key={`data-fragment-${pageIndex}-${i}`}>
                                 <Grid key={`data-${pageIndex}-${i}`} container>
-                                  <Grid item xs={0.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{(i % 6) + 1}</Grid>
+                                  <Grid item xs={0.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{pageIndex * rowsPerPage + i + 1}</Grid>
                                   <Grid item xs={3.25}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.CHARG !== null ? dataRow.CHARG : <br />}</Grid>
-                                  <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.COATING_DT !== null ? dataRow.COATING_DT : <br />}</Grid>
-                                  <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.OPERATING_TEMP_H !== null ? dataRow.OPERATING_TEMP_H : <br />}</Grid>
-                                  <Grid item xs={3}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_DUR_H !== null ? dataRow.TEST_DUR_H : <br />}</Grid>
+                                  <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQ_VALUE !== null ? dataRow.REQ_VALUE : <br />}</Grid>
+                                  <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.ACHIEVED_VALUE !== null ? dataRow.ACHIEVED_VALUE : <br />}</Grid>
+                                  <Grid item xs={3}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                                 </Grid>
                                 {(i + 1) % 6 === 0 && (
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={0.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
@@ -376,7 +389,7 @@ export default function MaxWidthDialogelongation(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getelongation?.length > 0 ? getelongation[0].SPEC : '  '} & QAPNO:{getelongation?.length > 0 ? getelongation[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getelongation?.length > 0 ? getelongation[0].SPEC : '  '} & QAPNO: TSL/COAT/{getelongation?.length > 0 ? getelongation[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 

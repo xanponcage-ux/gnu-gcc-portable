@@ -25,22 +25,23 @@ import serverDetails from "../../../variables/serverDetails";
 import Preloader from "components/Preloader/Preloader";
 import logo from "../../../assets/img/Tata_White.png";
 
-import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AlarmIcon from "@mui/icons-material/Alarm";
-import LibraryAdd from "@mui/icons-material/LibraryAdd";
-import FindInPageIcon from "@mui/icons-material/FindInPage";;
-import Barcode from 'react-barcode';
+// import Tooltip from "@mui/material/Tooltip";
+// import IconButton from "@mui/material/IconButton";
+// import DeleteIcon from "@mui/@mui/icons-material/Delete";
+// import AlarmIcon from "@mui/@mui/icons-material/Alarm";
+// import LibraryAdd from "@mui/@mui/icons-material/LibraryAdd";
+// import FindInPageIcon from "@mui/@mui/icons-material/FindInPage";
+// import Barcode from 'react-barcode';
 import ReactToPrint from 'react-to-print';
+// import SentimentDissatisfiedIcon from '@mui/@mui/icons-material/SentimentDissatisfied';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import QRCode from "react-qr-code";
+// import Table from '@mui/material/Table';
+// import TableBody from '@mui/material/TableBody';
+// import TableCell from '@mui/material/TableCell';
+// import TableContainer from '@mui/material/TableContainer';
+// import TableHead from '@mui/material/TableHead';
+// import TableRow from '@mui/material/TableRow';
+// import QRCode from "react-qr-code";
 import { GetAuthorization } from "utils";
 import { Zoom } from "@mui/material";
 
@@ -48,7 +49,7 @@ export default function MaxWidthDialogDegreeofcure(props) {
   const [getdegreeofcure, setgetdegreeofcure] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -66,7 +67,7 @@ export default function MaxWidthDialogDegreeofcure(props) {
   const [loading, setLoading] = React.useState(false);
   const [plant, setPlant] = useState([]);
   const [sfgData, setSfgData] = useState([]);
-  const currentDate = DateTime.now().toFormat('dd.MM.yyyy');
+  // const currentDate = DateTime.now().toFormat('dd.MM.yyyy'); // DateTime is not imported, assuming it's from luxon or similar, but not used in the final render logic for currentDate.
 
   const { reviewedBy, instrumentName, instrumentId, wiNo } = props;
 
@@ -87,7 +88,6 @@ export default function MaxWidthDialogDegreeofcure(props) {
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
           shift: props.shift ? props.shift : "",
-          // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate
               .toLocaleDateString("en-GB", {
@@ -100,7 +100,6 @@ export default function MaxWidthDialogDegreeofcure(props) {
           : "",  
           heatno: props.heatno ? props.heatno : "",
           pipeno: props.pipeno ? props.pipeno : "",
-          // rmno: props.rmno ? props.rmno : "",  //
         };
 
         GetAuthorization().then((token) => {
@@ -114,7 +113,7 @@ export default function MaxWidthDialogDegreeofcure(props) {
               axiosAPI.post("api/LDCR003/getdegreeofcure", data, defaultOptions),
           ]).then(([getdegreeofcureResponse]) => {
             setgetdegreeofcure(getdegreeofcureResponse.data);
-                console.log(getdegreeofcure);
+                // console.log(getdegreeofcure); // This will log the old state value due to closure
                 
                 setInitialLoad(true);
             }).finally(() => {
@@ -132,7 +131,6 @@ export default function MaxWidthDialogDegreeofcure(props) {
   };
 
   const handleClose = () => {
-    //setOpen(false); 
     props.close(false);
   };
 
@@ -151,7 +149,7 @@ export default function MaxWidthDialogDegreeofcure(props) {
           defaultOptions
         )
         .then((response) => {
-          if (response.statusText != "" && response.statusText != "OK") {
+          if (response.statusText !== "" && response.statusText !== "OK") {
             reject(response.statusText);
           } else {
             localStorage.setItem("tcm_accessToken", response.data.accessToken);
@@ -163,16 +161,9 @@ export default function MaxWidthDialogDegreeofcure(props) {
           }
         });
     });
-  const formattedPrintDateShift = props?.printdate
-  ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
-       props?.printShift?.value || ""
-    }`
-  : "";
-
 
   const componentRef = React.useRef();
 
-  //const pageStyle = `
   const pageStyle = `
   @page {
     size: A4 landscape;
@@ -193,8 +184,24 @@ export default function MaxWidthDialogDegreeofcure(props) {
   }
   `;
   
-    const rowsPerPage = 10;
+    const rowsPerPage = 16; // Number of data rows per page
     const numPages = Math.max(1, Math.ceil(getdegreeofcure?.length / rowsPerPage));
+
+    const formattedPrintDateShift = props?.printdate
+  ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
+       props?.printShift?.value || ""
+    }`
+  : "";
+
+    const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
 
   return (
     <React.Fragment>
@@ -204,7 +211,6 @@ export default function MaxWidthDialogDegreeofcure(props) {
         open={props.open}
         onClose={handleClose}
       >
-        {/* <DialogTitle>{props.type} Print Label</DialogTitle> */}
         <DialogContent>
           {loading && <Preloader />}
           {getdegreeofcure?.length === 0 && !loading ? (
@@ -248,7 +254,7 @@ export default function MaxWidthDialogDegreeofcure(props) {
           ref={componentRef}
           style={{ display: 'block' }}>
          {Array.from({ length: numPages }).map((_, pageIndex) => (
-<div key={pageIndex} className="print-page">
+            <div key={pageIndex} className="print-page">
              <div className="print-container">
               <div style={{ display: 'flex', justifyContent: 'center' }}>
               <img
@@ -331,7 +337,8 @@ export default function MaxWidthDialogDegreeofcure(props) {
                               {/* <p>Test Finish Time  </p> */}
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getdegreeofcure?.length > 0  ? `${getdegreeofcure[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getdegreeofcure?.length > 0  ? `${getdegreeofcure[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getdegreeofcure?.length > 0  ? `   LTR/DOC/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {getdegreeofcure?.length > 0  ? getdegreeofcure[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
@@ -344,44 +351,101 @@ export default function MaxWidthDialogDegreeofcure(props) {
                     <Grid container xs = {12} >
 
                       <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={2.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
-                      <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
-                      <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
-                      <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
+                      <Grid item xs={2.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
+                      <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
+                      <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
+                      <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
                       <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST RESULT</Grid>
+                      <Grid item xs={2.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST RESULT</Grid>
                       <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
                     
                       {getdegreeofcure
                             .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
-                            .map((dataRow, i) => (
-<Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                            <Grid item xs={2.9}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}</Grid>
-                            <Grid item xs={1.7}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_METHOD!== null ? dataRow.TEST_METHOD : <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQ_TG !== null ? dataRow.REQ_TG : <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_RESULT_TG1 !== null ? dataRow.TEST_RESULT_TG1 : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
-                         </Grid>
-                      ))}
+                            .map((dataRow, i) => {
+                              const currentSrNo = pageIndex * rowsPerPage + i + 1;
+                              // Condition to display content in specific columns (MATERIAL DESCRIPTION, BATCH NO., TEST DESCRIPTION, TEST METHOD)
+                              const displayContentForSpecificColumns = (currentSrNo - 4) % 8 === 0;
+                              // Condition to apply bottom border for specific columns
+                              const applyBottomBorderForSpecificColumns = (currentSrNo % 8 === 0);
+
+                              // Helper function to determine cell styles based on column type
+                              const getCellStyle = (isSpecificDataColumn) => ({
+                                fontSize: '10px',
+                                color: 'black',
+                                fontFamily: "ArialBold",
+                                fontWeight: 'bold',
+                                // Apply conditional border for specific data columns, otherwise always apply
+                                borderBottom: (isSpecificDataColumn && applyBottomBorderForSpecificColumns) ? '1px solid black' : (!isSpecificDataColumn ? '1px solid black' : 'none'),
+                                borderRight: '1px solid black',
+                                padding: '3px'
+                              });
+
+                              return (
+                                <Grid key={`data-${pageIndex}-${i}`} container>
+                                    {/* SR.NO. column: Always displays number, always has bottom border */}
+                                    <Grid item xs={0.5} style={getCellStyle(false)}>{currentSrNo}</Grid>
+                                    {/* MATERIAL DESCRIPTION: Conditional content, conditional bottom border */}
+                                    <Grid item xs={2.5} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />) : <br />}</Grid>
+                                    {/* BATCH NO.: Conditional content, conditional bottom border */}
+                                    <Grid item xs={1.5} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />) : <br />}</Grid>
+                                    {/* TEST DESCRIPTION: Conditional content, conditional bottom border */}
+                                    <Grid item xs={1.5} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />) : <br />}</Grid>
+                                    {/* TEST METHOD: Conditional content, conditional bottom border */}
+                                    <Grid item xs={1.2} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.TEST_METHOD !== null ? dataRow.TEST_METHOD : <br />) : <br />}</Grid>
+                                    {/* REQUIREMENT: Always displays content, always has bottom border */}
+<Grid item xs={1.5} style={getCellStyle(false)}>
+  {currentSrNo % 2 === 0
+    ? (dataRow.REQ_CURE ?? <br />)
+    : ('Δ'+ dataRow.REQ_TG + '℃' ?? <br />)}
+</Grid>
+                                    {/* TEST RESULT: Always displays content, always has bottom border */}
+                                    <Grid item xs={2.2} style={getCellStyle(false)}>{dataRow.TEST_RESULT !== null ? 'Δ ' + dataRow.TEST_RESULT : <br />}</Grid>
+                                    {/* REMARKS: Always displays content, always has bottom border */}
+                                    <Grid item xs={1.1} style={getCellStyle(false)}>{dataRow.LCP_DOC_REMARKS !== null ? dataRow.LCP_DOC_REMARKS : <br />}</Grid>
+                                </Grid>
+                              );
+                            })}
 
 
-{Array.from({ length: Math.max(0, rowsPerPage - getdegreeofcure.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
-                            <Grid key={`empty-${pageIndex}-${i}`} container>
+{Array.from({ length: Math.max(0, rowsPerPage - getdegreeofcure.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => {
+                            const currentSrNoEmpty = pageIndex * rowsPerPage + getdegreeofcure.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length + i + 1;
+                            // Condition to apply bottom border for specific columns in empty rows
+                            const applyBottomBorderForSpecificColumnsEmpty = (currentSrNoEmpty % 8 === 0);
 
-                            <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={2.9}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.7}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                         </Grid>
-                      ))}
+                            // Helper function for empty row cell styles
+                            const getCellStyleEmpty = (isSpecificDataColumn) => ({
+                                fontSize: '10px',
+                                color: 'black',
+                                fontFamily: "ArialBold",
+                                fontWeight: 'bold',
+                                // Apply conditional border for specific data columns, otherwise always apply
+                                borderBottom: (isSpecificDataColumn && applyBottomBorderForSpecificColumnsEmpty) ? '1px solid black' : (!isSpecificDataColumn ? '1px solid black' : 'none'),
+                                borderRight: '1px solid black',
+                                padding: '3px'
+                            });
+
+                            return (
+                                <Grid key={`empty-${pageIndex}-${i}`} container>
+                                    {/* SR.NO. empty row: Empty content, always has bottom border */}
+                                    <Grid item xs={0.5} style={getCellStyleEmpty(false)}>{<br />}</Grid>
+                                    {/* MATERIAL DESCRIPTION empty row: Empty content, conditional bottom border */}
+                                    <Grid item xs={2.5} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    {/* BATCH NO. empty row: Empty content, conditional bottom border */}
+                                    <Grid item xs={1.5} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    {/* TEST DESCRIPTION empty row: Empty content, conditional bottom border */}
+                                    <Grid item xs={1.5} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    {/* TEST METHOD empty row: Empty content, conditional bottom border */}
+                                    <Grid item xs={1.2} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    {/* REQUIREMENT empty row: Empty content, always has bottom border */}
+                                    <Grid item xs={1.5} style={getCellStyleEmpty(false)}>{<br />}</Grid>
+                                    {/* TEST RESULT empty row: Empty content, always has bottom border */}
+                                    <Grid item xs={2.2} style={getCellStyleEmpty(false)}>{<br />}</Grid>
+                                    {/* REMARKS empty row: Empty content, always has bottom border */}
+                                    <Grid item xs={1.1} style={getCellStyleEmpty(false)}>{<br />}</Grid>
+                                </Grid>
+                            );
+                        })}
 
                     </Grid>  
                     </Grid>
@@ -389,11 +453,11 @@ export default function MaxWidthDialogDegreeofcure(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getdegreeofcure?.length > 0 ? getdegreeofcure[0].SPEC : '  '} & QAPNO:{getdegreeofcure?.length > 0 ? getdegreeofcure[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getdegreeofcure?.length > 0 ? getdegreeofcure[0].SPEC : '  '} & QAPNO: TSL/COAT/{getdegreeofcure?.length > 0 ? getdegreeofcure[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 
-                     <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
+                     <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: "bold"}} >
                       <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>INSTRUMENT USED</Grid>
                       <Grid item xs={0.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>SR No.</Grid>
                       <Grid item xs={5.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
@@ -405,19 +469,10 @@ export default function MaxWidthDialogDegreeofcure(props) {
                           <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>2<br/></Grid>
                           <Grid item xs={5.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName2}</Grid>
                           <Grid item xs={5.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId2}</Grid>
-                          {/* <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>3<br/></Grid>
-                          <Grid item xs={7.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName3}</Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId3}</Grid>
-                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>4<br/></Grid>
-                          <Grid item xs={7.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName4}</Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId4}</Grid>
-                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>5<br/></Grid>
-                          <Grid item xs={7.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName5}</Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId5}</Grid> */}
                        </Grid>
                       
 
-                    <Grid container style={{  textAlign: 'left',fontSize: '11px', color: 'black', fontFamily: "Times New Roman",fontWeight: "bold"}}>
+                    <Grid container style={{  textAlign: 'left',fontSize: '11px', color: 'black', fontFamily: "Times New Roman",fontWeight: "bold"}} >
                       
                           <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold' }}>
                                <Grid item xs={6.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
@@ -469,3 +524,4 @@ export default function MaxWidthDialogDegreeofcure(props) {
     </React.Fragment >
   );
 }
+

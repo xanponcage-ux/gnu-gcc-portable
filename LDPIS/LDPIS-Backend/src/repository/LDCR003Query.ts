@@ -253,6 +253,99 @@ SELECT t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
   }
 };
 
+// export const getCROSSSECTIONINTERFACEPOROSITY = async (
+//   plant: any,
+//   orderNo: any,
+//   item: any,
+//   matno: any,
+//   crdate: any,
+//   heatno: any,
+//   pipeno: any
+//   // ,rmno: any
+// ) => {
+//   try {
+//     var sql = ` SELECT 
+//        t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
+//           t1.enc_sec2_max
+//        || ' mm OD '
+//        || 'X '
+//        || t1.enc_sec1_max
+//        || ' mm WT' pipe_size,
+//        t.TCP_CP1_CO_APPLI PROJECTNAME,
+//        t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
+//        'LTR/C' || '&' || 'IP' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
+//        t.tpc_order_id, t.tpc_order_item,
+//       TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') ||' & '||t3.prd_shift_120 DATE_SHIFTQ,
+//        t3.prd_date_120 || ' & ' || t3.prd_shift_120, SYSDATE, 'D' shift,
+//        t.tpc_sd_proc_sheet process_sheet_no,
+// --==================
+//        'FBE COATED PIPE (2 SAMPLE)' mat_desc,
+//        t3.charg batch_no, 'CROSS SECTION POROSITY' test_dec1,
+//        'INTERFACE POROSITY' test_dec2, t.tcp_ld_cs_refstd test_method1,
+//        t.tcp_ld_interporo_refstd test_method2, t.tcp_ld_cs_min requirement1,
+//        t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
+//        t.tcp_ld_interporo_min requirement2,
+//        t3.lcp_cross_section1 test_result_cross1,
+//        t3.lcp_cross_section2 test_result_cross2,
+//        t3.lcp_interface1 test_result_interace1,
+//        t3.lcp_interface2 test_result_interace2, ' ' remarks
+//   FROM v_process_sheet_ec t,
+//        v_end_cust_ord_epa t1,
+//        v_ldp_prodn t2,
+//        v_zcoat_lab t3
+//  WHERE t.tpc_order_id = t1.enc_id_order
+//    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
+//    AND t.tpc_order_id = t2.lom_id_order_cus
+//    AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+//    AND t3.charg = t2.lom_id_batch
+// --FILTER COND.
+//    -- AND t3.charg = 'Q20000026'
+//    -- AND t3.prd_date_120 = '13-JUL-2026'
+// --AND t3.prd_shift_120 ='D'
+//     AND T2.LOM_CD_EPA = ${plant} `;
+
+//     if (orderNo && orderNo !== "" && orderNo !== null) {
+//       sql += ` AND t.tpc_order_id = '${orderNo}' `;
+//       // binds["orderNo"] = orderNo;
+//     }
+
+//     if (item && item !== "" && item !== null) {
+//       sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
+//       // binds["item"] = item;
+//     }
+
+//     if (matno && matno !== "" && matno !== null) {
+//       sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
+//       // binds["matno"] = matno;
+//     }
+
+//     if (crdate && crdate !== "" && crdate !== null) {
+//       // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
+//       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+//     }
+
+//     if (heatno && heatno !== "" && heatno !== null) {
+//       sql += ` AND t2.lom_no_cast IN ('${heatno}')  `;
+//       // binds["heatno"] = heatno;
+//     }
+
+//     if (pipeno && pipeno !== "" && pipeno !== null) {
+//       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
+//       // binds["pipeno"] = pipeno;
+//     }
+
+//     sql += `  order by t2.lom_ID_FIRST_PAR,t2.lom_ID_BATCH,t2.lom_CD_STATUS `;
+
+//     console.error("getCROSSSECTIONINTERFACEPOROSITY", sql);
+//     console.error("binds");
+//     return await query.executeQuery(sql);
+//   } catch (error) {
+//     // console.log(error);
+//     throw new Error.InternalServerErrorMsg(error);
+//   }
+// };
+
+
 export const getCROSSSECTIONINTERFACEPOROSITY = async (
   plant: any,
   orderNo: any,
@@ -261,86 +354,113 @@ export const getCROSSSECTIONINTERFACEPOROSITY = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
 ) => {
   try {
-    var sql = ` SELECT 
-       t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
-          t1.enc_sec2_max
-       || ' mm OD '
-       || 'X '
-       || t1.enc_sec1_max
-       || ' mm WT' pipe_size,
-       t.TCP_CP1_CO_APPLI PROJECTNAME,
-       t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
-       'LTR/C' || '&' || 'IP' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
-       t.tpc_order_id, t.tpc_order_item,
-      TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') ||' & '||t3.prd_shift_120 DATE_SHIFTQ,
-       t3.prd_date_120 || ' & ' || t3.prd_shift_120, SYSDATE, 'D' shift,
-       t.tpc_sd_proc_sheet process_sheet_no,
---==================
-       'FBE COATED PIPE (2 SAMPLE)' mat_desc,
-       t3.charg batch_no, 'CROSS SECTION POROSITY' test_dec1,
-       'INTERFACE POROSITY' test_dec2, t.tcp_ld_cs_refstd test_method1,
-       t.tcp_ld_interporo_refstd test_method2, t.tcp_ld_cs_min requirement1,
-       t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
-       t.tcp_ld_interporo_min requirement2,
-       t3.lcp_cross_section1 test_result_cross1,
-       t3.lcp_cross_section2 test_result_cross2,
-       t3.lcp_interface1 test_result_interace1,
-       t3.lcp_interface2 test_result_interace2, ' ' remarks
-  FROM v_process_sheet_ec t,
-       v_end_cust_ord_epa t1,
-       v_ldp_prodn t2,
-       v_zcoat_lab t3
- WHERE t.tpc_order_id = t1.enc_id_order
-   AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-   AND t.tpc_order_id = t2.lom_id_order_cus
-   AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
-   AND t3.charg = t2.lom_id_batch
---FILTER COND.
-   -- AND t3.charg = 'Q20000026'
-   -- AND t3.prd_date_120 = '13-JUL-2026'
---AND t3.prd_shift_120 ='D'
-    AND T2.LOM_CD_EPA = ${plant} `;
+    let filter = "";
 
-    if (orderNo && orderNo !== "" && orderNo !== null) {
-      sql += ` AND t.tpc_order_id = '${orderNo}' `;
-      // binds["orderNo"] = orderNo;
+    if (orderNo) {
+      filter += ` AND t.tpc_order_id = '${orderNo}' `;
     }
 
-    if (item && item !== "" && item !== null) {
-      sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
-      // binds["item"] = item;
+    if (item) {
+      filter += ` AND TO_NUMBER(t.tpc_order_item) = ${item} `;
     }
 
-    if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
-      // binds["matno"] = matno;
+    if (matno) {
+      filter += ` AND t2.lom_no_matnr IN ('${matno}') `;
     }
 
-    if (crdate && crdate !== "" && crdate !== null) {
-      // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-      sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+    if (crdate) {
+      filter += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}','DD-MON-YYYY') `;
     }
 
-    if (heatno && heatno !== "" && heatno !== null) {
-      sql += ` AND t2.lom_no_cast IN ('${heatno}')  `;
-      // binds["heatno"] = heatno;
+    if (heatno) {
+      filter += ` AND t2.lom_no_cast IN ('${heatno}') `;
     }
 
-    if (pipeno && pipeno !== "" && pipeno !== null) {
-      sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
-      // binds["pipeno"] = pipeno;
+    if (pipeno) {
+      filter += ` AND t3.charg = '${pipeno}' `;
     }
 
-    sql += `  order by t2.lom_ID_FIRST_PAR,t2.lom_ID_BATCH,t2.lom_CD_STATUS `;
+    let sql = `
+      SELECT
+         t1.enc_mark_cust_name client,
+         t.tcp_sd_poref_no po_ref_no,
+         t1.enc_sec2_max || ' mm OD X ' || t1.enc_sec1_max || ' mm WT' pipe_size,
+         t.TCP_CP1_CO_APPLI projectname,
+         t.tcp_sd_tech_spec spec,
+         t.tcp_sd_ic_type type_of_coating,
+         'LTR/CIP/' || TO_CHAR(SYSDATE,'YYYYMMDD') rep_no,
+         t.tpc_order_id,
+         t.tpc_order_item,
+         TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') || ' & ' || t3.prd_shift_120 date_shiftq,
+         t.tpc_sd_proc_sheet process_sheet_no,
+         'FBE COATED PIPE (2 SAMPLE)' mat_desc,
+         t3.charg batch_no,
+         1 sample_no,
+         'CROSS SECTION POROSITY' test_dec,
+         t.tcp_ld_cs_refstd test_method,
+         t.tcp_ld_cs_min requirement,
+         t3.lcp_cross_section1 test_result_cross,
+         t3.lcp_interface1 test_result_interface,
+         t.TPC_SD_QAP_NO1 acceptance_crt,
+         ' ' remarks
+      FROM v_process_sheet_ec t,
+           v_end_cust_ord_epa t1,
+           v_ldp_prodn t2,
+           v_zcoat_lab t3
+      WHERE t.tpc_order_id = t1.enc_id_order
+        AND TO_NUMBER(t.tpc_order_item) = t1.enc_no_item
+        AND t.tpc_order_id = t2.lom_id_order_cus
+        AND TO_NUMBER(t.tpc_order_item) = t2.lom_id_ord_item_cus
+        AND t3.charg = t2.lom_id_batch
+        AND t3.lcp_cross_section1 is not null
+        and t3.lcp_interface1 is not null
+        AND t2.lom_cd_epa = ${plant}
+        ${filter}
+      UNION ALL
+      SELECT
+         t1.enc_mark_cust_name client,
+         t.tcp_sd_poref_no po_ref_no,
+         t1.enc_sec2_max || ' mm OD X ' || t1.enc_sec1_max || ' mm WT' pipe_size,
+         t.TCP_CP1_CO_APPLI projectname,
+         t.tcp_sd_tech_spec spec,
+         t.tcp_sd_ic_type type_of_coating,
+         'LTR/CIP/' || TO_CHAR(SYSDATE,'YYYYMMDD') rep_no,
+         t.tpc_order_id,
+         t.tpc_order_item,
+         TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') || ' & ' || t3.prd_shift_120 date_shiftq,
+         t.tpc_sd_proc_sheet process_sheet_no,
+         'FBE COATED PIPE (2 SAMPLE)' mat_desc,
+         t3.charg batch_no,
+         2 sample_no,
+         'INTERFACE POROSITY' test_dec,
+         t.tcp_ld_interporo_refstd test_method,
+         t.tcp_ld_interporo_min requirement,
+         t3.lcp_cross_section2 test_result_cross,
+         t3.lcp_interface2 test_result_interface,
+         t.TPC_SD_QAP_NO1 acceptance_crt,
+         ' ' remarks
+      FROM v_process_sheet_ec t,
+           v_end_cust_ord_epa t1,
+           v_ldp_prodn t2,
+           v_zcoat_lab t3
+      WHERE t.tpc_order_id = t1.enc_id_order
+        AND TO_NUMBER(t.tpc_order_item) = t1.enc_no_item
+        AND t.tpc_order_id = t2.lom_id_order_cus
+        AND TO_NUMBER(t.tpc_order_item) = t2.lom_id_ord_item_cus
+        AND t3.charg = t2.lom_id_batch
+                        AND t3.lcp_cross_section2 is not null
+        and t3.lcp_interface2 is not null
+        AND t2.lom_cd_epa = ${plant}
+        ${filter}
+      ORDER BY batch_no, sample_no
+    `;
 
-    console.error("getCROSSSECTIONINTERFACEPOROSITY", sql);
-    console.error("binds");
+    console.log("getCROSSSECTIONINTERFACEPOROSITY :", sql);
+
     return await query.executeQuery(sql);
   } catch (error) {
-    // console.log(error);
     throw new Error.InternalServerErrorMsg(error);
   }
 };
@@ -356,67 +476,57 @@ export const getdegreeofcure = async (
   // ,rmno: any
 ) => {
   try {
-    var sql = ` 
-       SELECT 
-       t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
-          t1.enc_sec2_max
-       || ' mm OD '
-       || 'X '
-       || t1.enc_sec1_max
-       || ' mm WT' pipe_size,
-       t.TCP_CP1_CO_APPLI PROJECTNAME,
-       t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
-       'LTR/DOC' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
-       t.tpc_order_id, t.tpc_order_item,
-       t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
-       t3.prd_date_120 || ' & ' || t3.prd_shift_120, SYSDATE, 'D' shift,
-       t.tpc_sd_proc_sheet process_sheet_no, t.tpc_sd_qap_no1 qap_no,
-       'CURED EPOXY FROM COATED PIPE' mat_desc,
-       'PIPE NO: ' || t3.charg pipe_no, 'DEGREE OF CURE' test_desc,
-       t.tcp_ld_dcure_refstd test_method,
-              TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') ||' & '||t3.prd_shift_120 DATE_SHIFTQ,
-       DECODE (t.tcp_ld_tag_min,
-               NULL, UNISTR ('\x394') || 'Tg ' || t.tcp_ld_tag_max,
-                  UNISTR ('\x394')
-               || 'Tg'
-               || t.tcp_ld_tag_min
-               || ','
-               || UNISTR ('\x394')
-               || 'Tg '
-               || t.tcp_ld_tag_max
-              ) req_tg,
-       DECODE (t.tcp_ld_degree_cure_max,
-               NULL, 'CURE = Min ' || t.tcp_ld_degree_cure_min || '%',
-                  'CURE = Min '
-               || t.tcp_ld_degree_cure_min
-               || '%'
-               || ', CURE = Max '
-               || t.tcp_ld_degree_cure_max
-               || '%'
-              ) req_tg,
-       '% CURE = ' || lcp_doc_test1 test_result_dc1,
-       '% CURE = ' || lcp_doc_test2 test_result_dc2,
-       '% CURE = ' || lcp_doc_test3 test_result_dc3,
-       '% CURE = ' || lcp_doc_test4 test_result_dc4,
-       UNISTR ('\x394') || 'Tg =' || lcp_tag_test1 || '°C' test_result_tg1,
-       UNISTR ('\x394') || 'Tg =' || lcp_tag_test2 || '°C' test_result_tg2,
-       UNISTR ('\x394') || 'Tg =' || lcp_tag_test3 || '°C' test_result_tg3,
-       UNISTR ('\x394') || 'Tg =' || lcp_tag_test4 || '°C' test_result_tg4,
-       lcp_doc_remarks
-  FROM v_process_sheet_ec t,
-       v_end_cust_ord_epa t1,
-       v_ldp_prodn t2,
-       v_zcoat_lab t3
- WHERE t.tpc_order_id = t1.enc_id_order
-   AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-   AND t.tpc_order_id = t2.lom_id_order_cus
-   AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
-   AND t3.charg = t2.lom_id_batch
---FILTER COND.
-   --AND t3.charg = 'Q20000026'
-   --AND t3.prd_date_120 = '13-JUL-2026'
-   --AND t3.prd_shift_120 ='D'
-    AND T2.LOM_CD_EPA = ${plant} `;
+
+    var sql = `WITH BaseData AS (
+    SELECT
+        t1.enc_mark_cust_name client,
+        t.tcp_sd_poref_no po_ref_no,
+        t1.enc_sec2_max || ' mm OD ' || 'X ' || t1.enc_sec1_max || ' mm WT' pipe_size,
+        t.TCP_CP1_CO_APPLI PROJECTNAME,
+        t.tcp_sd_tech_spec spec,
+        t.tcp_sd_ic_type type_of_coating,
+        'LTR/DOC' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
+        t.tpc_order_id,
+        t.tpc_order_item,
+        t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
+        t3.prd_date_120 || ' & ' || t3.prd_shift_120 AS date_shift_raw,
+        SYSDATE AS current_date,
+        'D' AS shift,
+        t.tpc_sd_proc_sheet process_sheet_no,
+        t.tpc_sd_qap_no1 qap_no,
+        'CURED EPOXY FROM COATED PIPE' mat_desc,
+        'PIPE NO: ' || t3.charg pipe_no, -- Used for partitioning the serial number
+        t3.charg AS raw_charg, -- For the final ORDER BY clause
+        t2.lom_ID_FIRST_PAR, -- For the final ORDER BY clause
+        t2.lom_CD_STATUS,    -- For the final ORDER BY clause
+        'DEGREE OF CURE' test_desc,
+        t.tcp_ld_dcure_refstd test_method,
+        TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') ||' & '||t3.prd_shift_120 DATE_SHIFTQ,
+        -- Renamed the second 'req_tg' to 'req_cure' to avoid column name conflict
+        DECODE (t.tcp_ld_tag_min, NULL, 'Tg ' || t.tcp_ld_tag_max, 'Tg' || t.tcp_ld_tag_min || ',' || 'Tg ' || t.tcp_ld_tag_max) AS req_tg,
+        DECODE (t.tcp_ld_degree_cure_max, NULL, 'CURE = Min ' || t.tcp_ld_degree_cure_min || '%', 'CURE = Min ' || t.tcp_ld_degree_cure_min || '%' || ', CURE = Max ' || t.tcp_ld_degree_cure_max || '%') AS req_cure,
+        lcp_doc_test1, lcp_doc_test2, lcp_doc_test3, lcp_doc_test4,
+        lcp_tag_test1, lcp_tag_test2, lcp_tag_test3, lcp_tag_test4,
+        lcp_doc_remarks
+    FROM v_process_sheet_ec t,
+         v_end_cust_ord_epa t1,
+         v_ldp_prodn t2,
+         v_zcoat_lab t3
+    WHERE t.tpc_order_id = t1.enc_id_order
+      AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
+      AND t.tpc_order_id = t2.lom_id_order_cus
+      AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
+      AND t3.charg = t2.lom_id_batch
+      AND lcp_doc_test1 IS NOT NULL
+      AND lcp_doc_test2 IS NOT NULL
+      AND lcp_doc_test3 IS NOT NULL
+      AND lcp_doc_test4 IS NOT NULL
+      AND lcp_tag_test1 IS NOT NULL
+      AND lcp_tag_test2 IS NOT NULL
+      AND lcp_tag_test3 IS NOT NULL
+      AND lcp_tag_test4 IS NOT NULL
+      AND T2.LOM_CD_EPA = ${plant}
+`;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {
       sql += ` AND t.tpc_order_id = '${orderNo}' `;
@@ -448,7 +558,57 @@ export const getdegreeofcure = async (
       // binds["pipeno"] = pipeno;
     }
 
-    sql += `  order by t2.lom_ID_FIRST_PAR,t2.lom_ID_BATCH,t2.lom_CD_STATUS `;
+    sql += `  ),
+UnpivotedData AS (
+    -- Unpivot Tg tests first, then CURE tests for each index to ensure correct ordering
+    SELECT 1 SRN, bd.*, 'Tg' AS TestType, 1 AS TestIndex, 'Tg = ' || bd.lcp_tag_test1 || '°C' AS TestResultDisplay, 1 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 2 SRN,bd.*, '% CURE' AS TestType, 1 AS TestIndex, '% CURE = ' || bd.lcp_doc_test1 AS TestResultDisplay, 2 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 3 SRN,bd.*, 'Tg' AS TestType, 2 AS TestIndex, 'Tg = ' || bd.lcp_tag_test2 || '°C' AS TestResultDisplay, 1 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 4 SRN,bd.*, '% CURE' AS TestType, 2 AS TestIndex, '% CURE = ' || bd.lcp_doc_test2 AS TestResultDisplay, 2 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 5 SRN, bd.*, 'Tg' AS TestType, 3 AS TestIndex, 'Tg = ' || bd.lcp_tag_test3 || '°C' AS TestResultDisplay, 1 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 6 SRN,bd.*, '% CURE' AS TestType, 3 AS TestIndex, '% CURE = ' || bd.lcp_doc_test3 AS TestResultDisplay, 2 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 7 SRN, bd.*, 'Tg' AS TestType, 4 AS TestIndex, 'Tg = ' || bd.lcp_tag_test4 || '°C' AS TestResultDisplay, 1 AS SortOrder FROM BaseData bd
+    UNION ALL
+    SELECT 8 SRN,bd.*, '% CURE' AS TestType, 4 AS TestIndex, '% CURE = ' || bd.lcp_doc_test4 AS TestResultDisplay, 2 AS SortOrder FROM BaseData bd
+)
+SELECT
+        ROW_NUMBER() OVER (PARTITION BY ud.pipe_no ORDER BY ud.SRN) AS "SR. no",
+    ud.client,
+    ud.po_ref_no,
+    ud.pipe_size,
+    ud.PROJECTNAME,
+    ud.spec,
+    ud.type_of_coating,
+    ud.rep_no,
+    ud.tpc_order_id,
+    ud.tpc_order_item,
+    ud.ACCEPTANCE_CRT,
+    ud.date_shift_raw,
+    ud.current_date,
+    ud.shift,
+    ud.process_sheet_no,
+    ud.qap_no,
+    ud.mat_desc,
+    ud.pipe_no,
+    ud.test_desc,
+    ud.test_method,
+    ud.DATE_SHIFTQ,
+    ud.req_tg,
+    ud.req_cure, -- Displaying the renamed 'req_cure' column
+    ud.TestResultDisplay AS test_result, -- The unpivoted test result
+    ud.lcp_doc_remarks
+FROM UnpivotedData ud
+ORDER BY
+    ud.lom_ID_FIRST_PAR,
+    ud.raw_charg, -- Corresponds to t2.lom_ID_BATCH
+    ud.lom_CD_STATUS,
+    rownum `;
 
     console.error("getdegreeofcure", sql);
     console.error("binds");
@@ -530,26 +690,16 @@ AND T3.CHARG = T2.LOM_ID_BATCH
 --and t3.prd_date_120 ='13-JUL-2026' 
 --AND t3.prd_shift_120 ='D'
  AND T2.LOM_CD_EPA = ${plant}
-)
-UNPIVOT (
-    ACHIEVED_VALUE FOR TEST_NO IN (
-        TEST1 AS 'TEST1',
-        TEST2 AS 'TEST2',
-        TEST3 AS 'TEST3',
-        TEST4 AS 'TEST4',
-        TEST5 AS 'TEST5',
-        TEST6 AS 'TEST6'
-    )
-)
+
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {
-      sql += ` WHERE tpc_order_id = '${orderNo}' `;
+      sql += ` and T.tpc_order_id = '${orderNo}' `;
       // binds["orderNo"] = orderNo;
     }
 
     if (item && item !== "" && item !== null) {
-      sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
+      sql += ` AND TO_NUMBER(T.tpc_order_item) = '${item}' `;
       // binds["item"] = item;
     }
 
@@ -565,7 +715,19 @@ UNPIVOT (
       // binds["pipeno"] = pipeno;
     }
 
-    sql += ` ORDER BY tpc_order_id, tpc_order_item, TEST_NO  `;
+    sql += ` 
+    )
+UNPIVOT (
+    ACHIEVED_VALUE FOR TEST_NO IN (
+        TEST1 AS 'TEST1',
+        TEST2 AS 'TEST2',
+        TEST3 AS 'TEST3',
+        TEST4 AS 'TEST4',
+        TEST5 AS 'TEST5',
+        TEST6 AS 'TEST6'
+    )
+)
+    ORDER BY tpc_order_id, tpc_order_item, TEST_NO  `;
 
     console.error("getelongationrep", sql);
     console.error("binds");
@@ -647,23 +809,16 @@ AND T3.CHARG = T2.LOM_ID_BATCH
 --and t3.prd_date_120 ='13-JUL-2026' 
 --AND t3.prd_shift_120 ='D'
 AND T2.LOM_CD_EPA = ${plant}
-)
-UNPIVOT (
-    ACHIEVED_VALUE FOR TEST_NO IN (
-        ACHIEVED_VALUE1 AS 'ACHIEVED_VALUE1',
-        ACHIEVED_VALUE2 AS 'ACHIEVED_VALUE2',
-        ACHIEVED_VALUE3 AS 'ACHIEVED_VALUE3'
-    )
-)
+
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {
-      sql += `  WHERE tpc_order_id = '${orderNo}' `;
+      sql += `  AND T.tpc_order_id = '${orderNo}' `;
       // binds["orderNo"] = orderNo;
     }
 
     if (item && item !== "" && item !== null) {
-      sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
+      sql += ` AND TO_NUMBER(T.tpc_order_item) = '${item}' `;
       // binds["item"] = item;
     }
 
@@ -679,7 +834,14 @@ UNPIVOT (
       // binds["pipeno"] = pipeno;
     }
 
-    sql += ` ORDER BY tpc_order_id, tpc_order_item, TEST_NO  `;
+    sql += `)
+UNPIVOT (
+    ACHIEVED_VALUE FOR TEST_NO IN (
+        ACHIEVED_VALUE1 AS 'ACHIEVED_VALUE1',
+        ACHIEVED_VALUE2 AS 'ACHIEVED_VALUE2',
+        ACHIEVED_VALUE3 AS 'ACHIEVED_VALUE3'
+    )
+) ORDER BY tpc_order_id, tpc_order_item, TEST_NO  `;
 
     console.error("getFLEXIBILITYTEST3LPE", sql);
     console.error("binds");
@@ -801,7 +963,7 @@ sysdate,'D' shift,
 t.tpc_sd_proc_sheet process_sheet_no,
 t.tpc_sd_qap_no1 qap_no,
 --=====================================
-T3.CHARG Mat_desc ,
+'PIPE No.-' || T3.CHARG Mat_desc ,
 t3.CDT_HRD_INS_NAME Batch_no,
 'Hardness Test' Test_desc,
 t.TCP_LD_HARDH_REFSTD	Test_method,
@@ -820,6 +982,7 @@ AND T3.CHARG = T2.LOM_ID_BATCH
 --and t3.prd_date_120 ='13-JUL-2026' 
 --AND t3.prd_shift_120 ='D'
  AND T2.LOM_CD_EPA = ${plant}
+ and t3.CDT_HARDNESS	 is not null
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {
@@ -847,96 +1010,6 @@ AND T3.CHARG = T2.LOM_ID_BATCH
     sql += ` ORDER BY tpc_order_id, tpc_order_item  `;
 
     console.error("getHARDNESSTEST", sql);
-    console.error("binds");
-    return await query.executeQuery(sql);
-  } catch (error) {
-    // console.log(error);
-    throw new Error.InternalServerErrorMsg(error);
-  }
-};
-
-export const getHOTWATERADHESIONTEST24HRS = async (
-  plant: any,
-  orderNo: any,
-  item: any,
-  matno: any,
-  crdate: any,
-  heatno: any,
-  pipeno: any
-  // ,rmno: any
-) => {
-  try {
-    var sql = ` 
-       select T1.ENC_MARK_CUST_NAME Client,
-t.TCP_SD_POREF_NO PO_ref_no,
-t.TCP_CP1_CO_APPLI PROJECTNAME,
-t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
-t.TCP_SD_TECH_SPEC SPEC,
-t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
-t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/HWA'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
-t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
-t3.prd_shift_120 COATING_SHIFT,
-sysdate,'D' shift,
-t.tpc_sd_proc_sheet process_sheet_no,
-t.tpc_sd_qap_no1 qap_no,
---=====================================
-'Partially/FBE Coated Pipe Sample' Mat_desc,
-'PIPE No:-'||T3.CHARG Batch_no ,
-'HOT WATER ADHESION TEST For 24 Hrs. at'||TCP_LD_ADHETEST_UNIT	 Test_desc,
-t.TCP_LD_24H_REFSTD Test_method,
-t.TCP_LD_24H_ADHETEST_MIN	|| TCP_LD_24H_ADHETEST_MAX	requirement,
-t3.LCP_ADHT_MIN	test_result1,
-t3.LCP_ADHT_MIN_1	test_result2,
-t3.LCP_ADHT_MIN_2	test_result3,
-' ' remarks,
-TO_CHAR(t3.LCP_SDATE_24H1, 'DD-MM-YYYY') ||
-' & Time - ' ||
-TO_CHAR(t3.LCP_SDATE_24H1, 'HH24:MI') AS strt_dt_time,
-
-TO_CHAR(t3.LCP_EDATE_24H1, 'DD-MM-YYYY') ||
-' & Time - ' ||
-TO_CHAR(t3.LCP_EDATE_24H1, 'HH24:MI') AS end_dt_time
---=======================================
-from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
-where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
-AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
-AND T.TPC_ORDER_ID = t2.lom_id_order_cus
-AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
-AND T3.CHARG = T2.LOM_ID_BATCH
---FILTER COND.
---and T3.CHARG = 'Q20000026' 
---and t3.prd_date_120 ='13-JUL-2026' 
---AND t3.prd_shift_120 ='D'
- AND T2.LOM_CD_EPA = ${plant}
-    `;
-
-    if (orderNo && orderNo !== "" && orderNo !== null) {
-      sql += ` AND t.tpc_order_id = '${orderNo}' `;
-      // binds["orderNo"] = orderNo;
-    }
-
-    if (item && item !== "" && item !== null) {
-      sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
-      // binds["item"] = item;
-    }
-
-
-    if (crdate && crdate !== "" && crdate !== null) {
-      // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-      sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
-    }
-
-
-    if (pipeno && pipeno !== "" && pipeno !== null) {
-      sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
-      // binds["pipeno"] = pipeno;
-    }
-
-    sql += ` ORDER BY tpc_order_id, tpc_order_item  `;
-
-    console.error("getHOTWATERADHESIONTEST24HRS", sql);
     console.error("binds");
     return await query.executeQuery(sql);
   } catch (error) {
@@ -1107,6 +1180,98 @@ AND CDT_TENSILE is not null
   }
 };
 
+export const getHOTWATERADHESIONTEST24HRS = async (
+  plant: any,
+  orderNo: any,
+  item: any,
+  matno: any,
+  crdate: any,
+  heatno: any,
+  pipeno: any
+  // ,rmno: any
+) => {
+  try {
+    var sql = ` 
+       select T1.ENC_MARK_CUST_NAME Client,
+t.TCP_SD_POREF_NO PO_ref_no,
+t.TCP_CP1_CO_APPLI PROJECTNAME,
+t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
+t.TCP_SD_TECH_SPEC SPEC,
+t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
+t.TCP_SD_IC_TYPE type_of_coating,
+'LTR/HWA'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
+t.tpc_order_id,t.tpc_order_item,
+TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
+t3.prd_shift_120 COATING_SHIFT,
+sysdate,'D' shift,
+t.tpc_sd_proc_sheet process_sheet_no,
+t.tpc_sd_qap_no1 qap_no,
+--=====================================
+'Partially/FBE Coated Pipe Sample' Mat_desc,
+'PIPE No:-'||T3.CHARG Batch_no ,
+'HOT WATER ADHESION TEST For 24 Hrs. at'||TCP_LD_ADHETEST_UNIT	 Test_desc,
+t.TCP_LD_24H_REFSTD Test_method,
+t.TCP_LD_24H_ADHETEST_MIN	|| TCP_LD_24H_ADHETEST_MAX	requirement,
+t3.LCP_ADHT_MIN	test_result1,
+t3.LCP_ADHT_MIN_1	test_result2,
+t3.LCP_ADHT_MIN_2	test_result3,
+' ' remarks,
+TO_CHAR(t3.LCP_SDATE_24H1, 'DD-MM-YYYY') ||
+' & Time - ' ||
+TO_CHAR(t3.LCP_SDATE_24H1, 'HH24:MI') AS strt_dt_time,
+TO_CHAR(t3.LCP_EDATE_24H1, 'DD-MM-YYYY') ||
+' & Time - ' ||
+TO_CHAR(t3.LCP_EDATE_24H1, 'HH24:MI') AS end_dt_time
+--=======================================
+from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
+where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
+AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
+AND T.TPC_ORDER_ID = t2.lom_id_order_cus
+AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+AND T3.CHARG = T2.LOM_ID_BATCH
+AND t3.LCP_ADHT_MIN is not null
+and t3.LCP_ADHT_MIN_1    is not null
+and t3.LCP_ADHT_MIN_2    is not null
+--FILTER COND.
+--and T3.CHARG = 'Q20000026' 
+--and t3.prd_date_120 ='13-JUL-2026' 
+--AND t3.prd_shift_120 ='D'
+ AND T2.LOM_CD_EPA = ${plant}
+    `;
+
+    if (orderNo && orderNo !== "" && orderNo !== null) {
+      sql += ` AND t.tpc_order_id = '${orderNo}' `;
+      // binds["orderNo"] = orderNo;
+    }
+
+    if (item && item !== "" && item !== null) {
+      sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
+      // binds["item"] = item;
+    }
+
+
+    if (crdate && crdate !== "" && crdate !== null) {
+      // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
+      sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+    }
+
+
+    if (pipeno && pipeno !== "" && pipeno !== null) {
+      sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
+      // binds["pipeno"] = pipeno;
+    }
+
+    sql += ` ORDER BY tpc_order_id, tpc_order_item  `;
+
+    console.error("getHOTWATERADHESIONTEST24HRS", sql);
+    console.error("binds");
+    return await query.executeQuery(sql);
+  } catch (error) {
+    // console.log(error);
+    throw new Error.InternalServerErrorMsg(error);
+  }
+};
+
 export const getHOTWATERIMMERSION48 = async (
   plant: any,
   orderNo: any,
@@ -1146,7 +1311,6 @@ t3.ACP_TEST_RESULT2  test_result3,
 TO_CHAR(t3.ACP_SDATE_48H2, 'DD-MM-YYYY') ||
 ' & Time - ' ||
 TO_CHAR(t3.ACP_SDATE_48H2, 'HH24:MI') AS strt_dt_time,
-
 TO_CHAR(t3.ACP_EDATE_48H2, 'DD-MM-YYYY') ||
 ' & Time - ' ||
 TO_CHAR(t3.ACP_EDATE_48H2, 'HH24:MI') AS end_dt_time
@@ -1157,6 +1321,9 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+AND t3.ACP_TEST_RESULT  is not null
+AND t3.ACP_TEST_RESULT1  is not null
+AND t3.ACP_TEST_RESULT2 is not null
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -1225,12 +1392,14 @@ SELECT t1.enc_mark_cust_name client,
        TO_CHAR (t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  coating_date,
        t3.prd_shift_120 coating_shift, SYSDATE, 'D' shift,
        t.tpc_sd_proc_sheet process_sheet_no, t.tpc_sd_qap_no1 qap_no,
-       --t3.lp3_sdate_indt strt_dt_time, 
-        TO_CHAR (t3.lp3_sdate_indt, 'DD.MM.YYYY') strt_dt_time,
-         TO_CHAR (t3.lp3_edate_indt, 'DD.MM.YYYY') end_dt_time,
-       --t3.lp3_edate_indt end_dt_time,
-       --TO_CHAR (t3.lp3_sdate_indt, 'DD.MM.YYYY') strt_dt_time,
-       --TO_CHAR (t3.lp3_edate_indt, 'DD.MM.YYYY') end_dt_time,
+TO_CHAR(
+    TO_DATE(t3.lp3_sdate_indt, 'YYYY-MM-DD"T"HH24:MI'),
+    'DD.MM.YYYY'
+) AS strt_dt_time,
+TO_CHAR(
+    TO_DATE(t3.lp3_edate_indt, 'YYYY-MM-DD"T"HH24:MI'),
+    'DD.MM.YYYY'
+) AS end_dt_time,
         t3.LP3_STIME_INDT START_time,
         t3.LP3_ETIME_INDT end_time,
           'Max. '

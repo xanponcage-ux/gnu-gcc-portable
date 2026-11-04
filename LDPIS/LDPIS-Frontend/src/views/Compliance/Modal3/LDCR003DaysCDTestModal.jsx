@@ -407,7 +407,7 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getdaycathodic?.length > 0 ? getdaycathodic[0].SPEC : '  '} & QAPNO:{getdaycathodic?.length > 0 ? getdaycathodic[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getdaycathodic?.length > 0 ? getdaycathodic[0].SPEC : '  '} & QAPNO: TSL/COAT/{getdaycathodic?.length > 0 ? getdaycathodic[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 

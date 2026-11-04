@@ -50,6 +50,7 @@ import MaxWidthproductionstab from "./Modal3/LDCR003productionsctability";
 import MaxWidthtensile from "./Modal3/LDCR003tensile";
 import MaxWidthindent from "./Modal3/LDCR003indentation";
 import MaxWidthhotwtad24 from "./Modal3/LDCR003hotwateradhe24";
+import MaxWidthhotwtad48 from "./Modal3/LDCR003hotwaterimmersion"
 
 import "../../tabulatorCss.scss";
 import { GetAuthorization } from "utils";
@@ -487,6 +488,7 @@ export default function LDCR003() {
   };
 
   const handlerepTypeChange = (value) => {
+    handleClearAll();
     setSelectrepType(value);
     //  setselectedunit("");
     //  setInstrumentName("");
@@ -518,22 +520,66 @@ export default function LDCR003() {
     // selectedEndFacingTable([]);
   };
 
-  const handleClearAll = () => {
-    console.log("Inside handleClearAll");
-    setSelectedPlant([]);
-    setSelectrepType([]);
-    setcrdate(null);
-    setOrderNo("");
-    setitem("");
-    setReviewedBy("");
-    console.log("reviewedBy: ", reviewedBy);
-    setInstrumentName("");
-    setInstrumentId("");
-    setInstrumentName2("");
-    setInstrumentId2("");
-    setWiNo("");
-    setrepairmat("");
-  };
+const handleClearAll = () => {
+  console.log("Inside handleClearAll");
+
+  // Dates
+  setcrdate(null);
+  setprintdate(null);
+
+  // Order Details
+  setOrderNo("");
+  setitem("");
+  setpipeno("");
+  setrmno("");
+
+  // Review Details
+  setReviewedBy("");
+  setWiNo("");
+  setrepairmat("");
+
+  // Gain Details
+  setGainA("");
+  setGainM("");
+
+  // Instrument Details (General)
+  setInstrumentName("");
+  setInstrumentId("");
+
+  // Instrument Details (Blasting Reports)
+  setInstrumentName1("");
+  setInstrumentId1("");
+
+  setInstrumentName2("");
+  setInstrumentId2("");
+
+  setInstrumentName3("");
+  setInstrumentId3("");
+
+  setInstrumentName4("");
+  setInstrumentId4("");
+
+  setInstrumentName5("");
+  setInstrumentId5("");
+
+  // Shift Details
+  setSelectedShift(null);
+  setSelectedpShift(null);
+
+  // Unit & Specimen
+  setselectedunit(null);
+  setSelectedSpecimen(null);
+
+  // Radio / Print Options
+  setValueRadio("1");
+  setprintoption("R");
+
+  // Modal
+  setModalType(null);
+  setModalOpen(false);
+
+  console.log("All filters cleared");
+};
 
   return (
     <DashboardLayout>
@@ -1122,8 +1168,10 @@ export default function LDCR003() {
 
                       {/*  3 Instrument Name & Instrument IDs For blasting report */}
                       {// selectedrepType?.value === "3C" ||
-                      // selectedrepType?.value === "3" ||
-                      selectedrepType?.value === "3E" && (
+                      (selectedrepType?.value === "3K" ||
+                      selectedrepType?.value === "3E" ||
+                      selectedrepType?.value === "3L" 
+                    )&& (
                         // selectedrepType?.value === "3F" ||
                         // selectedrepType?.value === "3G" ||
                         // selectedrepType?.value === "3H" ||
@@ -1204,10 +1252,12 @@ export default function LDCR003() {
                         selectedrepType?.value === "3F" ||
                         selectedrepType?.value === "3G" ||
                         selectedrepType?.value === "3H" ||
-                        // selectedrepType?.value === "3I" ||
+                        selectedrepType?.value === "3I" ||
                         selectedrepType?.value === "3J"||
-                       selectedrepType?.value === "3M"||
-                      selectedrepType?.value === "3L") && (
+                       selectedrepType?.value === "3M"
+                      //  ||
+                      // selectedrepType?.value === "3L"
+                    ) && (
                         <Grid container spacing={2} mt={1}>
                           <Grid item xs={12}>
                             <MDTypography variant="h6">
@@ -1257,8 +1307,8 @@ export default function LDCR003() {
                       )}
 
                       {/*  1  Instrument Name & Instrument IDs For blasting report */}
-                      {(selectedrepType?.value === "3C"||
-                        selectedrepType?.value === "3I"
+                      {(selectedrepType?.value === "3C"
+                        //|| selectedrepType?.value === "3I"
                       ) && (
                         // selectedrepType?.value === "3D" ||
                         // selectedrepType?.value === "3E" ||
@@ -1643,8 +1693,8 @@ printShift={selectedpShift}
                             instrumentId1={instrumentId1}
                             instrumentName2={instrumentName2}
                             instrumentId2={instrumentId2}
-                            // instrumentName3={instrumentName3}
-                            // instrumentId3={instrumentId3}
+                            instrumentName3={instrumentName3}
+                            instrumentId3={instrumentId3}
                             // instrumentName4={instrumentName4}
                             // instrumentId4={instrumentId4}
                             // instrumentName5={instrumentName5}
@@ -1653,7 +1703,7 @@ printShift={selectedpShift}
                         )}
 
                          {modalType === "HOT WATER IMMERSION" && (
-                          <MaxWidthhotwtad24
+                          <MaxWidthhotwtad48
                             open={isModalOpen}
                             close={handleCloseModal}
                             type="FG-MD"
@@ -1707,8 +1757,8 @@ printShift={selectedpShift}
                             instrumentId1={instrumentId1}
                             instrumentName2={instrumentName2}
                             instrumentId2={instrumentId2}
-                            // instrumentName3={instrumentName3}
-                            // instrumentId3={instrumentId3}
+                            instrumentName3={instrumentName3}
+                            instrumentId3={instrumentId3}
                             // instrumentName4={instrumentName4}
                             // instrumentId4={instrumentId4}
                             // instrumentName5={instrumentName5}

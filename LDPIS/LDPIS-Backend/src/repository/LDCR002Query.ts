@@ -1879,7 +1879,7 @@ export const getthickness = async (
 ) => {
   try {
     var sql = `
-       SELECT A.TEST_ONPIPE,
+      SELECT 
        TO_CHAR (t3.tbp_prod_date, 'DD.MM.YYYY')
        || ' & '
        || t3.tbp_shift_DN date_shift,
@@ -1930,6 +1930,7 @@ export const getthickness = async (
        t3.tbp_prod_date,
        t3.tbp_result,
        t3.tbp_shift,
+       t3.tbp_shift_DN,
        t3.tbp_dia_end_10,
        t3.TBP_QTEMP_120,
        (SELECT LISTAGG(
@@ -1960,53 +1961,18 @@ export const getthickness = async (
         FROM V_LAB_FIELD_TEST_EC t4
         WHERE t4.elf_batch_no = t3.tbp_batch_no
           AND t4.elf_prod_date = t3.tbp_prod_date
-          AND t4.elf_shift = t3.tbp_shift
+          AND t4.elf_shift = t3.tbp_shift_DN
        ) test_name
   FROM v_process_sheet_ec t,
        v_end_cust_ord_epa t1,
        v_ldp_prodn t2,
-       v_bare_pdo t3,
-       (
-    SELECT ELF_BATCH_NO,
-           ELF_PLANT_CD,
-           ELF_PROD_DATE,
-           LISTAGG(DISTINCT
-                       CASE ELF_TEST_NAME
-                           WHEN 'Trial Pipe' THEN 'TP'
-                           WHEN 'Epoxy Holiday Test' THEN 'EHT'
-                           WHEN 'Cross Cut Test' THEN 'CCT'
-                           WHEN 'Impact Test' THEN 'IT'
-                           WHEN 'Peel Test' THEN 'PT'
-                           WHEN 'Middle Peel Test' THEN 'MPT'
-                           WHEN 'Air Entrapment Test' THEN 'AET'
-                           WHEN 'Degree of Cure' THEN 'DOC'
-                           WHEN '24 Hour Adhesion Test' THEN '24AT'
-                           WHEN 'Porosity Test' THEN 'PST'
-                           WHEN 'Flexibility Test for FBE' THEN 'FTFBE'
-                           WHEN 'Cathodic Disbondment Test 24H /48H' THEN 'CD24/48'
-                           WHEN 'Flexibility Test for 3LPE Pipe' THEN 'FT3LPE'
-                           WHEN 'Indentation Test' THEN 'IDT'
-                           WHEN 'Elongnation Test' THEN 'ET'
-                           WHEN 'Cathodic Disbondment Test 28D/30D' THEN 'CD28/30'
-                           WHEN 'Tensile Test' THEN 'TT'
-                           WHEN 'Hardness Test' THEN 'HT'
-                           WHEN 'Product Stability Test' THEN 'PST' -- Assuming PST for both Porosity and Product Stability
-                           WHEN '48 Hour Hot water Immersion Test' THEN '48HT'
-                           WHEN 'Repair Test Report' THEN 'REPAIR'
-                           ELSE ELF_TEST_NAME -- Keep original if no match
-                       END, ', ') WITHIN GROUP (ORDER BY ELF_TEST_NAME) AS TEST_ONPIPE
-    FROM V_lab_field_test_EC
-    GROUP BY ELF_BATCH_NO, ELF_PLANT_CD, ELF_PROD_DATE
-) A
+       v_bare_pdo t3
  WHERE t.tpc_order_id = t1.enc_id_order
    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
    AND T.TPC_ORDER_ID = t3.tbp_id_order_no
    AND to_number(t.TPC_ORDER_ITEM) = t3.tbp_item_no
    AND t3.tbp_batch_no = t2.lom_id_batch
    AND t3.tbp_cd_proc IN ('D')
-   AND A.ELF_BATCH_NO = T3.tbp_batch_no
-   AND A.ELF_PLANT_CD = T2.LOM_CD_EPA
-   AND A.ELF_PROD_DATE = T3.TBP_PROD_DATE
 --FILTER COND.
    --AND t.tpc_order_id = '0060977580'
    --AND TO_NUMBER (t.tpc_order_item) = 1
@@ -2025,7 +1991,7 @@ export const getthickness = async (
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.LOM_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND t3.tbp_shift_DN IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -2161,13 +2127,13 @@ export const getfinalinspection = async (
     }
 
     if (shift && shift !== "" && shift !== null) {
-      sql += ` AND t3.TBP_SHIFT IN ('${shift}')  `;
+      sql += ` AND t3.tbp_shift_DN IN ('${shift}')  `;
       // binds["matno"] = matno;
     }
 
     if (crdate && crdate !== "" && crdate !== null) {
       // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-      sql += ` AND TRUNC(t3.TBP_PROD_DATE) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
+      sql += ` AND TRUNC(t3.tbp_prod_date) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
     if (heatno && heatno !== "" && heatno !== null) {

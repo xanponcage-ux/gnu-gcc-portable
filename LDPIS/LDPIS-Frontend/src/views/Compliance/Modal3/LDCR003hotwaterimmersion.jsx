@@ -44,11 +44,11 @@ import QRCode from "react-qr-code";
 import { GetAuthorization } from "utils";
 import { Zoom } from "@mui/material";
 
-export default function MaxWidthhotwaterimer(props) {
-  const [gethotwater, setgethotwater] = useState([]);
+export default function MaxWidthhotwtad24(props) {
+  const [gethotwater48, setgethotwater48] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -112,9 +112,9 @@ export default function MaxWidthhotwaterimer(props) {
             setLoading(true);
             Promise.all([
               axiosAPI.post("api/LDCR003/getHOTWATERIMMERSION48", data, defaultOptions),
-          ]).then(([gethotwaterResponse]) => {
-            setgethotwater(gethotwaterResponse.data);
-                console.log(gethotwater);
+          ]).then(([gethotwater48Response]) => {
+            setgethotwater48(gethotwater48Response.data);
+                console.log(gethotwater48);
                 
                 setInitialLoad(true);
             }).finally(() => {
@@ -193,8 +193,19 @@ export default function MaxWidthhotwaterimer(props) {
   }
   `;
   
-    const rowsPerPage = 10;
-    const numPages = Math.max(1, Math.ceil(gethotwater?.length / rowsPerPage));
+    const rowsPerPage = 14;
+    const numPages = Math.max(1, Math.ceil(gethotwater48?.length / rowsPerPage));
+
+
+    const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
 
   return (
     <React.Fragment>
@@ -207,7 +218,7 @@ export default function MaxWidthhotwaterimer(props) {
         {/* <DialogTitle>{props.type} Print Label</DialogTitle> */}
         <DialogContent>
           {loading && <Preloader />}
-          {gethotwater?.length === 0 && !loading ? (
+          {gethotwater48?.length === 0 && !loading ? (
             <MDBox
            sx={{
              display: 'flex',
@@ -297,7 +308,7 @@ export default function MaxWidthhotwaterimer(props) {
                             noWrap
                             style={{ textAlign: 'Right', marginTop: '5px',fontSize: '11px', color: 'black', fontFamily: "Times New Roman" }}
                           >
-                           FORMAT NO : TSL/COAT/QC/F-42 Rev 05,Date 13.11.2021            _
+                           FORMAT NO : TSL/COAT/QC/F-42 Rev 05,Date 13.11.2021 _
                           </MDTypography>
                         </Grid>
                         <Grid item xs={12}>
@@ -313,13 +324,13 @@ export default function MaxWidthhotwaterimer(props) {
                               <p>Test Finish Date  </p> */}
                             </Grid>
                             <Grid item xs={6} style={{ fontSize: '12.5px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
-                              <p>: {gethotwater?.length > 0 ? gethotwater[0].CLIENT : ' '} </p>
-                              <p>: {gethotwater?.length > 0 ? gethotwater[0].PROJECTNAME : ' '}</p>
-                              <p>: {gethotwater?.length > 0 ? gethotwater[0].PO_REF_NO : ' '} </p>
-                              {/* <p>: {gethotwater?.length > 0 ? gethotwater[0].SPEC : ' '}  </p> */}
-                              <p>: {gethotwater?.length > 0 ? gethotwater[0].PIPE_SIZE : ' '}  </p>
-                              <p>: {gethotwater?.length > 0 ? gethotwater[0].TYPE_OF_COATING : ' '}  </p>
-                              {/* <p>: {gethotwater?.length > 0 ? gethotwater[0].TEST_ED_DT : ' '}  </p> */}
+                              <p>: {gethotwater48?.length > 0 ? gethotwater48[0].CLIENT : ' '} </p>
+                              <p>: {gethotwater48?.length > 0 ? gethotwater48[0].PROJECTNAME : ' '}</p>
+                              <p>: {gethotwater48?.length > 0 ? gethotwater48[0].PO_REF_NO : ' '} </p>
+                              {/* <p>: {gethotwater48?.length > 0 ? gethotwater48[0].SPEC : ' '}  </p> */}
+                              <p>: {gethotwater48?.length > 0 ? gethotwater48[0].PIPE_SIZE : ' '}  </p>
+                              <p>: {gethotwater48?.length > 0 ? gethotwater48[0].TYPE_OF_COATING : ' '}  </p>
+                              {/* <p>: {gethotwater48?.length > 0 ? gethotwater48[0].TEST_ED_DT : ' '}  </p> */}
                             </Grid>
 
                             <Grid item xs={1.5} style={{ fontSize: '12.5px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black', padding: '3px' }}>
@@ -331,55 +342,56 @@ export default function MaxWidthhotwaterimer(props) {
                               {/* <p>Test Finish Time  </p> */}
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12.5px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {gethotwater?.length > 0  ? `${gethotwater[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
-                              <p>: {formattedPrintDateShift}</p>
-                              <p>: {gethotwater?.length > 0  ? gethotwater[0].PROCESS_SHEET_NO : ' '} </p>
+                              {/* <p>: {gethotwater48?.length > 0  ? `${gethotwater48[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {gethotwater48?.length > 0  ? ` LTR/HWI/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
+                             <p>: {formattedPrintDateShift}</p>
+                              <p>: {gethotwater48?.length > 0  ? gethotwater48[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
-                              <p>: {gethotwater?.length > 0  ? gethotwater[0].DATE_SHIFTQ : ' '} </p>
-                              {/* <p>: {gethotwater?.length > 0  ? gethotwater[0].TEST_ED_TIME : ' '} </p> */}
+                              <p>: {gethotwater48?.length > 0  ? gethotwater48[0].COATING_DATE : ' '} </p>
+                              {/* <p>: {gethotwater48?.length > 0  ? gethotwater48[0].TEST_ED_TIME : ' '} </p> */}
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
                     
                     <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>     
                     <Grid container xs = {12} >
 
-                      <Grid item xs={0.5}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={2.9}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
-                      <Grid item xs={1.1}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
-                      <Grid item xs={1.7}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
-                      <Grid item xs={1.7}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
+                      <Grid item xs={0.4}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.<br />NO.</Grid>
+                      <Grid item xs={2}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
+                      <Grid item xs={1.4}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
+                      <Grid item xs={2.8}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
+                      <Grid item xs={0.8}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
+                      <Grid item xs={2.2}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
                       <Grid item xs={1.5}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST RESULT</Grid>
-                      <Grid item xs={1.1}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
+                      <Grid item xs={0.9}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
                     
-                      {gethotwater
+                      {gethotwater48
                             .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
                             .map((dataRow, i) => (
 <Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                            <Grid item xs={2.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.BATCH_NO !== null ? dataRow.BATCH_NO : <br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_METHOD  !== null ? dataRow.TEST_METHOD: <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_RESULT1 !== null ? dataRow.TEST_RESULT1 : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
+                            <Grid item xs={0.4}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
+                            <Grid item xs={2}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}</Grid>
+                            <Grid item xs={1.4}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.BATCH_NO !== null ? dataRow.BATCH_NO : <br />}</Grid>
+                            <Grid item xs={2.8}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}</Grid>
+                            <Grid item xs={0.8}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_METHOD !== null ? dataRow.TEST_METHOD : <br />}</Grid>
+                            <Grid item xs={2.2}   style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}</Grid>
+                            <Grid item xs={1.5}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_RESULT1 !== null ? dataRow.TEST_RESULT1 : <br />}</Grid>
+                            <Grid item xs={0.9}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                          </Grid>
                       ))}
 
 
-{Array.from({ length: Math.max(0, rowsPerPage - gethotwater.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
+{Array.from({ length: Math.max(0, rowsPerPage - gethotwater48.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
-                            <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={2.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.7}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={0.4}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={1.4}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={2.8}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={0.8}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={2.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
                             <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            <Grid item xs={0.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
                          </Grid>
                       ))}
 
@@ -388,9 +400,12 @@ export default function MaxWidthhotwaterimer(props) {
                     <Grid>
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
-                       <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {gethotwater?.length > 0 ? gethotwater[0].SPEC : '  '} & QAPNO:{gethotwater?.length > 0 ? gethotwater[0].QAP_NO : '  '} </Grid>
-                       
+                         <Grid item xs = {6}>Test Start Date  -{gethotwater48?.length > 0 ? gethotwater48[0].STRT_DT_TIME : '  '} </Grid>
+                         <Grid item xs = {6}>Test Finish Date -{gethotwater48?.length > 0 ? gethotwater48[0].END_DT_TIME : '  '} </Grid>
+                       </Grid>
+                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
+                         <Grid item xs = {0.1}>{<br/>}</Grid>
+                         <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {gethotwater48?.length > 0 ? gethotwater48[0].SPEC : '  '} & QAPNO: TSL/COAT/{gethotwater48?.length > 0 ? gethotwater48[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
@@ -402,13 +417,13 @@ export default function MaxWidthhotwaterimer(props) {
                           <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>1<br/></Grid>
                           <Grid item xs={5.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName1}</Grid>
                           <Grid item xs={5.5}  style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId1}</Grid>
-                          {/* <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>2<br/></Grid>
+                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>2<br/></Grid>
                           <Grid item xs={5.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName2}</Grid>
                           <Grid item xs={5.5}  style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId2}</Grid>
-                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>3<br/></Grid>
+                          {/* <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>3<br/></Grid>
                           <Grid item xs={7.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName3}</Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId3}</Grid> */}
-                          {/* <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>4<br/></Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId3}</Grid>
+                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>4<br/></Grid>
                           <Grid item xs={7.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName4}</Grid>
                           <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId4}</Grid>
                           <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>5<br/></Grid>

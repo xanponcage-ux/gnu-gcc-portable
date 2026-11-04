@@ -1698,7 +1698,7 @@ const handlerepTypeChange = (value) => {
                             testMethod={valueRadio}
                             orderNo={orderNo}
                             item={item}
-                            shift={selectedShift.value}
+                            shift={selectedShift?.value}
                             //heatno={heatno}
                             //pipeno={pipeno}
                             rmno={rmno}
@@ -1733,6 +1733,7 @@ const handlerepTypeChange = (value) => {
                             //matno={matno}
                             //heatno={heatno}
                             //pipeno={pipeno}
+                            shift={selectedShift?.value}
                             rmno={rmno}
                             crdate={crdate}
                             // instrumentName={instrumentName}

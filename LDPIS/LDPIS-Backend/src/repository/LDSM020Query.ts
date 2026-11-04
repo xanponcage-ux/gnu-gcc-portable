@@ -36,6 +36,21 @@ export const getTubePlanData = async (
     ENC_ORDER_TYPE,
     EOP_FG_MATNR,
     EOP_FG_MATNR_DESC,
+    ----Newly added columns
+    EOP_DISP_QTY_IN_UOM,
+          EOP_DISP_PEND,
+          EOP_ZONE,
+          EOP_CATEGORY,
+          EOP_SEGEMENT,
+          EOP_SIGNOF_MONTH,
+          EOP_SIGNOF_QTY,
+          EOP_VDI_GRN,
+          EOP_GRN_GAP,
+          EOP_NSIGNOF_QTY,
+          EOP_INSPECTION_FLAG,
+          EOP_PS_BARE,
+          EOP_PS_EXT,
+          EOP_PS_INT,
     ENC_CD_END_CUST,
     ENC_CUST_NAME,
     ENC_CD_SHIP_TO_PRTY,
@@ -187,31 +202,42 @@ export const getOdiaTo = async (plant: any) => {
 };
 
 export const getRefresh = async () => {
-    try {
-        const sql = `call LDPDBA.P_INSERT_ORDER_PROG()`;
-        console.log("getrefresherror Query -->",'call P_INSERT_ORDER_PROG()')
-        return await query.executeQuery(sql);
-    } catch (error) {
-        console.log("getrefresherror",error)
-        throw new Error.InternalServerErrorMsg(error);
-    }
+  try {
+    const sql = `call LDPDBA.P_INSERT_ORDER_PROG()`;
+    console.log("getrefresherror Query -->", "call P_INSERT_ORDER_PROG()");
+    return await query.executeQuery(sql);
+  } catch (error) {
+    console.log("getrefresherror", error);
+    throw new Error.InternalServerErrorMsg(error);
+  }
 };
 
 //added
-
 export const updateSignoff = async (row: any) => {
-  const binds: any = {}, sets: string[] = [];
-  for (const key of ["plant","Order1","Item"]) {
-    if (typeof row[key] !== "string" || !row[key].trim()) throw new TypeError("Plant, order and item are required.");
+  const binds: any = {},
+    sets: string[] = [];
+  for (const key of ["plant", "Order1", "Item"]) {
+    if (typeof row[key] !== "string" || !row[key].trim())
+      throw new TypeError("Plant, order and item are required.");
     binds[key] = row[key].trim();
   }
-  for (const col of ["ENC_SIGNOF_MONTH","ENC_SIGNOF_QTY","ENC_INSPECTION_FLAG"]) {
+  for (const col of [
+    "ENC_SIGNOF_MONTH",
+    "ENC_SIGNOF_QTY",
+    "ENC_INSPECTION_FLAG",
+  ]) {
     if (row[col] == null || !String(row[col]).trim()) continue;
     const value = String(row[col]).trim();
-    if (col === "ENC_INSPECTION_FLAG" && !["Y","N"].includes(value)) throw new TypeError("Inspection must be Y or N.");
-    sets.push(col + " = :" + col); binds[col] = value;
+    if (col === "ENC_INSPECTION_FLAG" && !["Y", "N"].includes(value))
+      throw new TypeError("Inspection must be Y or N.");
+    sets.push(col + " = :" + col);
+    binds[col] = value;
   }
   if (!sets.length) throw new TypeError("No sign-off values supplied.");
-  return query.executeQuery("UPDATE V_END_CUST_ORD_EPA SET " + sets.join(", ") +
-    " WHERE ENC_CD_EPA=:plant AND ENC_ID_ORDER=:Order1 AND ENC_NO_ITEM=:Item", binds);
+  return query.executeQuery(
+    "UPDATE V_END_CUST_ORD_EPA SET " +
+      sets.join(", ") +
+      " WHERE ENC_CD_EPA=:plant AND ENC_ID_ORDER=:Order1 AND ENC_NO_ITEM=:Item",
+    binds
+  );
 };

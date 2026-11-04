@@ -132,7 +132,6 @@ export const getRefresh = async (req: Request, res: Response) => {
 };
 
 //added
-
 export const updateSignoff = async (req: Request, res: Response) => {
   try {
     const result = await writeSignoff(req.body);

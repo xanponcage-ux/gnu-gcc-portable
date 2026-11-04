@@ -48,7 +48,7 @@ export default function MaxWidthFlex3lpe(props) {
   const [getflex3lpe, setgetflex3lpe] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -164,11 +164,7 @@ export default function MaxWidthFlex3lpe(props) {
         });
     });
 
-      const formattedPrintDateShift = props?.printdate
-  ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
-       props?.printShift?.value || ""
-    }`
-  : "";
+
 
   const componentRef = React.useRef();
 
@@ -195,6 +191,23 @@ export default function MaxWidthFlex3lpe(props) {
   
     const rowsPerPage = 12;
     const numPages = Math.max(1, Math.ceil(getflex3lpe?.length / rowsPerPage));
+
+    const formattedPrintDateShift = props?.printdate
+  ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
+       props?.printShift?.value || ""
+    }`
+  : "";
+
+
+    const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
 
   return (
     <React.Fragment>
@@ -331,11 +344,12 @@ export default function MaxWidthFlex3lpe(props) {
                               {/* <p>Test Finish Time  </p> */}
                             </Grid>
                             <Grid item xs={3.4} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getflex3lpe?.length > 0  ? `${getflex3lpe[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getflex3lpe?.length > 0  ? `${getflex3lpe[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getflex3lpe?.length > 0  ? `   LTR/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {getflex3lpe?.length > 0  ? getflex3lpe[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
-                              <p>: {getflex3lpe?.length > 0  ? getflex3lpe[0].COATING_DT : ' '} </p>
+                              <p>: {getflex3lpe?.length > 0  ? getflex3lpe[0].COATING_DATE : ' '} </p>
                               {/* <p>: {getflex3lpe?.length > 0  ? getflex3lpe[0].TEST_ED_TIME : ' '} </p> */}
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
@@ -355,11 +369,11 @@ export default function MaxWidthFlex3lpe(props) {
                             .map((dataRow, i) => (
                               <React.Fragment key={`data-fragment-${pageIndex}-${i}`}>
                                 <Grid key={`data-${pageIndex}-${i}`} container>
-                                  <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{(i % 3) + 1}</Grid>
-                                  <Grid item xs={1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.CHARG !== null ? dataRow.CHARG : <br />}</Grid>
-                                  <Grid item xs={5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.COATING_DT !== null ? dataRow.COATING_DT : <br />}</Grid>
-                                  <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.OPERATING_TEMP_H !== null ? dataRow.OPERATING_TEMP_H : <br />}</Grid>
-                                  <Grid item xs={2.5}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_DUR_H !== null ? dataRow.TEST_DUR_H : <br />}</Grid>
+                                  <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{pageIndex * rowsPerPage + i + 1}</Grid>
+                                  <Grid item xs={1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
+                                  <Grid item xs={5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}</Grid>
+                                  <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.ACHIEVED_VALUE !== null ? dataRow.ACHIEVED_VALUE : <br />}</Grid>
+                                  <Grid item xs={2.5}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                                 </Grid>
                                 {(i + 1) % 3 === 0 && (
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
@@ -398,7 +412,7 @@ export default function MaxWidthFlex3lpe(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getflex3lpe?.length > 0 ? getflex3lpe[0].SPEC : '  '} & QAPNO:{getflex3lpe?.length > 0 ? getflex3lpe[0].ACCEPTANCE_CRITERIA : '  '} AND FOUND SATISFACTORY</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getflex3lpe?.length > 0 ? getflex3lpe[0].SPEC : '  '} & QAPNO: TSL/COAT/{getflex3lpe?.length > 0 ? getflex3lpe[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 

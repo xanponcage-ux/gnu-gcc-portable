@@ -21,29 +21,78 @@ Use this file for future LDPIS-related runnable instructions and supplementary c
 ```
 Prompt:
 implement the following points.
-1.in LD01S009 in linking part give excel upload feature in batch filter where user will give batch no and then we fetch batch details based on that .Also, put a check on the LINK button that for all selected rows in batch compare the FG MAT with the FG Material of selected row of Order Details and should be same.Also,enable select all in Batch Details.
+1.create a screen LD01S011 exactly the same as Linking tab of LD01S005(dont copy the delinking part) and with following loigc:
+->user enters list of batch id
+->we fetch the batch details given thery are in status WB (remove WF)  (no concept of selection as all the batch ids entered above will be considered always )
+->remove Fitting order button  as not needed , just give a manual entry Order and item field and user will enter value on that field and hit a Order details fetch icon on the ORder filter ribbon upon which an api will be called which does following:
+    1.Check that number of LOM_ID_BATCH in V_LDP_PRODN in LOM_CD_STATUS='WB'  with selected order and item(lom_id_order_cus lom_id_ord_item_cus ) is equal to number of batches we entered above
+    2.if above check passes fetch the order details fetch order details using below query:
+    SELECT TO_CHAR(ENC_DT_ORD_CREATE, 'YYYY-MM-DD HH24:MI:SS') Ord_Crt_Dt
+      ,ENC_ID_ORDER Ord
+      ,ENC_NO_ITEM item
+      ,ENC_ORD_DESC Ord_Desc
+      ,ENC_ORD_QUANTITY Ord_qnty
+      ,(select F_BAL_TO_SCHD (ENC_CD_EPA,ENC_ID_ORDER,ENC_NO_ITEM)  from dual) btp
+      ,ENC_LENGTH_MIN length_min
+      ,ENC_LENGTH_MAX length_max
+      ,ENC_SEC1_MIN Thk_Min
+      ,ENC_SEC1_MAX Thk_Max
+      ,ENC_SEC2_MAX Odia_Min
+      ,ENC_SEC2_MAX Odia_Max
+      ,ENC_NO_MATNR FG_mat
+      ,(select MAKTX from v_makt where mandt='600' AND MATNR=ENC_NO_MATNR)FG_DESC
+      ,ENC_MARK_CUST Mark_cust_cd
+      ,ENC_MARK_CUST_NAME Mark_Cust_NM
+      ,ENC_MATNR_IP IP
+      ,ENC_MATNR_SPEC SPEC
+      ,ENC_SUR_FINISH Sur_Finish
+      ,ENC_END_FINISH End_Finish
+      ,ENC_FIN_COND Fin_Condition
+      ,ENC_GEOMETRY Geometry
+      ,DECODE(ENC_GEOMETRY,'O','Round','R','Section','S','Section',ENC_GEOMETRY) Section_Type
+      FROM V_END_CUST_ORD_EPA --,v_tub_matl_mapping
+      WHERE ENC_CD_ePA='0780'
+      AND ENC_SLIT_PLAN='TUBE'
+      AND ENC_ST_ORDER='A'
+      AND ENC_ID_ORDER = NVL('${props.orderId}',ENC_ID_ORDER)
+      AND ENC_NO_ITEM = NVL('${props.itemId}',ENC_NO_ITEM)
+->instead of working on clicking on order give an icon button on the Order Details ribbon ,upon hitting this we do following :
+1. We fetch all batches(LOM_ID_BATCH from V_LDP_PRODN with lom_id_order_cus lom_id_ord_item_cus as user entered)
+2.we loop through the batches  given by user swapping their current order with the target order given by user and in return one batch currently linked to the target order will be linked to order of the user given batch
+User gives:
+ Batch1(linked to Order 1)   Target Order(Order2 currently having Batch2)
+We need to do:
+step1:Delink Batch1 with Order1 step2: link Batch1 with Order2 step3: Delink Batch2 with Order2 step4: link Batch2 with Order1
 
-2.IN LDSM020 give excel upload (just like in LD10S001 but slight logic modification :) where user uploads rows having data in  following fields where order and item and plant  is mandatory,   for each order and item we fetch the details by calling api of submit button with the corresponding order and item :
-ENC_CD_EPA
-ENC_ID_ORDER
-ENC_NO_ITEM
-ENC_SIGNOF_MONTH   (needs to be added to table )
-ENC_SIGNOF_QTY      (needs to be added to table )
-ENC_INSPECTION_FLAG  (Column name Inspection and only allowed values Y or N)  (needs to be added to table )
+example:
+Given:
+batch (currently linked to order)
+Batch1 -ORD1
+Batch2 -ORD2
+Batch3 -ORD3
+Batch4 -ORDX
+Batch5 -ORDX
 
-give a button beside download upon clicking which an api is called which has an update query which updates the V_END_CUST_ORD_EPA with values of ENC_SIGNOF_MONTH,ENC_SIGNOF_QTY and ENC_GRN_GAP_SIGNOF where given order and item and plant (also any of ENC_SIGNOF_MONTH,ENC_SIGNOF_QTY and ENC_GRN_GAP_SIGNOF which is null or blank will not be updated )
+User Given Target Order ORDX
+Batches currently linked to ORDX(BatchA,BATCHB,BATCHC,Batch4,Batch5)
+
+we will not do above steps for Batch4 and Batch5.
+After doing above steps we will have:
+Batch1 -ORDX
+Batch2 -ORDX
+Batch3 -ORDX
+Batch4 -ORDX
+Batch5 -ORDX
+
+BATCHA- ORD1
+BATCHB-ORD2
+BATCHC-ORD3
+2.we call Procedrue call LDPDBA.LDLTB007(
+          LS_BATCH => :LS_BATCH,
+          LS_ORDER => :LS_ORDER,
+          LS_ITEM => :LS_ITEM,
+          LS_LINK_TYPE => :LS_LINK_TYPE, -- 'LINK' or 'DELINK'
+          LS_OUT_FLAG => :LS_OUT_FLAG
+        )
+   for LINK and delink (it has been done in LD01S009 and if LS_OUT FLAG starts with Y then success)
 ```
-
-## 2026-11-03 — Batch linking and order sign-off uploads
-
-LD01S009: on the Link tab download the batch template, enter BATCH_NO as Text, then upload. Eligible batches appear in Batch Details. Missing batches are listed. Use the header checkbox for select-all. LINK checks every selected batch against the selected order's FG material before sending the update.
-
-LDSM020: use the template, keep plant/order/item identifiers as Text (including leading zeros), and supply only the sign-off values to change. Upload looks up each key with the Submit API. Review the grid and click Update sign-off beside Download. Blank cells leave the current database value unchanged. Each successful update is committed separately; retry updates only remaining pending rows. Per user clarification Inspection is ENC_INSPECTION_FLAG in both Excel and Oracle, with values Y or N.
-
-Run in office PowerShell:
-~~~powershell
-git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
-& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
-& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-~~~

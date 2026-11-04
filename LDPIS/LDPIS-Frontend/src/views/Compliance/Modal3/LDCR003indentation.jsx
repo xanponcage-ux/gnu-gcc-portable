@@ -48,7 +48,7 @@ export default function MaxWidthindent(props) {
   const [getindent, setgetindent] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -192,6 +192,17 @@ export default function MaxWidthindent(props) {
     const rowsPerPage = 4;
     const numPages = Math.max(1, Math.ceil(getindent?.length / rowsPerPage));
 
+
+    const formattedPrintDate = props?.printdate
+  ? (() => {
+      const date = new Date(props.printdate); // Ensure it's a Date object
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}${month}${day}`;
+    })()
+  : "";
+
   return (
     <React.Fragment>
       <Dialog
@@ -326,7 +337,8 @@ export default function MaxWidthindent(props) {
                               <p>Coating Date</p>
                             </Grid>
                             <Grid item xs={3.5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getindent?.length > 0  ? `${getindent[0].REP_NO}-${pageIndex + 1}` : ' '} </p>
+                              {/* <p>: {getindent?.length > 0  ? `${getindent[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getindent?.length > 0  ? `  LTR/ITR/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
                               <p>: {getindent?.length > 0  ? getindent[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
@@ -378,8 +390,8 @@ export default function MaxWidthindent(props) {
                             .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
                             .map((dataRow, i) => (
 <Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                            <Grid item xs={1.35}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
+                            <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>{pageIndex * rowsPerPage + i + 1}</Grid>
+                            <Grid item xs={1.35}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
                                 <Grid item xs={0.6} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '0px', textAlign: 'center' }}>
                                  <Grid container>
                                        <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' ,borderBottom: '1px solid black',borderLeft: '1px solid black', padding: '3px',borderRight: '1px solid black'}}>
@@ -457,7 +469,7 @@ export default function MaxWidthindent(props) {
                                         {(dataRow.SAMPLE_HRESULT3 !== null ) ? dataRow.SAMPLE_HRESULT3 : <br />}</Grid>
                                  </Grid>
                                 </Grid>                                
-                            <Grid item xs={1.65}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REFERENCE_STD !== null ? dataRow.REFERENCE_STD  : <br />}</Grid>
+                            <Grid item xs={1.65}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center'   }}>{dataRow.REFERENCE_STD !== null ? dataRow.REFERENCE_STD  : <br />}</Grid>
                             <Grid item xs={1.9}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                          
                            <Grid item xs={0.5}   style={{ fontSize: '1px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{ <br />}</Grid>
@@ -489,7 +501,7 @@ export default function MaxWidthindent(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getindent?.length > 0 ? getindent[0].SPEC : '  '} & QAPNO:{getindent?.length > 0 ? getindent[0].QAP_NO : '  '} AND FOUND SATISFACTORY.</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getindent?.length > 0 ? getindent[0].SPEC : '  '} & QAPNO: TSL/COAT/{getindent?.length > 0 ? getindent[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 
