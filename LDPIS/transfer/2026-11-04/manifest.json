@@ -13,8 +13,9 @@
   {
     "Project": "LDPIS-Backend",
     "File": "src/routes/LD01S011Route.ts",
-    "Patch": "LD01S011Route.ts.patch",
-    "NewFile": true
+    "Patch": "LD01S011Route.layers.patch",
+    "NewFile": true,
+    "LegacyPatch": "LD01S011Route.ts.patch"
   },
   {
     "Project": "LDPIS-Frontend",
@@ -25,6 +26,18 @@
     "Project": "LDPIS-Frontend",
     "File": "src/views/Planning/LD01S011.jsx",
     "Patch": "LD01S011.jsx.patch",
+    "NewFile": true
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/models/LD01S011Model.ts",
+    "Patch": "LD01S011Model.ts.patch",
+    "NewFile": true
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/controllers/LD01S011Controller.ts",
+    "Patch": "LD01S011Controller.ts.patch",
     "NewFile": true
   }
 ]

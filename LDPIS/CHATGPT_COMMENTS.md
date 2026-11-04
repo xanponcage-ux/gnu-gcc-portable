@@ -110,3 +110,5 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
 ~~~
 Default bundle: 2026-11-04. Configure LD01S011 screen permissions in UAT. Verify that V_LDP_PRODN permits FOR UPDATE and LDLTB007 does not commit internally before enabling production swaps; internal commits cannot be rolled back by the application.
+
+LD01S011 backend correction: route → controller → model → repository, following LD01S005. Pull main and rerun the same 2026-11-04 check/apply commands above, even if the earlier bundle was already applied. Restart the backend after applying.

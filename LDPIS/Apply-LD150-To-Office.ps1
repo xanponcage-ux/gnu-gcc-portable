@@ -3,7 +3,7 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-# Defaults to the 2026-11-04 requests. Earlier bundles remain selectable with -ChangeSet.
+# The 2026-11-04 bundle includes the LD01S011 controller/model correction for new and existing installations. Earlier bundles remain selectable with -ChangeSet.
 # Checks patches on temporary copies first; preserves unrelated office edits.
 # Does not stage, commit, push, or change either office repository's Git settings.
 [CmdletBinding()]

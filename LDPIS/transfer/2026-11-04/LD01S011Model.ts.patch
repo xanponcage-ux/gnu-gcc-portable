@@ -1,0 +1,20 @@
+diff --git a/LDPIS/LDPIS-Backend/src/models/LD01S011Model.ts b/LDPIS/LDPIS-Backend/src/models/LD01S011Model.ts
+new file mode 100644
+--- /dev/null
++++ b/LDPIS/LDPIS-Backend/src/models/LD01S011Model.ts
+@@ -0,0 +1,15 @@
++import * as repository from "../repository/LD01S011Query";
++
++export default class LD01S011 {
++  getBatches(props: any) {
++    return repository.handleSwap("batches", props);
++  }
++
++  getOrder(props: any) {
++    return repository.handleSwap("order", props);
++  }
++
++  swap(props: any) {
++    return repository.handleSwap("swap", props);
++  }
++}

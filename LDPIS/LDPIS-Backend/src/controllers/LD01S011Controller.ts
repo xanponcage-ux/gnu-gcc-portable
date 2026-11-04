@@ -1,0 +1,22 @@
+import { Request, Response } from "express";
+import LD01S011 from "../models/LD01S011Model";
+import UserModel from "../models/usersModel";
+
+async function handle(req: Request, res: Response, action: "getBatches" | "getOrder" | "swap") {
+  try {
+    const access: any = await UserModel.prototype.AuthDetails(req.user as any, "LD01S011", "0780");
+    const flags = access.outBinds;
+    if (flags?.PS_AUTH_USER_SCR !== "Y" || flags?.PS_AUTH_USER_TSM !== "Y" ||
+        (action === "swap" && flags.LS_READ_WRITE_FLAG !== "RL_RW")) {
+      return res.status(403).json({ message: "Not authorized for LD01S011." });
+    }
+    const result = await LD01S011.prototype[action](req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({ message: error instanceof Error ? error.message : "Order swap failed." });
+  }
+}
+
+export const getBatches = (req: Request, res: Response) => handle(req, res, "getBatches");
+export const getOrder = (req: Request, res: Response) => handle(req, res, "getOrder");
+export const swap = (req: Request, res: Response) => handle(req, res, "swap");
