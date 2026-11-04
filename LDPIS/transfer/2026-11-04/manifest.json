@@ -1,0 +1,30 @@
+[
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/app.ts",
+    "Patch": "app.ts.patch"
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/repository/LD01S011Query.ts",
+    "Patch": "LD01S011Query.ts.patch",
+    "NewFile": true
+  },
+  {
+    "Project": "LDPIS-Backend",
+    "File": "src/routes/LD01S011Route.ts",
+    "Patch": "LD01S011Route.ts.patch",
+    "NewFile": true
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/routes.js",
+    "Patch": "routes.js.patch"
+  },
+  {
+    "Project": "LDPIS-Frontend",
+    "File": "src/views/Planning/LD01S011.jsx",
+    "Patch": "LD01S011.jsx.patch",
+    "NewFile": true
+  }
+]

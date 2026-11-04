@@ -68,6 +68,7 @@ import LD50S003 from "views/Planning/LD50S003";
 import LD50S005 from "views/Planning/LD50S005";
 import LD01S002 from "views/Planning/LD01S002";
 import LD01S004 from "views/Planning/LD01S004";
+import LD01S011 from "views/Planning/LD01S011";
 import LD01S005 from "views/Planning/LD01S005";
 import LD01S010 from "views/Planning/LD01S010";
 
@@ -226,6 +227,7 @@ const routes = [
             route: "/LD01S004",
             component: <LD01S004 />,
           },
+          {name:"FG Order Swap",route:"/LD01S011",component:<LD01S011 />},
           {
             name: "FG Linking/De-Linking",
             route: "/LD01S005",
@@ -786,3 +788,4 @@ const routes = [
 ];
 
 export default routes;
+

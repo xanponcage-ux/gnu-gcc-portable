@@ -38,6 +38,7 @@ import LDSM041Route from "./routes/LDSM041Route";
 import LDSM048Route from "./routes/LDSM048Route";
 import LD01S002Route from "./routes/LD01S002Route";
 import LD01S004Route from "./routes/LD01S004Route";
+import LD01S011Route from "./routes/LD01S011Route";
 import LD01S005Route from "./routes/LD01S005Route";
 import LD01S007Route from "./routes/LD01S007Route";
 import LD01S009Route from "./routes/LD01S009Route";
@@ -227,6 +228,7 @@ export class App {
     this.app.use("/api/LDSM048/", LDSM048Route);
     this.app.use("/api/LD01S002/", LD01S002Route);
     this.app.use("/api/LD01S004/", LD01S004Route);
+    this.app.use("/api/LD01S011/", LD01S011Route);
     this.app.use("/api/LD01S005/", LD01S005Route);
     this.app.use("/api/LD01S010/", LD01S010Route);
     this.app.use("/api/LD01S007/", LD01S007Route);
@@ -308,3 +310,4 @@ export class App {
     this.app.use("/api/LDLTS08D/", LDLTS08DRoute);
   }
 }
+

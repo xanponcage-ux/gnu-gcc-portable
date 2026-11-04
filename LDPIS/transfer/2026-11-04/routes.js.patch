@@ -1,0 +1,20 @@
+diff --git a/LDPIS/LDPIS-Frontend/src/routes.js b/LDPIS/LDPIS-Frontend/src/routes.js
+index d6f105a..237d3d0 100644
+--- a/LDPIS/LDPIS-Frontend/src/routes.js
++++ b/LDPIS/LDPIS-Frontend/src/routes.js
+@@ -68,6 +68,7 @@ import LD50S003 from "views/Planning/LD50S003";
+ import LD50S005 from "views/Planning/LD50S005";
+ import LD01S002 from "views/Planning/LD01S002";
+ import LD01S004 from "views/Planning/LD01S004";
++import LD01S011 from "views/Planning/LD01S011";
+ import LD01S005 from "views/Planning/LD01S005";
+ import LD01S010 from "views/Planning/LD01S010";
+ 
+@@ -226,6 +227,7 @@ const routes = [
+             route: "/LD01S004",
+             component: <LD01S004 />,
+           },
++          {name:"FG Order Swap",route:"/LD01S011",component:<LD01S011 />},
+           {
+             name: "FG Linking/De-Linking",
+             route: "/LD01S005",

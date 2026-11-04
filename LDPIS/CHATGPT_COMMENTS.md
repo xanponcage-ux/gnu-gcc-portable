@@ -96,3 +96,17 @@ BATCHC-ORD3
         )
    for LINK and delink (it has been done in LD01S009 and if LS_OUT FLAG starts with Y then success)
 ```
+
+
+## 2026-11-04 — LD01S011 FG Order Swap
+
+Planning & Scheduling → FG Order Swap. Enter distinct batch IDs and fetch the complete WB list. Enter target order and item; fetch Order Details to check the WB count and preview exchanges. Use the swap icon in Order Details to confirm. Entered batches already on the target remain there. Remaining input batches are paired in entry order with remaining target batches sorted by batch ID. Only authenticated users with screen permission can fetch; swap requires RL_RW.
+
+Office PowerShell:
+~~~powershell
+git -C "D:\Office Work\Striver\gnu-gcc-portable" pull --ff-only origin main
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
+& "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
+~~~
+Default bundle: 2026-11-04. Configure LD01S011 screen permissions in UAT. Verify that V_LDP_PRODN permits FOR UPDATE and LDLTB007 does not commit internally before enabling production swaps; internal commits cannot be rolled back by the application.
