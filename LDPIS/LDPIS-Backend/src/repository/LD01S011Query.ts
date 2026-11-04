@@ -65,8 +65,8 @@ export async function handleSwap(action:string, body:any){
     const rows:any[]=(await conn.execute(sql,binds,{outFormat:oracledb.OUT_FORMAT_OBJECT})).rows as any[];
     const byId=new Map<string,any>(rows.map(r=>[String(r.BATCH1),r] as [string,any]));
     if(byId.size!==rows.length)throw new Error("Ambiguous batch IDs.");
+    if(action==="batches")return ids.filter(id=>byId.has(id)).map(id=>byId.get(id));
     const source=ids.map(id=>{const r=byId.get(id);if(!r)throw new Error("Missing or not WB: "+id);return r;});
-    if(action==="batches")return source;
     const orders=(await conn.execute(orderSQL,{ord,itm},{outFormat:oracledb.OUT_FORMAT_OBJECT})).rows as any[];
     if(orders.length!==1)throw new Error("Expected one active TUBE order/item in plant 0780.");
     const onTarget=(r:any)=>String(r.ORD)===String(orders[0].ORD)&&String(r.ITEM)===String(orders[0].ITEM);

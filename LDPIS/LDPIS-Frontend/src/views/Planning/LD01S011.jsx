@@ -536,20 +536,41 @@ export default function LD01S011() {
     if(action==="order")setPreview(null);
     try{
       const {accessToken}=await GetAuthorization();
-      const {data}=await axiosAPI.post("api/LD01S011/"+action,{ids:ids.trim().split(/[\s,;]+/).filter(Boolean),order:order.trim(),item:item.trim(),snapshot:preview?.snapshot},{headers:{Authorization:"Bearer "+accessToken}});
-      if(action==="batches")setBatches(data);
-      else if(action==="order")setPreview(data);
+      const requested = action === "batches" ? ids.trim().split(/[\s,;]+/).filter(Boolean) : batches.map(row => String(row.BATCH1));
+      const response=await axiosAPI.post("api/LD01S011/"+action,{ids:requested,order:order.trim(),item:item.trim(),snapshot:preview?.snapshot},{headers:{Authorization:"Bearer "+accessToken}});
+      const data = response?.data;
+      if (data?.message) throw new Error(String(data.message));
+      if (action === "batches") {
+        if (data && !Array.isArray(data)) throw new Error("Unexpected batch response. Please fetch again.");
+        const rows = Array.isArray(data) ? data.filter(row => row?.BATCH1 != null) : [];
+        const found = new Set(rows.map(row => String(row.BATCH1)));
+        const ignored = requested.filter(id => !found.has(id));
+        setBatches(rows);
+        setMessage((rows.length ? rows.length + " WB batches found." : "No eligible WB batches found.") +
+          (ignored.length ? " Missing or not WB: " + ignored.join(", ") : ""));
+      } else if (action === "order") {
+        if (!Array.isArray(data?.orders) || !data.orders.length || !Array.isArray(data.pairs) ||
+            !data.pairs.every(pair => Array.isArray(pair) && pair.length === 2) || !data.snapshot)
+          throw new Error("No order preview returned. Check the order and item, then fetch again.");
+        setPreview(data);
+      } else if (!Number.isInteger(data?.swapped) || !Number.isInteger(data?.skipped)) {
+        throw new Error("No swap confirmation returned. Fetch batch details again to verify the assignments.");
+      }
       else {setPreview(null);setBatches([]);setMessage("Completed "+data.swapped+" swaps; "+data.skipped+" already on target.");}
-    }catch(e){setPreview(null);setMessage(e.response?.data?.message || e.message);}
+    }catch(e){setPreview(null);setMessage(String(e?.response?.data?.message || e?.message || "Request failed."));}
     finally{setLoading(false);}
   }
   const ribbon=(title,action,disabled,icon)=> <MDBox bgColor="info" color="white" px={2} py={1} display="flex" justifyContent="space-between" alignItems="center"><MDTypography color="white" variant="h6">{title}</MDTypography>{action && <IconButton aria-label={action} disabled={disabled || loading} onClick={()=>run(action)}>{icon}</IconButton>}</MDBox>;
   return <DashboardLayout><DefaultNavbar routes={routes} module="Planning & Scheduling" page="FG Order Swap"/>
     {loading && <Preloader/>}{isRestricted ? <p>You are not authorized to view this page.</p> :
     <Grid container spacing={2} mt={2}>
-    <Grid item xs={12}><Card>{ribbon("Batch Filters","batches",!ids.trim(),<ManageSearchIcon/>)}<MDBox p={2}><MDInput multiline label="Batch IDs (comma or newline separated)" fullWidth value={ids} disabled={loading} onChange={e=>{setIds(e.target.value);setBatches([]);setPreview(null);setMessage("");}}/></MDBox></Card></Grid>
-    <Grid item xs={12}><Card>{ribbon("Batch Details")}<div id="swapBatch" key={batches.length ? "rows":"empty"}/></Card></Grid>
-    <Grid item xs={12}><Card>{ribbon("Order Filters","order",!batches.length || !order.trim() || !item.trim(),<ManageSearchIcon/>)}<MDBox p={2}><MDInput label="Order" value={order} disabled={loading} onChange={e=>{setOrder(e.target.value);setPreview(null);}}/> <MDInput label="Item" value={item} disabled={loading} onChange={e=>{setItem(e.target.value);setPreview(null);}}/></MDBox></Card></Grid>
-    <Grid item xs={12}><Card>{ribbon("Order Details","swap",!preview || isReadWriteAccess || !preview.pairs.length,<MergeIcon/>)}<div id="swapOrder"/>{preview && <MDBox p={2}>{preview.pairs.map(([a,b])=><div key={a}>{a} ↔ {b}</div>)}Already on target: {preview.skipped}</MDBox>}</Card></Grid>
+      <Grid item xs={12} md={6} sx={{minWidth:0}}>
+        <Card>{ribbon("Batch Filters","batches",!ids.trim(),<ManageSearchIcon/>)}<MDBox p={2}><MDInput multiline label="Batch IDs (comma or newline separated)" fullWidth value={ids} disabled={loading} onChange={e=>{setIds(e.target.value);setBatches([]);setPreview(null);setMessage("");}}/></MDBox></Card>
+        <MDBox mt={2}><Card>{ribbon("Batch Details")}<div id="swapBatch" key={batches.length ? "rows":"empty"}/></Card></MDBox>
+      </Grid>
+      <Grid item xs={12} md={6} sx={{minWidth:0}}>
+        <Card>{ribbon("Order Filters","order",!batches.length || !order.trim() || !item.trim(),<ManageSearchIcon/>)}<MDBox p={2}><MDInput label="Order" value={order} disabled={loading} onChange={e=>{setOrder(e.target.value);setPreview(null);}}/> <MDInput label="Item" value={item} disabled={loading} onChange={e=>{setItem(e.target.value);setPreview(null);}}/></MDBox></Card>
+        <MDBox mt={2}><Card>{ribbon("Order Details","swap",!preview || isReadWriteAccess || !preview.pairs.length,<MergeIcon/>)}<div id="swapOrder"/>{preview && <MDBox p={2}>{preview.pairs.map(([a,b])=><div key={a}>{a} ↔ {b}</div>)}Already on target: {preview.skipped}</MDBox>}</Card></MDBox>
+      </Grid>
     </Grid>}<p role="status">{message}</p></DashboardLayout>;
 }

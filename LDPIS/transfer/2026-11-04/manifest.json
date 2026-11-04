@@ -7,8 +7,9 @@
   {
     "Project": "LDPIS-Backend",
     "File": "src/repository/LD01S011Query.ts",
-    "Patch": "LD01S011Query.ts.patch",
-    "NewFile": true
+    "Patch": "LD01S011Query.ts.wb-fix.patch",
+    "NewFile": true,
+    "LegacyPatch": "LD01S011Query.ts.patch"
   },
   {
     "Project": "LDPIS-Backend",
@@ -25,8 +26,9 @@
   {
     "Project": "LDPIS-Frontend",
     "File": "src/views/Planning/LD01S011.jsx",
-    "Patch": "LD01S011.jsx.patch",
-    "NewFile": true
+    "Patch": "LD01S011.jsx.wb-fix.patch",
+    "NewFile": true,
+    "LegacyPatch": "LD01S011.jsx.patch"
   },
   {
     "Project": "LDPIS-Backend",

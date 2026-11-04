@@ -112,3 +112,5 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 Default bundle: 2026-11-04. Configure LD01S011 screen permissions in UAT. Verify that V_LDP_PRODN permits FOR UPDATE and LDLTB007 does not commit internally before enabling production swaps; internal commits cannot be rolled back by the application.
 
 LD01S011 backend correction: route → controller → model → repository, following LD01S005. Pull main and rerun the same 2026-11-04 check/apply commands above, even if the earlier bundle was already applied. Restart the backend after applying.
+
+LD01S011 WB lookup/layout fix: pull main and rerun the 2026-11-04 check/apply commands above. Missing and non-WB batches are ignored. Preview and swap use only displayed WB batches. Batch and order panels are side by side on desktop.
