@@ -310,4 +310,3 @@ export class App {
     this.app.use("/api/LDLTS08D/", LDLTS08DRoute);
   }
 }
-

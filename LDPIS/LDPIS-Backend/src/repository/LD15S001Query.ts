@@ -539,7 +539,7 @@ FROM dual
       CASE WHEN d150.TBP_BATCH_NO IS NOT NULL THEN d150.TBP_MIXPAINT_RATIO_150 ELSE b.TBP_MIXPAINT_RATIO_150 END AS TBP_MIXPAINT_RATIO,
       TO_CHAR(d150.TBP_PROD_DATE, 'DD-MON-YYYY', 'NLS_DATE_LANGUAGE=English') AS TBP_PROD_DATE,
       TO_CHAR(d150.TBP_PROD_END_DT, 'HH24:MI') AS TIME,
-      (SELECT a.TBP_DIA_BODY_10 FROM V_BARE_PDO a
+      (select CASE WHEN REGEXP_LIKE(a.TBP_DIA_BODY_10, '^[0-9]+$') THEN TO_NUMBER(a.TBP_DIA_BODY_10) ELSE NULL END FROM V_BARE_PDO a
         WHERE a.TBP_BATCH_NO = b.TBP_BATCH_NO
           AND a.TBP_PLANT_CD = b.TBP_PLANT_CD
           AND a.TBP_CD_PROC = 'F'
@@ -601,12 +601,13 @@ FROM dual
       sql += ` AND l.LOM_ID_PAR_COIL_NO = :rmBatch`;
       binds.rmBatch = data.RM_BATCH;
     } else if (data.ORDNO && data.ORDITEM) {
-      sql += ` AND b.TBP_ID_ORDER_NO = :orderNo AND b.TBP_ITEM_NO = :orderItem`;
+      sql += ` AND l.LOM_ID_ORDER_CUS = :orderNo AND l.LOM_ID_ORD_ITEM_CUS = :orderItem`;
       binds.orderNo = data.ORDNO;
       binds.orderItem = data.ORDITEM;
     } else {
       sql += ` AND 1=0`;
     }
+    sql += ` order by tbp_dia_end_10 `;
     console.log(sql, binds);
     return await query.executeQuery(sql, binds);
   } catch (error) {

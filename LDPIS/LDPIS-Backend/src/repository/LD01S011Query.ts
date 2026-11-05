@@ -53,25 +53,46 @@ const orderSQL = `SELECT TO_CHAR(ENC_DT_ORD_CREATE, 'YYYY-MM-DD HH24:MI:SS') Ord
       AND ENC_ID_ORDER=:ord AND ENC_NO_ITEM=:itm`;
 
 type Database = Pick<typeof query, "executeQuery">;
-type RequestData = { ids: string[]; order: string; item: string; snapshot?: string };
+type RequestData = {
+  ids: string[];
+  order: string;
+  item: string;
+  snapshot?: string;
+};
 
 function validateIds(ids: string[]) {
-  if (!Array.isArray(ids) || !ids.length || ids.length > 1000 ||
-      ids.some(id => typeof id !== "string" || !id.trim()) || new Set(ids).size !== ids.length) {
+  if (
+    !Array.isArray(ids) ||
+    !ids.length ||
+    ids.length > 1000 ||
+    ids.some((id) => typeof id !== "string" || !id.trim()) ||
+    new Set(ids).size !== ids.length
+  ) {
     throw new Error("Enter 1–1000 distinct batch IDs.");
   }
 }
 
-async function fetchRows(db: Database, sql: string, binds: any): Promise<any[]> {
+async function fetchRows(
+  db: Database,
+  sql: string,
+  binds: any
+): Promise<any[]> {
   const result = await db.executeQuery(sql, binds);
   return result.rows.map((row: any) => {
     const record: any = {};
-    result.metaData.forEach((col: any, i: number) => { record[col.name] = row[i]; });
+    result.metaData.forEach((col: any, i: number) => {
+      record[col.name] = row[i];
+    });
     return record;
   });
 }
 
-async function fetchBatches(db: Database, ids: string[], target?: RequestData, lock = false) {
+async function fetchBatches(
+  db: Database,
+  ids: string[],
+  target?: RequestData,
+  lock = false
+) {
   validateIds(ids);
   const binds: any = {};
   const placeholders = ids.map((id, i) => {
@@ -84,38 +105,65 @@ async function fetchBatches(db: Database, ids: string[], target?: RequestData, l
     binds.ord = target.order;
     binds.itm = target.item;
   }
-  const sql = batchSQL + " AND (" + filter + ") ORDER BY lom_id_batch" + (lock ? " FOR UPDATE NOWAIT" : "");
+  const sql =
+    batchSQL +
+    " AND (" +
+    filter +
+    ") ORDER BY lom_id_batch" +
+    (lock ? " FOR UPDATE NOWAIT" : "");
   const rows = await fetchRows(db, sql, binds);
-  const byId = new Map(rows.map(row => [String(row.BATCH1), row] as [string, any]));
+  const byId = new Map(
+    rows.map((row) => [String(row.BATCH1), row] as [string, any])
+  );
   if (byId.size !== rows.length) throw new Error("Ambiguous batch IDs.");
   return { rows, byId };
 }
 
 export async function getBatches(data: RequestData) {
   const { byId } = await fetchBatches(query, data.ids);
-  return data.ids.filter(id => byId.has(id)).map(id => byId.get(id));
+  return data.ids.filter((id) => byId.has(id)).map((id) => byId.get(id));
 }
 
 async function prepareSwap(db: Database, data: RequestData, lock = false) {
   if (!data.order || !data.item) throw new Error("Enter order and item.");
   const { rows, byId } = await fetchBatches(db, data.ids, data, lock);
-  const source = data.ids.map(id => {
+  const source = data.ids.map((id) => {
     if (!byId.has(id)) throw new Error("Missing or not WB: " + id);
     return byId.get(id);
   });
-  const orders = await fetchRows(db, orderSQL, { ord: data.order, itm: data.item });
-  if (orders.length !== 1) throw new Error("Expected one active TUBE order/item in plant 0780.");
-  const onTarget = (row: any) => String(row.ORD) === String(orders[0].ORD) && String(row.ITEM) === String(orders[0].ITEM);
+  const orders = await fetchRows(db, orderSQL, {
+    ord: data.order,
+    itm: data.item,
+  });
+  if (orders.length !== 1)
+    throw new Error("Expected one active TUBE order/item in plant 0780.");
+  const onTarget = (row: any) =>
+    String(row.ORD) === String(orders[0].ORD) &&
+    String(row.ITEM) === String(orders[0].ITEM);
   const target = rows.filter(onTarget);
-  if (target.length !== source.length) throw new Error("Target has " + target.length + " WB batches; expected " + source.length + ".");
-  const incoming = source.filter(row => !onTarget(row));
-  const outgoing = target.filter(row => !data.ids.includes(String(row.BATCH1)));
-  if (incoming.some(row => row.ORD == null || row.ITEM == null)) throw new Error("Every incoming batch must have an existing order and item.");
+  if (target.length !== source.length)
+    throw new Error(
+      "Target has " +
+        target.length +
+        " WB batches; expected " +
+        source.length +
+        "."
+    );
+  const incoming = source.filter((row) => !onTarget(row));
+  const outgoing = target.filter(
+    (row) => !data.ids.includes(String(row.BATCH1))
+  );
+  if (incoming.some((row) => row.ORD == null || row.ITEM == null))
+    throw new Error(
+      "Every incoming batch must have an existing order and item."
+    );
   const preview = {
     orders,
     pairs: incoming.map((row, i) => [row.BATCH1, outgoing[i].BATCH1]),
     skipped: source.length - incoming.length,
-    snapshot: JSON.stringify(rows.map(row => [row.BATCH1, row.ORD, row.ITEM]))
+    snapshot: JSON.stringify(
+      rows.map((row) => [row.BATCH1, row.ORD, row.ITEM])
+    ),
   };
   return { incoming, outgoing, preview };
 }
@@ -125,21 +173,34 @@ export async function getOrder(data: RequestData) {
   return preview;
 }
 
-async function changeLink(db: Database, batch: string, order: string, item: string, op: "LINK" | "DELINK") {
-  const sql = "BEGIN LDPDBA.LDLTB007(LS_BATCH=>:b, LS_ORDER=>:o, LS_ITEM=>:i, LS_LINK_TYPE=>:op, LS_OUT_FLAG=>:flag); END;";
+async function changeLink(
+  db: Database,
+  batch: string,
+  order: string,
+  item: string,
+  op: "LINK" | "DELINK"
+) {
+  const sql =
+    "BEGIN LDPDBA.LDLTB002(LS_BATCH=>:b, LS_ORDER=>:o, LS_ITEM=>:i, LS_LINK_TYPE=>:op, LS_OUT_FLAG=>:flag); END;";
   const result = await db.executeQuery(sql, {
-    b: batch, o: order, i: item, op,
-    flag: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 }
+    b: batch,
+    o: order,
+    i: item,
+    op,
+    flag: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 },
   });
-  if (!String(result.outBinds.flag).startsWith("Y")) throw new Error(op + " failed for " + batch + ": " + result.outBinds.flag);
+  if (!String(result.outBinds.flag).startsWith("Y"))
+    throw new Error(op + " failed for " + batch + ": " + result.outBinds.flag);
 }
 
 export async function swap(data: RequestData) {
-  return query.withTransaction(async db => {
+  return query.withTransaction(async (db) => {
     const { incoming, outgoing, preview } = await prepareSwap(db, data, true);
-    if (data.snapshot !== preview.snapshot) throw new Error("Assignments changed. Fetch order details again.");
+    if (data.snapshot !== preview.snapshot)
+      throw new Error("Assignments changed. Fetch order details again.");
     for (let i = 0; i < incoming.length; i++) {
-      const from = incoming[i], replacement = outgoing[i];
+      const from = incoming[i],
+        replacement = outgoing[i];
       await changeLink(db, from.BATCH1, from.ORD, from.ITEM, "DELINK");
       await changeLink(db, from.BATCH1, data.order, data.item, "LINK");
       await changeLink(db, replacement.BATCH1, data.order, data.item, "DELINK");

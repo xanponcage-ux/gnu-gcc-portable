@@ -991,6 +991,7 @@ export default function TubePlanning() {
       newData.push({
         PLANT: "0780",
         BATCH_NO: pipeNo ?? null,
+        TBP_DIA_END_10: Number(row.TBP_DIA_END_10 || 0),
         CD_PROC: rowData.C_PRC ?? null,
         BATCH_PROC_NO: "0",
         NEXT_PROC: rowData.N_PRC ?? null,
@@ -1160,7 +1161,14 @@ export default function TubePlanning() {
       title: "Mark",
       hozAlign: "center",
       headerSort: false,
-      // width: 70,
+      frozen:true
+    },
+    {
+      title: "Seq No",
+      field: "TBP_DIA_END_10",
+      headerFilterPlaceholder: "search...",
+      headerFilter: "input",
+      frozen:true
     },
     {
       title: "C Prc",

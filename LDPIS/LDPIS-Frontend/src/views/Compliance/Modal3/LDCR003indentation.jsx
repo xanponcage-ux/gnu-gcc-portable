@@ -86,7 +86,7 @@ export default function MaxWidthindent(props) {
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          pipeno: props.selectedShift ? props.selectedShift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate
@@ -99,7 +99,7 @@ export default function MaxWidthindent(props) {
               .replace("Sept", "Sep")
           : "",  
           heatno: props.heatno ? props.heatno : "",
-          pipeno: props.pipeno ? props.pipeno : "",
+          // pipeno: props.pipeno ? props.pipeno : "",
         };
 
         GetAuthorization().then((token) => {

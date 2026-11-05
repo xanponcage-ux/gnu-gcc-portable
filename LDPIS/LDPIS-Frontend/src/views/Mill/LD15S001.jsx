@@ -958,6 +958,7 @@ export default function TubePlanning() {
         // Construct the row data first, including all WFT values, LENGTH, and OD
         const currentRowData = {
           C_PRC: nxtproc2 || "",
+          TBP_DIA_END_10: Number(row.TBP_DIA_END_10 || 0),
           N_PRC: row.NEXT_PROC || nxtproc || "",
           PIPE_NO: row.TBP_BATCH_NO || "",
           DATE: alreadyExists ? row.TBP_PROD_DATE ?? "" : SHIFT_DATE || "",
@@ -1162,6 +1163,7 @@ const updateData = async () => {
     newData.push({
       PLANT: "0780",
       BATCH_NO: pipeNo ?? null,
+      TBP_DIA_END_10: item._row.data.TBP_DIA_END_10 ?? null,
       CD_PROC: item._row.data.C_PRC ?? null,
       C_PRC: item._row.data.C_PRC ?? null,
       BATCH_PROC_NO: "0",
@@ -1388,6 +1390,14 @@ const showErrorAlert = (errorMessage) => {
       titleFormatter: "rowSelection",
       hozAlign: "center",
       headerSort: false,
+      frozen:true
+    },
+    {
+      title: "Seq No",
+      field: "TBP_DIA_END_10",
+      headerFilterPlaceholder: "search...",
+      headerFilter: "input",
+      frozen:true
     },
     {
       title: "Cur Proc",

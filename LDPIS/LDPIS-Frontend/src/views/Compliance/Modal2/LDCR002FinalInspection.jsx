@@ -193,26 +193,12 @@ export default function MaxWidthDialogFinalinsp(props) {
     const rowsPerPage = 12;
     const numPages = Math.max(1, Math.ceil(getfinalINSP?.length / rowsPerPage));
 
-      const formattedPrintDate = props?.printdate
-  ?.split(".")
-  ?.reverse()
-  ?.join("");
+    console.log('props?.crdateprops?.crdateprops?.crdate',props?.crdate);
 
-//   const qrValue = () => {
-//     var val = "";
-//     val = props.inputValues().EOM_ID_BATCH + "," + Number(props.inputValues().EOM_ODIA).toFixed(2) + "," + Number(props.inputValues().EOM_IDIA).toFixed(2)
-//       + "," + Number(props.inputValues().EOM_SEC1).toFixed(2).toFixed(2)
-//       + "," + Number(props.inputValues().EOM_LENGTH).toFixed(2).toFixed(2)
-//       + Number(props.inputValues().EOM_ID_ORDER);
+const formattedDate = props?.crdate
+  ? `${props.crdate.getFullYear()}${String(props.crdate.getMonth() + 1).padStart(2, "0")}${String(props.crdate.getDate()).padStart(2, "0")}`
+  : "";
 
-//     return val;
-//   }
-
-//   const cDate = () => {
-//     let varDate = new Date()
-//     return varDate.getDate()?.toString() + '/' + (varDate.getMonth()?.toString()?.length > 1 ? varDate.getMonth() : '0' + varDate.getMonth()) + '/' + varDate.getFullYear()?.toString()
-//   }
-//   console.log(props?.inputValues())
   return (
     <React.Fragment>
       <Dialog
@@ -355,11 +341,19 @@ export default function MaxWidthDialogFinalinsp(props) {
                               {/* <p>: {getfinalINSP?.length > 0  ? `${getfinalINSP[0].REP_NO}-${pageIndex + 1}`: ' '} </p> */}
                               <p>
   : {getfinalINSP?.length > 0
-      ? `FIR/${formattedPrintDate}-${pageIndex + 1}`
+      ? `FIR/${formattedDate}-${pageIndex + 1}`
       : ' '}
 </p>
                               {/* <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].DATE_SHIFT : ' '} </p> */}
-                              <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>
+                              {/* <p>: {props?.printdate} & {props?.selectedpShift?.value} </p> */}
+                              <p>
+  : {props?.crdate
+      ? `${String(props.crdate.getDate()).padStart(2, "0")}.${String(
+          props.crdate.getMonth() + 1
+        ).padStart(2, "0")}.${props.crdate.getFullYear()}`
+      : ""}{" "}
+    & {props?.shift}
+</p>
                               <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].ACCEPTANCE_CRITERIA : ' '} </p>
                               <p>: {getfinalINSP?.length > 0  ? getfinalINSP[0].PROCESS_SHEET_NO : ' '} </p>
                                <p>: {props?.wiNo} </p> 

@@ -263,7 +263,7 @@ export const getFillData = async (data: any) => {
     ) {
       binds.orderNo = data.ORDNO;
       binds.orderItem = data.ORDITEM;
-      sql += ` AND TBP_ID_ORDER_NO = :orderNo AND TBP_ITEM_NO = :orderItem AND TBP_CD_PROC = '8'`;
+      sql += ` AND LOM_ID_ORDER_CUS = :orderNo AND LOM_ID_ORD_ITEM_CUS = :orderItem AND TBP_CD_PROC = '8'`;
     } else {
       sql += ` AND 1=0`;
     }

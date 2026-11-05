@@ -1703,6 +1703,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            // printdate = {crdate}
                             // instrumentName={instrumentName}
                             // instrumentId={instrumentId}
                             wiNo={wiNo}

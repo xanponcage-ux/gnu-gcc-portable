@@ -1477,7 +1477,7 @@ FROM   v_process_sheet_ec t,
 
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
-      sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
+      sql += ` AND t3.PRD_SHIFT_120 = '${pipeno}' `; // changed BETWEEN to =
       // binds["pipeno"] = pipeno;
     }
 

@@ -496,7 +496,7 @@ export const getFillData = async (data: any) => {
                        AND x.TBP_PLANT_CD = f.TBP_PLANT_CD
                        AND x.TBP_CD_PROC = 'E')
                   AND ROWNUM = 1) AS TBP_FLD_NO_130,
-               (select A.TBP_DIA_BODY_10 FROM V_BARE_PDO A
+               (select CASE WHEN REGEXP_LIKE(A.TBP_DIA_BODY_10, '^[0-9]+$') THEN TO_NUMBER(A.TBP_DIA_BODY_10) ELSE NULL END FROM V_BARE_PDO A
                       where A.TBP_BATCH_NO = LOM_ID_BATCH
                         and A.TBP_CD_PROC = 'F'
                         and A.TBP_BATCH_PROC_NO = (
@@ -534,11 +534,13 @@ export const getFillData = async (data: any) => {
       data.ORDITEM &&
       data.ORDITEM !== ""
     ) {
-      sql += ` AND TBP_ID_ORDER_NO = '${data.ORDNO}' AND TBP_ITEM_NO = '${data.ORDITEM}' AND TBP_CD_PROC = '8'`;
+      sql += ` AND LOM_ID_ORDER_CUS = '${data.ORDNO}' AND LOM_ID_ORD_ITEM_CUS = '${data.ORDITEM}' AND TBP_CD_PROC = '8'`;
     } else {
       // No filter provided: return empty result set to avoid large queries
       sql += ` AND 1=0`;
     }
+
+    sql += ` order by tbp_dia_end_10 `;
     console.log("filldataqry120", sql);
     return await query.executeQuery(sql);
   } catch (error) {

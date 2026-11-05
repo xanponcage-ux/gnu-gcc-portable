@@ -750,7 +750,7 @@ FROM dual
       data.ORDITEM &&
       data.ORDITEM !== ""
     ) {
-      sql += ` AND b.TBP_ID_ORDER_NO = :ordno AND b.TBP_ITEM_NO = :orditem  AND b.TBP_CD_PROC='8'`;
+      sql += ` AND l.LOM_ID_ORDER_CUS = :ordno AND l.LOM_ID_ORD_ITEM_CUS = :orditem  AND b.TBP_CD_PROC='8'`;
       binds.ordno = data.ORDNO;
       binds.orditem = data.ORDITEM;
     }

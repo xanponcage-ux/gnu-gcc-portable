@@ -266,7 +266,7 @@ export const getFillData = async (data: any) => {
       data.ORDITEM &&
       data.ORDITEM !== ""
     ) {
-      sql += ` AND TBP_ID_ORDER_NO = '${data.ORDNO}' AND TBP_ITEM_NO = '${data.ORDITEM}' AND TBP_CD_PROC = '8'`;
+      sql += ` AND LOM_ID_ORDER_CUS = '${data.ORDNO}' AND LOM_ID_ORD_ITEM_CUS = '${data.ORDITEM}' AND TBP_CD_PROC = '8'`;
     } else {
       // No filter provided: return empty result set to avoid large queries
       sql += ` AND 1=0`;
