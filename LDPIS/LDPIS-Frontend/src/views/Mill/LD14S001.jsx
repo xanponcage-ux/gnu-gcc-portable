@@ -1,3 +1,4 @@
+import MDAlert from "@mui/material/Alert";
 import React, { useEffect, useState, useRef, forwardRef } from "react";
 
 // @mui material components
@@ -84,6 +85,7 @@ export default function TubePlanning() {
   const [ordNo, setOrdNo] = useState("");
   const [ordItem, setOrdItem] = useState("");
   const [custName, setCustName] = useState("");
+  const [saveMsg, setSaveMsg] = useState("");
   const [inspectorname, setInspectorName] = useState("");
   const [selectedProcessDt, setSelectedProcessDt] = useState(null);
   const [remarks, setRemarks] = useState("");
@@ -341,7 +343,17 @@ export default function TubePlanning() {
       });
   };
 
-  const setTableNull = () => {
+  const clearMessage = () => {
+      setSaveMsg("");
+    };
+    const showApiError = (value, fallback) => {
+      const data = value?.response?.data ?? value?.data;
+      const message = (typeof data === "string" ? data : data?.message) || value?.message || fallback;
+      setSaveMsg(String(message));
+    };
+    const setTableNull = () => {
+      clearMessage();
+
     setLPETable([]);
   };
 
@@ -363,6 +375,7 @@ export default function TubePlanning() {
   }, [getLPETable]);
 
   const handlePipeNoChange = (value) => {
+      setTableNull();
     setPipeNo(value);
     setrmBatchId(
       value?.parentCoilNo
@@ -392,6 +405,7 @@ export default function TubePlanning() {
   };
 
   const handleOrderNoChange = (event) => {
+      setTableNull();
     const value = event.target.value;
     if (pipeno?.value) {
       setOrdItem("");
@@ -406,6 +420,7 @@ export default function TubePlanning() {
   };
 
   const handleOrderItemChange = (event) => {
+      setTableNull();
     setOrdItem(event.target.value);
     setPipeNo(null);
     setrmBatchId(null);
@@ -598,6 +613,7 @@ export default function TubePlanning() {
   };
 
   const updateData = async (newToken = false) => {
+    clearMessage();
     const token = await GetAuthorization();
     const defaultOptions = {
       headers: {
@@ -673,9 +689,9 @@ export default function TubePlanning() {
       .post(url, data, defaultOptions)
       .then(async (response) => {
         if (response.statusText != "" && response.statusText != "OK") {
-          alertify.error("Error in Procedure");
+          showApiError(response, "Error in Procedure");
         } else {
-          const result = response.data;
+          const result = response?.data || {};
           if (result.failedCount > 0 && result.successfulPipes?.length) {
             const saved = new Set(result.successfulPipes);
             await Promise.all(selectedLPETable.getRows()
@@ -691,14 +707,14 @@ export default function TubePlanning() {
             handleAllBelow();
             fetchDetails();
           } else {
-            alertify.error(result.message || "No pipes were saved.");
+            showApiError(response, "No pipes were saved.");
             // setLPETable([]);
             // setSelectedLPETable(null)
           }
         }
       })
       .catch((error) => {
-        alertify.error(error?.response?.data?.message || "Failed to save pipes.");
+        showApiError(error, "Failed to save pipes.");
       })
       .finally((f) => {
         setLoading(false);
@@ -706,6 +722,7 @@ export default function TubePlanning() {
   };
 
   const handleClearAll = (newToken = false) => {
+      setTableNull();
     setInspectorName("");
     setSelectedResult("");
     setSalesOrd("");
@@ -717,6 +734,7 @@ export default function TubePlanning() {
   };
 
   const handleClearMain = (newToken = false) => {
+      setTableNull();
     handleClearAll();
     handleAllBelow();
     setPipeNo(null);
@@ -770,6 +788,7 @@ export default function TubePlanning() {
   };
 
   const bindLPEData = async () => {
+    clearMessage();
     try {
       setLoading(true);
       setLPETable([]);
@@ -899,13 +918,13 @@ export default function TubePlanning() {
       );
 
       // console.log("response", response);
-      if (response.status !== 200 || !response.data) {
-        throw new Error("Invalid response from API");
+      if (response?.status !== 200 || !Array.isArray(response?.data)) {
+        showApiError(response, "Invalid response from API"); return;
       }
 
       //console.log("response140",response.data.length)
       if (response.data.length == 0) {
-        alertify.error("NO Data Found in V_BARE_PDO");
+        showApiError(null, "NO Data Found in V_BARE_PDO");
         return;
       }
       let LPEData = response.data.map((row) => ({
@@ -950,7 +969,7 @@ export default function TubePlanning() {
       setLPETable(LPEData);
     } catch (error) {
       // console.log(error);
-      alertify.error(error,"Error fetching data.");
+      showApiError(error, "Error fetching data.");
     } finally {
       setLoading(false);
     }
@@ -961,6 +980,7 @@ export default function TubePlanning() {
   };
 
   const handleShiftChange = (value) => {
+      setTableNull();
     setSelectedShift(value);
   };
 
@@ -969,6 +989,7 @@ export default function TubePlanning() {
   // };
 
   const clearFilterOnDate = () => {
+      setTableNull();
     setLPETable([]);
     setSelectedLPETable(null);
   };
@@ -1168,7 +1189,7 @@ export default function TubePlanning() {
       field: "PIPE_SUR_TEMP",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
-      editor: "input",
+      editor: "number", editorParams: { step: "any" }, hozAlign: "right",
     },
 
     {
@@ -1176,21 +1197,21 @@ export default function TubePlanning() {
       field: "ROUGHNESS",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
-      editor: "input",
+      editor: "number", editorParams: { step: "any" }, hozAlign: "right",
     },
     {
       title: "Degree Of Cleanliness",
       field: "DEGREE_OF_CLEANLINESS",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
-      editor: "input",
+      editor: "number", editorParams: { step: "any" }, hozAlign: "right",
     },
     {
       title: "Dust Level",
       field: "DUST_LEVEL",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",
-      editor: "input",
+      editor: "number", editorParams: { step: "any" }, hozAlign: "right",
     },
     // {
     //   title: "Holiday",
@@ -1431,7 +1452,7 @@ export default function TubePlanning() {
                           type="datetime-local"
                           //step="1" // Allows selection of seconds
                           style={{ height: "37px" }}
-                          id="prodStartDate"
+                          id="prodStartDate" onChange={setTableNull}
                         />
                       </Grid>
 
@@ -1525,7 +1546,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="inspectorname"
+                            name="inspectorname" style={{ backgroundColor: "#dac292" }}
                             value={inspectorname}
                             onChange={(e) => {
                               setInspectorName(e.target.value), setTableNull();
@@ -1565,7 +1586,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="cutbackfend"
+                            name="cutbackfend" type="number" inputProps={{ step: "any" }} sx={{ backgroundColor: "#fff", "& input": { textAlign: "right" } }}
                             value={cutbackfend}
                             onChange={(e) => {
                               setCutBackFEnd(e.target.value);
@@ -1586,7 +1607,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="cutbacktend"
+                            name="cutbacktend" type="number" inputProps={{ step: "any" }} sx={{ backgroundColor: "#fff", "& input": { textAlign: "right" } }}
                             value={cutbacktend}
                             onChange={(e) => {
                               setCutBackTEnd(e.target.value);
@@ -1607,7 +1628,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="cutbackanglefend"
+                            name="cutbackanglefend" type="number" inputProps={{ step: "any" }} sx={{ backgroundColor: "#fff", "& input": { textAlign: "right" } }}
                             value={cutbackanglefend}
                             onChange={(e) => {
                               setCutBackAngleFEnd(e.target.value);
@@ -1628,7 +1649,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="cutbackangletend"
+                            name="cutbackangletend" type="number" inputProps={{ step: "any" }} sx={{ backgroundColor: "#fff", "& input": { textAlign: "right" } }}
                             value={cutbackangletend}
                             onChange={(e) => {
                               setCutBackAngleTEnd(e.target.value);
@@ -1713,7 +1734,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="remarks"
+                            name="remarks" style={{ backgroundColor: "#dac292" }}
                             value={remarks}
                             onChange={(e) => {
                               setRemarks(e.target.value);
@@ -1734,7 +1755,7 @@ export default function TubePlanning() {
                           </MDTypography>
                           <MDInput
                             label=""
-                            name="VIS_INSP"
+                            name="VIS_INSP" style={{ backgroundColor: "#dac292" }}
                             value={VIS_INSP}
                             onChange={(e) => {
                               setVIS_INSP(e.target.value);
@@ -1753,6 +1774,7 @@ export default function TubePlanning() {
                             Fill Data
                           </MDButton>
                         </Grid>
+                        <Grid item xs={12}><MDTypography variant="caption"><span style={{backgroundColor:"#dac292",padding:"2px 6px"}}>Text field</span>{"  "}<span style={{backgroundColor:"#fff",border:"1px solid #ccc",padding:"2px 6px"}}>Numeric field</span></MDTypography></Grid>
                       </Grid>
                     </MDBox>
                   {/* )} */}
@@ -1829,6 +1851,7 @@ export default function TubePlanning() {
                           Showing 1 to {getLPETable.length} of{" "}
                           {getLPETable.length} entries
                         </p>
+                        {saveMsg && <MDAlert severity="error" onClose={clearMessage} sx={{whiteSpace:"pre-wrap"}}>{saveMsg}</MDAlert>}
                       </Grid>
                     </Grid>
                   </MDBox>

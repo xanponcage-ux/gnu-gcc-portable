@@ -1,0 +1,519 @@
+/tmp/tmp.gs7iqmxAPC/fix:154: trailing whitespace.
+          
+warning: 1 line adds whitespace errors.
+diff --git a/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx b/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
+index e53f9a9..cde9e53 100644
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
+@@ -274,6 +274,7 @@ export default function TubePlanning() {
+   };
+ 
+   const handleShiftChange = (value) => {
++      setTableNull();
+     setSelectedShift(value)
+    
+   };
+@@ -324,7 +325,24 @@ export default function TubePlanning() {
+       });
+     });
+ 
++    const formVersion = useRef(0);
++    const clearMessage = () => {
++      setSaveMsg("");
++      setShowSaveMsgError(false);
++      setShowSaveMsgSuccess(false);
++    };
++    const showApiError = (value, fallback) => {
++      const data = value?.response?.data ?? value?.data;
++      const message = (typeof data === "string" ? data : data?.message) || value?.message || fallback;
++      setSaveMsg(String(message));
++      setShowSaveMsgError(true);
++      setShowSaveMsgSuccess(false);
++    };
+     const setTableNull = () => {
++      clearMessage();
++      formVersion.current++;
++      setSelectedBlastAppTable(null);
++
+       setBlastAppTable([])
+       
+     };
+@@ -457,12 +475,14 @@ export default function TubePlanning() {
+         });
+   
+         setSelectedBlastAppTable(table);
++        return () => table.destroy();
+       } else {
+         setSelectedBlastAppTable(null)
+       }
+     }, [getBlastAppTable])
+ 
+     const clearFilterOnDate = () => {
++      setTableNull();
+       setBlastAppTable([]);
+       setSelectedBlastAppTable(null);
+     };
+@@ -521,6 +541,7 @@ export default function TubePlanning() {
+   
+ 
+     const handleClearMain = (newToken = false) => {
++      setTableNull();
+       handleClearAll();
+       setPipeNo(null)
+       setrmBatchId(null)
+@@ -552,6 +573,7 @@ export default function TubePlanning() {
+     };
+ 
+     const handleClearAll = (newToken = false) => {
++      setTableNull();
+       // Clear all new fields
+       setTBP_VISUAL_INSP_80("OK"); // Reset to default "OK"
+       setTbpVisualInsp80("");
+@@ -733,6 +755,7 @@ export default function TubePlanning() {
+     };
+     
+     const handlePipeNoChange = (value) => {
++      setTableNull();
+       setPipeNo(value);
+       setrmBatchId(
+         value?.parentCoilNo
+@@ -763,6 +786,7 @@ export default function TubePlanning() {
+     };
+ 
+     const handleOrderNoChange = (event) => {
++      setTableNull();
+       const value = event.target.value;
+ 
+       if (pipeno?.value) {
+@@ -779,6 +803,7 @@ export default function TubePlanning() {
+     };
+ 
+     const handleOrderItemChange = (event) => {
++      setTableNull();
+       setOrdItem(event.target.value);
+       setPipeNo(null);
+       setrmBatchId(null);
+@@ -800,6 +825,8 @@ export default function TubePlanning() {
+ 
+   
+   const bindBlastAppData = async () => {
++    clearMessage();
++    const version = ++formVersion.current;
+     try {
+       setLoading(true);
+       setBlastAppTable([])
+@@ -931,13 +958,14 @@ export default function TubePlanning() {
+       let response = await axiosAPI.post("api/LD15S001/getFillData", requestData, defaultOptions);
+   
+       console.log("response", response);
+-      if (response.status !== 200 || !Array.isArray(response.data)) {
+-        throw new Error("Invalid response from API");
++      if (version !== formVersion.current) return;
++      if (response?.status !== 200 || !Array.isArray(response?.data)) {
++        showApiError(response, "Invalid response from API"); return;
+       }
+       if (response.data.length == 0)
+       {
+        
+-        alertify.error("NO Data Found in V_BARE_PDO");
++        showApiError(null, "NO Data Found in V_BARE_PDO");
+         return;
+       }
+ 
+@@ -1043,11 +1071,11 @@ export default function TubePlanning() {
+ 
+       let BlastAppData = await Promise.all(BlastAppDataPromises); // Wait for all promises to resolve
+       console.log("BlastAppData",BlastAppData)
+-      setBlastAppTable(BlastAppData)
++      if (version === formVersion.current) setBlastAppTable(BlastAppData)
+ 
+ 
+     } catch (error) {
+-      alertify.error(error?.message || "Error fetching data.");
++      if (version === formVersion.current) showApiError(error, "Error fetching data.");
+       console.error(error);
+ 
+     } finally {
+@@ -1242,12 +1270,12 @@ const updateData = async () => {
+     .then(async (response) => {
+       if (response.statusText !== "" && response.statusText !== "OK") {
+         const errMsg =
+-          response?.error?.response?.data?.message ||
++          response?.data?.message ||
+           "An error occurred.";
+         alertify.error(errMsg);
+         setShowSaveMsgSuccess(false);
+         setShowSaveMsgError(true);
+-        setSaveMsg(errMsg);
++        showApiError(response, errMsg);
+       } else {
+         if (response.data?.failedCount > 0 || !response.data?.successCount) {
+           if (response.data?.successfulPipes?.length) {
+@@ -1256,10 +1284,10 @@ const updateData = async () => {
+               .filter(row => saved.has(String(row.getData().PIPE_NO)))
+               .map(row => row.delete()));
+           }
+-          showErrorAlert(response.data?.message);
++          
+           setShowSaveMsgSuccess(false);
+           setShowSaveMsgError(true);
+-          setSaveMsg(response.data?.message);
++          showApiError(response, "No pipes were saved.");
+         } else {
+           const successMessage = `Successfully saved ${response.data.successCount} pipe(s).`;
+           alertify.success(successMessage);
+@@ -1283,104 +1311,13 @@ const updateData = async () => {
+       alertify.error(errMsg);
+       setShowSaveMsgSuccess(false);
+       setShowSaveMsgError(true);
+-      setSaveMsg(errMsg);
++      showApiError(error, errMsg);
+     })
+     .finally(() => {
+       setLoading(false);
+     });
+ };
+ 
+-const showErrorAlert = (errorMessage) => {
+-  const styleErrorDialog = () => {
+-    const dialog = document.querySelector(".alertify .ajs-dialog");
+-    const header = document.querySelector(".alertify .ajs-header");
+-    const body = document.querySelector(".alertify .ajs-body");
+-    const content = document.querySelector(".alertify .ajs-content");
+-    const footer = document.querySelector(".alertify .ajs-footer");
+-    const commands = document.querySelector(".alertify .ajs-commands");
+-    const closeBtn = document.querySelector(".alertify .ajs-close");
+-    const okBtn = document.querySelector(".alertify .ajs-ok");
+-
+-    if (dialog) {
+-      dialog.style.padding = "0";
+-      dialog.style.borderRadius = "6px";
+-      dialog.style.overflow = "hidden";
+-      dialog.style.maxWidth = "560px";
+-      dialog.style.backgroundColor = "#fff";
+-    }
+-
+-    if (header) {
+-      header.style.margin = "0";
+-      header.style.padding = "16px 24px";
+-      header.style.backgroundColor = "#dc3545";
+-      header.style.color = "#fff";
+-      header.style.fontSize = "18px";
+-      header.style.fontWeight = "bold";
+-    }
+-
+-    if (commands) {
+-      commands.style.top = "18px";
+-      commands.style.right = "18px";
+-      commands.style.margin = "0";
+-      commands.style.zIndex = "10";
+-    }
+-
+-    if (closeBtn) {
+-      closeBtn.style.filter = "brightness(0) invert(1)";
+-      closeBtn.style.opacity = "1";
+-    }
+-
+-    if (body) {
+-      body.style.margin = "0";
+-      body.style.padding = "0";
+-      body.style.minHeight = "auto";
+-    }
+-
+-    if (content) {
+-      content.style.padding = "24px";
+-      content.style.color = "#333";
+-      content.style.fontSize = "16px";
+-      content.style.fontWeight = "normal";
+-      content.style.lineHeight = "1.5";
+-      content.style.whiteSpace = "pre-wrap";
+-    }
+-
+-    if (footer) {
+-      footer.style.margin = "0";
+-      footer.style.padding = "12px 20px 18px 20px";
+-      footer.style.backgroundColor = "#fff";
+-      footer.style.borderTop = "none";
+-    }
+-
+-    if (okBtn) {
+-      okBtn.style.minWidth = "100px";
+-      okBtn.style.minHeight = "38px";
+-      okBtn.style.border = "1px solid #333";
+-      okBtn.style.backgroundColor = "#fff";
+-      okBtn.style.color = "#111";
+-      okBtn.style.fontSize = "15px";
+-      okBtn.style.fontWeight = "500";
+-      okBtn.style.borderRadius = "3px";
+-    }
+-  };
+-
+-  alertify
+-    .alert()
+-    .set({
+-      title: "Error:",
+-      message: errorMessage,
+-      labels: {
+-        ok: "OK",
+-      },
+-      onshow: styleErrorDialog,
+-      onfocus: styleErrorDialog,
+-    })
+-    .show();
+-};
+-
+-
+-
+- 
+   const isRowEditable = (cell) => Number(cell.getRow().getData().NO_OF_REC || 0) === 0;
+ 
+ 
+@@ -2173,7 +2110,7 @@ const showErrorAlert = (errorMessage) => {
+                         type="datetime-local"
+                         //step="1" // Allows selection of seconds
+                         style={{ height: "37px" }}
+-                        id="prodStartDate"
++                        id="prodStartDate" onChange={setTableNull}
+                       />
+                     </Grid>
+ 
+@@ -2316,7 +2253,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               AMB Temp.
+             </MDTypography>
+-            <MDInput value={tbpAmbTmp100} onChange={(e) => setTbpAmbTmp100(e.target.value)} />
++            <MDInput value={tbpAmbTmp100} onChange={(e) => { setTbpAmbTmp100(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 2. RH */}
+@@ -2324,7 +2261,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               RH
+             </MDTypography>
+-            <MDInput value={tbpRh100} onChange={(e) => setTbpRh100(e.target.value)} />
++            <MDInput value={tbpRh100} onChange={(e) => { setTbpRh100(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 3. Dew Point */}
+@@ -2332,7 +2269,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Dew Point
+             </MDTypography>
+-            <MDInput value={tbpDewTemp100} onChange={(e) => setTbpDewTemp100(e.target.value)} />
++            <MDInput value={tbpDewTemp100} onChange={(e) => { setTbpDewTemp100(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 4. Visual of coated surface */}
+@@ -2343,7 +2280,7 @@ const showErrorAlert = (errorMessage) => {
+             <ReactSelect
+               options={visualOptions}
+               value={visualOptions.find((opt) => opt.value === TBP_VISUAL_INSP_80) || null}
+-              onChange={(e) => setTBP_VISUAL_INSP_80(e.value)}
++              onChange={(e) => { setTBP_VISUAL_INSP_80(e?.value || ""); setTableNull(); }}
+             />
+           </Grid>
+ 
+@@ -2352,25 +2289,25 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               F END 1 *
+             </MDTypography>
+-            <MDInput value={tbpWftF1150} onChange={(e) => setTbpWftF1150(e.target.value)} />
++            <MDInput value={tbpWftF1150} onChange={(e) => { setTbpWftF1150(e.target.value); setTableNull(); }} />
+           </Grid>
+           <Grid item xs={1}>
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               F END 2 *
+             </MDTypography>
+-            <MDInput value={tbpWftF2150} onChange={(e) => setTbpWftF2150(e.target.value)} />
++            <MDInput value={tbpWftF2150} onChange={(e) => { setTbpWftF2150(e.target.value); setTableNull(); }} />
+           </Grid>
+           <Grid item xs={1}>
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               F END 3 *
+             </MDTypography>
+-            <MDInput value={tbpWftF3150} onChange={(e) => setTbpWftF3150(e.target.value)} />
++            <MDInput value={tbpWftF3150} onChange={(e) => { setTbpWftF3150(e.target.value); setTableNull(); }} />
+           </Grid>
+           <Grid item xs={1}>
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               F END 4 *
+             </MDTypography>
+-            <MDInput value={tbpWftF4150} onChange={(e) => setTbpWftF4150(e.target.value)} />
++            <MDInput value={tbpWftF4150} onChange={(e) => { setTbpWftF4150(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 5.5 to 5.8: T END Measurements */}
+@@ -2378,25 +2315,25 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               T END 1 *
+             </MDTypography>
+-            <MDInput value={tbpWftT1150} onChange={(e) => setTbpWftT1150(e.target.value)} />
++            <MDInput value={tbpWftT1150} onChange={(e) => { setTbpWftT1150(e.target.value); setTableNull(); }} />
+           </Grid>
+           <Grid item xs={1}>
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               T END 2 *
+             </MDTypography>
+-            <MDInput value={tbpWftT2150} onChange={(e) => setTbpWftT2150(e.target.value)} />
++            <MDInput value={tbpWftT2150} onChange={(e) => { setTbpWftT2150(e.target.value); setTableNull(); }} />
+           </Grid>
+           <Grid item xs={1}>
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               T END 3 *
+             </MDTypography>
+-            <MDInput value={tbpWftT3150} onChange={(e) => setTbpWftT3150(e.target.value)} />
++            <MDInput value={tbpWftT3150} onChange={(e) => { setTbpWftT3150(e.target.value); setTableNull(); }} />
+           </Grid>
+           <Grid item xs={1}>
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               T END 4 *
+             </MDTypography>
+-            <MDInput value={tbpWftT4150} onChange={(e) => setTbpWftT4150(e.target.value)} />
++            <MDInput value={tbpWftT4150} onChange={(e) => { setTbpWftT4150(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 6. Cut Back F End */}
+@@ -2404,7 +2341,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Cut Back F End
+             </MDTypography>
+-            <MDInput value={Cut_Back_F_End} onChange={(e) => setTbpMeFend150(e.target.value)} />
++            <MDInput value={Cut_Back_F_End} onChange={(e) => { setTbpMeFend150(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 7. Cut Back T End */}
+@@ -2412,7 +2349,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Cut Back T End
+             </MDTypography>
+-            <MDInput value={Cut_Back_T_End} onChange={(e) => setTbpUmeTend150(e.target.value)} />
++            <MDInput value={Cut_Back_T_End} onChange={(e) => { setTbpUmeTend150(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 8. Base Manufacturer */}
+@@ -2420,7 +2357,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Base Manufacturer
+             </MDTypography>
+-            <MDInput value={tbpBaseManufacturer} onChange={(e) => settbpBaseManufacturer(e.target.value)} />
++            <MDInput value={tbpBaseManufacturer} onChange={(e) => { settbpBaseManufacturer(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 9. Base Grade */}
+@@ -2428,7 +2365,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Base Grade
+             </MDTypography>
+-            <MDInput value={Base_Grade} onChange={(e) => setBase_Grade(e.target.value)}/>
++            <MDInput value={Base_Grade} onChange={(e) => { setBase_Grade(e.target.value); setTableNull(); }}/>
+           </Grid>
+ 
+           {/* 10. Base Batch No */}
+@@ -2436,7 +2373,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Base Batch No
+             </MDTypography>
+-            <MDInput value={Base_Batch_No} onChange={(e) => setBase_Batch_No(e.target.value)} />
++            <MDInput value={Base_Batch_No} onChange={(e) => { setBase_Batch_No(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 11. Hardner Manufacturer */}
+@@ -2444,7 +2381,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Hardner Manufacturer
+             </MDTypography>
+-            <MDInput value={Hardner_Manf} onChange={(e) => setHardner_Manf(e.target.value)}/>
++            <MDInput value={Hardner_Manf} onChange={(e) => { setHardner_Manf(e.target.value); setTableNull(); }}/>
+           </Grid>
+ 
+           {/* 12. Hardner Grade */}
+@@ -2452,7 +2389,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Hardner Grade
+             </MDTypography>
+-            <MDInput value={Hardner_Grade} onChange={(e) => setHardner_Grade(e.target.value)}/>
++            <MDInput value={Hardner_Grade} onChange={(e) => { setHardner_Grade(e.target.value); setTableNull(); }}/>
+           </Grid>
+ 
+           {/* 13. Hardner Batch No */}
+@@ -2460,7 +2397,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+              Hardner Batch No
+             </MDTypography>
+-            <MDInput value={Hardner_Batch_No} onChange={(e) => setHardner_Batch_No(e.target.value)}/>
++            <MDInput value={Hardner_Batch_No} onChange={(e) => { setHardner_Batch_No(e.target.value); setTableNull(); }}/>
+           </Grid>
+ 
+           {/* 14. Mix Paint Ratio */}
+@@ -2468,7 +2405,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Mix Paint Ratio
+             </MDTypography>
+-            <MDInput value={tbpMixPaintRatio} onChange={(e) => setTbpMixPaintRatio(e.target.value)} />
++            <MDInput value={tbpMixPaintRatio} onChange={(e) => { setTbpMixPaintRatio(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 14 (SS Labels both as 14). Inspector */}
+@@ -2476,7 +2413,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Inspector *
+             </MDTypography>
+-            <MDInput value={tbpVisualInsp80} onChange={(e) => setTbpVisualInsp80(e.target.value)} />
++            <MDInput value={tbpVisualInsp80} onChange={(e) => { setTbpVisualInsp80(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 15. Result */}
+@@ -2499,7 +2436,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Remarks *
+             </MDTypography>
+-            <MDInput value={inspectorRemarks} onChange={(e) => setInspectorRemarks(e.target.value)} />
++            <MDInput value={inspectorRemarks} onChange={(e) => { setInspectorRemarks(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* 17. Line Speed */}
+@@ -2507,7 +2444,7 @@ const showErrorAlert = (errorMessage) => {
+             <MDTypography fontWeight="regular" fontSize="small" textTransform="capitalize" variant="h6" color={"dark"} noWrap>
+               Line Speed
+             </MDTypography>
+-            <MDInput value={tbpLineSpeed150} onChange={(e) => setTbpLineSpeed150(e.target.value)} />
++            <MDInput value={tbpLineSpeed150} onChange={(e) => { setTbpLineSpeed150(e.target.value); setTableNull(); }} />
+           </Grid>
+ 
+           {/* Fill Data Button */}
+@@ -2604,7 +2541,7 @@ const showErrorAlert = (errorMessage) => {
+                             severity="error"
+                             variant="filled"
+                             onClose={() => {
+-                              setShowSaveMsgError(false);
++                              clearMessage();
+                             }}
+                           >
+                             <MDTypography variant="body2" color="white">
+@@ -2613,7 +2550,7 @@ const showErrorAlert = (errorMessage) => {
+                                 fontWeight="medium"
+                                 color="white"
+                               >
+-                                {saveMsg}
++                                <span style={{whiteSpace:"pre-wrap"}}>{saveMsg}</span>
+                               </MDTypography>
+                             </MDTypography>
+                           </MDAlert>
+@@ -2626,7 +2563,7 @@ const showErrorAlert = (errorMessage) => {
+                             color="success"
+                             variant="filled"
+                             onClose={() => {
+-                              setShowSaveMsgSuccess(false);
++                              clearMessage();
+                             }}
+                           >
+                             <MDTypography variant="body2" color="white">
+@@ -2637,7 +2574,7 @@ const showErrorAlert = (errorMessage) => {
+                                 fontSize="lg"
+                                 textTransform="capitalize"
+                               >
+-                                {saveMsg}
++                                <span style={{whiteSpace:"pre-wrap"}}>{saveMsg}</span>
+                               </MDTypography>
+                             </MDTypography>
+                           </MDAlert>

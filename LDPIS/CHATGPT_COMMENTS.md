@@ -28,3 +28,15 @@ implement the following points.
     a>error message given by api should be handled and cleared exactly like in LD10S001 like we do it in a label at bottom
     b>just like in LD10 when we change a field value the table gets cleared do similar here
 ```
+
+
+## 2026-11-05 — LD14S001 and LD15S001
+
+LD14 marks the four specified measurements as numeric and distinguishes text fields. Both screens show fill/save API errors below the results grid. Dismiss the message, edit the form, clear it, or retry to clear the previous error. LD15 form edits invalidate the filled rows; use Fill Data again before saving. The transfer contains only the two frontend files.
+
+```powershell
+$repo = "D:\Office Work\Striver\gnu-gcc-portable"
+git -C $repo pull --ff-only origin main
+& "$repo\LDPIS\Apply-LD150-To-Office.ps1" -ChangeSet "2026-11-05" -CheckOnly
+& "$repo\LDPIS\Apply-LD150-To-Office.ps1" -ChangeSet "2026-11-05"
+```
