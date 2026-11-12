@@ -49,7 +49,7 @@ export default function MaxWidthDialogelongation(props) {
   const [getelongation, setgetelongation] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("xl");
+  const [maxWidth, setMaxWidth] = React.useState("md");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -347,47 +347,90 @@ export default function MaxWidthDialogelongation(props) {
                       <Grid item xs={0.75}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
                       <Grid item xs={3.25}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Pipe No.</Grid>
                       <Grid item xs={2.5}    style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Required Value</Grid>
-                      <Grid item xs={2.5}    style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>AChieved Value</Grid>
-                      <Grid item xs={3}      style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
+                      <Grid item xs={2.5}    style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Achieved Value</Grid>
+                      <Grid item xs={3}      style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Remarks</Grid>
 
                     
-                      {getelongation
-                            .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
-                            .map((dataRow, i) => (
-                              <React.Fragment key={`data-fragment-${pageIndex}-${i}`}>
-                                <Grid key={`data-${pageIndex}-${i}`} container>
-                                  <Grid item xs={0.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                                  <Grid item xs={3.25}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.CHARG !== null ? dataRow.CHARG : <br />}</Grid>
-                                  <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQ_VALUE !== null ? dataRow.REQ_VALUE : <br />}</Grid>
-                                  <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.ACHIEVED_VALUE !== null ? dataRow.ACHIEVED_VALUE : <br />}</Grid>
-                                  <Grid item xs={3}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
-                                </Grid>
-                                {(i + 1) % 6 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={0.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
-                                )} 
-                                {(i + 1) % 6 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={3.25} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
-                                )}
-                                {(i + 1) % 6 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={2.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
-                                )}
-                                {(i + 1) % 6 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={2.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
-                                )}
-                                {(i + 1) % 6 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
-                                )}
-                              </React.Fragment>
-                      ))}
+                     {getelongation
+  .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
+  .map((dataRow, i) => {
+    const rowPosition = i + 1;
+
+    // Logic to display text data only at positions 3, 9, 15
+    const shouldShowData = rowPosition === 3 || rowPosition === 9 || rowPosition === 15;
+
+    // Logic to close the group border every 6th row for the special columns
+    const isEndOfGroup = rowPosition % 6 === 0;
+
+    const baseCellStyle = {
+      fontSize: "10px",
+      color: "black",
+      fontFamily: "ArialBold",
+      fontWeight: "bold",
+      borderRight: "1px solid black",
+      padding: "3px",
+    };
+
+    // Style for columns that have a border on every single line
+    const standardCellStyle = {
+      ...baseCellStyle,
+      borderBottom: "1px solid black",
+    };
+
+    // Style for CHARG and REQ_VALUE (border only at the end of the 6-row group)
+    const specialCellStyle = {
+      ...baseCellStyle,
+      borderBottom: isEndOfGroup ? "1px solid black" : "none",
+    };
+
+    return (
+      <React.Fragment key={`data-fragment-${pageIndex}-${i}`}>
+        <Grid key={`data-${pageIndex}-${i}`} container>
+          {/* SR.NO Column - Border every line */}
+          <Grid item xs={0.75} style={standardCellStyle}>
+            {pageIndex * rowsPerPage + rowPosition}
+          </Grid>
+
+          {/* Pipe No (CHARG) Column - Border only every 6th line */}
+          <Grid item xs={3.25} style={specialCellStyle}>
+            {shouldShowData && dataRow.CHARG !== null ? dataRow.CHARG : <br />}
+          </Grid>
+
+          {/* Required Value Column - Border only every 6th line */}
+          <Grid item xs={2.5} style={specialCellStyle}>
+            {shouldShowData && dataRow.REQ_VALUE !== null ? dataRow.REQ_VALUE : <br />}
+          </Grid>
+
+          {/* Achieved Value Column - Border every line */}
+          <Grid item xs={2.5} style={standardCellStyle}>
+            {dataRow.ACHIEVED_VALUE !== null ? dataRow.ACHIEVED_VALUE : <br />}
+          </Grid>
+
+          {/* Remarks Column - Border every line */}
+          <Grid item xs={3} style={standardCellStyle}>
+            {dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}
+          </Grid>
+        </Grid>
+      </React.Fragment>
+    );
+  })}
 
 
-{Array.from({ length: Math.max(0, rowsPerPage - getelongation.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (                            <Grid key={`empty-${pageIndex}-${i}`} container>                            <Grid item xs={0.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>                            <Grid item xs={3.25}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>                            <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>                            <Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>                            <Grid item xs={3}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>                         </Grid>                      ))}
+
+{Array.from({ length: Math.max(0, rowsPerPage - getelongation.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => ( 
+                             <Grid key={`empty-${pageIndex}-${i}`} container>
+<Grid item xs={0.75}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid> 
+<Grid item xs={3.25}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+<Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+<Grid item xs={2.5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+<Grid item xs={3}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+</Grid>                      ))}
 
                     </Grid>  
                     </Grid>
                     <Grid>
  </Grid>
-                       <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
+                       <Grid container style={{textAlign: 'left', fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
                        <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getelongation?.length > 0 ? getelongation[0].SPEC : '  '} & QAPNO: TSL/COAT/{getelongation?.length > 0 ? getelongation[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        

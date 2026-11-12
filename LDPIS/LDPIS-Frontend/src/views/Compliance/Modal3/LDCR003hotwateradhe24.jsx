@@ -193,7 +193,7 @@ export default function MaxWidthhotwtad24(props) {
   }
   `;
   
-    const rowsPerPage = 14;
+    const rowsPerPage = 15;
     const numPages = Math.max(1, Math.ceil(gethotwtad24?.length / rowsPerPage));
 
 
@@ -296,7 +296,7 @@ export default function MaxWidthhotwtad24(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '45px', fontSize: '17px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '25px', fontSize: '17px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             LAB TEST REPORT
@@ -365,20 +365,161 @@ export default function MaxWidthhotwtad24(props) {
                       <Grid item xs={1.1}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
                     
-                      {gethotwtad24
-                            .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
-                            .map((dataRow, i) => (
-<Grid key={`data-${pageIndex}-${i}`} container>
-                            <Grid item xs={0.4}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                            <Grid item xs={2.3}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}</Grid>
-                            <Grid item xs={1.6}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.BATCH_NO !== null ? dataRow.BATCH_NO : <br />}</Grid>
-                            <Grid item xs={2.8}   style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.TEST_METHOD !== null ? dataRow.TEST_METHOD : <br />}</Grid>
-                            <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.TEST_RESULT1 !== null ? dataRow.TEST_RESULT1 : <br />}</Grid>
-                            <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
-                         </Grid>
-                      ))}
+{gethotwtad24
+  .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
+  .map((dataRow, i) => {
+    // Calculate the actual Serial Number
+    const srNo = pageIndex * rowsPerPage + i + 1;
+
+    // Condition for displaying border: only for SR.NO. 3, 6, 9
+    // const shouldShowBorder = srNo === 3 || srNo === 6 || srNo === 9 || srNo === 12;
+        const shouldShowBorder = srNo % 3 === 0;
+
+    // Condition for displaying content: only for SR.NO. 2, 5, 8
+    // const shouldShowContent = srNo === 2 || srNo === 5 || srNo === 8 || srNo === 11;
+       const shouldShowContent = srNo % 3 === 2;
+
+    return (
+      <Grid key={`data-${pageIndex}-${i}`} container>
+        {/* SR.NO. Column */}
+        <Grid
+          item
+          xs={0.4}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: "1px solid black",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {srNo}
+        </Grid>
+
+        {/* MATERIAL DESCRIPTION */}
+        <Grid
+          item
+          xs={2.3}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: shouldShowBorder ? "1px solid black" : "none",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {shouldShowContent && dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />}
+        </Grid>
+
+        {/* BATCH NO. */}
+        <Grid
+          item
+          xs={1.6}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: shouldShowBorder ? "1px solid black" : "none",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {shouldShowContent && dataRow.BATCH_NO !== null ? dataRow.BATCH_NO : <br />}
+        </Grid>
+
+        {/* TEST DESCRIPTION */}
+        <Grid
+          item
+          xs={2.8}
+          style={{
+            fontSize: "9px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: shouldShowBorder ? "1px solid black" : "none",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {shouldShowContent && dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />}
+        </Grid>
+
+        {/* TEST METHOD */}
+        <Grid
+          item
+          xs={1.1}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: shouldShowBorder ? "1px solid black" : "none",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {shouldShowContent && dataRow.TEST_METHOD !== null ? dataRow.TEST_METHOD : <br />}
+        </Grid>
+
+        {/* REQUIREMENT (Kept original logic) */}
+        <Grid
+          item
+          xs={1.2}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: "1px solid black",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}
+        </Grid>
+
+        {/* TEST RESULT (Kept original logic) */}
+        <Grid
+          item
+          xs={1.5}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: "1px solid black",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {dataRow.TEST_RESULT_VALUE !== null ? dataRow.TEST_RESULT_VALUE : <br />}
+        </Grid>
+
+        {/* REMARKS (Kept original logic) */}
+        <Grid
+          item
+          xs={1.1}
+          style={{
+            fontSize: "11px",
+            color: "black",
+            fontFamily: "ArialBold",
+            fontWeight: "bold",
+            borderBottom: "1px solid black",
+            borderRight: "1px solid black",
+            padding: "3px",
+          }}
+        >
+          {dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}
+        </Grid>
+      </Grid>
+    );
+  })}
+
 
 
 {Array.from({ length: Math.max(0, rowsPerPage - gethotwtad24.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
@@ -441,7 +582,7 @@ export default function MaxWidthhotwtad24(props) {
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
-                       <Grid item xs = {12}><br/></Grid>
+                       
                        <Grid item xs = {6} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '2px'  ,  textAlign: 'Center'  }}> {props?.reviewedBy} <br/> (QC ENGINEER)</Grid>
                        <Grid item xs = {6} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '2px'  ,  textAlign: 'Center'  }}> TPIA / CLIENT<br/></Grid>
                        <Grid item xs = {12}><br/></Grid>

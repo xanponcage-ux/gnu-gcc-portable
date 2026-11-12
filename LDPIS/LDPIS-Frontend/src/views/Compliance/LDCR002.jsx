@@ -361,7 +361,7 @@ const handlepipelistChange = (value) => {
     ) {
       alertify.error("Please choose a Report Type");
     }
-        if (serverDetails.PersonalNo !== '808535') {
+        if (serverDetails.PersonalNo !== '808535l') {
         if (!orderNo ) {
           alertify.error("Please select Order No");
           return;
@@ -372,10 +372,19 @@ const handlepipelistChange = (value) => {
           return;
         }
 
+        if (selectedrepType?.value !== "2C") {
         if ( !crdate) {
           alertify.error("Please select  Date");
           return;
         }
+      }
+
+       if (selectedrepType?.value === "2C") {
+        if ( !printdate) {
+          alertify.error("Please select  Date");
+          return;
+        }
+      }
 
         if ( !reviewedBy) {
           alertify.error("Please Fill Revieved By");

@@ -431,7 +431,7 @@ export default function LDLTS005() {
       const res = await axiosAPI.post(url, data, defaultOptions);
 
       if (res.statusText !== "" && res.statusText !== "OK") {
-        alertify.error("Error fetching count check data");
+        // alertify.error("Error fetching count check data");
         setIsSaveButtonDisabled(true);
       } else {
         const count = res.data?.[0]?.CNT;

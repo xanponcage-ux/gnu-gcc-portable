@@ -206,15 +206,24 @@ export default function LDSM006() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
-    {
-      title: "Weight (KG)",
-      field: "TBP_WEIGHT",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      bottomCalc: "sum",
-      bottomCalcParams: { precision: 3 },
-      cellEdited: function (cell) {},
-    },
+{
+  title: "Weight (KG)",
+  field: "TBP_WEIGHT",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+  hozAlign: "Right",
+  // Add the formatter and params below
+  formatter: "money",
+  formatterParams: {
+    decimal: ".",
+    thousand: ",",
+    symbol: "",
+    precision: 3,
+  },
+  bottomCalc: "sum",
+  bottomCalcParams: { precision: 3 },
+  cellEdited: function (cell) {},
+},
     {
       title: "Status",
       field: "TBP_CD_STATUS",
@@ -349,26 +358,61 @@ export default function LDSM006() {
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "OD",
-      field: "LOM_SEC2",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      formatter: decimalFormatter
-    },
-    {
-      title: "Thick",
-      field: "LOM_SEC1",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      formatter: decimalFormatter
-    },
-    {
-      title: "Length",
-      field: "LOM_LENGTH",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      formatter: decimalFormatter
-    },
+  title: "OD",
+  field: "LOM_SEC2",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+  hozAlign: "Right",
+  // Add the formatter and params below
+  formatter: "money",
+  formatterParams: {
+    decimal: ".",
+    thousand: ",",
+    symbol: "",
+    precision: 3,
+  },
+  bottomCalc: "sum",
+  bottomCalcParams: { precision: 3 },
+  cellEdited: function (cell) {},
+},
+
+{
+  title: "Thick",
+  field: "LOM_SEC1",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+  hozAlign: "Right",
+  // Add the formatter and params below
+  formatter: "money",
+  formatterParams: {
+    decimal: ".",
+    thousand: ",",
+    symbol: "",
+    precision: 3,
+  },
+  bottomCalc: "sum",
+  bottomCalcParams: { precision: 3 },
+  cellEdited: function (cell) {},
+},
+
+{
+  title: "Length",
+  field: "LOM_LENGTH",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+  hozAlign: "Right",
+  // Add the formatter and params below
+  formatter: "money",
+  formatterParams: {
+    decimal: ".",
+    thousand: ",",
+    symbol: "",
+    precision: 3,
+  },
+  bottomCalc: "sum",
+  bottomCalcParams: { precision: 3 },
+  cellEdited: function (cell) {},
+},
     {
       title: "Flating0O10",
       field: "TBP_FLATNG_0_O_10",
@@ -860,63 +904,63 @@ export default function LDSM006() {
       formatter: decimalFormatter
     },
     {
-      title: "Rh100",
+      title: "Rh 100/150",
       field: "TBP_RH_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Ambt Tmp100",
+      title: "Ambt Tmp 100/150",
       field: "TBP_AMBT_TMP_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Dew Tmp100",
+      title: "Dew Tmp 100/150",
       field: "TBP_DEW_TMP_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Pipsur Tmp100",
+      title: "Pipsur Tmp 100/140",
       field: "TBP_PIPSUR_TEMP_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Deg Clean100",
+      title: "Deg Clean 100/140",
       field: "TBP_DEG_CLEAN_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Rough100",
+      title: "Rough 100/140/160",
       field: "TBP_ROUGH_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Dust Lvlra100",
+      title: "Dust Lvlra 100/140",
       field: "TBP_DUST_LVLRA_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Dust Lvlcl100",
+      title: "Dust Lvlcl 100",
       field: "TBP_DUST_LVLCL_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: decimalFormatter
     },
     {
-      title: "Salt Conta100",
+      title: "Salt Conc. 100/140",
       field: "TBP_SALT_CONTA_100",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
@@ -1823,6 +1867,264 @@ export default function LDSM006() {
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
+        {
+      title: "Field No. 130",
+      field: "TBP_FLD_NO_130",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+
+    //
+// --------150--------------------------------------------
+{
+  title: "F1 END 150",
+  field: "TBP_WFT_F1_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "F2 END 150",
+  field: "TBP_WFT_F2_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "F3 END 150",
+  field: "TBP_WFT_F3_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "F4 END 150",
+  field: "TBP_WFT_F4_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "T1 END 150",
+  field: "TBP_WFT_T1_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "T2 END 150",
+  field: "TBP_WFT_T2_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "T3 END 150",
+  field: "TBP_WFT_T3_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "T4 END 150",
+  field: "TBP_WFT_T4_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Coat Wt. 150 (Kg)",
+  field: "TBP_COT_WT_IN_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Cut Back FEND 150",
+  field: "TBP_ME_FEND_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Cut Back TEND 150",
+  field: "TBP_UME_TEND_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Base Manuf 150",
+  field: "TBP_RMUSE1_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Base Batch No. 150",
+  field: "TBP_RMUSE2_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Hardner Grade",
+  field: "TBP_RMUSE3_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+// {
+//   title: "RMUSE4 150",
+//   field: "TBP_RMUSE4_150",
+//   headerFilter: "input",
+//   headerFilterPlaceholder: "search...",
+// },
+// {
+//   title: "RMUSE5 150",
+//   field: "TBP_RMUSE5_150",
+//   headerFilter: "input",
+//   headerFilterPlaceholder: "search...",
+// },
+{
+  title: "Batch1 150",
+  field: "TBP_BATCH1_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Batch2 150",
+  field: "TBP_BATCH2_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Batch3 150",
+  field: "TBP_BATCH3_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Batch4 150",
+  field: "TBP_BATCH4_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Batch5 150",
+  field: "TBP_BATCH5_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Line Speed 150",
+  field: "TBP_LINES_SPED_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Mixpaint Ratio 150",
+  field: "TBP_MIXPAINT_RATIO_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Quantity 150",
+  field: "TBP_QUANTITY_150",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+
+// --------160---------------------------------------------
+{
+  title: "Field No Int 160",
+  field: "TBP_FIELDNO_INT_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT F1 160",
+  field: "TBP_DFT_F1_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT F2 160",
+  field: "TBP_DFT_F2_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT F3 160",
+  field: "TBP_DFT_F3_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT F4 160",
+  field: "TBP_DFT_F4_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT T1 160",
+  field: "TBP_DFT_T1_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT T2 160",
+  field: "TBP_DFT_T2_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT T3 160",
+  field: "TBP_DFT_T3_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFT T4 160",
+  field: "TBP_DFT_T4_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "DFTW5 160",
+  field: "TBP_DFTW5_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Marking 160",
+  field: "TBP_MARKING_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "OLT W1 160",
+  field: "TBP_ONLTESTW1_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Final Station 160",
+  field: "TBP_FINALSTATION_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "Repair St. 160",
+  field: "TBP_REPAIR_ST_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "OLT B1 160",
+  field: "TBP_ONLTESTB1_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "OLT B2 160",
+  field: "TBP_ONLTESTB2_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+{
+  title: "OLT B3 160",
+  field: "TBP_ONLTESTB3_160",
+  headerFilter: "input",
+  headerFilterPlaceholder: "search...",
+},
+    //
     {
       title: "WorkCenter",
       field: "TBP_WORK_CENTER",
@@ -1999,8 +2301,12 @@ export default function LDSM006() {
     { value: "C", label: "110" },
     { value: "D", label: "120" },
     { value: "E", label: "130" },
-    { value: "F", label: "150" },
-    { value: "W", label: "W" },
+    { value: "F", label: "140" },
+    { value: "G", label: "150" },
+    { value: "H", label: "160" },
+    { value: "WB", label: "Bare Packaging" },
+    { value: "WE", label: "EXT. Packaging" },
+    { value: "WI", label: "INT. Packaging" },
   ];
 
   const qltyList = [
@@ -2049,8 +2355,8 @@ export default function LDSM006() {
       };
       const prodStartDt = formatDate(selectedProdStartDt);
       const prodEndDt = formatDate(selectedProdEndDt);
-      console.log("prodstartdt", prodStartDt);
-      console.log("prodstartdt", prodStartDt);
+      // console.log("prodstartdt", prodStartDt);
+      // console.log("prodstartdt", prodStartDt);
       var currentTime = new Date();
       var prodEndDateCheck = new Date(prodEndDt);
       if (prodEndDateCheck > currentTime) {
@@ -2087,7 +2393,7 @@ export default function LDSM006() {
       }
       url = "api/LDSM006/getProdInqData";
 
-      setLoading(true);
+      // setLoading(true);
 
       await axiosAPI
         .post(url, data, defaultOptions)
@@ -2098,12 +2404,11 @@ export default function LDSM006() {
             if (response.data.length == 0) {
               alertify.error("No Data Found");
               setProdInquiryData([]);
-              setLoading(false);
+              // setLoading(false);
             } else {
               setProdInquiryData(response.data);
-              setLoading(false);
+              // setLoading(false);
             }
-            
           }
         })
         .catch((error) => {
@@ -2214,7 +2519,7 @@ export default function LDSM006() {
 
                   <MDBox px={3} py={3}>
                     <Grid container spacing={2}>
-                      <Grid item xs={1.2}>
+                      <Grid item xs={1.6}>
                         <MDTypography
                           fontWeight="regular"
                           fontSize="small"
@@ -2383,7 +2688,7 @@ export default function LDSM006() {
                         />
                       </Grid>
 
-                      <Grid item xs={1.5}>
+                      <Grid item xs={1.3}>
                         <MDTypography
                           fontWeight="regular"
                           fontSize="small"
@@ -2403,7 +2708,7 @@ export default function LDSM006() {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={1.5}>
+                      <Grid item xs={1.3}>
                         <MDTypography
                           fontWeight="regular"
                           fontSize="small"

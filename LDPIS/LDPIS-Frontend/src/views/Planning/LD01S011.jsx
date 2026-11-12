@@ -376,6 +376,18 @@ export default function LD01S011() {
       headerFilterPlaceholder: "search...",
     },
     {
+      title: "Order",
+      field: "ORD",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Item",
+      field: "ITEM",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
       title: "Net Wt",
       field: "NET_WT",
       formatter: function (cell, formatterParams) {
@@ -477,18 +489,7 @@ export default function LD01S011() {
       headerFilterPlaceholder: "search...",
       hozAlign: "right",
     },
-    {
-      title: "Order",
-      field: "ORD",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Item",
-      field: "ITEM",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
+    
     {
       title: "Mill No",
       field: "MILL_NO",
@@ -548,10 +549,14 @@ export default function LD01S011() {
         setBatches(rows);
         setMessage((rows.length ? rows.length + " WB batches found." : "No eligible WB batches found.") +
           (ignored.length ? " Missing or not WB: " + ignored.join(", ") : ""));
+          alertify.error((rows.length ? rows.length + " WB batches found." : "No eligible WB batches found.") +
+          (ignored.length ? " Missing or not WB: " + ignored.join(", ") : ""));
       } else if (action === "order") {
         if (!Array.isArray(data?.orders) || !data.orders.length || !Array.isArray(data.pairs) ||
-            !data.pairs.every(pair => Array.isArray(pair) && pair.length === 2) || !data.snapshot)
-          throw new Error("No order preview returned. Check the order and item, then fetch again.");
+            !data.pairs.every(pair => Array.isArray(pair) && pair.length === 2) || !data.snapshot){
+              alertify.error("Not sufficient WB batches in selected Target Order-Item. Please connect with Planning for support.");
+          throw new Error("Not sufficient WB batches in selected Target Order-Item. Please connect with Planning for support.");
+            }
         setPreview(data);
       } else if (!Number.isInteger(data?.swapped) || !Number.isInteger(data?.skipped)) {
         throw new Error("No swap confirmation returned. Fetch batch details again to verify the assignments.");

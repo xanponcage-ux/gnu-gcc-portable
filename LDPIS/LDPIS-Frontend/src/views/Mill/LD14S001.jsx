@@ -931,7 +931,7 @@ export default function TubePlanning() {
         C_PRC: nxtproc2 ? nxtproc2 : "",
         N_PRC: row.NEXT_PROC || nxtproc || "",
         PIPE_NO: row.TBP_BATCH_NO ? row.TBP_BATCH_NO : "",
-        ASL_NO: "",
+        // ASL_NO: "",
         LENGTH: row.TBP_PIPE_LNG_10 ? row.TBP_PIPE_LNG_10 : "0",
         PROC_DT: formattedDate,
         // COAT_WT: coatwt ? coatwt : "",

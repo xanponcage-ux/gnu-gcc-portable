@@ -148,6 +148,7 @@ export const insertTempData = async (data: any) => {
           TBP_PH_BEACID_100,
           TBP_PH_AFACID_100,
           TBP_VISUAL_INSP_80,
+          TBP_ASL_NO_80,
           TBP_DWELLTM_100,
           TBP_PREDM_WA_100,
           TBP_DMWA_FRA_1_100,
@@ -176,7 +177,7 @@ export const insertTempData = async (data: any) => {
           TO_DATE(:START_DT, 'DD/MM/YYYY HH24:MI'), TO_DATE(:END_DT, 'DD/MM/YYYY HH24:MI'),
           :RESULT, :REMARK, :HEAT_NO, :INSP_NAME, 
           :PTEMP_BEFORE_BLAST, :PTEMP_BEFORE_ACID_WASH, :PH_BEFORE_ACID_WASH, 
-          :PH_AFTER_ACID_WASH,:VISUAL_INSP, :DWELL_TIME, :PRESS_DM_WASH, :DM_WATER_FLOW_RATE1, 
+          :PH_AFTER_ACID_WASH,:VISUAL_INSP,:ASL_NO, :DWELL_TIME, :PRESS_DM_WASH, :DM_WATER_FLOW_RATE1, 
           :DM_WATER_FLOW_RATE2, :DM_WATER_FLOW_RATE3, :PRE_HEAT_AIR_AFTER_WATER_WASH, 
           :REL_HUMID, :AMB_TEMP, :DEW_POINT_TEMP, :PIPE_SURFACE_TEMP, :DEGREE_CLEANLINESS, 
           :ROUGHNESS, :DUST_LEVEL_RATING, :DUST_LEVEL_CLASS, :SALT_CONTAMIN, :PHOS_ACID_MATERIAL, 
@@ -209,6 +210,7 @@ export const insertTempData = async (data: any) => {
       INSP_NAME: data.INSP_NAME,
       VISUAL_INSP: data.VISUAL_INSP,
       DEGREE_CLEANLINESS: data.DEGREE_CLEANLINESS,
+      ASL_NO: data.ASL_NO,
 
       // Convert each NUMBER field explicitly
       PTEMP_BEFORE_BLAST: data.PTEMP_BEFORE_BLAST
@@ -237,7 +239,7 @@ export const insertTempData = async (data: any) => {
       PRE_HEAT_AIR_AFTER_WATER_WASH: data.PRE_HEAT_AIR_AFTER_WATER_WASH
         ? parseFloat(data.PRE_HEAT_AIR_AFTER_WATER_WASH)
         : null,
-      REL_HUMID: data.REL_HUMID ? parseInt(data.REL_HUMID) : null,
+      REL_HUMID: data.REL_HUMID ? data.REL_HUMID : null,
       AMB_TEMP: data.AMB_TEMP ? parseFloat(data.AMB_TEMP) : null,
       DEW_POINT_TEMP: data.DEW_POINT_TEMP
         ? parseFloat(data.DEW_POINT_TEMP)
@@ -420,7 +422,7 @@ export const getPono = async (rmBatch: any, pipeno: any) => {
 export const getFillData = async (data: any) => {
   try {
     const binds: any = { status: data.STATUS };
-    let sql = `SELECT TBP_BATCH_NO, lom_sec2, lom_sec1,lom_ms_piece_actl,LOM_LENGTH  TBP_PIPE_LNG_10,
+    let sql = `SELECT TBP_BATCH_NO, lom_sec2, lom_sec1,lom_ms_piece_actl,LOM_LENGTH  TBP_PIPE_LNG_10,LOM_NO_CAST TBP_HEAT_NO,
        LOM_NO_MATNR TBP_NO_MATNR, LOM_ID_ORDER_CUS ORDER_NO, LOM_ID_ORD_ITEM_CUS ITEM, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
        (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'B') as nxtproc from dual) NEXT_PROC,
        (select CASE WHEN REGEXP_LIKE(A.TBP_DIA_END_10, '^[0-9]+$') THEN TO_NUMBER(A.TBP_DIA_END_10) ELSE NULL END FROM V_BARE_PDO A
@@ -431,7 +433,9 @@ export const getFillData = async (data: any) => {
                     WHERE A.TBP_BATCH_NO = x.TBP_BATCH_NO
                       AND x.TBP_CD_PROC = 'A'
                   )
-                and rownum = 1) TBP_DIA_END_10, LOM_ID_PAR_COIL_NO
+                and rownum = 1) TBP_DIA_END_10, 
+                LOM_ID_PAR_COIL_NO,
+                TBP_ASL_NO_80
           FROM V_BARE_PDO b, V_END_CUST_ORD_EPA, V_LDP_PRODN
          WHERE  TBP_BATCH_NO = LOM_ID_BATCH
            AND TBP_PLANT_CD = LOM_CD_EPA

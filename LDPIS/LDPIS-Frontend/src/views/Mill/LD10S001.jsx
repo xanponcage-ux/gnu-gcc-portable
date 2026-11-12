@@ -463,7 +463,7 @@ export default function TubePlanning() {
           QUALITY_CD: null,
           MATNR: item._row.data.MATERIAL ?? null,
           FLAG: null,
-          // ASL_NO: item._row.data.ASL_NO ? item._row.data.ASL_NO : "",
+          ASL_NO: item._row.data.ASL_NO ? item._row.data.ASL_NO : "",
           START_DT: prodstartdt,
           END_DT: prodenddt,
           RESULT: item._row.data.RESULT ?? null,

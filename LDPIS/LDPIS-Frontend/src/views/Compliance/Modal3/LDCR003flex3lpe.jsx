@@ -189,7 +189,7 @@ export default function MaxWidthFlex3lpe(props) {
   }
   `;
   
-    const rowsPerPage = 12;
+    const rowsPerPage = 6;
     const numPages = Math.max(1, Math.ceil(getflex3lpe?.length / rowsPerPage));
 
     const formattedPrintDateShift = props?.printdate
@@ -298,7 +298,7 @@ export default function MaxWidthFlex3lpe(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '45px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '45px', fontSize: '17px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             FLEXIBILITY TEST REPORT
@@ -308,7 +308,7 @@ export default function MaxWidthFlex3lpe(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'Right', marginTop: '5px',fontSize: '9px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'Right', marginTop: '5px',fontSize: '10px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                            FORMAT NO : TSL/COAT/QC/F-19 Rev 05,Date 13.11.2021            _
                           </MDTypography>
@@ -357,11 +357,11 @@ export default function MaxWidthFlex3lpe(props) {
                     <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>     
                     <Grid container xs = {12} >
 
-                      <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={1}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO.</Grid>
-                      <Grid item xs={5}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIRED VALUE</Grid>
-                      <Grid item xs={3}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ACHIEVED VALUE</Grid>
-                      <Grid item xs={2.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
+                      <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
+                      <Grid item xs={2}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE NO.</Grid>
+                      <Grid item xs={4}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIRED VALUE</Grid>
+                      <Grid item xs={3}     style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>ACHIEVED VALUE</Grid>
+                      <Grid item xs={2.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
                     
  {getflex3lpe
@@ -369,27 +369,79 @@ export default function MaxWidthFlex3lpe(props) {
                             .map((dataRow, i) => (
                               <React.Fragment key={`data-fragment-${pageIndex}-${i}`}>
                                 <Grid key={`data-${pageIndex}-${i}`} container>
-                                  <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'    }}>{pageIndex * rowsPerPage + i + 1}</Grid>
-                                  <Grid item xs={1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />}</Grid>
-                                  <Grid item xs={5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REQUIREMENT !== null ? dataRow.REQUIREMENT : <br />}</Grid>
-                                  <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.ACHIEVED_VALUE !== null ? dataRow.ACHIEVED_VALUE : <br />}</Grid>
+                                  <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center'  }}>{pageIndex * rowsPerPage + i + 1}</Grid>
+                                    {/* Modified PIPE_NO field */}
+<Grid
+  item
+  xs={2}
+  style={{
+    fontSize: "10px",
+    color: "black",
+    fontFamily: "ArialBold",
+    fontWeight: "bold",
+    borderBottom: (i + 1) % 3 === 0 ? "1px solid black" : "none",
+    borderRight: "1px solid black",
+    // Flexbox properties to control spacing
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    lineHeight: "1", // Adjust this value to minimize the gap further
+    padding: "2px 0px", // Optional: minimal padding for breathing room
+  }}
+>
+  {(i + 1) % 3 === 2 && dataRow.PIPE_NO !== null ? (
+    <div>{dataRow.PIPE_NO} <br/>( 3LPE COATED PIPE )</div>
+  ) : null}
+
+  {/* {(i + 1) % 3 === 0 && dataRow?.PIPE_NO !== null ? (
+    <div>( 3LPE COATED PIPE )</div>
+  ) : null} */}
+</Grid>
+
+
+        {/* Modified REQUIREMENT field */}
+<Grid item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>
+  {dataRow.REQUIREMENT !== null ? (
+    <>
+      {dataRow.REQUIREMENT}
+      {/* Conditionally add <br /> and the next value if it exists */}
+      {dataRow.REQUIRED_MANDREL !== null && 'Required Mandrel radius = ' + dataRow.REQUIRED_MANDREL + 'mm'!== undefined && (
+        <>
+          <br />
+          Required Mandrel radius = {dataRow.REQUIRED_MANDREL} mm
+        </>
+      )}
+      {dataRow.USED_MANDREL !== null && 'Used Mandrel radius = ' +  dataRow.USED_MANDREL  + 'mm' !== undefined && (
+        <>
+          <br />
+          Required Mandrel radius = {dataRow.USED_MANDREL} mm
+        </>
+      )}
+    </>
+  ) : (
+    <br />
+  )}
+</Grid>
+
+                                  <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' ,display: 'flex', alignItems: 'center',  justifyContent: 'center'  }}>{dataRow.ACHIEVED_VALUE !== null ? dataRow.ACHIEVED_VALUE : <br />}</Grid>
                                   <Grid item xs={2.5}      style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                                 </Grid>
-                                {(i + 1) % 3 === 0 && (
+                                {/* {(i + 1) % 3 === 0 && (
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )} 
                                 {(i + 1) % 3 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={1} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={2} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )}
                                 {(i + 1) % 3 === 0 && (
-                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )}
                                 {(i + 1) % 3 === 0 && (
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
                                 )}
                                 {(i + 1) % 3 === 0 && (
                                   <Grid key={`separator-${pageIndex}-${i}`} item xs={2.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{<br />}</Grid>
-                                )}
+                                )} */}
                               </React.Fragment>
                       ))}
 
@@ -397,11 +449,30 @@ export default function MaxWidthFlex3lpe(props) {
 {Array.from({ length: Math.max(0, rowsPerPage - getflex3lpe.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
-                            <Grid item xs={0.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={1}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
-                            <Grid item xs={5}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                                                       <Grid item xs={0.4}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  { <>
+                                      <br />
+                                      <br /> 
+                                        <br />
+                                 </>}</Grid>
+                            <Grid item xs={2}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
+                            <Grid item xs={4}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
                             <Grid item xs={3}    style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
                             <Grid item xs={2.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}> {<br />}</Grid>
+                            {/* {(i + 1) % 3 === 0 && (
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={0.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>{<br />}</Grid>
+                                )} 
+                                {(i + 1) % 3 === 0 && (
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={2} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>{<br />}</Grid>
+                                )}
+                                {(i + 1) % 3 === 0 && (
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={4} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>{<br />}</Grid>
+                                )}
+                                {(i + 1) % 3 === 0 && (
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={3} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>{<br />}</Grid>
+                                )}
+                                {(i + 1) % 3 === 0 && (
+                                  <Grid key={`separator-${pageIndex}-${i}`} item xs={2.5} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>{<br />}</Grid>
+                                )} */}
 
                          </Grid>
                       ))}
@@ -417,17 +488,17 @@ export default function MaxWidthFlex3lpe(props) {
                        </Grid>
 
                      <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black' }}>
-                      <Grid item xs={12}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center' }}>INSTRUMENT USED</Grid>
-                      <Grid item xs={0.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center' }}>SR No.</Grid>
-                      <Grid item xs={5.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
-                      <Grid item xs={5.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center' }}>INSTRUMENT ID/SERIAL NO.</Grid>
+                      <Grid item xs={12}   style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>INSTRUMENT USED</Grid>
+                      <Grid item xs={0.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>SR No.</Grid>
+                      <Grid item xs={5.75} style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center' }}>INSTRUMENT NAME</Grid>
+                      <Grid item xs={5.5}  style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center' }}>INSTRUMENT ID/SERIAL NO.</Grid>
                        
-                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>1<br/></Grid>
-                          <Grid item xs={5.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName1}</Grid>
-                          <Grid item xs={5.5}  style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId1}</Grid>
-                          <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>2<br/></Grid>
-                          <Grid item xs={5.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName2}</Grid>
-                          <Grid item xs={5.5}  style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId2}</Grid>
+                          <Grid item xs={0.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>1<br/></Grid>
+                          <Grid item xs={5.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName1}</Grid>
+                          <Grid item xs={5.5}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId1}</Grid>
+                          <Grid item xs={0.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>2<br/></Grid>
+                          <Grid item xs={5.75} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName2}</Grid>
+                          <Grid item xs={5.5}  style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId2}</Grid>
                           {/* <Grid item xs={0.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>3<br/></Grid>
                           <Grid item xs={7.75} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{props?.instrumentName3}</Grid>
                           <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'  }}>{props?.instrumentId3}</Grid>
@@ -443,9 +514,11 @@ export default function MaxWidthFlex3lpe(props) {
                     <Grid container style={{  textAlign: 'left',fontSize: '11px', color: 'black', fontFamily: "Times New Roman",fontWeight: "bold"}}>
                       
                           <Grid container style={{textAlign: 'left', fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold' }}>
-                               <Grid item xs={6.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
-                               <Grid item xs={5.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '2px'  ,  textAlign: 'Center' }}>ACCEPTED BY</Grid>
+                               <Grid item xs={6.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',  textAlign: 'Center' }}>INSPECTED BY</Grid>
+                               <Grid item xs={5.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px'  ,  textAlign: 'Center' }}>ACCEPTED BY</Grid>
                           </Grid>
+                       <Grid item xs = {12}><br/></Grid>
+                       <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>
                        <Grid item xs = {12}><br/></Grid>

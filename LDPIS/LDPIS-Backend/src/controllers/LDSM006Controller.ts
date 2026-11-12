@@ -18,6 +18,8 @@ export const getProdInqData = async (req: Request, res: Response) => {
     let ProdDateFrom = req.body.ProdDtFrom;
     let ProdDateTo = req.body.ProdDtTo;
     let millNo = req?.body?.millNo;
+    
+        console.log('status',Status);
 
     const results: any = await LDSM006.prototype.getProdInqData(
       Proc,
@@ -34,7 +36,7 @@ export const getProdInqData = async (req: Request, res: Response) => {
       shift,
       millNo
     );
-    console.log(results);
+
     const table: any = [];
     const header: any = [];
     const columns: any = [];

@@ -46,13 +46,13 @@ export const getProdInqData = async (
   try {
     let sql = `
             SELECT
-                TBP_PLANT_CD, TBP_BATCH_NO, TBP_CD_PROC, TBP_BATCH_PROC_NO, TBP_NEXT_PROC,TO_CHAR(TBP_PROD_DATE, 'DD-MM-YYYY') TBP_PROD_DATE, TBP_SHIFT, TBP_WEIGHT,LOM_CD_STATUS TBP_CD_STATUS,
+                TBP_PLANT_CD, TBP_BATCH_NO, TBP_CD_PROC, TBP_BATCH_PROC_NO, TBP_NEXT_PROC,TO_CHAR(TBP_PROD_DATE, 'DD-MM-YYYY') TBP_PROD_DATE, TBP_SHIFT, ROUND(TBP_WEIGHT,3) TBP_WEIGHT,LOM_CD_STATUS TBP_CD_STATUS,
                 TBP_PAR_COIL_NO, TBP_ID_FIRST_PAR, TBP_ID_ORDER_NO, TBP_ITEM_NO, TBP_QUALITY_CD, TBP_NO_MATNR,
                 (SELECT MAKTX
                   FROM V_MAKT
                  WHERE MANDT = '600'
                    AND MATNR = NVL (TBP_NO_MATNR, LOM_NO_MATNR)
-                   AND ROWNUM = 1) MAT_DESC, TBP_CD_FLAG,LOM_SEC2,LOM_SEC1,LOM_LENGTH,NVL(TBP_HEAT_NO,LOM_NO_CAST) TBP_HEAT_NO,
+                   AND ROWNUM = 1) MAT_DESC, TBP_CD_FLAG,ROUND(LOM_SEC2,3) LOM_SEC2,ROUND(LOM_SEC1,3) LOM_SEC1,ROUND(LOM_LENGTH,3) LOM_LENGTH,NVL(TBP_HEAT_NO,LOM_NO_CAST) TBP_HEAT_NO,
                 (select CASE WHEN REGEXP_LIKE(A.TBP_DIA_END_10, '^[0-9]+$') THEN TO_NUMBER(A.TBP_DIA_END_10) ELSE NULL END FROM V_BARE_PDO A
                 where A.TBP_BATCH_NO = LOM_ID_BATCH
                   and A.TBP_CD_PROC = 'A'
@@ -91,7 +91,52 @@ export const getProdInqData = async (
                 tbp_cot_thk_4_120, tbp_cot_thk_5_120, tbp_cot_thk_6_120, tbp_cot_thk_7_120, tbp_cot_thk_8_120, tbp_cot_thk_9_120,
                 tbp_cot_thk_10_120, tbp_cot_thk_11_120, tbp_cot_thk_12_120, tbp_cot_wt_vs_120, tbp_coat_stas_120, tbp_test_pip_120, tbp_lab_tst_120, tbp_fld_test_120, tbp_cb_fend_130, tbp_cb_tend_130,
                 tbp_ep_fend_130, tbp_ep_tend_130, tbp_ca_fend_130, tbp_ca_tend_130, tbp_holidat_130, tbp_resumg_1_130, tbp_resumg_2_130, tbp_resumg_3_130, tbp_resumg_4_130, tbp_fstation_130,
-                tbp_work_center,TO_CHAR(tbp_rec_crt_dt, 'DD-MM-YYYY HH24:MI:SS') tbp_rec_crt_dt,tbp_rec_crt_by, tbp_hold_rsn, tbp_sampl_tag
+                tbp_work_center,TO_CHAR(tbp_rec_crt_dt, 'DD-MM-YYYY HH24:MI:SS') tbp_rec_crt_dt,tbp_rec_crt_by, tbp_hold_rsn, tbp_sampl_tag,
+                -----130
+                TBP_FLD_NO_130
+                ----150
+,TBP_WFT_F1_150
+,TBP_WFT_F2_150
+,TBP_WFT_F3_150
+,TBP_WFT_F4_150
+,TBP_WFT_T1_150
+,TBP_WFT_T2_150
+,TBP_WFT_T3_150
+,TBP_WFT_T4_150
+,TBP_COT_WT_IN_150
+,TBP_ME_FEND_150
+,TBP_UME_TEND_150
+,TBP_RMUSE1_150
+,TBP_RMUSE2_150
+,TBP_RMUSE3_150
+,TBP_RMUSE4_150
+,TBP_RMUSE5_150
+,TBP_BATCH1_150
+,TBP_BATCH2_150
+,TBP_BATCH3_150
+,TBP_BATCH4_150
+,TBP_BATCH5_150
+,TBP_LINES_SPED_150
+,TBP_MIXPAINT_RATIO_150
+,TBP_QUANTITY_150
+--------160
+,TBP_FIELDNO_INT_160
+,TBP_DFT_F1_160
+,TBP_DFT_F2_160
+,TBP_DFT_F3_160
+,TBP_DFT_F4_160
+,TBP_DFT_T1_160
+,TBP_DFT_T2_160
+,TBP_DFT_T3_160
+,TBP_DFT_T4_160
+,TBP_DFTW5_160
+,TBP_MARKING_160
+,TBP_ONLTESTW1_160
+,TBP_FINALSTATION_160
+,TBP_REPAIR_ST_160
+,TBP_ONLTESTB1_160
+,TBP_ONLTESTB2_160
+,TBP_ONLTESTB3_160
                 ,(select ENC_MARK_CUST_NAME from v_end_cust_ord_epa 
                 where ENC_ID_ORDER = TBP_ID_ORDER_NO
                 and ENC_NO_ITEM = TBP_ITEM_NO) MARK_CUST
@@ -108,14 +153,26 @@ export const getProdInqData = async (
                 AND TBP_BATCH_NO = LOM_ID_BATCH
         `;
 
-    // Initialize binds as an empty object
     const binds: { [key: string]: any } = {};
 
-    if (Proc && Proc !== "") {
-      sql += ` AND TBP_CD_PROC = :Proc`;
-      binds.Proc = Proc;
-    }
+  //ADDEd on 11.11.2026 to view PACKAGING LINE for BARE EXT and INT.
+if (Proc && Proc !== "") {
+  if (Proc === "WB" || Proc === "WE" || Proc === "WI") {
+    
+    sql += ` AND TBP_CD_PROC = :Proc AND TBP_CD_STATUS = :Status1`;
+    binds.Proc = "W";
+    binds.Status1 = Proc;
+  } else {
+    
+    sql += ` AND TBP_CD_PROC = :Proc`;
+    binds.Proc = Proc;
+  }
+}
 
+    if (Status && Status !== "" && !binds.Status) {
+      sql += ` AND TBP_CD_STATUS = :Status`;
+      binds.Status = Status;
+    }
     if (shift && shift !== "") {
       sql += ` AND TBP_SHIFT = :shift`;
       binds.shift = shift;
@@ -140,10 +197,6 @@ export const getProdInqData = async (
     if (OrdItem && OrdItem !== "") {
       sql += ` AND TBP_ITEM_NO = :OrdItem`;
       binds.OrdItem = OrdItem;
-    }
-    if (Status && Status !== "") {
-      sql += ` AND TBP_CD_STATUS = :Status`;
-      binds.Status = Status;
     }
     if (MatnrNo && MatnrNo !== "") {
       sql += ` AND TBP_NO_MATNR = :MatnrNo`;

@@ -650,7 +650,7 @@ export const getelongationrep = async (
     BATCH_NO,
     REQ_VALUE,
     TEST_NO,
-    ACHIEVED_VALUE,
+    ACHIEVED_VALUE || ' %' ACHIEVED_VALUE,
     REMARKS
 FROM
 (
@@ -671,7 +671,7 @@ FROM
         t.tpc_sd_qap_no1                                               AS qap_no,
         T3.CHARG,
         'HDPE-B.NO.'                                                   AS BATCH_NO,
-        T.TCP_LD_ELONG_TEST_MIN                                        AS REQ_VALUE,
+        'Minimum '||T.TCP_LD_ELONG_TEST_MIN || '%'                                      AS REQ_VALUE,
         T3.LP3_ELONG_TEST1                                             AS TEST1,
         T3.LP3_ELONG_TEST2                                             AS TEST2,
         T3.LP3_ELONG_TEST3                                             AS TEST3,
@@ -727,7 +727,7 @@ UNPIVOT (
         TEST6 AS 'TEST6'
     )
 )
-    ORDER BY tpc_order_id, tpc_order_item, TEST_NO  `;
+    ORDER BY CHARG,tpc_order_id, tpc_order_item, TEST_NO  `;
 
     console.error("getelongationrep", sql);
     console.error("binds");
@@ -804,6 +804,9 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+AND LP3_FLEX_3LPE_T1 is not null
+AND LP3_FLEX_3LPE_T2 is not null
+AND LP3_FLEX_3LPE_T3 is not null
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -841,7 +844,7 @@ UNPIVOT (
         ACHIEVED_VALUE2 AS 'ACHIEVED_VALUE2',
         ACHIEVED_VALUE3 AS 'ACHIEVED_VALUE3'
     )
-) ORDER BY tpc_order_id, tpc_order_item, TEST_NO  `;
+) ORDER BY PIPE_NO,tpc_order_id, tpc_order_item, TEST_NO  `;
 
     console.error("getFLEXIBILITYTEST3LPE", sql);
     console.error("binds");
@@ -896,6 +899,11 @@ AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
 AND T.TPC_ORDER_ID = t2.lom_id_order_cus
 AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
 AND T3.CHARG = T2.LOM_ID_BATCH
+ AND LCP_FLEXTEST1 is not null
+ AND LCP_FLEXTEST2 is not null
+ AND LCP_FLEXTEST3 is not null
+ AND LCP_FLEXTEST4 is not null
+ AND LCP_FLEXTEST5 is not null
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -1192,46 +1200,71 @@ export const getHOTWATERADHESIONTEST24HRS = async (
 ) => {
   try {
     var sql = ` 
-       select T1.ENC_MARK_CUST_NAME Client,
-t.TCP_SD_POREF_NO PO_ref_no,
-t.TCP_CP1_CO_APPLI PROJECTNAME,
-t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
-t.TCP_SD_TECH_SPEC SPEC,
-t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
-t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/HWA'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
-t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
-t3.prd_shift_120 COATING_SHIFT,
-sysdate,'D' shift,
-t.tpc_sd_proc_sheet process_sheet_no,
-t.tpc_sd_qap_no1 qap_no,
---=====================================
-'Partially/FBE Coated Pipe Sample' Mat_desc,
-'PIPE No:-'||T3.CHARG Batch_no ,
-'HOT WATER ADHESION TEST For 24 Hrs. at'||TCP_LD_ADHETEST_UNIT	 Test_desc,
-t.TCP_LD_24H_REFSTD Test_method,
-t.TCP_LD_24H_ADHETEST_MIN	|| TCP_LD_24H_ADHETEST_MAX	requirement,
-t3.LCP_ADHT_MIN	test_result1,
-t3.LCP_ADHT_MIN_1	test_result2,
-t3.LCP_ADHT_MIN_2	test_result3,
-' ' remarks,
-TO_CHAR(t3.LCP_SDATE_24H1, 'DD-MM-YYYY') ||
-' & Time - ' ||
-TO_CHAR(t3.LCP_SDATE_24H1, 'HH24:MI') AS strt_dt_time,
-TO_CHAR(t3.LCP_EDATE_24H1, 'DD-MM-YYYY') ||
-' & Time - ' ||
-TO_CHAR(t3.LCP_EDATE_24H1, 'HH24:MI') AS end_dt_time
---=======================================
-from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
-where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
-AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
-AND T.TPC_ORDER_ID = t2.lom_id_order_cus
-AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
-AND T3.CHARG = T2.LOM_ID_BATCH
-AND t3.LCP_ADHT_MIN is not null
-and t3.LCP_ADHT_MIN_1    is not null
-and t3.LCP_ADHT_MIN_2    is not null
+       SELECT 
+    Client,
+    PO_ref_no,
+    PROJECTNAME,
+    pipe_size,
+    SPEC,
+    ACCEPTANCE_CRT,
+    type_of_coating,
+    REP_NO,
+    tpc_order_id,
+    tpc_order_item,
+    COATING_DATE,
+    COATING_SHIFT,
+    curr_date,
+    shift,
+    process_sheet_no,
+    qap_no,
+    Mat_desc,
+    Batch_no,
+    Test_desc,
+    Test_method,
+    requirement,
+    remarks,
+    strt_dt_time,
+    end_dt_time,
+    TEST_RESULT_VALUE -- This will contain the values from the 3 columns
+FROM (
+    SELECT 
+        T1.ENC_MARK_CUST_NAME AS Client,
+        t.TCP_SD_POREF_NO AS PO_ref_no,
+        t.TCP_CP1_CO_APPLI AS PROJECTNAME,
+        t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' AS pipe_size,
+        t.TCP_SD_TECH_SPEC AS SPEC,
+        t.TPC_SD_QAP_NO1 AS ACCEPTANCE_CRT,
+        t.TCP_SD_IC_TYPE AS type_of_coating,
+        'LTR/HWA'||'/'||TO_CHAR(sysdate,'YYYYMMDD') AS REP_NO, 
+        t.tpc_order_id,
+        t.tpc_order_item,
+        TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120 AS COATING_DATE,
+        t3.prd_shift_120 AS COATING_SHIFT,
+        sysdate AS curr_date,
+        'D' AS shift,
+        t.tpc_sd_proc_sheet AS process_sheet_no,
+        t.tpc_sd_qap_no1 AS qap_no,
+        'Partially/FBE Coated Pipe Sample' AS Mat_desc,
+        'PIPE No:-'||T3.CHARG AS Batch_no,
+        'HOT WATER ADHESION TEST For 24 Hrs. at'||TCP_LD_ADHETEST_UNIT AS Test_desc,
+        t.TCP_LD_24H_REFSTD AS Test_method,
+        t.TCP_LD_24H_ADHETEST_MIN || TCP_LD_24H_ADHETEST_MAX AS requirement,
+        ' ' AS remarks,
+        TO_CHAR(t3.LCP_SDATE_24H1, 'DD-MM-YYYY') || ' & Time - ' || TO_CHAR(t3.LCP_SDATE_24H1, 'HH24:MI') AS strt_dt_time,
+        TO_CHAR(t3.LCP_EDATE_24H1, 'DD-MM-YYYY') || ' & Time - ' || TO_CHAR(t3.LCP_EDATE_24H1, 'HH24:MI') AS end_dt_time,
+        -- These are the columns to be unpivoted
+        t3.LCP_ADHT_MIN,
+        t3.LCP_ADHT_MIN_1,
+        t3.LCP_ADHT_MIN_2
+    FROM v_process_sheet_ec t, V_END_CUST_ORD_EPA t1, v_ldp_prodn t2, V_zcoat_lab t3
+    WHERE t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
+    AND TO_NUMBER(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
+    AND T.TPC_ORDER_ID = t2.lom_id_order_cus
+    AND TO_NUMBER(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+    AND T3.CHARG = T2.LOM_ID_BATCH
+    AND t3.LCP_ADHT_MIN IS NOT NULL
+    AND t3.LCP_ADHT_MIN_1 IS NOT NULL
+    AND t3.LCP_ADHT_MIN_2 IS NOT NULL
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -1261,7 +1294,15 @@ and t3.LCP_ADHT_MIN_2    is not null
       // binds["pipeno"] = pipeno;
     }
 
-    sql += ` ORDER BY tpc_order_id, tpc_order_item  `;
+    sql += ` )
+UNPIVOT (
+    TEST_RESULT_VALUE FOR RESULT_SOURCE IN (
+        LCP_ADHT_MIN AS 'RESULT_1',
+        LCP_ADHT_MIN_1 AS 'RESULT_2',
+        LCP_ADHT_MIN_2 AS 'RESULT_3'
+    )
+)
+ORDER BY Batch_no,tpc_order_id, tpc_order_item  `;
 
     console.error("getHOTWATERADHESIONTEST24HRS", sql);
     console.error("binds");
@@ -1284,46 +1325,49 @@ export const getHOTWATERIMMERSION48 = async (
 ) => {
   try {
     var sql = ` 
-       select T1.ENC_MARK_CUST_NAME Client,
-t.TCP_SD_POREF_NO PO_ref_no,
-t.TCP_CP1_CO_APPLI PROJECTNAME,
-t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
-t1.enc_sec2_max || ' mm OD ' || 'X '|| t1.enc_sec1_max ||' mm WT' pipe_size,
-t.TCP_SD_TECH_SPEC SPEC,
-t.TCP_SD_IC_TYPE type_of_coating,
-'LTR/HWI'||'/'||TO_CHAR(sysdate,'YYYYMMDD') REP_NO, 
-t.tpc_order_id,t.tpc_order_item,
-TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  COATING_DATE,
-t3.prd_shift_120 COATING_SHIFT,
-sysdate,'D' shift,
-t.tpc_sd_proc_sheet process_sheet_no,
-t.tpc_sd_qap_no1 qap_no,
---=====================================
-'3LPE COATED PIPE SAMPLE' Mat_desc,
-'PIPE No:-'||T3.CHARG Batch_no ,
-'HOT WATER IMMERSION TEST FOR 48 HRS. at 80+-3'  Test_desc,
-t.TCP_LD_48H_REFSTD	 Test_method,
-t.TCP_LD_HOTWATER_MIN  requirement,
-t3.ACP_TEST_RESULT  test_result1,
-t3.ACP_TEST_RESULT1  test_result2,
-t3.ACP_TEST_RESULT2  test_result3,
-' ' remarks,
-TO_CHAR(t3.ACP_SDATE_48H2, 'DD-MM-YYYY') ||
-' & Time - ' ||
-TO_CHAR(t3.ACP_SDATE_48H2, 'HH24:MI') AS strt_dt_time,
-TO_CHAR(t3.ACP_EDATE_48H2, 'DD-MM-YYYY') ||
-' & Time - ' ||
-TO_CHAR(t3.ACP_EDATE_48H2, 'HH24:MI') AS end_dt_time
---=======================================
-from v_process_sheet_ec t ,V_END_CUST_ORD_EPA t1,v_ldp_prodn t2,V_zcoat_lab t3
-where t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
-AND to_number(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
-AND T.TPC_ORDER_ID = t2.lom_id_order_cus
-AND to_number(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
-AND T3.CHARG = T2.LOM_ID_BATCH
-AND t3.ACP_TEST_RESULT  is not null
-AND t3.ACP_TEST_RESULT1  is not null
-AND t3.ACP_TEST_RESULT2 is not null
+       WITH BaseQuery AS (
+    SELECT 
+        T1.ENC_MARK_CUST_NAME AS Client,
+        t.TCP_SD_POREF_NO AS PO_ref_no,
+        t.TCP_CP1_CO_APPLI AS PROJECTNAME,
+        t.TPC_SD_QAP_NO1 AS ACCEPTANCE_CRT,
+        t1.enc_sec2_max || ' mm OD ' || 'X ' || t1.enc_sec1_max || ' mm WT' AS pipe_size,
+        t.TCP_SD_TECH_SPEC AS SPEC,
+        t.TCP_SD_IC_TYPE AS type_of_coating,
+        'LTR/HWI' || '/' || TO_CHAR(sysdate, 'YYYYMMDD') AS REP_NO,
+        t.tpc_order_id,
+        t.tpc_order_item,
+        TO_CHAR(t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120 AS COATING_DATE,
+        t3.prd_shift_120 AS COATING_SHIFT,
+        sysdate AS current_sysdate,
+        'D' AS shift,
+        t.tpc_sd_proc_sheet AS process_sheet_no,
+        t.tpc_sd_qap_no1 AS qap_no,
+        '3LPE COATED PIPE SAMPLE' AS Mat_desc,
+        'PIPE No:-' || T3.CHARG AS Batch_no,
+        'HOT WATER IMMERSION TEST FOR 48 HRS. at 80+-3' AS Test_desc,
+        t.TCP_LD_48H_REFSTD AS Test_method,
+        t.TCP_LD_HOTWATER_MIN AS requirement,
+        t3.ACP_TEST_RESULT AS test_result1,
+        t3.ACP_TEST_RESULT1 AS test_result2,
+        t3.ACP_TEST_RESULT2 AS test_result3,
+        ' ' AS remarks,
+        TO_CHAR(t3.ACP_SDATE_48H2, 'DD-MM-YYYY') || ' & Time - ' || TO_CHAR(t3.ACP_SDATE_48H2, 'HH24:MI') AS strt_dt_time,
+        TO_CHAR(t3.ACP_EDATE_48H2, 'DD-MM-YYYY') || ' & Time - ' || TO_CHAR(t3.ACP_EDATE_48H2, 'HH24:MI') AS end_dt_time
+    FROM 
+        v_process_sheet_ec t,
+        V_END_CUST_ORD_EPA t1,
+        v_ldp_prodn t2,
+        V_zcoat_lab t3
+    WHERE 
+        t.TPC_ORDER_ID = t1.ENC_ID_ORDER 
+        AND TO_NUMBER(t.TPC_ORDER_ITEM) = t1.ENC_NO_ITEM
+        AND T.TPC_ORDER_ID = t2.lom_id_order_cus
+        AND TO_NUMBER(t.TPC_ORDER_ITEM) = t2.lom_id_ord_item_cus
+        AND T3.CHARG = T2.LOM_ID_BATCH
+        AND t3.ACP_TEST_RESULT IS NOT NULL
+        AND t3.ACP_TEST_RESULT1 IS NOT NULL
+        AND t3.ACP_TEST_RESULT2 IS NOT NULL
 --FILTER COND.
 --and T3.CHARG = 'Q20000026' 
 --and t3.prd_date_120 ='13-JUL-2026' 
@@ -1353,7 +1397,48 @@ AND t3.ACP_TEST_RESULT2 is not null
       // binds["pipeno"] = pipeno;
     }
 
-    sql += ` ORDER BY tpc_order_id, tpc_order_item  `;
+    sql += ` )
+SELECT 
+    Client,
+    PO_ref_no,
+    PROJECTNAME,
+    ACCEPTANCE_CRT,
+    pipe_size,
+    SPEC,
+    type_of_coating,
+    REP_NO,
+    tpc_order_id,
+    tpc_order_item,
+    COATING_DATE,
+    COATING_SHIFT,
+    current_sysdate,
+    shift,
+    process_sheet_no,
+    qap_no,
+    Mat_desc,
+    Batch_no,
+    Test_desc,
+    Test_method,
+    requirement,
+    -- Select the appropriate result based on the row index
+    DECODE(rn.lvl, 1, test_result1, 2, test_result2, 3, test_result3) AS FINAL_TEST_RESULT,
+    remarks,
+    strt_dt_time,
+    end_dt_time
+FROM 
+    BaseQuery
+CROSS JOIN (
+    SELECT 1 AS lvl FROM DUAL
+    UNION ALL
+    SELECT 2 AS lvl FROM DUAL
+    UNION ALL
+    SELECT 3 AS lvl FROM DUAL
+) rn
+ORDER BY
+Batch_no, 
+    tpc_order_id, 
+    tpc_order_item, 
+    rn.lvl  `;
 
     console.error("getHOTWATERIMMERSION48", sql);
     console.error("binds");
@@ -1392,14 +1477,8 @@ SELECT t1.enc_mark_cust_name client,
        TO_CHAR (t3.prd_date_120, 'DD.MM.YYYY') || ' & ' || t3.prd_shift_120  coating_date,
        t3.prd_shift_120 coating_shift, SYSDATE, 'D' shift,
        t.tpc_sd_proc_sheet process_sheet_no, t.tpc_sd_qap_no1 qap_no,
-TO_CHAR(
-    TO_DATE(t3.lp3_sdate_indt, 'YYYY-MM-DD"T"HH24:MI'),
-    'DD.MM.YYYY'
-) AS strt_dt_time,
-TO_CHAR(
-    TO_DATE(t3.lp3_edate_indt, 'YYYY-MM-DD"T"HH24:MI'),
-    'DD.MM.YYYY'
-) AS end_dt_time,
+    TO_CHAR(lp3_sdate_indt, 'DD.MM.YYYY') AS strt_dt_time,
+    TO_CHAR(lp3_edate_indt, 'DD.MM.YYYY') AS end_dt_time,
         t3.LP3_STIME_INDT START_time,
         t3.LP3_ETIME_INDT end_time,
           'Max. '
@@ -1449,14 +1528,11 @@ FROM   v_process_sheet_ec t,
 --AND t3.prd_shift_120 ='D'
  AND T2.LOM_CD_EPA = ${plant}
  and t3.lp3_initial_hot is not null
-     and t3.lp3_initial_hot1 is not null
-     and t3.lp3_initial_hot2 is not null
+ AND t3.lp3_initial_cold is not null
      and t3.lp3_finalrd_hot is not null
-     and t3.lp3_finalrd_hot1 is not null
-     and t3.lp3_finalrd_hot2 is not null
+    and t3.lp3_finalrd_cold  is not null
      and t3.lp3_result_hot is not null
-     and t3.lp3_result_hot1 is not null
-     and t3.lp3_result_hot2 is not null
+     and t3.lp3_result_cold is not null
     `;
 
     if (orderNo && orderNo !== "" && orderNo !== null) {

@@ -1741,13 +1741,25 @@ SELECT
        t.tcp_id_ins_appli_id3_m instrument_id_sno3,
        t.tcp_cp1_chpheatemp_min pipe_temp_b4chrom_min,
        t.tcp_cp1_chpheatemp_max pipe_temp_b4chrom_max,
+       t.TCP_CP1_PEFFLIM_TEMP_MIN,
+       t.TCP_CP1_PEFFLIM_TEMP_MAX,
+       t.TCP_CP1_QUENTEMP_MIN,
+       t.TCP_CP1_QUENTEMP_MAX,
        t.tcp_cp1_chsol_temp chrom_sol_temp_max,
 --T.TCP_CP1_CH_APPLI PIPE_TEMP_AFCHROM_APPLI,
        t.tcp_cp1_ph_fbeapp_min,
        t.tcp_cp1_ph_fbeapp_max, t.tcp_cp1_adheflim_min,
        t.tcp_cp1_adheflim_max, t.tcp_cp2_afwatemp_quen_min,
        t.tcp_cp2_afwatemp_quen_max, t3.tbp_batch_no, t2.lom_no_cast heat_no,
-       ROUND (t2.lom_length / 1000, 2) LENGTH, t3.tbp_asl_no_80,
+       ROUND (t2.lom_length / 1000, 2) LENGTH, 
+       (Select A.TBP_ASL_NO_80 FROM V_BARE_PDO A
+               where A.TBP_BATCH_NO = t3.tbp_batch_no
+                 and A.TBP_CD_PROC = '8'
+                 and A.TBP_BATCH_PROC_NO = (
+                   select MAX(B.TBP_BATCH_PROC_NO) FROM V_BARE_PDO B
+                   where A.TBP_BATCH_NO = B.TBP_BATCH_NO
+                     and B.TBP_CD_PROC = '8'
+  ) )TBP_ASL_NO_80 , 
        t3.tbp_piptmp_becrm_110, t3.tbp_chrm_visual_110,
        t3.tbp_chrm_tmp_110 chro_sol_temp, t3.tbp_piptmp_afcrm_110,
        t3.tbp_piptmp_befbe_110, t3.tbp_tmp_adhef_fil_110,
@@ -1793,7 +1805,9 @@ SELECT
        t3.tbp_chrom_bh_110,
        t3.tbp_epxy_bh_110, t3.tbp_adha_bh_110, t3.tbp_pepp_bh_110,
        t3.tbp_lines_sped_110, t3.tbp_epxy_dwpt_110, t3.tbp_no_epgun_110,
-       t3.tbp_hdpe_rpm01_110, t3.tbp_adhe_rpm_110, t3.tbp_prod_date,
+       t3.tbp_hdpe_rpm01_110,
+       t3.TBP_HDPE_RPM02_110,
+       t3.tbp_adhe_rpm_110, t3.tbp_prod_date,
        t3.tbp_shift,
        t3.tbp_dia_end_10
   FROM v_process_sheet_ec t,
@@ -1911,7 +1925,14 @@ export const getthickness = async (
        t3.tbp_batch_no,
        t2.lom_no_cast heat_no,
        ROUND (t2.lom_length / 1000, 2) LENGTH,
-       t3.tbp_asl_no_80,
+              (Select A.TBP_ASL_NO_80 FROM V_BARE_PDO A
+               where A.TBP_BATCH_NO = t3.tbp_batch_no
+                 and A.TBP_CD_PROC = '8'
+                 and A.TBP_BATCH_PROC_NO = (
+                   select MAX(B.TBP_BATCH_PROC_NO) FROM V_BARE_PDO B
+                   where A.TBP_BATCH_NO = B.TBP_BATCH_NO
+                     and B.TBP_CD_PROC = '8'
+  )) TBP_ASL_NO_80 , 
        ROUND (t3.tbp_cot_thk_1_120,2) TBP_COT_THK_1_120,
        ROUND (t3.tbp_cot_thk_2_120,2) TBP_COT_THK_2_120,
        ROUND (t3.tbp_cot_thk_3_120,2) TBP_COT_THK_3_120, --3'OCLOCK
@@ -2070,15 +2091,14 @@ export const getfinalinspection = async (
        t3.tbp_batch_no, t2.lom_no_cast heat_no,
        --ROUND (t2.lom_length / 1000, 2) LENGTH,
         TO_CHAR(ROUND(t2.lom_length / 1000, 2), 'FM9999999990.00') AS LENGTH,
-       (SELECT t5.tbp_asl_no_80
-          FROM v_bare_pdo t5
-         WHERE t5.tbp_batch_no = t3.tbp_batch_no
-           AND t5.tbp_cd_proc = 'D'
-           AND t5.tbp_batch_proc_no =
-                  (SELECT MAX (tbp_batch_proc_no)
-                     FROM v_bare_pdo a
-                    WHERE a.tbp_batch_no = t5.tbp_batch_no
-                      AND a.tbp_cd_proc = 'D')) tbp_asl_no_80,
+                             (Select A.TBP_ASL_NO_80 FROM V_BARE_PDO A
+               where A.TBP_BATCH_NO = t3.tbp_batch_no
+                 and A.TBP_CD_PROC = '8'
+                 and A.TBP_BATCH_PROC_NO = (
+                   select MAX(B.TBP_BATCH_PROC_NO) FROM V_BARE_PDO B
+                   where A.TBP_BATCH_NO = B.TBP_BATCH_NO
+                     and B.TBP_CD_PROC = '8'
+  )) TBP_ASL_NO_80 , 
        t3.tbp_cb_fend_130, t3.tbp_cb_tend_130, t3.tbp_ep_fend_130,
        t3.tbp_ep_tend_130, t3.tbp_ca_fend_130, t3.tbp_ca_tend_130,
        t3.tbp_holidat_130, t3.tbp_resumg_1_130, t3.tbp_resumg_2_130,
@@ -3073,7 +3093,14 @@ t.TPS_MD_WEIGHT_MAX AS MD_WEIGHT_MAX,
     T2.TBP_ROOTFACE_T_END_80 AS rootface_t_end_80,
     T2.TBP_PIPE_LNG_10 AS pipe_lng_10,  
     t2.tbp_weight AS weight,
-    t2.tbp_asl_no_80 AS asl_no_80,
+          (Select A.TBP_ASL_NO_80 FROM V_BARE_PDO A
+               where A.TBP_BATCH_NO = t3.tbp_batch_no
+                 and A.TBP_CD_PROC = '8'
+                 and A.TBP_BATCH_PROC_NO = (
+                   select MAX(B.TBP_BATCH_PROC_NO) FROM V_BARE_PDO B
+                   where A.TBP_BATCH_NO = B.TBP_BATCH_NO
+                     and B.TBP_CD_PROC = '8'
+                 ) TBP_ASL_NO_80 , 
     T2.TBP_REMARK AS remark,
      to_char(T2.TBP_PROD_DATE,'dd.mm.yyyy')||' / '||t2.tbp_shift AS CRT_DT_FORMAT,
     t2.tbp_shift AS shift,
@@ -3426,7 +3453,14 @@ export const getInletData = async (data: any) => {
       t2.lom_no_cast Heat_no,
       --round(t2.lom_length/1000,2) length,
       TO_CHAR(ROUND(t2.lom_length / 1000, 2), 'FM9999999990.00') AS LENGTH,
-      t3.TBP_ASL_NO_80,
+           (Select A.TBP_ASL_NO_80 FROM V_BARE_PDO A
+               where A.TBP_BATCH_NO = t3.tbp_batch_no
+                 and A.TBP_CD_PROC = '8'
+                 and A.TBP_BATCH_PROC_NO = (
+                   select MAX(B.TBP_BATCH_PROC_NO) FROM V_BARE_PDO B
+                   where A.TBP_BATCH_NO = B.TBP_BATCH_NO
+                     and B.TBP_CD_PROC = '8'
+                 )) TBP_ASL_NO_80 , 
       t3.tbp_visual_insp_80,
       t3.tbp_prod_date,
       t3.tbp_shift,
@@ -3497,7 +3531,15 @@ export const getBlastingData = async (data: any) => {
     T.TCP_CP1_SRUF_MAX ROUGHNESS_MAX,
     T.TCP_CP1_DG_DUST_MAX DEGREE_DUST_RATE_LEVL_MAX,
     T.TCP_CP1_SALT_CONT SALT_CONT_MAX,
-    t3.tbp_batch_no,t2.lom_no_cast Heat_no,round(t2.lom_length/1000,2)length,t3.TBP_ASL_NO_80,
+    t3.tbp_batch_no,t2.lom_no_cast Heat_no,round(t2.lom_length/1000,2)length,
+          (Select A.TBP_ASL_NO_80 FROM V_BARE_PDO A
+               where A.TBP_BATCH_NO = t3.tbp_batch_no
+                 and A.TBP_CD_PROC = '8'
+                 and A.TBP_BATCH_PROC_NO = (
+                   select MAX(B.TBP_BATCH_PROC_NO) FROM V_BARE_PDO B
+                   where A.TBP_BATCH_NO = B.TBP_BATCH_NO
+                     and B.TBP_CD_PROC = '8'
+  )) TBP_ASL_NO_80 , 
     t3.TBP_PIPTMP_BEBLST_100 BLAST,t3.TBP_PIPTMP_BEACID_100 ACID_WASH	,t3.TBP_DWELLTM_100,
     T3.TBP_PH_BEACID_100 B_WATER,
     T3.TBP_PH_AFACID_100 A_WATER,
@@ -3507,7 +3549,7 @@ export const getBlastingData = async (data: any) => {
     T3.TBP_DMWA_FRA_2_100	FM_2,
     T3.TBP_DMWA_FRA_3_100	FM_3,
     NVL(T3.TBP_DMWA_FRA_1_100,0)+NVL(T3.TBP_DMWA_FRA_2_100,0)+NVL(T3.TBP_DMWA_FRA_3_100,0)TOT,
-    T3.TBP_AIRTEM_AFTWA_100	PREHEAT_AFTER_WATER,T3.TBP_RH_100,t3.TBP_AMBT_TMP_100,t3.TBP_DEW_TMP_100,
+    T3.TBP_AIRTEM_AFTWA_100	PREHEAT_AFTER_WATER,T3.TBP_RH_100,T3.TBP_ROUGH_100,t3.TBP_AMBT_TMP_100,t3.TBP_DEW_TMP_100,
     ROUND(t3.TBP_PIPSUR_TEMP_100,1) TBP_PIPSUR_TEMP_100,
     TBP_DEG_CLEAN_100,T3.TBP_DUST_LVLRA_100 DUST_RATING,T3.TBP_DUST_LVLCL_100	DUST_LEVEL,
     T3.TBP_SALT_CONTA_100,T3.TBP_REMARK,

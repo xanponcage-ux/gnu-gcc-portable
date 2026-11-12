@@ -382,42 +382,6 @@ const selectedPipeNos = props.selectedpipelist
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
                     
                     <Grid container style ={{display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>    
-                          {/* <Grid item xs={2.5} colSpan={6} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
-                            <Grid container>
-                                  <Grid item xs={12} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                  PIPE DATA
-                                  </Grid>
-                                  <Grid item xs={2} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>SR.NO.</Grid>
-                                  <Grid item xs={5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>PIPE NO</Grid>
-                                  <Grid item xs={5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>ASL NO</Grid>
-                            </Grid>
-                           </Grid>  
-                           <Grid item xs={3} colSpan={6} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
-                            <Grid container>
-                                  <Grid item xs={12} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                  CHROMATE APPLICATION
-                                  </Grid>
-                                  <Grid item xs={4} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>PIPE TEMP BEFORE CHROMATE (°C)</Grid>
-                                  <Grid item xs={4} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>VISUAL OF CHROMATE APPLICATION</Grid>
-                                  <Grid item xs={4} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>CHROMATE SOLUTION TEMP (°C)</Grid>
-                            </Grid>
-                           </Grid>  
-                          <Grid item xs={6.5} colSpan={6} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
-                            <Grid container>
-                                  <Grid item xs={12} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                  COATING APPLICATION
-                                  </Grid>
-                                  <Grid item xs={1.75} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>PIPE TEMP AFTER CHROMATE APPLICATION (°C)</Grid>
-                                  <Grid item xs={1.75} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>PIPE TEMP BEFORE FBE APPLICATION (°C)</Grid>
-                                  <Grid item xs={1.75} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>ADHESIVE FILM Temp. (°C)</Grid>
-                                  <Grid item xs={1.75} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>PE/PP FILM Temp. (°C)</Grid>
-                                  <Grid item xs={1.75} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>WATER TEMP BEFORE QUENCHING</Grid>
-                                  <Grid item xs={1.75} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>WATER TEMP AFTER QUENCHING</Grid>
-                                  <Grid item xs={1.5} style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>REMARK</Grid>
-                            </Grid>
-                           </Grid>   */}
-
-
                     <Grid container xs = {12} >
                       <Grid item xs={2.17}    style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>PIPE DATA</Grid>
                       <Grid item xs={2.9}     style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>CHROMATE APPLICATION</Grid>
@@ -487,7 +451,7 @@ const selectedPipeNos = props.selectedpipelist
                                                     -
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].CHROM_SOL_TEMP_MAX !== null)? getapplication[0].CHROM_SOL_TEMP_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>-</Grid>
                                               </Grid>
                                              </Grid>
                                            <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
@@ -504,30 +468,30 @@ const selectedPipeNos = props.selectedpipelist
                                               {/* ADHESIVE FILM Temp. (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP1_ADHEFLIM_MIN !== null)? getapplication[0].TCP_CP1_ADHEFLIM_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP1_ADHEFLIM_MAX !== null)? getapplication[0].TCP_CP1_ADHEFLIM_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
                                              <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               {/* PE/PP FILM Temp. (°C) */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP1_PEFFLIM_TEMP_MIN !== null)? getapplication[0].TCP_CP1_PEFFLIM_TEMP_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP1_PEFFLIM_TEMP_MAX !== null)? getapplication[0].TCP_CP1_PEFFLIM_TEMP_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
                                             <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               {/* WATER TEMP BEFORE QUENCHING */}
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MIN : '-'}
+                                                    {(getapplication?.length > 0 && getapplication[0].TCP_CP1_QUENTEMP_MIN !== null)? getapplication[0].TCP_CP1_QUENTEMP_MIN : '-'}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX !== null)? getapplication[0].TCP_CP2_AFWATEMP_QUEN_MAX : '-'}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{(getapplication?.length > 0 && getapplication[0].TCP_CP1_QUENTEMP_MAX !== null)? getapplication[0].TCP_CP1_QUENTEMP_MAX : '-'}</Grid>
                                               </Grid>
                                              </Grid>
                                             <Grid item xs={0.99} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
@@ -781,7 +745,8 @@ const selectedPipeNos = props.selectedpipelist
       }}
     >
       {rowIndex === 0 ? 2 : ''}
-      {rowIndex === 2 ? '-' : ''}
+      {/* {rowIndex === 2 ? '-' : ''} */}
+      {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_HDPE_RPM02_110 :  <br />}
     </Grid>
     <Grid item xs={1.1} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderRight: '1px solid black', padding: '1px', textAlign: 'Center' }}>
       {(rowIndex === 2  && getapplication?.length > 0) ? getapplication[0].TBP_ADHE_RPM_110 :  <br />}

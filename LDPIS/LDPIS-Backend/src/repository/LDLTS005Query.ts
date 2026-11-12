@@ -240,7 +240,7 @@ export const insertTempData = async (data: any) => {
       let insertValueString: string;
       let updateSetString: string;
 
-      if (columnName === "PRT_PEEL_DATE") {
+      if (columnName === "PRT_PEEL_DATE1") {
   if (value) {
     insertValueString = `TO_DATE('${value}','DD/MM/YYYY')`;
     updateSetString = `${columnName} = TO_DATE('${value}','DD/MM/YYYY')`;
@@ -250,6 +250,7 @@ export const insertTempData = async (data: any) => {
   }
 }
       else if (
+        columnName === "PRT_PEEL_DATE" ||
         columnName === "LCP_SDATE_24H1" ||
         columnName === "LCP_EDATE_24H1" ||
         columnName === "LP3_SDATE_CATH" ||
@@ -257,7 +258,9 @@ export const insertTempData = async (data: any) => {
         columnName === "CDT_SDATE_CATH1" ||
         columnName === "CDT_EDATE_CATH1" ||
         columnName === "ACP_SDATE_48H2" ||
-        columnName === "ACP_EDATE_48H2"
+        columnName === "ACP_EDATE_48H2" ||
+         columnName === "LP3_SDATE_INDT" ||
+          columnName === "LP3_EDATE_INDT" 
       ) {
         // Frontend sends YYYY-MM-DDTHH:MM (e.g., "2026-07-15T11:40")
         if (value) {

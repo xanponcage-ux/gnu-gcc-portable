@@ -590,7 +590,7 @@ const formatDateForInput = (value) => {
                       </Grid>
                                               <Grid item xs={12} md={3}>
                          <Grid container alignItems="center" spacing={1}>
-                           <Grid item xs={3}>
+                           <Grid item xs={4.6}>
                             <MDTypography
                               fontWeight="regular"
                               fontSize="small"
@@ -603,7 +603,7 @@ const formatDateForInput = (value) => {
                               Peel Date 
                             </MDTypography>
                           </Grid>
-                          <Grid item xs={8}>
+                          {/* <Grid item xs={8}> */}
                             {/* <MDInput
                               fullWidth
                               id="PRT_PEEL_DATE"
@@ -617,31 +617,24 @@ const formatDateForInput = (value) => {
                               }}
                               style={{ marginLeft: "8px" }}
                             /> */}
-<MDInput
-  type="date"
-  fullWidth
-  value={
-    holDetData?.PRT_PEEL_DATE
-      ? (() => {
-          const parts = holDetData.PRT_PEEL_DATE.split(" ")[0].split("/");
-          return `${parts[2]}-${parts[1]}-${parts[0]}`; // yyyy-MM-dd
-        })()
-      : ""
-  }
-  onChange={(e) => {
-    const value = e.target.value; // yyyy-MM-dd
-
-    if (value) {
-      const [year, month, day] = value.split("-");
-
-      setHolDetData((prev) => ({
-        ...prev,
-        PRT_PEEL_DATE: `${day}/${month}/${year}`,
-      }));
-    }
-  }}
-/>
+                          <Grid item xs={6.4}>
+                            <MDInput
+                              type="datetime-local"
+                              fullWidth
+                              value={formatDateTimeLocal(holDetData?.PRT_PEEL_DATE)}
+                              onChange={(e) => {
+                                const dateTimeValue = e.target.value; // e.g., "2026-07-15T11:40"
+                                // const timePart = dateTimeValue ? dateTimeValue.substring(11, 16) : ""; // Extracts "11:40"
+                                setHolDetData((prev) => ({
+                                  ...prev,
+                                  PRT_PEEL_DATE: dateTimeValue,
+                                  // PRT_PEEL_DATE: timePart, // Update the separate time field
+                                }));
+                              }}
+                            />
                           </Grid>
+
+                          {/* </Grid> */}
                         </Grid>
                       </Grid>
 <Grid item xs={12} md={3}>

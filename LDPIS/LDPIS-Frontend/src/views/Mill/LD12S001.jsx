@@ -3236,7 +3236,7 @@ return isNaN(num) ? value : num.toFixed(2);
       editable: isRowEditable,
     },
     {
-      title: "Test on Pipe",
+      title: "Visual of Coated Pipe",
       field: "TEST_PIP",
       headerFilterPlaceholder: "search...",
       headerFilter: "input",

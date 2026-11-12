@@ -478,7 +478,7 @@ export default function QueryPage() {
         setConnMsg("")
         var url = "api/users/testConnection";
         if (allValues.Server == "" || allValues.Port == "" || allValues.DBName == "" || allValues.testId == "" || allValues.testCode == "") {
-            alertify.error("All filds are mendetory !")
+            alertify.error("All filds are Mandatory !")
             return;
         }
         var data = {
@@ -760,7 +760,7 @@ export default function QueryPage() {
                                                 >
                                                     {!connMsg && (
                                                         <h4 style={{ color: "red" }}>
-                                                            All filds are mendetory !!!
+                                                            All filds are Mandatory !!!
                                                         </h4>
                                                     )}
 

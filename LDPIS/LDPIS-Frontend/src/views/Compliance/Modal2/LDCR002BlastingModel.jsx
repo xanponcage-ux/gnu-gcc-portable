@@ -136,7 +136,8 @@
     const numPages = Math.max(1, Math.ceil(blastingData?.length / rowsPerPage));
 
     // Common display function
-const displayValue = (value, fallback = "-") => {
+const displayValue = (value) => {
+  // Check for null, undefined, 0, "0", empty strings, or whitespace
   if (
     value === null ||
     value === undefined ||
@@ -144,9 +145,42 @@ const displayValue = (value, fallback = "-") => {
     value === "0" ||
     (typeof value === "string" && value.trim() === "")
   ) {
-    return fallback;
+    return "-";
   }
 
+  // Check if the value is a number or a numeric string
+  const numericValue = parseFloat(value);
+  
+  // If it is a valid number, format to 2 decimal places
+  if (!isNaN(numericValue)) {
+    return numericValue.toFixed(1);
+  }
+
+  // Return the original value if it's a non-numeric string (e.g., "SA 2½")
+  return value;
+};
+
+const displayValueINT = (value) => {
+  // Check for null, undefined, 0, "0", empty strings, or whitespace
+  if (
+    value === null ||
+    value === undefined ||
+    value === 0 ||
+    value === "0" ||
+    (typeof value === "string" && value.trim() === "")
+  ) {
+    return "-";
+  }
+
+  // Check if the value is a number or a numeric string
+  const numericValue = parseFloat(value);
+  
+  // If it is a valid number, format to 2 decimal places
+  if (!isNaN(numericValue)) {
+    return numericValue.toFixed(0);
+  }
+
+  // Return the original value if it's a non-numeric string (e.g., "SA 2½")
   return value;
 };
 
@@ -633,68 +667,68 @@ const displayValue = (value, fallback = "-") => {
           <TableCell>{displayValue(row.ACID_WASH)}</TableCell>
 
           {/* DWELL TIME */}
-          <TableCell>{displayValue(row.TBP_DWELLTM_100)}</TableCell>
+          <TableCell>{displayValueINT(row.TBP_DWELLTM_100)}</TableCell>
 
           {/* pH BEFORE WATER */}
-           <TableCell>{displayValue(row.B_WATER)}</TableCell>
+           <TableCell>{displayValueINT(row.B_WATER)}</TableCell>
 
           {/* pH AFTER WATER */}
-           <TableCell>{displayValue(row.A_WATER)}</TableCell>
+           <TableCell>{displayValueINT(row.A_WATER)}</TableCell>
 
           {/* VISUAL INSPECTION */}
           <TableCell>{displayValue(row.TBP_VISUAL_INSP_80)}</TableCell>
 
           {/* PRESSURE OF DM WATER */}
-          <TableCell>{displayValue(row.PRESSURE_DM_WATER)}</TableCell>
+          <TableCell>{displayValueINT(row.PRESSURE_DM_WATER)}</TableCell>
 
           {/* FM1 */}
-          <TableCell>{displayValue(row.FM_1)}</TableCell>
+          <TableCell>{displayValueINT(row.FM_1)}</TableCell>
 
           {/* FM2 */}
-          <TableCell>{displayValue(row.FM_2)}</TableCell>
+          <TableCell>{displayValueINT(row.FM_2)}</TableCell>
 
           {/* FM3 */}
-          <TableCell>{displayValue(row.FM_3)}</TableCell>
+          <TableCell>{displayValueINT(row.FM_3)}</TableCell>
 
           {/* TOTAL FLOW */}
-          <TableCell>{displayValue(row.TOT)}</TableCell>
+          <TableCell>{displayValueINT(row.TOT)}</TableCell>
 
           {/* PREHEAT AFTER WATER */}
-          <TableCell>{displayValue(Number(row.PREHEAT_AFTER_WATER).toFixed(0))}</TableCell>
+          <TableCell>{displayValueINT(row.PREHEAT_AFTER_WATER)}</TableCell>
 
           {/* RH */}
-          <TableCell>{displayValue(Number(row.TBP_RH_100).toFixed(0))}</TableCell>
+          <TableCell>{displayValue(row.TBP_RH_100)}</TableCell>
 
           {/* AMBIENT TEMP */}
-          <TableCell>{displayValue(Number(row.TBP_AMBT_TMP_100).toFixed(0))}</TableCell>
+          <TableCell>{displayValue(row.TBP_AMBT_TMP_100)}</TableCell>
 
           {/* DEW POINT */}
-          <TableCell>{displayValue(Number(row.TBP_DEW_TMP_100).toFixed(0))}</TableCell>
+          <TableCell>{displayValue(row.TBP_DEW_TMP_100)}</TableCell>
 
           {/* PIPE SURFACE TEMP */}
           <TableCell>
-            {displayValue(Number(row.TBP_PIPSUR_TEMP_100).toFixed(0))}
+            {displayValue(row.TBP_PIPSUR_TEMP_100)}
           </TableCell>
 
           {/* DEGREE OF CLEANNESS */}
           <TableCell>SA 2½</TableCell>
 
           {/* ROUGHNESS */}
-          <TableCell>{displayValue(Number(row.ROUGHNESS_MIN).toFixed(0))}</TableCell>
+          <TableCell>{displayValueINT(row.TBP_ROUGH_100)}</TableCell>
 
           {/* DUST RATING */}
           <TableCell>
-            {displayValue(Number(row.DUST_RATING).toFixed(0))}
+            {displayValueINT(row.DUST_RATING)}
           </TableCell>
 
           {/* DUST CLASS */}
           <TableCell>
-            {displayValue(Number(row.DUST_LEVEL).toFixed(0))}
+            {displayValueINT(row.DUST_LEVEL)}
           </TableCell>
 
           {/* SALT CONTENT */}
           <TableCell>
-            {displayValue(Number(row.TBP_SALT_CONTA_100).toFixed(0))}
+            {displayValue(row.TBP_SALT_CONTA_100)}
           </TableCell>
 
           {/* REMARK */}
