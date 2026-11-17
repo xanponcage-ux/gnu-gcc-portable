@@ -425,23 +425,23 @@ const formattedDate = props?.crdate
                                                 <Grid item xs={1.2} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getfinalINSP?.length > 0 ? getfinalINSP[0].EPOXYMIN : ' '}
+                                                    {getfinalINSP?.length > 0 && getfinalINSP[0].EPOXYMIN !== null ? getfinalINSP[0].EPOXYMIN : <br/>}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getfinalINSP?.length > 0 ? getfinalINSP[0].EPOXYMAX : ' '}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getfinalINSP?.length > 0 && getfinalINSP[0].EPOXYMAX !== null  ? getfinalINSP[0].EPOXYMAX : <br/>}</Grid>
                                               </Grid>
                                              </Grid>
                                             <Grid item xs={1.2} colSpan={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '0px', textAlign: 'center' }}>
                                               <Grid container>
                                                     <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', textAlign: 'center' , padding: '3px'}}>
-                                                    {getfinalINSP?.length > 0 ? getfinalINSP[0].CUTBACKANGLEMIN : ' '}
+                                                    {getfinalINSP?.length > 0 && getfinalINSP[0].CUTBACKANGLEMIN !== null ? getfinalINSP[0].CUTBACKANGLEMIN : ' '}
                                                     </Grid>
                                                     {/* <Grid item xs={6} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black',borderRight : '1px solid black', padding: '3px' }}>F END</Grid> */}
-                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getfinalINSP?.length > 0 ? getfinalINSP[0].CUTBACKANGLEMAX : ' '}</Grid>
+                                                    <Grid item xs={12} style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold',borderTop : '1px solid black' , padding: '3px'}}>{getfinalINSP?.length > 0 && getfinalINSP[0].CUTBACKANGLEMAX !== null ? getfinalINSP[0].CUTBACKANGLEMAX : ' '}</Grid>
                                               </Grid>
                                              </Grid>
-                      <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>{getfinalINSP?.length > 0 ? getfinalINSP[0].HOLIDAY : ' '}</Grid>
-                      <Grid item xs={1}       style={{ fontSize: '6px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center'    }}>{getfinalINSP?.length > 0 ? getfinalINSP[0].RESUDIALMAGNETISM : ' '}</Grid>
+                      <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>{getfinalINSP?.length > 0 && getfinalINSP[0].HOLIDAY !== null ? getfinalINSP[0].HOLIDAY : ' '}</Grid>
+                      <Grid item xs={1}       style={{ fontSize: '7px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '1px',display: 'flex', alignItems: 'center',  justifyContent: 'center'    }}>{getfinalINSP?.length > 0 && getfinalINSP[0].RESUDIALMAGNETISM !== null ? getfinalINSP[0].RESUDIALMAGNETISM : ' '}</Grid>
                       <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}> -</Grid>
                       <Grid item xs={0.75}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}> - </Grid>
                       <Grid item xs={0.9}       style={{ fontSize: '9px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',display: 'flex', alignItems: 'center',  justifyContent: 'center'  }}> - </Grid>

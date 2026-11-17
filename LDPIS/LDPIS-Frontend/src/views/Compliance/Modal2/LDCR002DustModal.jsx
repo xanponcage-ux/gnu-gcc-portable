@@ -348,7 +348,7 @@ export default function MaxWidthDialogDUST(props) {
                               {/* <p>: {getdustdata?.length > 0  ? getdustdata[0].DATE_SHIFTQ : ' '} </p> */}
                               <p>
   : {getdustdata?.length > 0
-      ? `DLR/${formattedPrintDate}-${pageIndex + 1}`
+      ? `DLR/${formattedPrintDate}-`
       : ' '}
 </p>
                                                             <p>: {props?.printdate} & {props?.selectedpShift?.value} </p>

@@ -229,7 +229,7 @@ export default function LDLTS005() {
       let data = {
         plant: "0780",
         // FLAG: FLAG   // COMMENTED to only take FLAG: 'Y'  THis might be changed later
-        FLAG: "Y", /// MIght be changed later
+        FLAG: "YES", /// MIght be changed later
       };
       var url = "api/LDLTS005/getOrderId";
       axiosAPI

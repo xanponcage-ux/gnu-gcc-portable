@@ -22,6 +22,7 @@
   import TableHead from "@mui/material/TableHead";
   import TableRow from "@mui/material/TableRow";
   import Paper from "@mui/material/Paper";
+  import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 
   export default function DialogBlastingModel(props) {
     console.log("props: ", props);
@@ -201,6 +202,47 @@ const displayValueINT = (value) => {
   >
           <DialogContent>
             {loading && <Preloader />}
+             {/* Conditional rendering for "No Records Found" */}
+                      {blastingData?.length === 0 && !loading ? (
+                        <MDBox
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column", // Arrange items vertically
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "400px",
+                            width: "100%",
+                            textAlign: "center", // Center text within the box
+                            backgroundColor: "rgba(255, 0, 0, 0.05)", // A very subtle red background
+                            borderRadius: "8px",
+                            border: "1px dashed #ef5350", // A dashed red border
+                            p: 3, // Padding
+                          }}
+                        >
+                          <SentimentDissatisfiedIcon
+                            fontSize="large"
+                            sx={{ color: "error.main", mb: 2 }}
+                          />{" "}
+                          {/* Larger icon */}
+                          <MDTypography
+                            variant="h3" // Slightly larger and more prominent heading
+                            color="error"
+                            fontWeight="bold"
+                            mb={1} // Margin bottom for spacing
+                          >
+                            No Records Found
+                          </MDTypography>
+                          <MDTypography
+                            variant="body2" // Subtitle for more detail
+                            color="textSecondary" // A softer color for the subtitle
+                          >
+                            <br />
+                            It seems there's no data matching your criteria at the moment.
+                            <br />
+                            Please adjust your Filters and try again!
+                          </MDTypography>
+                        </MDBox>
+                      ) : (
 
             <MDBox px={3} py={1} ref={componentRef} style={{ display: "block" }}>
               {Array.from({ length: numPages }).map((_, pageIndex) => (
@@ -355,7 +397,8 @@ const displayValueINT = (value) => {
                                 // padding: "1px",
                               }}
                             >
-                              <p>: {blastingData?.[0]?.REP_NO}</p>
+                              {/* <p>: {blastingData?.[0]?.REP_NO}</p> */}
+                              <p>: {blastingData?.length > 0  ? `${blastingData[0].REP_NO}-${pageIndex + 1}`: ' '} </p>
                               <p>: {blastingData?.[0]?.DATE_SHIFT}</p>
                               <p>: {blastingData?.[0]?.PIPE_SIZE}</p>
                               <p>: {blastingData?.[0]?.TYPE_OF_COATING}</p>
@@ -1037,6 +1080,7 @@ const displayValueINT = (value) => {
                 </div>
               ))}
             </MDBox>
+              )}
 
             <Grid
               container

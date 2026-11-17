@@ -201,8 +201,14 @@ export default function LDSM006() {
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "Shift",
+      title: "Shift (SYSTEM)",
       field: "TBP_SHIFT",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+        {
+      title: "Shift (MANUAL)",
+      field: "TBP_SHIFT_DN",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -2779,7 +2785,7 @@ export default function LDSM006() {
                           color={"dark"}
                           noWrap
                         >
-                          Shift
+                          Shift (SYSTEM)
                         </MDTypography>
                         <ReactSelect
                           options={ShiftType}

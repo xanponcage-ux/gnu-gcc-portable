@@ -87,7 +87,7 @@ export default function MaxWidthDialogDegreeofcure(props) {
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          shift: props.selectedShift ? props.selectedShift : "",
           crdate: props.crdate
           ? props.crdate
               .toLocaleDateString("en-GB", {
@@ -351,11 +351,11 @@ export default function MaxWidthDialogDegreeofcure(props) {
                     <Grid container xs = {12} >
 
                       <Grid item xs={0.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>SR.NO.</Grid>
-                      <Grid item xs={2.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
-                      <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
-                      <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
+                      <Grid item xs={2.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>MATERIAL DESCRIPTION</Grid>
+                      <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>BATCH NO.</Grid>
+                      <Grid item xs={1.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST DESCRIPTION</Grid>
+                      <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST METHOD</Grid>
+                      <Grid item xs={2.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REQUIREMENT</Grid>
                       <Grid item xs={2.2}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>TEST RESULT</Grid>
                       <Grid item xs={1.1}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>REMARKS</Grid>
 
@@ -386,15 +386,15 @@ export default function MaxWidthDialogDegreeofcure(props) {
                                     {/* SR.NO. column: Always displays number, always has bottom border */}
                                     <Grid item xs={0.5} style={getCellStyle(false)}>{currentSrNo}</Grid>
                                     {/* MATERIAL DESCRIPTION: Conditional content, conditional bottom border */}
-                                    <Grid item xs={2.5} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />) : <br />}</Grid>
+                                    <Grid item xs={2.2} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.MAT_DESC !== null ? dataRow.MAT_DESC : <br />) : <br />}</Grid>
                                     {/* BATCH NO.: Conditional content, conditional bottom border */}
-                                    <Grid item xs={1.5} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />) : <br />}</Grid>
+                                    <Grid item xs={1.2} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.PIPE_NO !== null ? dataRow.PIPE_NO : <br />) : <br />}</Grid>
                                     {/* TEST DESCRIPTION: Conditional content, conditional bottom border */}
-                                    <Grid item xs={1.5} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />) : <br />}</Grid>
+                                    <Grid item xs={1.2} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.TEST_DESC !== null ? dataRow.TEST_DESC : <br />) : <br />}</Grid>
                                     {/* TEST METHOD: Conditional content, conditional bottom border */}
-                                    <Grid item xs={1.2} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.TEST_METHOD !== null ? dataRow.TEST_METHOD : <br />) : <br />}</Grid>
+                                    <Grid item xs={1.1} style={getCellStyle(true)}>{displayContentForSpecificColumns ? (dataRow.TEST_METHOD !== null ? dataRow.TEST_METHOD : <br />) : <br />}</Grid>
                                     {/* REQUIREMENT: Always displays content, always has bottom border */}
-<Grid item xs={1.5} style={getCellStyle(false)}>
+<Grid item xs={2.5} style={getCellStyle(false)}>
   {currentSrNo % 2 === 0
     ? (dataRow.REQ_CURE ?? <br />)
     : ('Δ'+ dataRow.REQ_TG + '℃' ?? <br />)}
@@ -430,15 +430,15 @@ export default function MaxWidthDialogDegreeofcure(props) {
                                     {/* SR.NO. empty row: Empty content, always has bottom border */}
                                     <Grid item xs={0.5} style={getCellStyleEmpty(false)}>{<br />}</Grid>
                                     {/* MATERIAL DESCRIPTION empty row: Empty content, conditional bottom border */}
-                                    <Grid item xs={2.5} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    <Grid item xs={2.2} style={getCellStyleEmpty(true)}>{<br />}</Grid>
                                     {/* BATCH NO. empty row: Empty content, conditional bottom border */}
-                                    <Grid item xs={1.5} style={getCellStyleEmpty(true)}>{<br />}</Grid>
-                                    {/* TEST DESCRIPTION empty row: Empty content, conditional bottom border */}
-                                    <Grid item xs={1.5} style={getCellStyleEmpty(true)}>{<br />}</Grid>
-                                    {/* TEST METHOD empty row: Empty content, conditional bottom border */}
                                     <Grid item xs={1.2} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    {/* TEST DESCRIPTION empty row: Empty content, conditional bottom border */}
+                                    <Grid item xs={1.2} style={getCellStyleEmpty(true)}>{<br />}</Grid>
+                                    {/* TEST METHOD empty row: Empty content, conditional bottom border */}
+                                    <Grid item xs={1.1} style={getCellStyleEmpty(true)}>{<br />}</Grid>
                                     {/* REQUIREMENT empty row: Empty content, always has bottom border */}
-                                    <Grid item xs={1.5} style={getCellStyleEmpty(false)}>{<br />}</Grid>
+                                    <Grid item xs={2.5} style={getCellStyleEmpty(false)}>{<br />}</Grid>
                                     {/* TEST RESULT empty row: Empty content, always has bottom border */}
                                     <Grid item xs={2.2} style={getCellStyleEmpty(false)}>{<br />}</Grid>
                                     {/* REMARKS empty row: Empty content, always has bottom border */}

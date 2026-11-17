@@ -44,11 +44,11 @@ import QRCode from "react-qr-code";
 import { GetAuthorization } from "utils";
 import { Zoom } from "@mui/material";
 
-export default function MaxWidthDialogDaysCDTestModal(props) {
-  const [getdaycathodic, setgetdaycathodic] = useState([]);
+export default function MaxWidthDialog2448(props) {
+  const [getCD30day, setgetCD30day] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("md");
+  const [maxWidth, setMaxWidth] = React.useState("xl");
   const [reqType, setReqType] = React.useState({
     value: "S",
     label: "STOCK TRANSFER",
@@ -86,7 +86,7 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          shift: props.selectedShift ? props.selectedShift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate
@@ -112,9 +112,9 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
             setLoading(true);
             Promise.all([
               axiosAPI.post("api/LDCR003/get28or30DaysCDTestReport", data, defaultOptions),
-          ]).then(([getdaycathodicResponse]) => {
-            setgetdaycathodic(getdaycathodicResponse.data);
-                console.log(getdaycathodic);
+          ]).then(([getCD30dayResponse]) => {
+            setgetCD30day(getCD30dayResponse.data);
+                console.log(getCD30day);
                 
                 setInitialLoad(true);
             }).finally(() => {
@@ -164,17 +164,14 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
         });
     });
 
-  const formattedPrintDateShift = props?.printdate
+      const formattedPrintDateShift = props?.printdate
   ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")} & ${
        props?.printShift?.value || ""
     }`
   : "";
 
-  //   const formattedPrintDate = props?.printdate
-  // ? `${props.printdate.toLocaleDateString("en-GB").replace(/\//g, ".")}`
-  // : "";
 
-  const formattedPrintDate = props?.printdate
+    const formattedPrintDate = props?.printdate
   ? (() => {
       const date = new Date(props.printdate); // Ensure it's a Date object
       const year = date.getFullYear();
@@ -183,7 +180,6 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
       return `${year}${month}${day}`;
     })()
   : "";
-
 
   const componentRef = React.useRef();
 
@@ -209,7 +205,7 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
   `;
   
     const rowsPerPage = 8;
-    const numPages = Math.max(1, Math.ceil(getdaycathodic?.length / rowsPerPage));
+    const numPages = Math.max(1, Math.ceil(getCD30day?.length / rowsPerPage));
 
   return (
     <React.Fragment>
@@ -222,7 +218,7 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
         {/* <DialogTitle>{props.type} Print Label</DialogTitle> */}
         <DialogContent>
           {loading && <Preloader />}
-          {getdaycathodic?.length !== 0 && !loading ? (
+          {getCD30day?.length !== 0 && !loading ? (
             <MDBox
            sx={{
              display: 'flex',
@@ -300,7 +296,7 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
                             variant="h1"
                             color={"dark"}
                             noWrap
-                            style={{ textAlign: 'center', marginTop: '45px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
+                            style={{ textAlign: 'center', marginTop: '35px', fontSize: '16px', color: 'black', fontFamily: "Times New Roman" }}
                           >
                             PIPE COATING DIVISION <br />
                             CATHODIC DISBONDMENT TEST REPORT
@@ -327,13 +323,13 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
                               <p>Test Finish Date  </p>
                             </Grid>
                             <Grid item xs={6} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderleft: '1px solid black' }}>
-                              <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].CLIENT : ' '} </p>
-                              <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].PO_REF_NO : ' '}</p>
-                              <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].PIPE_SIZE : ' '} </p>
-                              {/* <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].SPEC : ' '}  </p> */}
-                              <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].TYPE_OF_COATING : ' '}  </p>
-                              <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].TEST_ST_DT : ' '}  </p>
-                              <p>: {getdaycathodic?.length > 0 ? getdaycathodic[0].TEST_ED_DT : ' '}  </p>
+                              <p>: {getCD30day?.length > 0 ? getCD30day[0].CLIENT : ' '} </p>
+                              <p>: {getCD30day?.length > 0 ? getCD30day[0].PO_REF_NO : ' '}</p>
+                              <p>: {getCD30day?.length > 0 ? getCD30day[0].PIPE_SIZE : ' '} </p>
+                              {/* <p>: {getCD30day?.length > 0 ? getCD30day[0].SPEC : ' '}  </p> */}
+                              <p>: {getCD30day?.length > 0 ? getCD30day[0].TYPE_OF_COATING : ' '}  </p>
+                              <p>: {getCD30day?.length > 0 ? getCD30day[0].TEST_ST_DT : ' '}  </p>
+                              <p>: {getCD30day?.length > 0 ? getCD30day[0].TEST_ED_DT : ' '}  </p>
                             </Grid>
 
                             <Grid item xs={1.5} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black', padding: '3px' }}>
@@ -345,13 +341,13 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
                               <p>Test Finish Time  </p>
                             </Grid>
                             <Grid item xs={3} style={{ fontSize: '12px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderTop: '1px solid black',padding: '3px',borderRight: '1px solid black' }}>
-                              <p>: {getdaycathodic?.length > 0  ? `CDT/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
-                              {/* `CDT/${formattedPrintDateShift}-${pageIndex + 1}` */}
+                              {/* <p>: {getCD30day?.length > 0  ? `${getCD30day[0].REP_NO}-${pageIndex + 1}` : ' '} </p> */}
+                              <p>: {getCD30day?.length > 0  ? `CDT/${formattedPrintDate}-${pageIndex + 1}` : ' '} </p>
                               <p>: {formattedPrintDateShift}</p>
-                              <p>: {getdaycathodic?.length > 0  ? getdaycathodic[0].PROCESS_SHEET_NO : ' '} </p>
+                              <p>: {getCD30day?.length > 0  ? getCD30day[0].PROCESS_SHEET_NO : ' '} </p>
                               <p>: {props?.wiNo} </p>
-                              <p>: {getdaycathodic?.length > 0  ? getdaycathodic[0].TEST_ST_TM : ' '} </p>
-                              <p>: {getdaycathodic?.length > 0  ? getdaycathodic[0].TEST_ED_TIME : ' '} </p>
+                              <p>: {getCD30day?.length > 0  ? getCD30day[0].TEST_ST_TM : ' '} </p>
+                              <p>: {getCD30day?.length > 0  ? getCD30day[0].TEST_ED_TIME : ' '} </p>
                             </Grid>
                             <Grid item xs={12} style={{ fontSize: '10px', border: '1px solid black',  textAlign: 'center' }}>
                     
@@ -369,24 +365,24 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
                       <Grid item xs={1.5}   style={{ fontSize: '11px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '3px',display: 'flex', alignItems: 'center',  justifyContent: 'center' }}>Remarks</Grid>
 
                     
-                      {getdaycathodic
+                      {getCD30day
                             .slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage)
                             .map((dataRow, i) => (
 <Grid key={`data-${pageIndex}-${i}`} container>
                             <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{pageIndex * rowsPerPage + i + 1}</Grid>
                             <Grid item xs={1.1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.CHARG !== null ? dataRow.CHARG : <br />}</Grid>
                             <Grid item xs={1.1}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px' }}>{dataRow.COATING_DT !== null ? dataRow.COATING_DT : <br />}</Grid>
-                            <Grid item xs={2}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.REFERENCE_STD_H !== null ? dataRow.REFERENCE_STD_H : <br />}</Grid>
-                            <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.OPERATING_TEMP_H !== null ? dataRow.OPERATING_TEMP_H : <br />}</Grid>
-                            <Grid item xs={1}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.TEST_DUR_H !== null ? dataRow.TEST_DUR_H : <br />}</Grid>
-                            <Grid item xs={2.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.ACCEPTANCE_CRITERIA_N !== null ? dataRow.ACCEPTANCE_CRITERIA_N : <br />}</Grid>
-                            <Grid item xs={0.8}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.RESULT_H !== null ? dataRow.RESULT_H : <br />}</Grid>
+                            <Grid item xs={2}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.TCP_LD_REF_STD !== null ? dataRow.TCP_LD_REF_STD : <br />}</Grid>
+                            <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.LD_OPR_TEMP !== null ? dataRow.LD_OPR_TEMP : <br />}</Grid>
+                            <Grid item xs={1}     style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.TCP_LD_TEST_DUR !== null ? dataRow.TCP_LD_TEST_DUR : <br />}</Grid>
+                            <Grid item xs={2.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.ACCEPTANCE_CRITERIA !== null ? dataRow.ACCEPTANCE_CRITERIA : <br />}</Grid>
+                            <Grid item xs={0.8}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'  }}>{dataRow.RESULT !== null ? dataRow.RESULT : <br />}</Grid>
                             <Grid item xs={1.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', borderBottom: '1px solid black', borderRight: '1px solid black', padding: '3px'   }}>{dataRow.REMARKS !== null ? dataRow.REMARKS : <br />}</Grid>
                          </Grid>
                       ))}
 
 
-{Array.from({ length: Math.max(0, rowsPerPage - getdaycathodic.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
+{Array.from({ length: Math.max(0, rowsPerPage - getCD30day.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage).length) }).map((_, i) => (
                             <Grid key={`empty-${pageIndex}-${i}`} container>
 
                             <Grid item xs={0.5}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', padding: '3px' }}>  {<br />}</Grid>
@@ -407,7 +403,7 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
  </Grid>
                        <Grid container style={{textAlign: 'left', fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black',padding: '4px',borderRight: '1px solid black' }}>
                        <Grid item xs = {0.1}>{<br/>}</Grid>
-                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getdaycathodic?.length > 0 ? getdaycathodic[0].SPEC : '  '} & QAPNO: TSL/COAT/{getdaycathodic?.length > 0 ? getdaycathodic[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
+                       <Grid item xs = {11.9}>ABOVE RESULTS ARE CONFORMING TO SPECIFICATION: {getCD30day?.length > 0 ? getCD30day[0].SPEC : '  '} & QAPNO: TSL/COAT/{getCD30day?.length > 0 ? getCD30day[0].ACCEPTANCE_CRT : '  '} AND FOUND SATISFACTORY.</Grid>
                        
                        </Grid>
 
@@ -437,21 +433,21 @@ export default function MaxWidthDialogDaysCDTestModal(props) {
                           <Grid item xs={12}   style={{ fontSize: '10px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '5px',  textAlign: 'Left'  }}>Raw Material Used :-<br/></Grid>
                           
                           <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Left'  }}>MATERIAL<br/></Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_RAW_MAT1 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_RAW_MAT2 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_RAW_MAT3 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getCD30day?.length > 0 ? getCD30day[0].LP3_RAW_MAT1 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_RAW_MAT2 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_RAW_MAT3 : ' '} </Grid>
                           <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Left'  }}>MANUFACTURER<br/></Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_MFACTURE1 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_MFACTURE2 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_MFACTURE3 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getCD30day?.length > 0 ? getCD30day[0].LP3_MFACTURE1 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_MFACTURE2 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_MFACTURE3 : ' '} </Grid>
                           <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Left'  }}>GRADE<br/></Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_GRADE1 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_GRADE2 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_GRADE2 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getCD30day?.length > 0 ? getCD30day[0].LP3_GRADE1 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_GRADE2 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_GRADE3 : ' '} </Grid>
                           <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Left'  }}>BATCH NO.<br/></Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_BATCH1 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_BATCH2 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getdaycathodic?.length > 0 ? getdaycathodic[0].CDT_BATCH3 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getCD30day?.length > 0 ? getCD30day[0].LP3_BATCH1 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_BATCH2 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getCD30day?.length > 0 ? getCD30day[0].LP3_BATCH3 : ' '} </Grid>
                         </Grid>
 
                     <Grid container style={{  textAlign: 'left',fontSize: '11px', color: 'black', fontFamily: "Times New Roman",fontWeight: "bold"}}>

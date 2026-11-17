@@ -86,7 +86,7 @@ export default function MaxWidthhotwtad24(props) {
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          shift: props.selectedShift ? props.selectedShift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate

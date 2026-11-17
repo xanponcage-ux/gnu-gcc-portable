@@ -28,7 +28,7 @@ export const get24or48HrsCDtest = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+   ,shift: any
 ) => {
   try {
     var sql = `select T1.ENC_MARK_CUST_NAME Client,
@@ -102,6 +102,11 @@ AND T3.CHARG = T2.LOM_ID_BATCH
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120   IN ('${shift}')  `;
+      // binds["heatno"] = heatno;
+    }
+
     if (heatno && heatno !== "" && heatno !== null) {
       sql += ` AND t2.lom_no_cast IN ('${heatno}')  `;
       // binds["heatno"] = heatno;
@@ -131,7 +136,7 @@ export const get28or30DaysCDTestReport = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+  ,shift: any
 ) => {
   try {
     var sql = `
@@ -226,6 +231,10 @@ SELECT t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
       sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 IN ('${shift}')  `;
+      // binds["shift"] = shift;
+    }
 
     if (crdate && crdate !== "" && crdate !== null) {
       // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
@@ -253,99 +262,6 @@ SELECT t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
   }
 };
 
-// export const getCROSSSECTIONINTERFACEPOROSITY = async (
-//   plant: any,
-//   orderNo: any,
-//   item: any,
-//   matno: any,
-//   crdate: any,
-//   heatno: any,
-//   pipeno: any
-//   // ,rmno: any
-// ) => {
-//   try {
-//     var sql = ` SELECT 
-//        t1.enc_mark_cust_name client, t.tcp_sd_poref_no po_ref_no,
-//           t1.enc_sec2_max
-//        || ' mm OD '
-//        || 'X '
-//        || t1.enc_sec1_max
-//        || ' mm WT' pipe_size,
-//        t.TCP_CP1_CO_APPLI PROJECTNAME,
-//        t.tcp_sd_tech_spec spec, t.tcp_sd_ic_type type_of_coating,
-//        'LTR/C' || '&' || 'IP' || '/' || TO_CHAR (SYSDATE, 'YYYYMMDD') rep_no,
-//        t.tpc_order_id, t.tpc_order_item,
-//       TO_CHAR(t3.prd_date_120,'DD.MM.YYYY') ||' & '||t3.prd_shift_120 DATE_SHIFTQ,
-//        t3.prd_date_120 || ' & ' || t3.prd_shift_120, SYSDATE, 'D' shift,
-//        t.tpc_sd_proc_sheet process_sheet_no,
-// --==================
-//        'FBE COATED PIPE (2 SAMPLE)' mat_desc,
-//        t3.charg batch_no, 'CROSS SECTION POROSITY' test_dec1,
-//        'INTERFACE POROSITY' test_dec2, t.tcp_ld_cs_refstd test_method1,
-//        t.tcp_ld_interporo_refstd test_method2, t.tcp_ld_cs_min requirement1,
-//        t.TPC_SD_QAP_NO1 ACCEPTANCE_CRT,
-//        t.tcp_ld_interporo_min requirement2,
-//        t3.lcp_cross_section1 test_result_cross1,
-//        t3.lcp_cross_section2 test_result_cross2,
-//        t3.lcp_interface1 test_result_interace1,
-//        t3.lcp_interface2 test_result_interace2, ' ' remarks
-//   FROM v_process_sheet_ec t,
-//        v_end_cust_ord_epa t1,
-//        v_ldp_prodn t2,
-//        v_zcoat_lab t3
-//  WHERE t.tpc_order_id = t1.enc_id_order
-//    AND TO_NUMBER (t.tpc_order_item) = t1.enc_no_item
-//    AND t.tpc_order_id = t2.lom_id_order_cus
-//    AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
-//    AND t3.charg = t2.lom_id_batch
-// --FILTER COND.
-//    -- AND t3.charg = 'Q20000026'
-//    -- AND t3.prd_date_120 = '13-JUL-2026'
-// --AND t3.prd_shift_120 ='D'
-//     AND T2.LOM_CD_EPA = ${plant} `;
-
-//     if (orderNo && orderNo !== "" && orderNo !== null) {
-//       sql += ` AND t.tpc_order_id = '${orderNo}' `;
-//       // binds["orderNo"] = orderNo;
-//     }
-
-//     if (item && item !== "" && item !== null) {
-//       sql += ` AND TO_NUMBER(t.tpc_order_item) = '${item}' `;
-//       // binds["item"] = item;
-//     }
-
-//     if (matno && matno !== "" && matno !== null) {
-//       sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
-//       // binds["matno"] = matno;
-//     }
-
-//     if (crdate && crdate !== "" && crdate !== null) {
-//       // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
-//       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
-//     }
-
-//     if (heatno && heatno !== "" && heatno !== null) {
-//       sql += ` AND t2.lom_no_cast IN ('${heatno}')  `;
-//       // binds["heatno"] = heatno;
-//     }
-
-//     if (pipeno && pipeno !== "" && pipeno !== null) {
-//       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
-//       // binds["pipeno"] = pipeno;
-//     }
-
-//     sql += `  order by t2.lom_ID_FIRST_PAR,t2.lom_ID_BATCH,t2.lom_CD_STATUS `;
-
-//     console.error("getCROSSSECTIONINTERFACEPOROSITY", sql);
-//     console.error("binds");
-//     return await query.executeQuery(sql);
-//   } catch (error) {
-//     // console.log(error);
-//     throw new Error.InternalServerErrorMsg(error);
-//   }
-// };
-
-
 export const getCROSSSECTIONINTERFACEPOROSITY = async (
   plant: any,
   orderNo: any,
@@ -353,7 +269,8 @@ export const getCROSSSECTIONINTERFACEPOROSITY = async (
   matno: any,
   crdate: any,
   heatno: any,
-  pipeno: any
+  pipeno: any,
+  shift: any
 ) => {
   try {
     let filter = "";
@@ -380,6 +297,9 @@ export const getCROSSSECTIONINTERFACEPOROSITY = async (
 
     if (pipeno) {
       filter += ` AND t3.charg = '${pipeno}' `;
+    }
+        if (shift) {
+      filter += ` AND t3.prd_shift_120 = '${shift}' `;
     }
 
     let sql = `
@@ -473,7 +393,7 @@ export const getdegreeofcure = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+  ,shift: any
 ) => {
   try {
 
@@ -538,9 +458,9 @@ export const getdegreeofcure = async (
       // binds["item"] = item;
     }
 
-    if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
-      // binds["matno"] = matno;
+    if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 IN ('${shift}')  `;
+      // binds["shift"] = shift;
     }
 
     if (crdate && crdate !== "" && crdate !== null) {
@@ -627,7 +547,7 @@ export const getelongationrep = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+  ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -708,6 +628,10 @@ AND T3.CHARG = T2.LOM_ID_BATCH
       // sql += ` AND TRUNC(t2.FPT_CRT_DT) = '${crdate}'  `;
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120   = '${shift}' `; 
+      // binds["shift"] = shift;
+    }
 
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
@@ -746,7 +670,7 @@ export const getFLEXIBILITYTEST3LPE = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+  ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -831,6 +755,10 @@ AND T2.LOM_CD_EPA = ${plant}
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+    if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -863,7 +791,7 @@ export const getFLEXIBILITYTESTREPORTFBE = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+  ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -927,6 +855,11 @@ AND T3.CHARG = T2.LOM_ID_BATCH
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
+
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -951,8 +884,8 @@ export const getHARDNESSTEST = async (
   matno: any,
   crdate: any,
   heatno: any,
-  pipeno: any
-  // ,rmno: any
+  pipeno: any,
+  shift: any
 ) => {
   try {
     var sql = ` 
@@ -1009,6 +942,11 @@ AND T3.CHARG = T2.LOM_ID_BATCH
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
+
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -1034,7 +972,7 @@ export const getproductstablilty = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+   ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -1090,6 +1028,11 @@ AND T3.CHARG = T2.LOM_ID_BATCH
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
+
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -1115,7 +1058,7 @@ export const gettensile = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+   ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -1171,6 +1114,11 @@ AND CDT_TENSILE is not null
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
+
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -1196,7 +1144,7 @@ export const getHOTWATERADHESIONTEST24HRS = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+   ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -1288,6 +1236,11 @@ FROM (
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
+
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -1321,7 +1274,7 @@ export const getHOTWATERIMMERSION48 = async (
   crdate: any,
   heatno: any,
   pipeno: any
-  // ,rmno: any
+   ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -1391,6 +1344,11 @@ export const getHOTWATERIMMERSION48 = async (
       sql += ` AND TRUNC(t3.prd_date_120) = TO_DATE('${crdate}', 'DD-MON-YYYY') `;
     }
 
+        if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.prd_shift_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
+    }
+
 
     if (pipeno && pipeno !== "" && pipeno !== null) {
       sql += ` AND t3.charg = '${pipeno}' `; // changed BETWEEN to =
@@ -1456,8 +1414,8 @@ export const getINDENTATIONTEST = async (
   matno: any,
   crdate: any,
   heatno: any,
-  pipeno: any
-  // ,rmno: any
+  shift: any
+  //  ,shift: any
 ) => {
   try {
     var sql = ` 
@@ -1552,9 +1510,9 @@ FROM   v_process_sheet_ec t,
     }
 
 
-    if (pipeno && pipeno !== "" && pipeno !== null) {
-      sql += ` AND t3.PRD_SHIFT_120 = '${pipeno}' `; // changed BETWEEN to =
-      // binds["pipeno"] = pipeno;
+    if (shift && shift !== "" && shift !== null) {
+      sql += ` AND t3.PRD_SHIFT_120 = '${shift}' `; // changed BETWEEN to =
+      // binds["shift"] = shift;
     }
 
     sql += ` ORDER BY tpc_order_id, tpc_order_item  `;

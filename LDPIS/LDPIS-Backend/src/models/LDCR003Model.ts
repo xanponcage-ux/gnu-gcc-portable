@@ -15,7 +15,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+       ,shift: any
   ) {
     return repository.get24or48HrsCDtest(
       plant,
@@ -24,8 +24,8 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+     shift
     );
   }
   get28or30DaysCDTestReport(
@@ -36,7 +36,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+      ,shift: any
   ) {
     return repository.get28or30DaysCDTestReport(
       plant,
@@ -46,7 +46,7 @@ export default class LDCR003 {
       crdate,
       heatno,
       pipeno
-      // ,rmno
+      ,shift
     );
   }
 
@@ -58,7 +58,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+      ,shift: any
   ) {
     return repository.getCROSSSECTIONINTERFACEPOROSITY(
       plant,
@@ -68,7 +68,7 @@ export default class LDCR003 {
       crdate,
       heatno,
       pipeno
-      // ,rmno
+      ,shift
     );
   }
 
@@ -80,7 +80,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+      ,shift: any
   ) {
     return repository.getdegreeofcure(
       plant,
@@ -90,7 +90,7 @@ export default class LDCR003 {
       crdate,
       heatno,
       pipeno
-      // ,rmno
+      ,shift
     );
   }
 
@@ -102,7 +102,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+      ,shift: any
   ) {
     return repository.getelongationrep(
       plant,
@@ -112,7 +112,7 @@ export default class LDCR003 {
       crdate,
       heatno,
       pipeno
-      // ,rmno
+      ,shift
     );
   }
 
@@ -124,7 +124,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+      ,shift: any
   ) {
     return repository.getFLEXIBILITYTEST3LPE(
       plant,
@@ -134,7 +134,7 @@ export default class LDCR003 {
       crdate,
       heatno,
       pipeno
-      // ,rmno
+      ,shift
     );
   }
 
@@ -146,7 +146,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+      ,shift: any
   ) {
     return repository.getFLEXIBILITYTESTREPORTFBE(
       plant,
@@ -156,7 +156,7 @@ export default class LDCR003 {
       crdate,
       heatno,
       pipeno
-      // ,rmno
+      ,shift
     );
   }
 
@@ -168,7 +168,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+       ,shift: any
   ) {
     return repository.getHARDNESSTEST(
       plant,
@@ -177,8 +177,8 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+     shift
     );
   }
 
@@ -190,7 +190,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+       ,shift: any
   ) {
     return repository.getHOTWATERADHESIONTEST24HRS(
       plant,
@@ -199,8 +199,8 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+     shift
     );
   }
 
@@ -212,7 +212,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+       ,shift: any
   ) {
     return repository.getproductstablilty(
       plant,
@@ -221,8 +221,8 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+     shift
     );
   }
 
@@ -233,8 +233,7 @@ export default class LDCR003 {
     matno: any,
     crdate: any,
     heatno: any,
-    pipeno: any
-    //   ,rmno: any
+    shift: any
   ) {
     return repository.getINDENTATIONTEST(
       plant,
@@ -243,8 +242,7 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      shift
     );
   }
 
@@ -256,7 +254,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+       ,shift: any
   ) {
     return repository.getHOTWATERIMMERSION48(
       plant,
@@ -265,8 +263,8 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+     shift
     );
   }
 
@@ -278,7 +276,7 @@ export default class LDCR003 {
     crdate: any,
     heatno: any,
     pipeno: any
-    //   ,rmno: any
+       ,shift: any
   ) {
     return repository.gettensile(
       plant,
@@ -287,8 +285,8 @@ export default class LDCR003 {
       matno,
       crdate,
       heatno,
-      pipeno
-      // ,rmno
+      pipeno,
+     shift
     );
   }
 }

@@ -13,16 +13,31 @@ export const getOrderid = async (data: any) => {
     //   `
     // ;
 
-    let sql = `SELECT
+    // let sql = `SELECT
+    //     DISTINCT
+    //     P.LOM_ID_BATCH,
+    //     Z.PSNO
+    //        FROM V_LDP_PRODN P , V_ZCOAT_LAB Z
+    //         WHERE P.LOM_ID_BATCH = Z.CHARG(+)
+    //              AND P.LOM_CD_EPA  = Z.ZCL_PLANT_CD(+)
+    //        AND P.LOM_CD_EPA = '0780'
+    //          -- AND P.LOM_SAMPL_TAG_EC = 'Y'
+    //          AND P.LOM_SAMPL_TAG_EC = '${data?.FLAG}'
+    //   `;
+
+      let sql = `SELECT
         DISTINCT
         P.LOM_ID_BATCH,
-        Z.PSNO
-           FROM V_LDP_PRODN P , V_ZCOAT_LAB Z
+        Z.PSNO,
+        T.TBP_PROD_DATE
+           FROM V_LDP_PRODN P , V_ZCOAT_LAB Z  , V_BARE_PDO T
             WHERE P.LOM_ID_BATCH = Z.CHARG(+)
                  AND P.LOM_CD_EPA  = Z.ZCL_PLANT_CD(+)
            AND P.LOM_CD_EPA = '0780'
-             -- AND P.LOM_SAMPL_TAG_EC = 'Y'
-             AND P.LOM_SAMPL_TAG_EC = '${data?.FLAG}'
+             AND T.TBP_SAMPLE_10 = '${data?.FLAG}'
+              AND T.TBP_CD_PROC = 'D'
+              AND P.LOM_ID_BATCH = T.TBP_BATCH_NO
+               order by T.TBP_PROD_DATE desc
       `;
     console.log("sql: ", sql);
     return await query.executeQuery(sql);
@@ -50,7 +65,7 @@ export const getdateandshift = async (data: any) => {
         const CHARG = data?.BATCH_ID;
 
         let sql = `SELECT DISTINCT TBP_PROD_DATE PROD_DATE, TO_CHAR(TBP_PROD_DATE, 'DD-MON-YYYY') DATE_FR,TBP_SHIFT_DN SHIFT FROM V_BARE_PDO
-WHERE TBP_BATCH_NO = '${CHARG}' AND TBP_CD_PROC = 'D'`;
+WHERE TBP_BATCH_NO = '${CHARG}' AND TBP_CD_PROC = 'D' and TBP_SAMPLE_10 = 'YES'`;
 
     return await query.executeQuery(sql);
   } catch (error) {

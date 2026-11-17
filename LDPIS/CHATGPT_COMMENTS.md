@@ -21,5 +21,8 @@ Use this file for future LDPIS-related runnable instructions and supplementary c
 ```
 Prompt:
 implement the following points.
-1.In Ld11S001 for field Batch3 the field must have numeric value and not greater than 10 digits (put validation for : excel,field entry as well as edit in table ->best to put just one check in save button function)
+1.In LdSM020 the columns should be in this sequence :Plant	Ord Crt Dt	Order Id	Item No 	FG MATNR	CUST/Party NAME	Order Qty.(Sales Unit)	Qty	DISP QTY IN UOM	DISP QTY	BTD	FG QTY	BTR	WIP QTY	Sales Unit	Order Type	Incot	Sales Org.	Division	FG MATNR DESC	Width	Thick	LENGTH	Ref. Standard	BTP	MILL SCH_QTY	DISP PEND	Sign-off Month	Sign-off Qty	Inspection	VDI GRN	GRN GAP	Non-SIGNOF QTY	ZONE	CATEGORY	SEGEMENT	INSPECTION FLAG	Po No.	Delivery Date	MARK CUST NAME	MARK CUST	END CUST/Party Code	Sold Cust. City	Ship To Party	Ship Cust. Name	Ship Cust. City	SHIP_TO_PRTY DESC	Freight Indicator	Billing Block	Delivery Block	Process Sheet BARE	Process Sheet EXT	Process Sheet INT	DT ORD FULFILL	TDC	Material SPEC	Material IP	Surface Finish	END Finish	FIN COND	Geometry
+
+
+Also, Make shure sign-off month is always sent to backend in format "MONYY"
 ```

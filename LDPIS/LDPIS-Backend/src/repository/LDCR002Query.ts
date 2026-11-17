@@ -935,7 +935,7 @@ export const getCrossdata = async (
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND t3.prd_shift_120 IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -1238,7 +1238,7 @@ AND T3.EIT_EPOXY_HOLIDAY_TEST is not null
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.LOM_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND T3.Prd_Shift_120 IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -1332,7 +1332,7 @@ AND T3.EIT_IMPACT_TEST is not null
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND T2.LOM_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND t3.prd_shift_120 IN ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -1641,6 +1641,7 @@ TCP_CP2_TOT_CTHICK_MIN COATING_THICK
    AND t.tpc_order_id = t2.lom_id_order_cus
    AND TO_NUMBER (t.tpc_order_item) = t2.lom_id_ord_item_cus
    AND t3.charg = t2.lom_id_batch
+        AND t3.ftp_epoxy_0d1 is not null
 --FILTER COND.
 --and t.TPC_ORDER_ID = '9518845119'
 --AND TO_NUMBER (t.tpc_order_item) = 1
@@ -1659,7 +1660,7 @@ TCP_CP2_TOT_CTHICK_MIN COATING_THICK
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.LOM_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND t3.prd_shift_120 = ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -1840,7 +1841,7 @@ SELECT
     }
 
     if (matno && matno !== "" && matno !== null) {
-      sql += ` AND t2.lom_NO_MATNR IN ('${matno}')  `;
+      sql += ` AND t3.tbp_shift_DN = ('${matno}')  `;
       // binds["matno"] = matno;
     }
 
@@ -3445,7 +3446,7 @@ export const getInletData = async (data: any) => {
       t.tpc_sd_proc_sheet process_sheet_no,
       t1.enc_sec2_max || 'mm OD X ' || t1.enc_sec1_max || 'mm WT' pipe_size,
       t.TCP_SD_IC_TYPE type_of_coating,
-      'BPIR/'||TO_CHAR(t3.tbp_prod_date,'YYYYMMDD')||'-1' REP_NO,
+      'BPIR/'||TO_CHAR(t3.tbp_prod_date,'YYYYMMDD') REP_NO,
       t.TCP_ID_INTELPRO_M Procedure_WI_No,
       t.TCP_ID_INS_INLET1_M Instrument_Name,
       t.TCP_ID_INS_INLET_ID1_M Instrument_ID_SNo,
@@ -3514,7 +3515,7 @@ export const getBlastingData = async (data: any) => {
     t.tpc_sd_proc_sheet process_sheet_no,
     t1.enc_sec2_max || 'mm OD' || ' ' || 'X' || ' ' || t1.enc_sec1_max || 'mm WT' pipe_size,
     t.TCP_SD_IC_TYPE type_of_coating,
-    'PABIR'||'/'||TO_CHAR(t3.tbp_prod_date,'YYYYMMDD')||'- 1' REP_NO, 
+    'PABIR'||'/'||TO_CHAR(t3.tbp_prod_date,'YYYYMMDD') REP_NO, 
     t.TCP_ID_INTELPRO_M Procedure_WI_No,
     t.TCP_ID_INS_INLET1_M	Instrument_Name,
     t.TCP_ID_INS_INLET_ID1_M	Instrument_ID_SNo,

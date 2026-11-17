@@ -946,7 +946,7 @@ useEffect(() => {
   
 
 
-    const updateData = async (newToken = false) => {
+      const updateData = async (newToken = false) => {
       if (loading) return;
       const token = await GetAuthorization();
       const defaultOptions = {
@@ -964,13 +964,46 @@ useEffect(() => {
       const validationError = selectedRows.map(item => validateInspectionRow(item.getData())).find(Boolean);
       if (validationError) { alertify.error(validationError); return; }
 
+      // ================= BATCH3 (ADHESIVE_BATCH) VALIDATION =================
+      for (const item of selectedRows) {
+        const rowData = item.getData();
+        const batch3Val = String(rowData.ADHESIVE_BATCH ?? "").trim();
+        const pipeLabel = rowData.PIPE_NO ? `Pipe ${rowData.PIPE_NO}: ` : "";
+
+        // Case A: If Batch3 is MANDATORY
+        if (batch3Val && !/^\d{1,10}$/.test(batch3Val)) {
+          alertify.error(`${pipeLabel}Batch3 (Adhesive Batch) must be numeric and not exceed 10 digits.`);
+          return;
+        }
+
+        // // Must be purely numeric (digits only) and maximum 10 digits
+        // if (!/^\d+$/.test(batch3Val)) {
+        //   alertify.error(`${pipeLabel}Batch3 (Adhesive Batch) must be a numeric value.`);
+        //   return;
+        // }
+
+        // if (batch3Val.length > 10) {
+        //   alertify.error(`${pipeLabel}Batch3 (Adhesive Batch) must not be greater than 10 digits.`);
+        //   return;
+        // }
+
+        /* 
+        // Case B: If Batch3 is OPTIONAL (allow blank, validate only when entered):
+        // Replace Case A above with:
+        if (batch3Val && !/^\d{1,10}$/.test(batch3Val)) {
+          alertify.error(`${pipeLabel}Batch3 (Adhesive Batch) must be numeric and not exceed 10 digits.`);
+          return;
+        }
+        */
+      }
+      // ======================================================================
+
       const formatDate = (date) => {
         const d = date.getDate().toString().padStart(2, "0");
         const m = (date.getMonth() + 1).toString().padStart(2, "0"); 
         const y = date.getFullYear();
         const h = date.getHours().toString().padStart(2, "0");
         const min = date.getMinutes().toString().padStart(2, "0");
-        // const s = date.getSeconds().toString().padStart(2, '0');
         return `${d}-${m}-${y} ${h}:${min}`;
       };
     
@@ -3175,7 +3208,7 @@ const handleClearAll = (newToken = false) => {
                         />
                       </Grid>
 
-                      <Grid item xs={1.5}>
+                                            <Grid item xs={1.5}>
                         <MDTypography
                           fontWeight="regular"
                           fontSize="small"
@@ -3189,9 +3222,15 @@ const handleClearAll = (newToken = false) => {
                         <MDInput
                           label=""
                           name="batch3"
-                          style={{ backgroundColor: "#dac292" }}
                           value={batch3}
-                          onChange={(e) => setBatch3(e.target.value)}
+                          inputProps={{ maxLength: 10 }}
+                          onChange={(e) => {
+                            // Optional client-side restriction to numeric digits only
+                            const val = e.target.value;
+                            if (/^\d*$/.test(val)) {
+                              setBatch3(val);
+                            }
+                          }}
                         />
                       </Grid>
                       <Grid item xs={1.5}>

@@ -86,7 +86,7 @@ export default function MaxWidthDialog2448(props) {
           orderNo: props.orderNo ? props.orderNo : "",
           item: props.item ? props.item : "",
           matno: props.matno ? props.matno : "",
-          shift: props.shift ? props.shift : "",
+          shift: props.selectedShift ? props.selectedShift : "",
           // crdate: props.crdate ? props.crdate : "",  // Ensure crdate is included
           crdate: props.crdate
           ? props.crdate
@@ -443,7 +443,7 @@ export default function MaxWidthDialog2448(props) {
                           <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Left'  }}>GRADE<br/></Grid>
                           <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getcathodic?.length > 0 ? getcathodic[0].LP3_GRADE1 : ' '} </Grid>
                           <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getcathodic?.length > 0 ? getcathodic[0].LP3_GRADE2 : ' '} </Grid>
-                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getcathodic?.length > 0 ? getcathodic[0].LP3_GRADE2 : ' '} </Grid>
+                          <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getcathodic?.length > 0 ? getcathodic[0].LP3_GRADE3 : ' '} </Grid>
                           <Grid item xs={1.5} style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Left'  }}>BATCH NO.<br/></Grid>
                           <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px',  textAlign: 'Center'  }}>{getcathodic?.length > 0 ? getcathodic[0].LP3_BATCH1 : ' '} </Grid>
                           <Grid item xs={3.5}    style={{ fontSize: '8px', color: 'black', fontFamily: "ArialBold", fontWeight: 'bold', border: '1px solid black', padding: '4px'  ,  textAlign: 'Center'}}>{getcathodic?.length > 0 ? getcathodic[0].LP3_BATCH2 : ' '} </Grid>

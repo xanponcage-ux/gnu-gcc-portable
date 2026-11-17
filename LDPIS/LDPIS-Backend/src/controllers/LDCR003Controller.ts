@@ -25,7 +25,7 @@ export const get24or48HrsCDtest = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.get24or48HrsCDtest(
@@ -36,7 +36,7 @@ export const get24or48HrsCDtest = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno
-      // rmno
+      ,shift
     );
     const table: any = [];
     const header: any = [];
@@ -76,7 +76,7 @@ export const get28or30DaysCDTestReport = async (req: Request, res: Response) => 
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.get28or30DaysCDTestReport(
@@ -86,8 +86,8 @@ export const get28or30DaysCDTestReport = async (req: Request, res: Response) => 
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -127,7 +127,7 @@ export const getCROSSSECTIONINTERFACEPOROSITY = async (req: Request, res: Respon
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getCROSSSECTIONINTERFACEPOROSITY(
@@ -137,8 +137,8 @@ export const getCROSSSECTIONINTERFACEPOROSITY = async (req: Request, res: Respon
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -178,7 +178,7 @@ export const getdegreeofcure = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getdegreeofcure(
@@ -188,8 +188,8 @@ export const getdegreeofcure = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -229,7 +229,7 @@ export const getelongationrep = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getelongationrep(
@@ -239,8 +239,8 @@ export const getelongationrep = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -280,7 +280,7 @@ export const getFLEXIBILITYTEST3LPE = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getFLEXIBILITYTEST3LPE(
@@ -290,8 +290,8 @@ export const getFLEXIBILITYTEST3LPE = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -331,7 +331,7 @@ export const getFLEXIBILITYTESTREPORTFBE = async (req: Request, res: Response) =
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getFLEXIBILITYTESTREPORTFBE(
@@ -341,8 +341,8 @@ export const getFLEXIBILITYTESTREPORTFBE = async (req: Request, res: Response) =
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -382,7 +382,7 @@ export const getHARDNESSTEST = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getHARDNESSTEST(
@@ -392,8 +392,8 @@ export const getHARDNESSTEST = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      pipeno,
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -433,7 +433,7 @@ export const getHOTWATERADHESIONTEST24HRS = async (req: Request, res: Response) 
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getHOTWATERADHESIONTEST24HRS(
@@ -444,7 +444,7 @@ export const getHOTWATERADHESIONTEST24HRS = async (req: Request, res: Response) 
       crdate,
       heatno,
       pipeno
-      // rmno
+      ,shift
     );
     const table: any = [];
     const header: any = [];
@@ -484,7 +484,7 @@ export const getproductstablilty = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getproductstablilty(
@@ -495,7 +495,7 @@ export const getproductstablilty = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno
-      // rmno
+      ,shift
     );
     const table: any = [];
     const header: any = [];
@@ -534,8 +534,8 @@ export const getINDENTATIONTEST = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno,
-      // rmno
+      shift
+      
     } = req.body;
 
     const results: any = await LDCR003.prototype.getINDENTATIONTEST(
@@ -545,8 +545,7 @@ export const getINDENTATIONTEST = async (req: Request, res: Response) => {
       matno,
       crdate,
       heatno,
-      pipeno
-      // rmno
+      shift
     );
     const table: any = [];
     const header: any = [];
@@ -586,7 +585,7 @@ export const getHOTWATERIMMERSION48 = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.getHOTWATERIMMERSION48(
@@ -597,7 +596,7 @@ export const getHOTWATERIMMERSION48 = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno
-      // rmno
+      ,shift
     );
     const table: any = [];
     const header: any = [];
@@ -637,7 +636,7 @@ export const gettensile = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno,
-      // rmno
+      shift
     } = req.body;
 
     const results: any = await LDCR003.prototype.gettensile(
@@ -648,7 +647,7 @@ export const gettensile = async (req: Request, res: Response) => {
       crdate,
       heatno,
       pipeno
-      // rmno
+      ,shift
     );
     const table: any = [];
     const header: any = [];

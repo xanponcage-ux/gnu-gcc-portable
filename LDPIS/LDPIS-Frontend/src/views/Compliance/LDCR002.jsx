@@ -361,7 +361,7 @@ const handlepipelistChange = (value) => {
     ) {
       alertify.error("Please choose a Report Type");
     }
-        if (serverDetails.PersonalNo !== '808535l') {
+        if (serverDetails.PersonalNo !== '436077l') {
         if (!orderNo ) {
           alertify.error("Please select Order No");
           return;
@@ -1503,6 +1503,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            shift={selectedShift?.value}
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
@@ -1525,6 +1526,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            shift={selectedShift?.value}
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
@@ -1547,6 +1549,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            shift={selectedShift?.value}
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
@@ -1593,6 +1596,7 @@ const handlerepTypeChange = (value) => {
                             selectedpipelist={selectedpipelist} 
                             rmno={rmno}
                             crdate={crdate}
+                             shift={selectedShift?.value}
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
@@ -1616,6 +1620,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            shift={selectedShift?.value}
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             instrumentName2={instrumentName2}
@@ -1662,7 +1667,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
-                            shift={selectedShift}
+                            shift={selectedShift?.value}
                             instrumentName={instrumentName}
                             instrumentId={instrumentId}
                             wiNo={wiNo}
@@ -1774,6 +1779,7 @@ const handlerepTypeChange = (value) => {
                             //pipeno={pipeno}
                             rmno={rmno}
                             crdate={crdate}
+                            shift={selectedShift?.value}
                              selectedpipelist={selectedpipelist} 
                             // instrumentName={instrumentName}
                             // instrumentId={instrumentId}
