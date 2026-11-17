@@ -26,3 +26,18 @@ implement the following points.
 
 Also, Make shure sign-off month is always sent to backend in format "MONYY"
 ```
+
+
+## 2026-11-17 — LDSM020 column order and sign-off month
+
+Reordered all 61 columns as requested, preserving existing filters, formats and totals. Sign-off uploads and save payloads normalize months to uppercase MONYY (NOV26). Accepted inputs include NOV26, Nov-2026 and 2026-11; invalid/ambiguous values are rejected before updates. Blank months remain omitted, preserving existing values.
+
+Run in PowerShell from the rough repository after pulling main:
+
+```powershell
+git pull --ff-only origin main
+.\LDPIS\Apply-LD150-To-Office.ps1 -ChangeSet "2026-11-17" -CheckOnly
+.\LDPIS\Apply-LD150-To-Office.ps1 -ChangeSet "2026-11-17"
+```
+
+The default office root remains D:\LDP UAT MAY. This change set affects only LDSM020.jsx. Preview before applying; the script creates backups and does not commit or push the office repositories.

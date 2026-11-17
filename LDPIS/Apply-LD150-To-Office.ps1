@@ -3,15 +3,15 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1" -CheckOnly
 # & "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\Apply-LD150-To-Office.ps1"
-# Defaults to the LD14S001 and LD15S001 frontend changes for 2026-11-05.
+# Defaults to the LDSM020 column order and sign-off month changes for 2026-11-17.
 # Checks patches on temporary copies first; preserves unrelated office edits.
 # Does not stage, commit, push, or change either office repository's Git settings.
 [CmdletBinding()]
 param(
     [string]$OfficeRoot = "D:\LDP UAT MAY",
     [switch]$CheckOnly,
-    [ValidateSet("2026-10-07", "2026-10-14", "2026-10-14-evening", "2026-10-15", "2026-10-16", "2026-10-16-orders", "2026-10-29", "2026-10-30-ld10", "2026-10-30-ld11", "2026-10-30-ld13", "2026-11-03", "2026-11-04", "2026-11-04-standard", "2026-11-05")]
-    [string]$ChangeSet = "2026-11-05"
+    [ValidateSet("2026-10-07", "2026-10-14", "2026-10-14-evening", "2026-10-15", "2026-10-16", "2026-10-16-orders", "2026-10-29", "2026-10-30-ld10", "2026-10-30-ld11", "2026-10-30-ld13", "2026-11-03", "2026-11-04", "2026-11-04-standard", "2026-11-05", "2026-11-17")]
+    [string]$ChangeSet = "2026-11-17"
 )
 $ErrorActionPreference = "Stop"
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -136,4 +136,5 @@ try {
 }
 Write-Host "Transfer complete: $($prepared.Count) file(s) updated. Review Source Control and test the affected screens."
 Write-Host "Restart the backend to load the updated handlers. No Azure commit or push performed. Backups: $workDir"
+
 

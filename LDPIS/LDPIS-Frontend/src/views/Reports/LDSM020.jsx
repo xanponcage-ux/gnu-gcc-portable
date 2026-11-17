@@ -546,6 +546,19 @@ export default function TubePlanning() {
     setSelectPcat(value);
   };
 
+  const formatSignoffMonth = value => {
+    const text = String(value ?? "").trim().toUpperCase();
+    if (!text) return "";
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const named = text.match(/^([A-Z]{3})[ -]?(\d{2}|\d{4})$/);
+    if (named && months.includes(named[1])) return named[1] + named[2].slice(-2);
+    const numeric = text.match(/^(\d{4})-(\d{1,2})$/);
+    if (numeric && Number(numeric[2]) >= 1 && Number(numeric[2]) <= 12) {
+      return months[Number(numeric[2]) - 1] + numeric[1].slice(-2);
+    }
+    throw new Error("Invalid sign-off month: " + value + ". Use MONYY (e.g. NOV26), Nov-2026 or 2026-11.");
+  };
+
   const uploadKeys = ["ENC_CD_EPA","ENC_ID_ORDER","ENC_NO_ITEM"], signoffFields = ["ENC_SIGNOF_MONTH","ENC_SIGNOF_QTY","ENC_INSPECTION_FLAG"];
   const uploadOrders = async event => {
     const file = event.target.files[0]; event.target.value = "";
@@ -558,6 +571,7 @@ export default function TubePlanning() {
       for (const row of rows) {
         const [plant,Order1,Item] = uploadKeys.map(k => row[k]);
         const changes = Object.fromEntries(signoffFields.filter(k => row[k]).map(k => [k,row[k]]));
+        if (changes.ENC_SIGNOF_MONTH) changes.ENC_SIGNOF_MONTH = formatSignoffMonth(changes.ENC_SIGNOF_MONTH);
         if (changes.ENC_INSPECTION_FLAG && !["Y","N"].includes(changes.ENC_INSPECTION_FLAG)) throw new Error("Inspection must be Y or N: "+Order1+"/"+Item);
         const {data} = await axiosAPI.post("api/LDSM020/getTubePlanData",{plant,Order1,Item,MatNo:"",tdc:"",thickFrm:"",thickTo:"",widthFrm:"",widthTo:"",cust:""},{headers:{Authorization:"Bearer "+accessToken}});
         if (!Array.isArray(data) || data.length !== 1) throw new Error("Expected one order detail for "+plant+"/"+Order1+"/"+Item);
@@ -572,9 +586,15 @@ export default function TubePlanning() {
     setLoading(true);
     let saved = 0;
     try {
+      // Validate all months before sending any updates.
+      const payloads = pending.map(row => {
+        const payload = {...row._upload};
+        if (payload.ENC_SIGNOF_MONTH) payload.ENC_SIGNOF_MONTH = formatSignoffMonth(payload.ENC_SIGNOF_MONTH);
+        return payload;
+      });
       const {accessToken} = await GetAuthorization();
-      for (const row of pending) {
-        await axiosAPI.post("api/LDSM020/updateSignoff",row._upload,{headers:{Authorization:"Bearer "+accessToken}});
+      for (const payload of payloads) {
+        await axiosAPI.post("api/LDSM020/updateSignoff",payload,{headers:{Authorization:"Bearer "+accessToken}});
         saved++;
       }
       alertify.success("Updated " + saved + " order items.");
@@ -698,13 +718,15 @@ export default function TubePlanning() {
   };
 
   const TubePlanColumn = [
-    {title:"Sign-off Month",field:"ENC_SIGNOF_MONTH"},
-    {title:"Sign-off Qty",field:"ENC_SIGNOF_QTY"},
-    {title:"Inspection",field:"ENC_INSPECTION_FLAG"},
-   
     {
       title: "Plant",
       field: "EOP_CD_EPA",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ord Crt Dt",
+      field: "ENC_DT_ORD_CREATE",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -730,6 +752,26 @@ export default function TubePlanning() {
       // },
     },
     {
+      title: "FG MATNR",
+      field: "EOP_FG_MATNR",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "CUST/Party NAME",
+      field: "ENC_CUST_NAME",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Order Qty.(Sales Unit)",
+      field: "ENC_SALES_QTY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+      hozAlign: "right",
+      sorter: "number",
+    },
+    {
       title: "Qty",
       field: "EOP_QTY",
       width:100,
@@ -748,27 +790,14 @@ export default function TubePlanning() {
       bottomCalcParams: { precision: 3 },
     },
     {
-      title: "BTR",
-      field: "EOP_BTR",
-      width:80,
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        // Ensure value is a number before calling toFixed
-        var numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-          return numValue.toFixed(3);
-        }
-        return value; // Return original value if not a valid number
-      },
-      bottomCalc: "sum",
-      bottomCalcParams: { precision: 3 },
-    },
+    title: "DISP QTY IN UOM",
+    field: "EOP_DISP_QTY_IN_UOM",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
     {
-      title: "BTP",
-      field: "EOP_BTP",
-      width:80,
+      title: "DISP QTY",
+      field: "EOP_DISP_QTY",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: function (cell, formatterParams) {
@@ -802,8 +831,8 @@ export default function TubePlanning() {
       bottomCalcParams: { precision: 3 },
     },
     {
-      title: "MILL SCH_QTY",
-      field: "EOP_MILLSCH_QTY",
+      title: "FG QTY",
+      field: "EOP_FG_QTY",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: function (cell, formatterParams) {
@@ -819,8 +848,9 @@ export default function TubePlanning() {
       bottomCalcParams: { precision: 3 },
     },
     {
-      title: "FG QTY",
-      field: "EOP_FG_QTY",
+      title: "BTR",
+      field: "EOP_BTR",
+      width:80,
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: function (cell, formatterParams) {
@@ -853,40 +883,59 @@ export default function TubePlanning() {
       bottomCalcParams: { precision: 3 },
     },
     {
-      title: "DISP QTY",
-      field: "EOP_DISP_QTY",
+      title: "Sales Unit",
+      field: "ENC_SALES_QTY_UOM",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        // Ensure value is a number before calling toFixed
-        var numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-          return numValue.toFixed(3);
-        }
-        return value; // Return original value if not a valid number
-      },
-      bottomCalc: "sum",
-      bottomCalcParams: { precision: 3 },
     },
     {
-      title: "Thick",
-      field: "EOP_SEC1",
+      title: "Order Type",
+      field: "ENC_ORDER_TYPE",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
-      formatter: function (cell, formatterParams) {
-        var value = cell.getValue();
-        // Ensure value is a number before calling toFixed
-        var numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-          return numValue.toFixed(3);
-        }
-        return value; // Return original value if not a valid number
-      },
+    },
+    {
+      title: "Incot",
+      field: "ENC_INCOT",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Sales Org.",
+      field: "ENC_SAL_ORG",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Division",
+      field: "ENC_DIVISION",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "FG MATNR DESC",
+      field: "EOP_FG_MATNR_DESC",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
     },
     {
       title: "Width",
       field: "EOP_SEC2",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        // Ensure value is a number before calling toFixed
+        var numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+          return numValue.toFixed(3);
+        }
+        return value; // Return original value if not a valid number
+      },
+    },
+    {
+      title: "Thick",
+      field: "EOP_SEC1",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
       formatter: function (cell, formatterParams) {
@@ -915,140 +964,106 @@ export default function TubePlanning() {
       },
     },
     {
-      title: "TDC",
-      field: "ENC_NO_TDC",
+      title: "Ref. Standard",
+      field: "ENC_REF_STANDARD",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "Order Type",
-      field: "ENC_ORDER_TYPE",
+      title: "BTP",
+      field: "EOP_BTP",
+      width:80,
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        // Ensure value is a number before calling toFixed
+        var numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+          return numValue.toFixed(3);
+        }
+        return value; // Return original value if not a valid number
+      },
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
     },
-  {
-    title: "DISP QTY IN UOM",
-    field: "EOP_DISP_QTY_IN_UOM",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
-  {
+    {
+      title: "MILL SCH_QTY",
+      field: "EOP_MILLSCH_QTY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+      formatter: function (cell, formatterParams) {
+        var value = cell.getValue();
+        // Ensure value is a number before calling toFixed
+        var numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+          return numValue.toFixed(3);
+        }
+        return value; // Return original value if not a valid number
+      },
+      bottomCalc: "sum",
+      bottomCalcParams: { precision: 3 },
+    },
+    {
     title: "DISP PEND",
     field: "EOP_DISP_PEND",
     headerFilter: "input",
     headerFilterPlaceholder: "search...",
   },
-  {
-    title: "ZONE",
-    field: "EOP_ZONE",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
-  {
-    title: "CATEGORY",
-    field: "EOP_CATEGORY",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
-  {
-    title: "SEGEMENT",
-    field: "EOP_SEGEMENT",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
-  // {
-  //   title: "SIGNOF MONTH",
-  //   field: "EOP_SIGNOF_MONTH",
-  //   headerFilter: "input",
-  //   headerFilterPlaceholder: "search...",
-  // },
-  // {
-  //   title: "SIGNOF QTY",
-  //   field: "EOP_SIGNOF_QTY",
-  //   headerFilter: "input",
-  //   headerFilterPlaceholder: "search...",
-  // },
-  {
+    {title:"Sign-off Month",field:"ENC_SIGNOF_MONTH"},
+    {title:"Sign-off Qty",field:"ENC_SIGNOF_QTY"},
+    {title:"Inspection",field:"ENC_INSPECTION_FLAG"},
+    {
     title: "VDI GRN",
     field: "EOP_VDI_GRN",
     headerFilter: "input",
     headerFilterPlaceholder: "search...",
   },
-  {
+    {
     title: "GRN GAP",
     field: "EOP_GRN_GAP",
     headerFilter: "input",
     headerFilterPlaceholder: "search...",
   },
-  {
+    {
     title: "Non-SIGNOF QTY",
     field: "EOP_NSIGNOF_QTY",
     headerFilter: "input",
     headerFilterPlaceholder: "search...",
   },
-  {
+    {
+    title: "ZONE",
+    field: "EOP_ZONE",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
+    {
+    title: "CATEGORY",
+    field: "EOP_CATEGORY",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
+    {
+    title: "SEGEMENT",
+    field: "EOP_SEGEMENT",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
+    {
     title: "INSPECTION FLAG",
     field: "EOP_INSPECTION_FLAG",
     headerFilter: "input",
     headerFilterPlaceholder: "search...",
   },
-  {
-    title: "Process Sheet BARE",
-    field: "EOP_PS_BARE",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
-  {
-    title: "Process Sheet EXT",
-    field: "EOP_PS_EXT",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
-  {
-    title: "Process Sheet INT",
-    field: "EOP_PS_INT",
-    headerFilter: "input",
-    headerFilterPlaceholder: "search...",
-  },
     {
-      title: "FG MATNR",
-      field: "EOP_FG_MATNR",
+      title: "Po No.",
+      field: "ENC_PO_NO",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
     {
-      title: "FG MATNR DESC",
-      field: "EOP_FG_MATNR_DESC",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "END CUST/Party Code",
-      field: "ENC_CD_END_CUST",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "CUST/Party NAME",
-      field: "ENC_CUST_NAME",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Ship To Party",
-      field: "ENC_CD_SHIP_TO_PRTY",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "SHIP_TO_PRTY DESC",
-      field: "ENC_SHIP_TO_PRTY_DESC",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "MARK CUST",
-      field: "ENC_MARK_CUST",
+      title: "Delivery Date",
+      field: "ENC_DT_DELV",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -1059,8 +1074,92 @@ export default function TubePlanning() {
       headerFilterPlaceholder: "search...",
     },
     {
+      title: "MARK CUST",
+      field: "ENC_MARK_CUST",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "END CUST/Party Code",
+      field: "ENC_CD_END_CUST",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Sold Cust. City",
+      field: "ENC_SOLD_CUST_CITY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ship To Party",
+      field: "ENC_CD_SHIP_TO_PRTY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ship Cust. Name",
+      field: "ENC_SHIP_CUST_NAME",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Ship Cust. City",
+      field: "ENC_SHIP_CUST_CITY",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "SHIP_TO_PRTY DESC",
+      field: "ENC_SHIP_TO_PRTY_DESC",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Freight Indicator",
+      field: "ENC_FRT_IND",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Billing Block",
+      field: "ENC_BILING_BLOCK",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "Delivery Block",
+      field: "ENC_DELV_BLOCK",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+    title: "Process Sheet BARE",
+    field: "EOP_PS_BARE",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
+    {
+    title: "Process Sheet EXT",
+    field: "EOP_PS_EXT",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
+    {
+    title: "Process Sheet INT",
+    field: "EOP_PS_INT",
+    headerFilter: "input",
+    headerFilterPlaceholder: "search...",
+  },
+    {
       title: "DT ORD FULFILL",
       field: "ENC_DT_ORD_FULFILL",
+      headerFilter: "input",
+      headerFilterPlaceholder: "search...",
+    },
+    {
+      title: "TDC",
+      field: "ENC_NO_TDC",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -1097,98 +1196,6 @@ export default function TubePlanning() {
     {
       title: "Geometry",
       field: "ENC_GEOMETRY",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Ord Crt Dt",
-      field: "ENC_DT_ORD_CREATE",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Order Qty.(Sales Unit)",
-      field: "ENC_SALES_QTY",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-      hozAlign: "right",
-      sorter: "number",
-    },
-    {
-      title: "Sales Unit",
-      field: "ENC_SALES_QTY_UOM",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Incot",
-      field: "ENC_INCOT",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Sold Cust. City",
-      field: "ENC_SOLD_CUST_CITY",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Ship Cust. City",
-      field: "ENC_SHIP_CUST_CITY",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Ship Cust. Name",
-      field: "ENC_SHIP_CUST_NAME",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Division",
-      field: "ENC_DIVISION",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Sales Org.",
-      field: "ENC_SAL_ORG",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Ref. Standard",
-      field: "ENC_REF_STANDARD",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Po No.",
-      field: "ENC_PO_NO",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Freight Indicator",
-      field: "ENC_FRT_IND",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Delivery Date",
-      field: "ENC_DT_DELV",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Billing Block",
-      field: "ENC_BILING_BLOCK",
-      headerFilter: "input",
-      headerFilterPlaceholder: "search...",
-    },
-    {
-      title: "Delivery Block",
-      field: "ENC_DELV_BLOCK",
       headerFilter: "input",
       headerFilterPlaceholder: "search...",
     },
@@ -1620,3 +1627,4 @@ export default function TubePlanning() {
     </DashboardLayout>
   );
 }
+
