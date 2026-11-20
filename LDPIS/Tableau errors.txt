@@ -1,7 +1,0 @@
-Unable to complete action
-Errors occurred while trying to load the workbook "D:\Office Work\Striver\gnu-gcc-portable\LDPIS\LDP_Tableau_V4_Combined_Tables_PREVIEW.twb". The load was not able to complete successfully.
-Error Code: D2E8DA72
-Error(1150,490): element 'groupfilter' is not allowed for content model '(min?,max?,groupfilter,preset?,target*)' (id: D:\Office Work\Striver\gnu-gcc-portable\LDPIS\LDP_Tableau_V4_Combined_Tables_PREVIEW.twb)
-Error(1151,16): element 'filter' is not allowed for content model '(datasources?,mapsources?,datasource-dependencies*,filter,sort,perspectives,slices?,aggregation)' (id: D:\Office Work\Striver\gnu-gcc-portable\LDPIS\LDP_Tableau_V4_Combined_Tables_PREVIEW.twb)
-Error(1184,490): element 'groupfilter' is not allowed for content model '(min?,max?,groupfilter,preset?,target*)' (id: D:\Office Work\Striver\gnu-gcc-portable\LDPIS\LDP_Tableau_V4_Combined_Tables_PREVIEW.twb)
-Error(1185,16): element 'filter' is not allowed for content model '(datasources?,mapsources?,datasource-dependencies*,filter,sort,perspectives,slices?,aggregation)' (id: D:\Office Work\Striver\gnu-gcc-portable\LDPIS\LDP_Tableau_V4_Combined_Tables_PREVIEW.twb)
