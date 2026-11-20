@@ -3,7 +3,6 @@
 <!-- build 20224.22.1117.1841                               -->
 <workbook original-version='18.1' source-build='2022.4.0 (20224.22.1117.1841)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
   <document-format-change-manifest>
-    <_.fcp.AccessibleZoneTabOrder.true...AccessibleZoneTabOrder />
     <_.fcp.AnimationOnByDefault.true...AnimationOnByDefault />
     <IntuitiveSorting />
     <IntuitiveSorting_SP2 />
@@ -32,6 +31,9 @@
           <named-connection caption='LDP_Dashboard_Sample_Data' name='textscan.0o9lwwh1vuhimg1ej421a0adguze'>
             <connection class='textscan' directory='D:/Office Work/Striver/gnu-gcc-portable/LDPIS' filename='LDP_Dashboard_Sample_Data.csv' password='' server='' />
           </named-connection>
+          <named-connection caption='10.152.98.196' name='oracle.1lrl9zg16gzkca18c9f5y1i0hrbx'>
+            <connection authentication='RDBMS' class='oracle' one-time-sql='' port='1521' schema='LDPDBA' server='10.152.98.196' service='LDPISDEV' sslmode='' username='806760' />
+          </named-connection>
         </named-connections>
         <_.fcp.ObjectModelEncapsulateLegacy.false...relation connection='textscan.0o9lwwh1vuhimg1ej421a0adguze' name='LDP_Dashboard_Sample_Data.csv' table='[LDP_Dashboard_Sample_Data#csv]' type='table'>
           <columns character-set='UTF-8' header='yes' locale='en_IN' separator=','>
@@ -47,19 +49,169 @@
             <column datatype='date' name='As Of' ordinal='9' />
           </columns>
         </_.fcp.ObjectModelEncapsulateLegacy.false...relation>
-        <_.fcp.ObjectModelEncapsulateLegacy.true...relation connection='textscan.0o9lwwh1vuhimg1ej421a0adguze' name='LDP_Dashboard_Sample_Data.csv' table='[LDP_Dashboard_Sample_Data#csv]' type='table'>
-          <columns character-set='UTF-8' header='yes' locale='en_IN' separator=','>
-            <column datatype='integer' name='index' ordinal='0' />
-            <column datatype='string' name='Vertical' ordinal='1' />
-            <column datatype='string' name='Zone' ordinal='2' />
-            <column datatype='string' name='Stock Type' ordinal='3' />
-            <column datatype='string' name='Age Bucket' ordinal='4' />
-            <column datatype='integer' name='BOP' ordinal='5' />
-            <column datatype='integer' name='BOF' ordinal='6' />
-            <column datatype='integer' name='Pending DO' ordinal='7' />
-            <column datatype='integer' name='Stock Qty' ordinal='8' />
-            <column datatype='date' name='As Of' ordinal='9' />
-          </columns>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...relation type='collection'>
+          <relation connection='textscan.0o9lwwh1vuhimg1ej421a0adguze' name='LDP_Dashboard_Sample_Data.csv' table='[LDP_Dashboard_Sample_Data#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_IN' separator=','>
+              <column datatype='integer' name='index' ordinal='0' />
+              <column datatype='string' name='Vertical' ordinal='1' />
+              <column datatype='string' name='Zone' ordinal='2' />
+              <column datatype='string' name='Stock Type' ordinal='3' />
+              <column datatype='string' name='Age Bucket' ordinal='4' />
+              <column datatype='integer' name='BOP' ordinal='5' />
+              <column datatype='integer' name='BOF' ordinal='6' />
+              <column datatype='integer' name='Pending DO' ordinal='7' />
+              <column datatype='integer' name='Stock Qty' ordinal='8' />
+              <column datatype='date' name='As Of' ordinal='9' />
+            </columns>
+          </relation>
+          <relation connection='oracle.1lrl9zg16gzkca18c9f5y1i0hrbx' name='Custom SQL Query' type='text'><![CDATA[SELECT
+    M.EOP_BTD BTD,
+    M.EOP_BTP BTP,
+    0 PENDING_DO, -- LOGIC TO BE PROVIDED
+    M.EOP_MILLSCH_QTY TOTAL_LNK_QTY,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_CD_STATUS IN (
+            SELECT CD_DESC
+            FROM V_CODES
+            WHERE CD_TYPE = 'TB040'
+              AND CD_DESC1 = 'FG STOCK'
+        )
+    ) TOTAL_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+          AND LOM_CD_STATUS IN (
+                SELECT CD_DESC
+                FROM V_CODES
+                WHERE CD_TYPE = 'TB040'
+                  AND CD_DESC1 = 'FG STOCK'
+          )
+    ) TOTAL_LINK_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+          AND LOM_CD_STATUS = 'WF'
+    ) TOTAL_UNLINK_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+          AND LOM_CD_STATUS = '8Q'
+    ) TOTAL_HOLD,
+    -- Modified to handle division by zero for TOTAL_HOLD_PER
+    CASE
+        WHEN (
+            SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+            FROM V_LDP_PRODN
+            WHERE LOM_CD_STATUS IN (
+                SELECT CD_DESC
+                FROM V_CODES
+                WHERE CD_TYPE = 'TB040'
+                  AND CD_DESC1 = 'FG STOCK'
+            )
+        ) = 0 THEN 0
+        ELSE ROUND( -- Rounding the entire percentage calculation to 2 decimal places
+            (
+                (
+                    SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+                    FROM V_LDP_PRODN
+                    WHERE LOM_ID_ORDER_CUS IS NOT NULL
+                      AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+                      AND LOM_CD_STATUS = '8Q'
+                ) / (
+                    SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+                    FROM V_LDP_PRODN
+                    WHERE LOM_CD_STATUS IN (
+                        SELECT CD_DESC
+                        FROM V_CODES
+                        WHERE CD_TYPE = 'TB040'
+                          AND CD_DESC1 = 'FG STOCK'
+                    )
+                )
+            ) * 100
+        , 2)
+    END AS TOTAL_HOLD_PER,
+    M.EOP_SIGNOF_QTY,
+    0 GRNCOMP_QTY,
+    0 GRNCOMP_PER,
+    0 ROLLING_OSP,
+    0 ROLLING_MTD,
+    0 ROLLCOMP_PER,
+    0 PRODUCTION_OSP,
+    0 PRODUCTION_MTD,
+    0 PRODUCTION_PER,
+    -- New fields for Segments
+    S.BPRTUBE_BTD,
+    S.BPRTUBE_BTP,
+    S.CETUBE_BTD,
+    S.CETUBE_BTP,
+    S.CSTUBE_BTD,
+    S.CSTUBE_BTP,
+    S.EPTUBE_BTD,
+    S.EPTUBE_BTP,
+    -- New fields for Zones
+    S.API_BTD,
+    S.API_BTP,
+    S.EAST_BTD,
+    S.EAST_BTP,
+    S.NORTH_BTD,
+    S.NORTH_BTP,
+    S.SOUTH_BTD,
+    S.SOUTH_BTP,
+    S.WEST_BTD,
+    S.WEST_BTP,
+    S.EXPORT_BTD,
+    S.EXPORT_BTP
+FROM
+(
+    SELECT
+        SUM(NVL(EOP_BTD,0)) EOP_BTD,
+        SUM(NVL(EOP_BTP,0)) EOP_BTP,
+        SUM(NVL(EOP_MILLSCH_QTY,0)) EOP_MILLSCH_QTY,
+        SUM(NVL(EOP_SIGNOF_QTY,0)) EOP_SIGNOF_QTY
+    FROM V_LDP_ORDER_PROG,
+         V_END_CUST_ORD_EPA
+    WHERE EOP_CD_EPA = ENC_CD_EPA
+      AND EOP_ID_ORDER = ENC_ID_ORDER
+      AND EOP_NO_ITEM = ENC_NO_ITEM
+      AND ENC_DT_ORD_CREATE >>= SYSDATE - 365
+      AND ENC_ST_ORDER = 'A'
+      AND EOP_CD_EPA = '0780'
+) M
+CROSS JOIN
+(
+    SELECT
+        -- Segment-based sums
+        SUM(CASE WHEN EOP_SEGEMENT = 'Branded Products & Retail' THEN NVL(EOP_BTD,0) ELSE 0 END) AS BPRTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Branded Products & Retail' THEN NVL(EOP_BTP,0) ELSE 0 END) AS BPRTUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Commercial & Exports' THEN NVL(EOP_BTD,0) ELSE 0 END) AS CETUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Commercial & Exports' THEN NVL(EOP_BTP,0) ELSE 0 END) AS CETUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Construction and Solution' THEN NVL(EOP_BTD,0) ELSE 0 END) AS CSTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Construction and Solution' THEN NVL(EOP_BTP,0) ELSE 0 END) AS CSTUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Engineering & Packaging - Tubes' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EPTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Engineering & Packaging - Tubes' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EPTUBE_BTP,
+        -- Zone-based sums
+        SUM(CASE WHEN EOP_ZONE = 'API' THEN NVL(EOP_BTD,0) ELSE 0 END) AS API_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'API' THEN NVL(EOP_BTP,0) ELSE 0 END) AS API_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'East' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EAST_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'East' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EAST_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'North' THEN NVL(EOP_BTD,0) ELSE 0 END) AS NORTH_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'North' THEN NVL(EOP_BTP,0) ELSE 0 END) AS NORTH_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'South' THEN NVL(EOP_BTD,0) ELSE 0 END) AS SOUTH_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'South' THEN NVL(EOP_BTP,0) ELSE 0 END) AS SOUTH_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'West' THEN NVL(EOP_BTD,0) ELSE 0 END) AS WEST_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'West' THEN NVL(EOP_BTP,0) ELSE 0 END) AS WEST_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'Export' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EXPORT_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'Export' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EXPORT_BTP
+    FROM V_LDP_ORDER_PROG
+) S]]></relation>
         </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
         <metadata-records>
           <metadata-record class='capability'>
@@ -211,10 +363,585 @@
             <contains-null>true</contains-null>
             <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[LDP_Dashboard_Sample_Data.csv_86DC88F1B0ED44EDAD32FD7EB08DCFD0]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
           </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>BTD</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>BTP</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>PENDING_DO</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[PENDING_DO]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>PENDING_DO</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL_LNK_QTY</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[TOTAL_LNK_QTY]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>TOTAL_LNK_QTY</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL_STK</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[TOTAL_STK]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>TOTAL_STK</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <scale>0</scale>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL_LINK_STK</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[TOTAL_LINK_STK]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>TOTAL_LINK_STK</remote-alias>
+            <ordinal>17</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <scale>0</scale>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL_UNLINK_STK</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[TOTAL_UNLINK_STK]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>TOTAL_UNLINK_STK</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <scale>0</scale>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL_HOLD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[TOTAL_HOLD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>TOTAL_HOLD</remote-alias>
+            <ordinal>19</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <scale>0</scale>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL_HOLD_PER</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[TOTAL_HOLD_PER]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>TOTAL_HOLD_PER</remote-alias>
+            <ordinal>20</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EOP_SIGNOF_QTY</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EOP_SIGNOF_QTY]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EOP_SIGNOF_QTY</remote-alias>
+            <ordinal>21</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>GRNCOMP_QTY</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[GRNCOMP_QTY]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>GRNCOMP_QTY</remote-alias>
+            <ordinal>22</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>GRNCOMP_PER</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[GRNCOMP_PER]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>GRNCOMP_PER</remote-alias>
+            <ordinal>23</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>ROLLING_OSP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[ROLLING_OSP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>ROLLING_OSP</remote-alias>
+            <ordinal>24</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>ROLLING_MTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[ROLLING_MTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>ROLLING_MTD</remote-alias>
+            <ordinal>25</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>ROLLCOMP_PER</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[ROLLCOMP_PER]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>ROLLCOMP_PER</remote-alias>
+            <ordinal>26</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>PRODUCTION_OSP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[PRODUCTION_OSP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>PRODUCTION_OSP</remote-alias>
+            <ordinal>27</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>PRODUCTION_MTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[PRODUCTION_MTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>PRODUCTION_MTD</remote-alias>
+            <ordinal>28</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>PRODUCTION_PER</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[PRODUCTION_PER]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>PRODUCTION_PER</remote-alias>
+            <ordinal>29</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BPRTUBE_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[BPRTUBE_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>BPRTUBE_BTD</remote-alias>
+            <ordinal>30</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BPRTUBE_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[BPRTUBE_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>BPRTUBE_BTP</remote-alias>
+            <ordinal>31</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CETUBE_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[CETUBE_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>CETUBE_BTD</remote-alias>
+            <ordinal>32</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CETUBE_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[CETUBE_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>CETUBE_BTP</remote-alias>
+            <ordinal>33</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CSTUBE_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[CSTUBE_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>CSTUBE_BTD</remote-alias>
+            <ordinal>34</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CSTUBE_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[CSTUBE_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>CSTUBE_BTP</remote-alias>
+            <ordinal>35</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EPTUBE_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EPTUBE_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EPTUBE_BTD</remote-alias>
+            <ordinal>36</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EPTUBE_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EPTUBE_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EPTUBE_BTP</remote-alias>
+            <ordinal>37</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>API_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[API_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>API_BTD</remote-alias>
+            <ordinal>38</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>API_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[API_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>API_BTP</remote-alias>
+            <ordinal>39</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EAST_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EAST_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EAST_BTD</remote-alias>
+            <ordinal>40</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EAST_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EAST_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EAST_BTP</remote-alias>
+            <ordinal>41</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>NORTH_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[NORTH_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>NORTH_BTD</remote-alias>
+            <ordinal>42</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>NORTH_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[NORTH_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>NORTH_BTP</remote-alias>
+            <ordinal>43</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>SOUTH_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[SOUTH_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>SOUTH_BTD</remote-alias>
+            <ordinal>44</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>SOUTH_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[SOUTH_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>SOUTH_BTP</remote-alias>
+            <ordinal>45</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>WEST_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[WEST_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>WEST_BTD</remote-alias>
+            <ordinal>46</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>WEST_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[WEST_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>WEST_BTP</remote-alias>
+            <ordinal>47</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EXPORT_BTD</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EXPORT_BTD]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EXPORT_BTD</remote-alias>
+            <ordinal>48</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>EXPORT_BTP</remote-name>
+            <remote-type>131</remote-type>
+            <local-name>[EXPORT_BTP]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>EXPORT_BTP</remote-alias>
+            <ordinal>49</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQLT_NUM&quot;</attribute>
+            </attributes>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[_B537A69027CD4565B45235692C1F76CA]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
         </metadata-records>
       </connection>
       <aliases enabled='yes' />
       <_.fcp.ObjectModelTableType.true...column caption='LDP_Dashboard_Sample_Data.csv' datatype='table' name='[__tableau_internal_object_id__].[LDP_Dashboard_Sample_Data.csv_86DC88F1B0ED44EDAD32FD7EB08DCFD0]' role='measure' type='quantitative' />
+      <_.fcp.ObjectModelTableType.true...column caption='Custom SQL Query' datatype='table' name='[__tableau_internal_object_id__].[_B537A69027CD4565B45235692C1F76CA]' role='measure' type='quantitative' />
       <column caption='Index' datatype='integer' name='[index]' role='measure' type='quantitative' />
       <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <semantic-values>
@@ -240,7 +967,169 @@
               </relation>
             </properties>
           </object>
+          <object caption='Custom SQL Query' id='_B537A69027CD4565B45235692C1F76CA'>
+            <properties context=''>
+              <relation connection='oracle.1lrl9zg16gzkca18c9f5y1i0hrbx' name='Custom SQL Query' type='text'><![CDATA[SELECT
+    M.EOP_BTD BTD,
+    M.EOP_BTP BTP,
+    0 PENDING_DO, -- LOGIC TO BE PROVIDED
+    M.EOP_MILLSCH_QTY TOTAL_LNK_QTY,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_CD_STATUS IN (
+            SELECT CD_DESC
+            FROM V_CODES
+            WHERE CD_TYPE = 'TB040'
+              AND CD_DESC1 = 'FG STOCK'
+        )
+    ) TOTAL_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+          AND LOM_CD_STATUS IN (
+                SELECT CD_DESC
+                FROM V_CODES
+                WHERE CD_TYPE = 'TB040'
+                  AND CD_DESC1 = 'FG STOCK'
+          )
+    ) TOTAL_LINK_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+          AND LOM_CD_STATUS = 'WF'
+    ) TOTAL_UNLINK_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+          AND LOM_CD_STATUS = '8Q'
+    ) TOTAL_HOLD,
+    -- Modified to handle division by zero for TOTAL_HOLD_PER
+    CASE
+        WHEN (
+            SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+            FROM V_LDP_PRODN
+            WHERE LOM_CD_STATUS IN (
+                SELECT CD_DESC
+                FROM V_CODES
+                WHERE CD_TYPE = 'TB040'
+                  AND CD_DESC1 = 'FG STOCK'
+            )
+        ) = 0 THEN 0
+        ELSE ROUND( -- Rounding the entire percentage calculation to 2 decimal places
+            (
+                (
+                    SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+                    FROM V_LDP_PRODN
+                    WHERE LOM_ID_ORDER_CUS IS NOT NULL
+                      AND TRIM(LOM_ID_ORDER_CUS) <<>> '0'
+                      AND LOM_CD_STATUS = '8Q'
+                ) / (
+                    SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+                    FROM V_LDP_PRODN
+                    WHERE LOM_CD_STATUS IN (
+                        SELECT CD_DESC
+                        FROM V_CODES
+                        WHERE CD_TYPE = 'TB040'
+                          AND CD_DESC1 = 'FG STOCK'
+                    )
+                )
+            ) * 100
+        , 2)
+    END AS TOTAL_HOLD_PER,
+    M.EOP_SIGNOF_QTY,
+    0 GRNCOMP_QTY,
+    0 GRNCOMP_PER,
+    0 ROLLING_OSP,
+    0 ROLLING_MTD,
+    0 ROLLCOMP_PER,
+    0 PRODUCTION_OSP,
+    0 PRODUCTION_MTD,
+    0 PRODUCTION_PER,
+    -- New fields for Segments
+    S.BPRTUBE_BTD,
+    S.BPRTUBE_BTP,
+    S.CETUBE_BTD,
+    S.CETUBE_BTP,
+    S.CSTUBE_BTD,
+    S.CSTUBE_BTP,
+    S.EPTUBE_BTD,
+    S.EPTUBE_BTP,
+    -- New fields for Zones
+    S.API_BTD,
+    S.API_BTP,
+    S.EAST_BTD,
+    S.EAST_BTP,
+    S.NORTH_BTD,
+    S.NORTH_BTP,
+    S.SOUTH_BTD,
+    S.SOUTH_BTP,
+    S.WEST_BTD,
+    S.WEST_BTP,
+    S.EXPORT_BTD,
+    S.EXPORT_BTP
+FROM
+(
+    SELECT
+        SUM(NVL(EOP_BTD,0)) EOP_BTD,
+        SUM(NVL(EOP_BTP,0)) EOP_BTP,
+        SUM(NVL(EOP_MILLSCH_QTY,0)) EOP_MILLSCH_QTY,
+        SUM(NVL(EOP_SIGNOF_QTY,0)) EOP_SIGNOF_QTY
+    FROM V_LDP_ORDER_PROG,
+         V_END_CUST_ORD_EPA
+    WHERE EOP_CD_EPA = ENC_CD_EPA
+      AND EOP_ID_ORDER = ENC_ID_ORDER
+      AND EOP_NO_ITEM = ENC_NO_ITEM
+      AND ENC_DT_ORD_CREATE >>= SYSDATE - 365
+      AND ENC_ST_ORDER = 'A'
+      AND EOP_CD_EPA = '0780'
+) M
+CROSS JOIN
+(
+    SELECT
+        -- Segment-based sums
+        SUM(CASE WHEN EOP_SEGEMENT = 'Branded Products & Retail' THEN NVL(EOP_BTD,0) ELSE 0 END) AS BPRTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Branded Products & Retail' THEN NVL(EOP_BTP,0) ELSE 0 END) AS BPRTUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Commercial & Exports' THEN NVL(EOP_BTD,0) ELSE 0 END) AS CETUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Commercial & Exports' THEN NVL(EOP_BTP,0) ELSE 0 END) AS CETUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Construction and Solution' THEN NVL(EOP_BTD,0) ELSE 0 END) AS CSTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Construction and Solution' THEN NVL(EOP_BTP,0) ELSE 0 END) AS CSTUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Engineering & Packaging - Tubes' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EPTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Engineering & Packaging - Tubes' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EPTUBE_BTP,
+        -- Zone-based sums
+        SUM(CASE WHEN EOP_ZONE = 'API' THEN NVL(EOP_BTD,0) ELSE 0 END) AS API_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'API' THEN NVL(EOP_BTP,0) ELSE 0 END) AS API_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'East' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EAST_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'East' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EAST_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'North' THEN NVL(EOP_BTD,0) ELSE 0 END) AS NORTH_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'North' THEN NVL(EOP_BTP,0) ELSE 0 END) AS NORTH_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'South' THEN NVL(EOP_BTD,0) ELSE 0 END) AS SOUTH_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'South' THEN NVL(EOP_BTP,0) ELSE 0 END) AS SOUTH_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'West' THEN NVL(EOP_BTD,0) ELSE 0 END) AS WEST_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'West' THEN NVL(EOP_BTP,0) ELSE 0 END) AS WEST_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'Export' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EXPORT_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'Export' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EXPORT_BTP
+    FROM V_LDP_ORDER_PROG
+) S]]></relation>
+            </properties>
+          </object>
         </objects>
+        <relationships>
+          <relationship>
+            <expression op='='>
+              <expression op='[]' />
+              <expression op='[]' />
+            </expression>
+            <first-end-point object-id='LDP_Dashboard_Sample_Data.csv_86DC88F1B0ED44EDAD32FD7EB08DCFD0' />
+            <second-end-point object-id='_B537A69027CD4565B45235692C1F76CA' />
+          </relationship>
+        </relationships>
       </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
     </datasource>
   </datasources>
@@ -608,6 +1497,78 @@
         <cols>[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]</cols>
       </table>
       <simple-id uuid='{E40C462A-AF46-4A67-B442-7ACE3041B7D2}' />
+    </worksheet>
+    <worksheet name='Combined Order Table-Zone'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='LDP_Dashboard_Sample_Data' name='federated.0mgv02k02heggx1fde8zi0yw135a' />
+          </datasources>
+          <datasource-dependencies datasource='federated.0mgv02k02heggx1fde8zi0yw135a'>
+            <column datatype='integer' name='[BOF]' role='measure' type='quantitative' />
+            <column datatype='integer' name='[BOP]' role='measure' type='quantitative' />
+            <column datatype='integer' name='[Pending DO]' role='measure' type='quantitative' />
+            <column datatype='string' name='[Zone]' role='dimension' type='nominal' />
+            <column-instance column='[Zone]' derivation='None' name='[none:Zone:nk]' pivot='key' type='nominal' />
+            <column-instance column='[BOF]' derivation='Sum' name='[sum:BOF:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[BOP]' derivation='Sum' name='[sum:BOP:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Pending DO]' derivation='Sum' name='[sum:Pending DO:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <filter class='categorical' column='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]'>
+            <groupfilter function='union' user:op='manual'>
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOP:qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOF:qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:Pending DO:qk]&quot;' />
+            </groupfilter>
+          </filter>
+          <manual-sort column='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]' direction='ASC'>
+            <dictionary>
+              <bucket>&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOP:qk]&quot;</bucket>
+              <bucket>&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOF:qk]&quot;</bucket>
+              <bucket>&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:Pending DO:qk]&quot;</bucket>
+            </dictionary>
+          </manual-sort>
+          <shelf-sorts>
+            <shelf-sort-v2 dimension-to-sort='[federated.0mgv02k02heggx1fde8zi0yw135a].[none:Zone:nk]' direction='DESC' is-on-innermost-dimension='true' measure-to-sort-by='[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:Pending DO:qk]' shelf='rows' />
+          </shelf-sorts>
+          <slices>
+            <column>[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='cell'>
+            <format attr='width' field='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]' value='99' />
+          </style-rule>
+          <style-rule element='header'>
+            <format attr='wrap' data-class='subtotal' field='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]' value='on' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <text column='[federated.0mgv02k02heggx1fde8zi0yw135a].[Multiple Values]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='true' />
+                <format attr='mark-labels-cull' value='true' />
+              </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='-1' />
+                <format attr='maxwidth' value='-1' />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.0mgv02k02heggx1fde8zi0yw135a].[none:Zone:nk]</rows>
+        <cols>[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]</cols>
+      </table>
+      <simple-id uuid='{E40C462A-AF46-4A67-B442-7ACE3041B7D3}' />
     </worksheet>
     <worksheet name='KPI - BOF'>
       <table>
@@ -1247,82 +2208,122 @@
       </table>
       <simple-id uuid='{ABCDEF01-1234-4567-890A-000000000111}' />
     </worksheet>
-  <worksheet name='Combined Order Table-Zone'>
-      <table>
-        <view>
-          <datasources>
-            <datasource caption='LDP_Dashboard_Sample_Data' name='federated.0mgv02k02heggx1fde8zi0yw135a' />
-          </datasources>
-          <datasource-dependencies datasource='federated.0mgv02k02heggx1fde8zi0yw135a'>
-            <column datatype='integer' name='[BOF]' role='measure' type='quantitative' />
-            <column datatype='integer' name='[BOP]' role='measure' type='quantitative' />
-            <column datatype='integer' name='[Pending DO]' role='measure' type='quantitative' />
-            <column datatype='string' name='[Zone]' role='dimension' type='nominal' />
-            <column-instance column='[Zone]' derivation='None' name='[none:Zone:nk]' pivot='key' type='nominal' />
-            <column-instance column='[BOF]' derivation='Sum' name='[sum:BOF:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[BOP]' derivation='Sum' name='[sum:BOP:qk]' pivot='key' type='quantitative' />
-            <column-instance column='[Pending DO]' derivation='Sum' name='[sum:Pending DO:qk]' pivot='key' type='quantitative' />
-          </datasource-dependencies>
-          <filter class='categorical' column='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]'>
-            <groupfilter function='union' user:op='manual'>
-              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOP:qk]&quot;' />
-              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOF:qk]&quot;' />
-              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:Pending DO:qk]&quot;' />
-            </groupfilter>
-          </filter>
-          <manual-sort column='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]' direction='ASC'>
-            <dictionary>
-              <bucket>&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOP:qk]&quot;</bucket>
-              <bucket>&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:BOF:qk]&quot;</bucket>
-              <bucket>&quot;[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:Pending DO:qk]&quot;</bucket>
-            </dictionary>
-          </manual-sort>
-          <shelf-sorts>
-            <shelf-sort-v2 dimension-to-sort='[federated.0mgv02k02heggx1fde8zi0yw135a].[none:Zone:nk]' direction='DESC' is-on-innermost-dimension='true' measure-to-sort-by='[federated.0mgv02k02heggx1fde8zi0yw135a].[sum:Pending DO:qk]' shelf='rows' />
-          </shelf-sorts>
-          <slices>
-            <column>[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]</column>
-          </slices>
-          <aggregation value='true' />
-        </view>
-        <style>
-          <style-rule element='cell'>
-            <format attr='width' field='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]' value='99' />
-          </style-rule>
-          <style-rule element='header'>
-            <format attr='wrap' data-class='subtotal' field='[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]' value='on' />
-          </style-rule>
-        </style>
-        <panes>
-          <pane selection-relaxation-option='selection-relaxation-allow'>
-            <view>
-              <breakdown value='auto' />
-            </view>
-            <mark class='Automatic' />
-            <encodings>
-              <text column='[federated.0mgv02k02heggx1fde8zi0yw135a].[Multiple Values]' />
-            </encodings>
-            <style>
-              <style-rule element='mark'>
-                <format attr='mark-labels-show' value='true' />
-                <format attr='mark-labels-cull' value='true' />
-              </style-rule>
-              <style-rule element='pane'>
-                <format attr='minwidth' value='-1' />
-                <format attr='maxwidth' value='-1' />
-              </style-rule>
-            </style>
-          </pane>
-        </panes>
-        <rows>[federated.0mgv02k02heggx1fde8zi0yw135a].[none:Zone:nk]</rows>
-        <cols>[federated.0mgv02k02heggx1fde8zi0yw135a].[:Measure Names]</cols>
-      </table>
-      <simple-id uuid='{E40C462A-AF46-4A67-B442-7ACE3041B7D3}' />
-    </worksheet>
   </worksheets>
   <dashboards>
-<dashboard name='LDP Three Section Dashboard'><style /><size maxheight='1080' maxwidth='1920' minheight='1080' minwidth='1920' sizing-mode='fixed' /><zones><zone id='8000' type-v2='layout-basic' x='0' y='0' w='100000' h='100000'><zone id='8001' name='KPI - BOP' x='0' y='0' w='11000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8002' name='KPI - BOF' x='11000' y='0' w='11000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8003' name='KPI - Pending DO' x='22000' y='0' w='11000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8004' name='KPI - Stock' x='34000' y='0' w='16000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8005' name='Stock Table - Type' x='50000' y='0' w='16000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8006' name='Stock Table - Age' x='66000' y='0' w='17000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8007' name='Stock Table - Zone' x='83000' y='0' w='17000' h='11000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8008' name='Combined Order Table-Vertical' x='0' y='14000' w='33000' h='39000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8009' name='Combined Order Table-Zone' x='0' y='55000' w='33000' h='43000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8010' name='Stock Table - Vertical' x='34000' y='14000' w='32000' h='39000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8011' name='Stock Table - Zone' x='34000' y='55000' w='32000' h='43000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8012' name='Stock Table - Type' x='67000' y='14000' w='33000' h='39000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone><zone id='8013' name='Stock Table - Age' x='67000' y='55000' w='33000' h='43000'><zone-style><format attr='border-color' value='#cbd5e1' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' /><format attr='margin' value='3' /></zone-style></zone></zone></zones><simple-id uuid='{DAFCD955-1DBB-417E-917B-000000008008}' /></dashboard>
-</dashboards>
+    <dashboard name='LDP Three Section Dashboard'>
+      <style />
+      <size maxheight='1080' maxwidth='1920' minheight='1080' minwidth='1920' sizing-mode='fixed' />
+      <zones>
+        <zone h='100000' id='8000' type-v2='layout-basic' w='100000' x='0' y='0'>
+          <zone h='11000' id='8001' name='KPI - BOP' w='11000' x='0' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='11000' id='8002' name='KPI - BOF' w='11000' x='11000' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='11000' id='8003' name='KPI - Pending DO' w='11000' x='22000' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='11000' id='8004' name='KPI - Stock' w='16000' x='34000' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='11000' id='8005' name='Stock Table - Type' w='16000' x='50000' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='11000' id='8006' name='Stock Table - Age' w='17000' x='66000' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='11000' id='8007' name='Stock Table - Zone' w='17000' x='83000' y='0'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='39000' id='8008' name='Combined Order Table-Vertical' w='33000' x='0' y='14000'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='43000' id='8009' name='Combined Order Table-Zone' w='33000' x='0' y='55000'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='39000' id='8010' name='Stock Table - Vertical' w='32000' x='34000' y='14000'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='43000' id='8011' name='Stock Table - Zone' w='32000' x='34000' y='55000'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='39000' id='8012' name='Stock Table - Type' w='33000' x='67000' y='14000'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+          <zone h='43000' id='8013' name='Stock Table - Age' w='33000' x='67000' y='55000'>
+            <zone-style>
+              <format attr='border-color' value='#cbd5e1' />
+              <format attr='border-style' value='solid' />
+              <format attr='border-width' value='1' />
+              <format attr='margin' value='3' />
+            </zone-style>
+          </zone>
+        </zone>
+      </zones>
+      <simple-id uuid='{DAFCD955-1DBB-417E-917B-000000008008}' />
+    </dashboard>
+  </dashboards>
   <windows saved-dpi-scale-factor='1.5' source-height='44'>
     <window class='worksheet' name='Sheet 1'>
       <cards>
@@ -1468,44 +2469,6 @@
         </edge>
       </cards>
       <simple-id uuid='{E6F08070-CBE3-4525-B6CD-E615E9A781AA}' />
-    </window>
-    <window class='dashboard' name='LDP Overview'>
-      <viewpoints>
-        <viewpoint name='KPI - BOF' />
-        <viewpoint name='KPI - BOP' />
-        <viewpoint name='KPI - Pending DO' />
-        <viewpoint name='KPI - Stock' />
-        <viewpoint name='Stock by Age Bucket' />
-        <viewpoint name='Stock by Type' />
-        <viewpoint name='Stock by Vertical' />
-        <viewpoint name='Stock by Zone' />
-      </viewpoints>
-      <active id='100' />
-      <simple-id uuid='{DAFCD955-1DBB-417E-917B-000000000020}' />
-    </window>
-    <window class='dashboard' name='Order Progress'>
-      <viewpoints>
-        <viewpoint name='BOF Table - Vertical' />
-        <viewpoint name='BOF Table - Zone' />
-        <viewpoint name='BOP Table - Vertical' />
-        <viewpoint name='BOP Table - Zone' />
-        <viewpoint name='Pending DO Table - Vertical' />
-        <viewpoint name='Pending DO Table - Zone' />
-      </viewpoints>
-      <active id='130' />
-      <simple-id uuid='{DAFCD955-1DBB-417E-917B-000000000021}' />
-    </window>
-    <window class='dashboard' name='Stock and Ageing'>
-      <viewpoints>
-        <viewpoint name='Stock Table - Age' />
-        <viewpoint name='Stock Table - Type' />
-        <viewpoint name='Stock Table - Vertical' />
-        <viewpoint name='Stock Table - Zone' />
-        <viewpoint name='Stock by Type and Vertical' />
-        <viewpoint name='Stock by Type and Zone' />
-      </viewpoints>
-      <active id='160' />
-      <simple-id uuid='{DAFCD955-1DBB-417E-917B-000000000022}' />
     </window>
     <window class='worksheet' name='BOF by Zone'>
       <cards>
@@ -2137,8 +3100,46 @@
       </viewpoint>
       <simple-id uuid='{35F46D2E-9756-42CC-9E3F-450DDD9F75B5}' />
     </window>
-  <window class='dashboard' name='Combined Order Summary'><viewpoints><viewpoint name='KPI - BOP' /><viewpoint name='KPI - BOF' /><viewpoint name='KPI - Pending DO' /><viewpoint name='KPI - Stock' /><viewpoint name='Combined Order Table-Vertical' /><viewpoint name='Combined Order Table-Zone' /></viewpoints><active id='100' /><simple-id uuid='{DAFCD955-1DBB-417E-917B-000000000006}' /></window>
-  <window class='dashboard' name='LDP Executive Dashboard'><viewpoints><viewpoint name='KPI - BOP' /><viewpoint name='KPI - BOF' /><viewpoint name='KPI - Pending DO' /><viewpoint name='KPI - Stock' /><viewpoint name='Combined Order Table-Vertical' /><viewpoint name='Combined Order Table-Zone' /><viewpoint name='Stock by Vertical' /><viewpoint name='Stock by Zone' /><viewpoint name='Stock by Type' /><viewpoint name='Stock by Age Bucket' /></viewpoints><active id='100' /><simple-id uuid='{DAFCD955-1DBB-417E-917C-000000004100}' /></window><window class='dashboard' name='LDP Order Detail'><viewpoints><viewpoint name='Combined Order Table-Vertical' /><viewpoint name='Combined Order Table-Zone' /><viewpoint name='BOP by Vertical' /><viewpoint name='BOF by Vertical' /><viewpoint name='Pending DO by Vertical' /><viewpoint name='BOP by Zone' /><viewpoint name='BOF by Zone' /><viewpoint name='Pending DO by Zone' /></viewpoints><active id='100' /><simple-id uuid='{DAFCD955-1DBB-417E-917C-000000004200}' /></window><window class='dashboard' name='LDP Stock Detail'><viewpoints><viewpoint name='KPI - Stock' /><viewpoint name='Stock by Type' /><viewpoint name='Stock by Age Bucket' /><viewpoint name='Stock by Vertical' /><viewpoint name='Stock by Zone' /><viewpoint name='Stock by Type and Vertical' /><viewpoint name='Stock by Type and Zone' /></viewpoints><active id='100' /><simple-id uuid='{DAFCD955-1DBB-417E-917C-000000004300}' /></window><window class='dashboard' name='LDP One Page Dashboard'><viewpoints><viewpoint name='KPI - BOP' /><viewpoint name='KPI - BOF' /><viewpoint name='KPI - Pending DO' /><viewpoint name='KPI - Stock' /><viewpoint name='Combined Order Table-Vertical' /><viewpoint name='Combined Order Table-Zone' /><viewpoint name='Stock by Vertical' /><viewpoint name='Stock by Zone' /><viewpoint name='Stock by Type' /><viewpoint name='Stock by Age Bucket' /><viewpoint name='Stock by Type and Vertical' /><viewpoint name='Stock by Type and Zone' /></viewpoints><active id='100' /><simple-id uuid='{DAFCD955-1DBB-417E-917C-000000005100}' /></window></windows>
+    <window class='dashboard' name='LDP Three Section Dashboard'>
+      <viewpoints>
+        <viewpoint name='Combined Order Table-Vertical' />
+        <viewpoint name='Combined Order Table-Zone' />
+        <viewpoint name='KPI - BOF' />
+        <viewpoint name='KPI - BOP' />
+        <viewpoint name='KPI - Pending DO' />
+        <viewpoint name='KPI - Stock' />
+        <viewpoint name='Stock Table - Age' />
+        <viewpoint name='Stock Table - Type' />
+        <viewpoint name='Stock Table - Vertical' />
+        <viewpoint name='Stock Table - Zone' />
+      </viewpoints>
+      <active id='-1' />
+      <simple-id uuid='{6D146F01-FAED-402C-B58F-66A4A40A65C3}' />
+    </window>
+    <window class='worksheet' name='Combined Order Table-Zone'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='31'>
+            <card type='columns' />
+          </strip>
+          <strip size='31'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid='{F7F9D674-9B70-4509-B2B1-351C15E1BBDC}' />
+    </window>
+  </windows>
   <thumbnails>
     <thumbnail height='175' name='BOF by Vertical' width='192'>
       iVBORw0KGgoAAAANSUhEUgAAAMAAAACvCAYAAACrftGIAAAACXBIWXMAABYlAAAWJQFJUiTw
@@ -2644,185 +3645,6 @@
       vGhjCHjVsRcOPpv4PLBGim2IGf2UEewMdkduqC8kltg4zmfTjqqTZrMn3mDL5sp6lVja8GLw
       bqJm96uWpgUT/dfiblQuufsSPq6trpAyevGn7Ax+kSHlldWxC0Mc5+P6VKWPw9/cwsoXK+uz
       Y5eudG4/MdCARgTGEr8JFvlvxkRfhxYR0fN/agJvOZoUjLkAAAAASUVORK5CYII=
-    </thumbnail>
-    <thumbnail height='192' name='LDP Overview' width='192'>
-      iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAABYlAAAWJQFJUiTw
-      AAAgAElEQVR4nO3dd3Rc133g8e/0himYQe+9EQS7RElUdZEV2U4Ulcih6LjEdKI46zjZ45Nz
-      dv/w7jmbs+XEm5ysi2hblmRLliVbtmRbsixZzSZFiSLFAhIYlEEHBsD0Xt/bP0CBBEUQQxJE
-      m/v5i/Nw5+J3L+6P7913X1HIsiwjCHlKudoBCMJqUn/wD184gV6jWs1YNpxEOovdrF+wTfTz
-      8ruafp5PAL1GhVGvWf7ohAVEP6+MXPtZHAIJeU0kgJDX1Of+KTE15aa8vAw5m2JyOoBRk8E1
-      OoVSraW9owO9RoV7epqy0tLVi3jdE/28MnLr5/P2ACle/M0rADz3kydIq3Qce/PXTEUgFQvx
-      b9/8D1IyvPLqq6vUoI1C9PPKyK2f1Rd+7f0/voS95UbqSq0MApu27KDeBoGRXjzxlW7ExiX6
-      eWUs1c8LEsB5/DCukRL++b9+fH7bM08coFAnozA5+LhxYeWZeJgTZ/ooLC6noaZiJdqzIVxu
-      PwtXJpd+XpAArVt385f3fpTvP/4UX9m/D4AHPrufetvKBr7RiX5eGbn084cOgQyF5dy9u4Hn
-      Xj7EUn8PtcHMjh07ljPmvHE5/SxcuaX6WfHBtUCxRFos0Cyzi/Wp6OfldzX9LNYBhLwmEkDI
-      ayIBhLwmEkDIa+edBUrw9a/8A01dW8ikYrTu/Cgf2d3JKy88Td+4H7IpmrbezJ03b+fAf/wf
-      0FmRpCyW0gb+8p47V68FgpCTBF//yj/R1NVFPBLhI/fspbO+7MPrAF/8632kYj5++vwbpNtt
-      jERM/N3DDwLww0ceIblnOxjt7P/iFwH4wQ8fXfm2CMIV+GB8I0X44eMvUmfd8+GV4Ee+G2Fo
-      ZJz/9PX/gmfiGHXNm+Z/3lCmxx0G0nGOHj1KIhIgntWtdDsE4Yp43OMcPfoew84T1HXexG9f
-      fm3hHKB1626+/Dd/y7/89//Ci8//AkuhndkZ9/zPZwJZ7KZz5a2ltTz8xb0r1oCNwNVzlAMH
-      DnDGNbnaoWxoi/ezghs+dg+372pjamxw4R5gLkOO4p8ZQ220YSpvJz78TX77WgZV3ENQW4RZ
-      BWgMYgX4CjW076Bz2+7VDmPDu1g/F5VVLRi327dsPn8lOMlgTzcpCUxWB61NdSgAZIkB5xkk
-      rYWWhhoAJqemqCgvX7HGrFdiJXhl5NbPElNTM5SXly0oJy6FuIZEAqwMcSmEIFwhkQBCXhMJ
-      IOS1D90PIFxrGX7y6A8JZ6DAVsTdn/wkVqOWaGCWX//mRSStlU996m4K9BqOHnyVo6ddAOz5
-      6CfpaBB33S2LlI/fvT3Mx2/dfukE8Pl8WK1WZFmmt7eXTZs2oVAoOHXqFKlUiqamJgKBAFqt
-      lvLycgYHB7FarRQVFa1QS9ajDDHJwP79+/BPj/Dznz/PF/b+KQe+9xgP7X8YVdzDgR88zj/+
-      3V9ztHeE/fv3r3bA65OUwj0TJup3o7OWUFU2NyZHXU6iMT/Ts1HgEodAyWSSt99+m3g8zqFD
-      h6iqquLIkSMAbN68GY1GQzgcxu1209vbi9PpxGAwYDSKG1qX4nGP896RIxw+cpT2zi34h0/S
-      cN0nKLaasJfV0mZXM5tc7SjXubSP//0//5WR6QA/fexx4sDvn3+K93pG8c3MkDlbbNEE0Ol0
-      NDY2AqBSqbDZbKTTaQCy2SyhUAiz2QyAQqHA7Xbj9/s5duzYNW3XhqEAlVJNJBIknUqj0527
-      pESvVZLKADEfBw4c4MCBA7gm/asX6zq17cY7uOOWG2mrLCMJzMaV/PndH+OmG6+bP/RZ9BAo
-      Go0yMjJCOBymtLSUgwcP0tjYyNTUFJFIhG3btqFUKkkkEgBs2bKF7u5uCgoKVqBp61tRWRU7
-      d+5CltJ8/4c/5iPX3UPv95/jzt0tkE1xaiLMbSYWXHQoXL1oJIIkA9ksH7wTYNEEMJlM3Hnn
-      ucucm5qakCSJZDJJ+XmrwLfeeuv8v/fs2bPsQW88SkLTQxw4cIB0OsVtf3IvSp2NT97SyXe+
-      /R1A5hN/dh9KoLysbKnKhMUotJQWFwJgLy1BDXx0z3a+9f++RWGhiZLqrrliYiX42hErwStD
-      rAQLwhUSCSDkNZEAQl4TCSBsUBkOHXpnyVIiAYQNSs2NN16fQylhVbhcLrxeL9lslt27d9Pb
-      28vMzAxdXV0MDg4yOjrKrl27mJiYwGg0snnz5tUOed158skfsXfvPv7lG/9MSVUTs+4p9j78
-      n9GHh3jiZy9jtZhFAqyWhoYGfD7f/MD2+Xyo1WpcLhebN28mlUqRSqWIRqNkMpklahMupbp5
-      M/v27mXo6O8ZcwcZPXaUr/7j19AoxCHQqkmn0ySTSUwmEx6Ph66uLqqrq6msrOTo0aNs376d
-      8fFxdu/eTTwu3pixnNQKiWQ6C7J0bg+QSGdXM6YNKZHOfmgx5oN+jsXjdGzeSiSewjUyRk1N
-      Db5ghOamJmoblGRlJdt3Xc/J7m66tu4glkivRhPWhcX6OZWRiCXSpDNZYok0iVSWpCrDzbfe
-      zLf+/d8wmW3nVoIFIV/MuicwWItJh6bEHEDIP0o5w/PPPgk6i9gDCPlNTIKFvCYSQMhrYg4g
-      bFBzj0Nv3NxFLBrlrnsfoq22hIETh3jh9aMYdSo01nKRAMLG9cHj0OVsim898hhtD+/n1bdP
-      8LV/+HsUwDu/fUYcAgkbn0KlxVxgQCaOyVA098xbYFNn27k9QDiWQqVULFKFIKxdWUnGbNQu
-      2BaOSbR2dMwvIDa1tBFPKGlsbZjfllCaxS2RwvonbokUhCskEkDIayIBhLx23mnQDL98+mlm
-      QnEktHz2i59j8N3fUbT545Tn8Kyrg7/5ERU37aPetnD7kz96kr37lniPWMLPgSeeJeh1o7WW
-      YS8uZ9/9n7rsxgjCObmNZ9U3vvGNbwC4nUeYUFTx0H13s7WzFSke4DvffYRe1wSRRIam2nJe
-      e+kF3nr3BHUNTei1asYHz/Dsc8+jMNhI+8cw12zBLAc5cmqAqvISAI6/d5hhVz/dA5O0tDTy
-      3pF3qKisQgEcO3Zs7iFb6rPvHAuNsvPuL3DrjlbefXdhuUK9zFuHj/H6a79Hay2hxG4h5J3i
-      mWeeJZhWU1tZuuJdLKwN6YyERq1asC3X8Tx/CGSv7WT29Ot8+5EfMDobxmAp5q7bd/PAZ/fz
-      iVuv581f/wxT/Tbuvft2nnrqadJhN8+9+h6f/dznqSyae0YocoannnqW1rbW+UDisRh7Pv5p
-      ttXq+cVLh1CFJjjSN0027qW7b3zRRl1YLhGYoncyymf/ah9vvvAMkYzMz597nnse3Edm4gRn
-      JoLL3K3CepbreJ5PAIXawJe/8jU+v/deXvvFjxjyxBZUOBZKc317LQW2EmxmHW6Xky033IFG
-      raKkuBiAH/zrN6ja8VFsxnOnnwpsxTgsRhq37CHpc7H9tk9w8uDvOfrHt7juttsXbcDFytXW
-      1aFWa9neUcF0MIjzVD9PPfFDnGMz+GY9y9qBwvqW63ieT4DA9Dg9rjF0RgtlDgupjIROp2dm
-      ZoZ0Ok21Vcs7PSNEAjP4QwnKGlo5+fbrpDNZZj1zg++L//QNxt99iSl/dP4XZdJJMlmJ99/6
-      DfbaLSjURooNad4di9JWZr5EAz5cLp5IkIqHOXx6mqpCC7XN1Tz40Of4iwceoL68cFk7UFjf
-      ch3P83MAlErOHDvM62/+kaYdt9HVWE5ZVR2HX/0Vs3EFt99xO31H3uTwyQHuv/8+TGYblYUa
-      nvvlrzA5KigrKsRaVMH1Ozo5eeoMNVVzbzNRZWL89uVXUBU1cefN21AAZSaJ0biZrpbqDwVu
-      dZRhODs1P79cIjDFC7/7I8MjI3z63gewFxhobqjihV/+grHZMJ2dHWgvOA4U8sPF5gC5jucV
-      Xwke7TvBT194nf1f+Xus+sUH7IXlAkNHOThp4O6bOq55jML6cjUrweJSCGHdE5dCCMIVEgkg
-      5DWRAEJeEwkg5DWRAEJeEwkg5DWRAEJeW7anQqQTMdAa0VwkpWKxGEajkSlPCE8okXOdkpRF
-      qcx9dfdall9Lsay18stdd0mhidJC0/znTCaDWn1tHmBy2bU6+/tpbW6GdJSZMOgUcYLRNKZM
-      GCpa0CUjkE0Sy6oocVgZHxnGE4yxtWsTrx0b4pk3eq5FO4QN5MGPdPKZj3Rek7onRwbwhROo
-      dAW0N9ddxSGQnCAQStDvGkYOB4kj0XPyGElZweDIBIGpcVyufkxF5ei14hodYW3whxN0dnYi
-      pSKMuPqvfg5gtljRKlVkUWK32Ugkk3jcE8QSKZLpLGolJFPi2fbC2qBXQygaIyurqG1ovvxr
-      gWLhAGOT01RUVqFSa0FKowJkJai0RuKREIpsCn8sQ01FCSPDI9hLSjGbjJwYmOLMiDfnYCVJ
-      QqnMPUevZfm1FMtaK7/cdXfWl7C5oWT+81JzgMu6FkiWGBkepqKmHo1Kcek5QDIWRak3kY1F
-      0RSYUAFGs42ioixmg5pwUsJsNM79woAXSWPEYrEAYD57eX5tfT1erxdMxkv9KkGY1z00Q/fQ
-      zPxnSZL46M7GBRPjK6ZQUlvfMP/xkgngGxtCW99JeGgYS10pUxN+zGYziVgIh81AKgX9o6dJ
-      o6NUL4HeQtATREqGiUtqGiqLcA4ME0tmcDgcdLtmxCRYuCJdjWVXnACpyCzv97lBynD9zm2A
-      xICzD6/Hl/scIBXxUljZRDwamtuQjeMNxJGUGmwKiQgSR945gqPIhtM5wER/H92DIzS3tWMx
-      6q4ocEFYDmqtgXQ8iizLeKYnmfWFsdnMxDLypROgsKwY1+lupmJxjIBCoQDFBc8PVShQoACU
-      dLQ1MTg8gcNhpbS6FkeBjt6eXsKx5LVrnSAsITQzQXnTJnQqGXtpBcUWPWqTneYy08reEDM5
-      G2Q2GFu64FkbeaK3kcqvRCyNlQ5Mi4zPeDJDwQVHGReO56nxETSmQooKLYDM5NgIsrZgZRMg
-      m82iUuW+JrCWyq+lWNZa+dWO5WruCFvRF2RcTtavtfJrKZa1Vn4txXK+EVc/QZ+H0uYuPM73
-      MDXeQJ1DC8h0Hz+GpsC+shfDKS6cP6yj8msplrVWfi3Fcr7ahiZUCtBodDQ31gLMTYI940Ri
-      KpSZ2MpfDTo5NkxvvwuyMbyBGNPuKbILXtQqMzZwhkAsS8DrJQtMTU0tWl88EqC3t5cJt2du
-      vUHKMOWeXbR8OODB6XQyOe3NqTzAkPMMsSx4vV4SQS/+aGrRsjNT4zidToKRRE7lPdOTOJ0D
-      ZBbtj3OSsTBOp5NjJ7pz6ptkNEhPby9ujz+ntibCfs6cOY03GF2y/Kx7DPdsAKQ0vWfOMDnj
-      xev1APJFY/qgvCxL9J06TQpyKp9JRunt7WV4bPKS5T9MYsDZi1KrIxII0D80yuiQi8LSCoqL
-      qtBpU0TC4ZV+R5iENxilyqJmwhciMBsDtZLSsvOLZCjQqwnEs+D1EU2EQLv4Q69UWiOtrc0c
-      P9GNyWjE456gumXxC6kKrA4aDEZO9w1h1GmXLB8PepiccGOp78Dr9TAWS7Jla9ei5SfGJ7AU
-      V2Ax6emfHFmivMzQ0BAllQ2os3Hck8EP98d5dEYzra0tnDzZTSCHvhkdHaOmvpmBvj4Mev2S
-      bR0cmWRT5yZOnjyJXm+4ZHmjuYDJiQBp3ySlja1M9Peg02mI+mcpKG1YtHyxVY9GqSIF+Hze
-      Jcs7rBW0trVy/Nhx0mbjouU/TElTa/u5jxW3nPczBdt2Xne21IqSUCpUaHUqkqksY2OjGC9c
-      IVZqMBnOvu5GSjM6Po3JuPgqslJKcOS947R1dJKIBvFFUujUizdLoZAYHhpFq9XlVP6994+j
-      lNN4Zj34ZqeQVVoutUPetut6qkusdPf251BeQlbqKFRF6HdHLt4fF5ge6aektimnvjEYDIwN
-      u1DrDDm1ta66jB5nH7FUZsnyJtPcolQ6K6PTqFCgIJOMMzkbxGjQLlpepdWjP/sQq1zKq1Vw
-      9Mh7NLS2X7L8xaSTMQaHRpBkSERDJNLS/M98s1N4/KFzT4a76NO1lp2SoG8adzBDS10JBks5
-      2egsBYUOVGeP86R0gr4BF/5QApu1gOaOdsaHXBQVOS5a4/DgACqdnkxWwmAw0tZYydC4B7vN
-      ctHyvplpookUao0es9m8ZPnaugaMGhXW0kq0KjXFZjWRjGbRU3IToy7csx6KSioxGU1LlFeS
-      jAbxhBJUV5ZiLqz4UH9caNoboKa8hEQ8SdMSfZOIRYglM6g0Wixmy5JtTaeShMJhSsqq0Ol0
-      lygv4ervY9brp76pjgHnIEazFZPJSHt7Cy7XMEUO+0XLm80mRkdHiaYlLCbTkuXlVIy4Uoec
-      yWI0Gi5a/mJjN52R6O/ro7G+FhQyIz0niOvLsBlVkAzQNxknNjsmHowlrH+LnQY98vYbOAqt
-      WCs7KFV6mKSCgowHWaVlcmycbNQn3hMsbFwOuwMFMgopSf/IKF4S3LSzDRUQCXjwUiT2AML6
-      Jx6NKAg5SMbCjIzPnUIN+T3MeAMiAVZaxO/msUd/wLEzLk6cPLlIqRRvvfX2/KfJoR4effQx
-      Jr1h+k6cJPfHCgjncw4MUahL0zcygWtkGt/EsJgDrLQjb7xKddcNNFRY+V//7Zu47rwfc3qG
-      3jEfD37mXn7+k5+y5cY9zM56eO2PR7ljzw5+9fLrfO6vPsvjTz1HZPgU5r5bqCpQs6u9igmp
-      lC3n3T0lLM6oUzETShEPTqMx1VOkvYz7AYTlcdunH0Djd/HcS3+gY+cN3POJW3EHEzzwkS6e
-      fepZNt9+H7u3tvLOb5+ma/tWAPR6IzqDCZ0aWlu2cv/9n0KfCfPzN7ppqRWDP1cWi5VENERl
-      4zYSwVEGZxJiErzSTr37Fofe76GpcxfW7CwjUT3WzDS9oz4e/Mv7zu4BbiEVDJGUVXzstt0c
-      fv1Fjp48halqF7e0GHjt9Cyf+9Quvvn9l/j6V7+w2k1adeIFGXlidHSUmpoaAP7w8nM42m6m
-      o7Z4laNafSIBhLwmToMKwhUSCSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4T
-      CSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4T
-      CSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4TCSDkNZEAQl4TCSDktflXJGUlmVgivZqxCMIV
-      yUryRbflMp7n3w8gCPlIHAIJeU0kgJDXRAIIeU0kgJDXRAIIeU0kgJDXRAIIeW1+IcwXTqDX
-      qFYzFkG4Iol0FrtZv2BbruN5PgH0GpV4UbawYeQ6nsUhkJDXRAIIeW1BAsTDfo4dO8asLwRA
-      0OsmnsmtotG+E/gTH95+8sTJHL4tMzU1Nf8pEfbjC8Uv/ZVMHLc3OP/x4KGDOcV54mQu8Qgb
-      QS7jeT4B4v4xvv3DZ8hms7z24gsE09B9+BXckdx+2Vj/SQIXSYBTJ0/l8G0FL7300vyn13/7
-      a+IsMYGJuHnlcPf8x5tuvCmnOE+eyiUeYb3LdTyfuxw6FUeh1tO6qYtdu3aRiczy0uuHMQ/G
-      2bJlCzsbrPzoZy+j0yqp37Sbu27dzo+//10iWTUNHdswna2n+93XmUzb+PhN2wAIzgzz6KOP
-      4pme5tMP7efY757hrr37KdQrePTRx/nCFz4PQFuZGed0lNZSEzNxiUqLlj/+7nm6XW4SyQyf
-      //Lf8MqzT2MuMjIVUuJIj3L4+DRx3yT7993Pj558kn179/LSz3/M0EwER3kDn751E4//9Nco
-      yFLWuIU//VhuSSKsf7mO5/kEKCht4S/+RM1PH/8eCaWZL3/pr7jr9t1U3LSPehv85EeP8fBX
-      v4pOCY8/8TjeQbC238ZDezYBcPA3Tt4/9Duykob7P7ltPhBrSR179+1FzkR54ukX+bNP3MpL
-      rx7io+0GSlt2zZe77pabefaVg9Tc3EBBSSuQ5eipPvbcdgeRqX7efPcMpMMUNezhztZaCAwR
-      KJxk393nDeqkl+mUlYf/9iEA5GyKpppSXOMznDx+XCRAHsl1PM8fAslAZV0rX/rbr3B7eyHv
-      D3rO+wmA4lzt8gdbztsGyJJMPH7xY3cpk0Kh1GCt7CDqdvLWe05u271p/ufqgjKk2CxvH3qf
-      PTfvBCCTmTtgKyhv5rpNNaAxs6m19pINPz+mgy/+ElvLLr60fz8NZbZLfk/YWHIdz+cWwsb6
-      ePTlN9BqNaTSMl+4wUFY0ckPHvkmu264hY/ddj3f/vd/R6dVUrfpehyN2wm88V0eOf0HGjq2
-      YwS277mT7MghfvbSW9x31y0AZKKzfO97BwiFInzm838DwM2ba/jlyQB/rl6YQE3FJt4cCnOH
-      aS6srR0NHH7nXdQqFfrCsoUtNJfiPv5jvhdw86W9985t0zko0Qb4zncfwVHewK76Kn7+619w
-      ymbB7c1xMiNsCLmO5/k7wmKJ9IoshMmyzPE3foVUvZsdTSXX/PcJG9/Fxm6u43nF1wHG+k8y
-      nrWLwS+sCSu+BxCE5bau9gCCsJaIBBDymkgAIa+JBBDymkgAIa+JBBDy2rpJAEmS1nR916JO
-      EeO1pz7/Q8+p48gqHU2tbWhVisW+A4B7bBxHdRXnn2lNh9x4cVBmkTl13InGZKK1uYGL1RT3
-      jhEzVuMwLNyejQXwZ40UmbULtv/+qIs3jo9eTtsuSZZlFIpLt3G168y3GO/YXs9HdtQjSRJK
-      5cr837wgAdR6A2ZVmhmfh9GBEVramvBNT6PQ6lGko2RlCUtRLRHPCFPuAFssekbGprEVFiMn
-      g0R8U5jqdwMp9IYiDFkvzuExkmEvpUUl+AJBzFYH2Zif4Ow4JU1GxmJGMkE3ZqOGGX8YI3EG
-      A0r2XLcV3Xm3BMz4o3QPzaxIpwiro7Nh5a8OWJBm05PjhJISqkwCi6MSi0YiKcnMer1ICg2t
-      bS1EfBPICgs1FaUMj42j1ajx+70kMjLN9TXzdU2ODxNVF6BPhGlo6yIYDNHR3k4k4CEpKWis
-      q4JsilgqSzQaYzYQoaO9nYoSO1V1TQsGvyBcKwsSwGAwkE5n0eoNWC0mZElCksFkNGIwGAAF
-      BoONbNrHbCBMfXUV6axEUVERarK4JmbRaxSAisaWFlqb6tCbLOg1SkrsFs6c6aHAVoRSSjPi
-      9qM1Woi4h4inMpQUmunp6SWjtxNxuwh4p/GEU4yNja1Ozwh5Yd1cC5TNZlGplm+3kMlkUKvV
-      SxdcxTpFjLm5mmuBLvgtMkMDfUhqI4111TkHsGhg4TA6s3n+7t7x8TGqqqqRsyl6evuxFZVR
-      Ueog7JlhzOvHarVTWVZ80bpeOzYkJsFrsM7lrO9/fOmOZaknF1Njw4RiyYUJ4B8bRG2vptpu
-      ZHzERTgapbiikbGBk2RRU2DQYK9sYLyvF0mhoECvoqi2hUnXAHqzFb0ijT+WxWHWEE7IWI16
-      ik06BvuGUGj1kJ27az6bDCOp9Ph9PipKHUS8QWpaWykABgcG0GlUlFbXoVGe61gxCRaWUySW
-      prW19YLHosSSGE1zj5iLxlO0d3QyMzVMgbUQq8VCW3MVgUAEs60Yq8VKW30Z40MD+NNq/H4/
-      4WiSrs42IrE07a1NpOJxkrHI/ET6A8FgjLDfTSKZJJWVgQwDTieT0x6KjEpcs9EFg18Qllsy
-      HsbpdC7cA5Q3NXOq+xR+SyEmg5aeM92UVDSSiHjnbqVUaDDoQaFSAGpQaXGU16KcGsVkLUKn
-      mrsj12zU0ts3iMVggAUTaSMAKrUKs9VBLBJBoVCgNRpRxRLIsowvqaCx2IjfM01WV0g8ME11
-      9dUfjgnC+QwGAxnEJHjZ6rsWdYoYc7Nsk+BsMsyp3mHsRcXUVJYt9h0gzpArSH3D4mXcriGs
-      DfVkw2GMZvOi11z0dp8gllWxfUsnyGm6T/Wg1JvoaGlcUO7p33fzzBs9SzZIWNs660tWdLI7
-      OtRPPCVRVlZCPK2kQJlE1mgZHJ7EZDItTIC+/mE6uzajVsDpk++DLFHksHN6PIRFp8CiUyAp
-      tBSXGunrG8Kg8HJ6Mkl1gZ6KLR2MdJ9Co4SsykB8ZgK3rMAgpalOR+kZ96JSKFBl4mgNGjSm
-      chqqi4lGo2gK7HMByFnC4RgttQ0r1kHCxpbIyLS2tgIweuI4MyoNXXV2DEU1ZL0jC/9j1qkV
-      xFJZABQaPW1tdfg9QSprG7EaDVRXV5NJhJC0BVRV1VCgV9PRtQ3z2V2NDEgKDe2tTTgKi2hs
-      qAMg4A3S2NaOVimjM1lobWsjG4+CnEBnsBHxupmYDYBCx+4br2fM2UNq5fpI2MCiQR9Op5NI
-      Io1Bq0JWzl1jNj48gLrAsnAP0NDaTp+zD3+BjSKbGafLS2t7I/6UFoXGTiweR6U3YzHYCGqm
-      SKvtFOgU6KtL6O9xojdZKTLPTYDrG6sZ6HNRWmSnqNCC0+nE6iidXym2O2yg0KHXgb6iAp1a
-      DVKK3j4XpqISMoFpQqpzk+CSQhOd9ct3rUi+nWO/VnVebn315Sv7gDKDce7ESyYRRmkqopQ4
-      obSSlpZWqh0GMQleThtxgrnS9V1JncszCc6EOPzuGMUljkVWgbOEw0nMZuPSEWWThJNgNuou
-      +uPJURf+YIjimlZKrAb6e88gAXpzEbWVF/9fXkyChef/5cEr/u7BQwe58cabGBoawqxTMRuM
-      otGdPwmWMsQTGRQKJc4zp1CotWTRIMUDSMkQxR03Ep6aobd7ArUSKhqbGR2dRq/XopESpFMp
-      yipKeef0GDdtrWM2rKd74h2U6GhqrWZ0KkA2m2Hn1i7IJIkms5Sf/R9dVmpobqihu9fFeDrM
-      +GyI3bu2LdYWQbhsFr2SofEZotEY8ZjMpk2ddHd3L5wEV9bU01BbiUKjo6WlFRVZVHoTddXl
-      848UtdlLaK4pYmbKi6TWoFKpCQaDaI1GpFSK5o4uCs++sMxeUk5NkZ1Jf5iOjrPBqr8AAATW
-      SURBVHYsZ1eZfbEMhUYNIyNDACSiQQaHJ+joaGZmxkskKp7jKSwvndlBKuydO1EjzY1mWZbP
-      2wOoDCSCYwwOx3DYHQA4HHZSsTADrkEqtjbNTVzlLFqdTJ3dxqSrD53JSKmtidlACJPVjkqp
-      A5WKuaJ2dDIU2kwMOnsJx+auBSq2W/GHUzgK5g6nKmvqcTjmfqfVZkZdYCUWmCYmJsEixmXi
-      sDuwGNQMz0SptOs509NDUWnl0pPgidEhQnGJttbGi97amItUPMzQ6ARWeyllxYVXVEcmk1nW
-      TrkWt90td50ixtzEkxkKLphv5joJXjdngTbiH26l67sWda6FGHM5C+QeHyEQiWMvKScRmCGa
-      TGOyFq+fp0Isdydfi5uuRYxrt854PIas1FBUaCUUT9He3kHIN33hDTGCsDHVNbWRTkQ52X0G
-      FXOPXVk4CV4H3n/vHTIZmU1dzYzPQNw/SufWbSzxBJcFfLNTOEemuGHndvr6+tHISWxVLRSa
-      tEt/+SKkZJRe1xj+UJjKQhtl9ZX09o6ydXPbFdUHMD05hj8QQmW0IqfiVx0jQF/PEeKZYgy6
-      NCWFRnxJDQ1VV35S4eg7hyiwFdNQa2fIfWV/i/MFPZOMuAOUlpUT9HmWJcbzzbon8Ici1NTU
-      QjJET88ZKmsb188hEKTRGmx0NZUy4YnhPP4OxXVtl93h9uJyHNYCAHwzY4QyhqsaWEqdicpi
-      G0ajGaQ0B99+n87OKx/8ADabjXDQh7HAtiwxhn1u9LYS1Mydcu4dnr7qgVVgNpOMR8lk5Sv+
-      W5xvZHwSg1aNPxBYthjPV1JeRWtrG3arCXtJOe3tHdgtxvWUAGrSmQTT3ghFNj2tXTuYHOq7
-      qhrtJdWo0kHi6St/Elk27mfQHWbb5jZQatjR1YJzYOSq4kqksmzfuROPe2xZYvQHwsRDfqY8
-      s+hNVqqLC5j0hK4iQgl7cQWlFjX+WGZZ/haFBSYKy6pIREPLFOPFpUPTjHtiuE4fZTaSWT9n
-      gQCiIT+hhER5kYVYCpTZBCpDwWXdPjnrnsAXjGBzlGI2ajHoNUTiWcxnF+kuVyYZY3B4DNQ6
-      astL0BqNRMNhzGbzFdUHEA54mfaGqK+vI5mIX3WMc7JEI2kUSgmj0Uj4KmP0e6aJZ1VUFFuv
-      +G+xkMzE6DC2kioUUvqyYry8a4EynD49iE4rgcK4vhJAEC7mci+G6+k+htpYgpyYXk+HQIKw
-      PGxmM2WVlZgMFrEHENY/8ZK8POOdnWXlHiC+sa2rdYCNL8N3/+83weDgrtu38NQr3Tz8+c8w
-      M9pPaW0LBmWKXtcEIz3dXH/HzRiNDlJeF9978lcogAcfup+nHnuW+//iTymuqCUW9FJaWrra
-      jVrTRAKsKSpstgJCmNCd3TefPvgS4xkL3j8exUiU5k27SElJ3nz7BPfc9THePXyYvQ9/DVx/
-      4GjPOADKdIiXX38bOTzN/Q/ct4rtWfvEIdCakqCorAVdfIKwzoEykwZZZv5mjPNkM2lkoKG5
-      nt8+/wIv/+F9tm7tRK+RMBY3Euh9heKmHSvegvVG7AHWFAOtrTXUtrfRXFPFA3fvwVHZSPFI
-      H6W375k/BGpp/hg6rZJoLEXt5j3cWdDPe8fS6NVq7rv/HqRUlIy+ihu21q92g9a8/w/u8os+
-      eoDHLQAAAABJRU5ErkJggg==
     </thumbnail>
     <thumbnail height='192' name='Pending DO by Zone' width='192'>
       iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAABYlAAAWJQFJUiTw
