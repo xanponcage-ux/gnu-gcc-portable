@@ -1,0 +1,241 @@
+index,Vertical,Zone,Stock Type,Age Bucket,BOP,BOF,Pending DO,Stock Qty,As Of
+0,Branded Products & Retail,AP,Linked,0-7 days,428,278,34,66,2026-11-20
+1,Branded Products & Retail,AP,Linked,8-30 days,0,0,0,69,2026-11-20
+2,Branded Products & Retail,AP,Linked,31-60 days,0,0,0,120,2026-11-20
+3,Branded Products & Retail,AP,Linked,61-90 days,0,0,0,120,2026-11-20
+4,Branded Products & Retail,AP,Linked,90+ days,0,0,0,45,2026-11-20
+5,Branded Products & Retail,AP,Unlinked,0-7 days,0,0,0,167,2026-11-20
+6,Branded Products & Retail,AP,Unlinked,8-30 days,0,0,0,32,2026-11-20
+7,Branded Products & Retail,AP,Unlinked,31-60 days,0,0,0,33,2026-11-20
+8,Branded Products & Retail,AP,Unlinked,61-90 days,0,0,0,175,2026-11-20
+9,Branded Products & Retail,AP,Unlinked,90+ days,0,0,0,156,2026-11-20
+10,Branded Products & Retail,EAST,Linked,0-7 days,118,280,11,144,2026-11-20
+11,Branded Products & Retail,EAST,Linked,8-30 days,0,0,0,34,2026-11-20
+12,Branded Products & Retail,EAST,Linked,31-60 days,0,0,0,108,2026-11-20
+13,Branded Products & Retail,EAST,Linked,61-90 days,0,0,0,112,2026-11-20
+14,Branded Products & Retail,EAST,Linked,90+ days,0,0,0,153,2026-11-20
+15,Branded Products & Retail,EAST,Unlinked,0-7 days,0,0,0,180,2026-11-20
+16,Branded Products & Retail,EAST,Unlinked,8-30 days,0,0,0,69,2026-11-20
+17,Branded Products & Retail,EAST,Unlinked,31-60 days,0,0,0,98,2026-11-20
+18,Branded Products & Retail,EAST,Unlinked,61-90 days,0,0,0,47,2026-11-20
+19,Branded Products & Retail,EAST,Unlinked,90+ days,0,0,0,93,2026-11-20
+20,Branded Products & Retail,NORTH,Linked,0-7 days,345,651,27,88,2026-11-20
+21,Branded Products & Retail,NORTH,Linked,8-30 days,0,0,0,25,2026-11-20
+22,Branded Products & Retail,NORTH,Linked,31-60 days,0,0,0,111,2026-11-20
+23,Branded Products & Retail,NORTH,Linked,61-90 days,0,0,0,81,2026-11-20
+24,Branded Products & Retail,NORTH,Linked,90+ days,0,0,0,164,2026-11-20
+25,Branded Products & Retail,NORTH,Unlinked,0-7 days,0,0,0,143,2026-11-20
+26,Branded Products & Retail,NORTH,Unlinked,8-30 days,0,0,0,131,2026-11-20
+27,Branded Products & Retail,NORTH,Unlinked,31-60 days,0,0,0,45,2026-11-20
+28,Branded Products & Retail,NORTH,Unlinked,61-90 days,0,0,0,47,2026-11-20
+29,Branded Products & Retail,NORTH,Unlinked,90+ days,0,0,0,15,2026-11-20
+30,Branded Products & Retail,SOUTH,Linked,0-7 days,772,670,39,162,2026-11-20
+31,Branded Products & Retail,SOUTH,Linked,8-30 days,0,0,0,61,2026-11-20
+32,Branded Products & Retail,SOUTH,Linked,31-60 days,0,0,0,23,2026-11-20
+33,Branded Products & Retail,SOUTH,Linked,61-90 days,0,0,0,75,2026-11-20
+34,Branded Products & Retail,SOUTH,Linked,90+ days,0,0,0,102,2026-11-20
+35,Branded Products & Retail,SOUTH,Unlinked,0-7 days,0,0,0,98,2026-11-20
+36,Branded Products & Retail,SOUTH,Unlinked,8-30 days,0,0,0,52,2026-11-20
+37,Branded Products & Retail,SOUTH,Unlinked,31-60 days,0,0,0,61,2026-11-20
+38,Branded Products & Retail,SOUTH,Unlinked,61-90 days,0,0,0,156,2026-11-20
+39,Branded Products & Retail,SOUTH,Unlinked,90+ days,0,0,0,105,2026-11-20
+40,Branded Products & Retail,WEST,Linked,0-7 days,197,487,6,180,2026-11-20
+41,Branded Products & Retail,WEST,Linked,8-30 days,0,0,0,110,2026-11-20
+42,Branded Products & Retail,WEST,Linked,31-60 days,0,0,0,92,2026-11-20
+43,Branded Products & Retail,WEST,Linked,61-90 days,0,0,0,169,2026-11-20
+44,Branded Products & Retail,WEST,Linked,90+ days,0,0,0,87,2026-11-20
+45,Branded Products & Retail,WEST,Unlinked,0-7 days,0,0,0,102,2026-11-20
+46,Branded Products & Retail,WEST,Unlinked,8-30 days,0,0,0,124,2026-11-20
+47,Branded Products & Retail,WEST,Unlinked,31-60 days,0,0,0,62,2026-11-20
+48,Branded Products & Retail,WEST,Unlinked,61-90 days,0,0,0,70,2026-11-20
+49,Branded Products & Retail,WEST,Unlinked,90+ days,0,0,0,141,2026-11-20
+50,Branded Products & Retail,EXPORT,Linked,0-7 days,639,149,30,151,2026-11-20
+51,Branded Products & Retail,EXPORT,Linked,8-30 days,0,0,0,83,2026-11-20
+52,Branded Products & Retail,EXPORT,Linked,31-60 days,0,0,0,69,2026-11-20
+53,Branded Products & Retail,EXPORT,Linked,61-90 days,0,0,0,66,2026-11-20
+54,Branded Products & Retail,EXPORT,Linked,90+ days,0,0,0,135,2026-11-20
+55,Branded Products & Retail,EXPORT,Unlinked,0-7 days,0,0,0,117,2026-11-20
+56,Branded Products & Retail,EXPORT,Unlinked,8-30 days,0,0,0,129,2026-11-20
+57,Branded Products & Retail,EXPORT,Unlinked,31-60 days,0,0,0,52,2026-11-20
+58,Branded Products & Retail,EXPORT,Unlinked,61-90 days,0,0,0,50,2026-11-20
+59,Branded Products & Retail,EXPORT,Unlinked,90+ days,0,0,0,166,2026-11-20
+60,Commercial & Exports,AP,Linked,0-7 days,378,408,29,155,2026-11-20
+61,Commercial & Exports,AP,Linked,8-30 days,0,0,0,95,2026-11-20
+62,Commercial & Exports,AP,Linked,31-60 days,0,0,0,84,2026-11-20
+63,Commercial & Exports,AP,Linked,61-90 days,0,0,0,51,2026-11-20
+64,Commercial & Exports,AP,Linked,90+ days,0,0,0,152,2026-11-20
+65,Commercial & Exports,AP,Unlinked,0-7 days,0,0,0,35,2026-11-20
+66,Commercial & Exports,AP,Unlinked,8-30 days,0,0,0,129,2026-11-20
+67,Commercial & Exports,AP,Unlinked,31-60 days,0,0,0,174,2026-11-20
+68,Commercial & Exports,AP,Unlinked,61-90 days,0,0,0,167,2026-11-20
+69,Commercial & Exports,AP,Unlinked,90+ days,0,0,0,67,2026-11-20
+70,Commercial & Exports,EAST,Linked,0-7 days,664,231,39,122,2026-11-20
+71,Commercial & Exports,EAST,Linked,8-30 days,0,0,0,124,2026-11-20
+72,Commercial & Exports,EAST,Linked,31-60 days,0,0,0,27,2026-11-20
+73,Commercial & Exports,EAST,Linked,61-90 days,0,0,0,76,2026-11-20
+74,Commercial & Exports,EAST,Linked,90+ days,0,0,0,52,2026-11-20
+75,Commercial & Exports,EAST,Unlinked,0-7 days,0,0,0,26,2026-11-20
+76,Commercial & Exports,EAST,Unlinked,8-30 days,0,0,0,134,2026-11-20
+77,Commercial & Exports,EAST,Unlinked,31-60 days,0,0,0,107,2026-11-20
+78,Commercial & Exports,EAST,Unlinked,61-90 days,0,0,0,72,2026-11-20
+79,Commercial & Exports,EAST,Unlinked,90+ days,0,0,0,63,2026-11-20
+80,Commercial & Exports,NORTH,Linked,0-7 days,293,692,25,73,2026-11-20
+81,Commercial & Exports,NORTH,Linked,8-30 days,0,0,0,20,2026-11-20
+82,Commercial & Exports,NORTH,Linked,31-60 days,0,0,0,56,2026-11-20
+83,Commercial & Exports,NORTH,Linked,61-90 days,0,0,0,40,2026-11-20
+84,Commercial & Exports,NORTH,Linked,90+ days,0,0,0,83,2026-11-20
+85,Commercial & Exports,NORTH,Unlinked,0-7 days,0,0,0,101,2026-11-20
+86,Commercial & Exports,NORTH,Unlinked,8-30 days,0,0,0,155,2026-11-20
+87,Commercial & Exports,NORTH,Unlinked,31-60 days,0,0,0,120,2026-11-20
+88,Commercial & Exports,NORTH,Unlinked,61-90 days,0,0,0,78,2026-11-20
+89,Commercial & Exports,NORTH,Unlinked,90+ days,0,0,0,152,2026-11-20
+90,Commercial & Exports,SOUTH,Linked,0-7 days,594,109,38,171,2026-11-20
+91,Commercial & Exports,SOUTH,Linked,8-30 days,0,0,0,150,2026-11-20
+92,Commercial & Exports,SOUTH,Linked,31-60 days,0,0,0,35,2026-11-20
+93,Commercial & Exports,SOUTH,Linked,61-90 days,0,0,0,142,2026-11-20
+94,Commercial & Exports,SOUTH,Linked,90+ days,0,0,0,173,2026-11-20
+95,Commercial & Exports,SOUTH,Unlinked,0-7 days,0,0,0,111,2026-11-20
+96,Commercial & Exports,SOUTH,Unlinked,8-30 days,0,0,0,17,2026-11-20
+97,Commercial & Exports,SOUTH,Unlinked,31-60 days,0,0,0,99,2026-11-20
+98,Commercial & Exports,SOUTH,Unlinked,61-90 days,0,0,0,169,2026-11-20
+99,Commercial & Exports,SOUTH,Unlinked,90+ days,0,0,0,67,2026-11-20
+100,Commercial & Exports,WEST,Linked,0-7 days,352,121,39,70,2026-11-20
+101,Commercial & Exports,WEST,Linked,8-30 days,0,0,0,65,2026-11-20
+102,Commercial & Exports,WEST,Linked,31-60 days,0,0,0,50,2026-11-20
+103,Commercial & Exports,WEST,Linked,61-90 days,0,0,0,72,2026-11-20
+104,Commercial & Exports,WEST,Linked,90+ days,0,0,0,79,2026-11-20
+105,Commercial & Exports,WEST,Unlinked,0-7 days,0,0,0,80,2026-11-20
+106,Commercial & Exports,WEST,Unlinked,8-30 days,0,0,0,78,2026-11-20
+107,Commercial & Exports,WEST,Unlinked,31-60 days,0,0,0,94,2026-11-20
+108,Commercial & Exports,WEST,Unlinked,61-90 days,0,0,0,31,2026-11-20
+109,Commercial & Exports,WEST,Unlinked,90+ days,0,0,0,126,2026-11-20
+110,Commercial & Exports,EXPORT,Linked,0-7 days,443,463,45,113,2026-11-20
+111,Commercial & Exports,EXPORT,Linked,8-30 days,0,0,0,168,2026-11-20
+112,Commercial & Exports,EXPORT,Linked,31-60 days,0,0,0,157,2026-11-20
+113,Commercial & Exports,EXPORT,Linked,61-90 days,0,0,0,100,2026-11-20
+114,Commercial & Exports,EXPORT,Linked,90+ days,0,0,0,123,2026-11-20
+115,Commercial & Exports,EXPORT,Unlinked,0-7 days,0,0,0,101,2026-11-20
+116,Commercial & Exports,EXPORT,Unlinked,8-30 days,0,0,0,107,2026-11-20
+117,Commercial & Exports,EXPORT,Unlinked,31-60 days,0,0,0,154,2026-11-20
+118,Commercial & Exports,EXPORT,Unlinked,61-90 days,0,0,0,87,2026-11-20
+119,Commercial & Exports,EXPORT,Unlinked,90+ days,0,0,0,125,2026-11-20
+120,Construction & Solutions,AP,Linked,0-7 days,678,623,55,66,2026-11-20
+121,Construction & Solutions,AP,Linked,8-30 days,0,0,0,177,2026-11-20
+122,Construction & Solutions,AP,Linked,31-60 days,0,0,0,169,2026-11-20
+123,Construction & Solutions,AP,Linked,61-90 days,0,0,0,21,2026-11-20
+124,Construction & Solutions,AP,Linked,90+ days,0,0,0,63,2026-11-20
+125,Construction & Solutions,AP,Unlinked,0-7 days,0,0,0,148,2026-11-20
+126,Construction & Solutions,AP,Unlinked,8-30 days,0,0,0,61,2026-11-20
+127,Construction & Solutions,AP,Unlinked,31-60 days,0,0,0,160,2026-11-20
+128,Construction & Solutions,AP,Unlinked,61-90 days,0,0,0,128,2026-11-20
+129,Construction & Solutions,AP,Unlinked,90+ days,0,0,0,172,2026-11-20
+130,Construction & Solutions,EAST,Linked,0-7 days,496,178,37,20,2026-11-20
+131,Construction & Solutions,EAST,Linked,8-30 days,0,0,0,160,2026-11-20
+132,Construction & Solutions,EAST,Linked,31-60 days,0,0,0,82,2026-11-20
+133,Construction & Solutions,EAST,Linked,61-90 days,0,0,0,178,2026-11-20
+134,Construction & Solutions,EAST,Linked,90+ days,0,0,0,27,2026-11-20
+135,Construction & Solutions,EAST,Unlinked,0-7 days,0,0,0,85,2026-11-20
+136,Construction & Solutions,EAST,Unlinked,8-30 days,0,0,0,24,2026-11-20
+137,Construction & Solutions,EAST,Unlinked,31-60 days,0,0,0,165,2026-11-20
+138,Construction & Solutions,EAST,Unlinked,61-90 days,0,0,0,138,2026-11-20
+139,Construction & Solutions,EAST,Unlinked,90+ days,0,0,0,49,2026-11-20
+140,Construction & Solutions,NORTH,Linked,0-7 days,522,109,9,80,2026-11-20
+141,Construction & Solutions,NORTH,Linked,8-30 days,0,0,0,176,2026-11-20
+142,Construction & Solutions,NORTH,Linked,31-60 days,0,0,0,62,2026-11-20
+143,Construction & Solutions,NORTH,Linked,61-90 days,0,0,0,114,2026-11-20
+144,Construction & Solutions,NORTH,Linked,90+ days,0,0,0,35,2026-11-20
+145,Construction & Solutions,NORTH,Unlinked,0-7 days,0,0,0,120,2026-11-20
+146,Construction & Solutions,NORTH,Unlinked,8-30 days,0,0,0,24,2026-11-20
+147,Construction & Solutions,NORTH,Unlinked,31-60 days,0,0,0,39,2026-11-20
+148,Construction & Solutions,NORTH,Unlinked,61-90 days,0,0,0,176,2026-11-20
+149,Construction & Solutions,NORTH,Unlinked,90+ days,0,0,0,85,2026-11-20
+150,Construction & Solutions,SOUTH,Linked,0-7 days,229,170,44,79,2026-11-20
+151,Construction & Solutions,SOUTH,Linked,8-30 days,0,0,0,57,2026-11-20
+152,Construction & Solutions,SOUTH,Linked,31-60 days,0,0,0,92,2026-11-20
+153,Construction & Solutions,SOUTH,Linked,61-90 days,0,0,0,20,2026-11-20
+154,Construction & Solutions,SOUTH,Linked,90+ days,0,0,0,101,2026-11-20
+155,Construction & Solutions,SOUTH,Unlinked,0-7 days,0,0,0,168,2026-11-20
+156,Construction & Solutions,SOUTH,Unlinked,8-30 days,0,0,0,17,2026-11-20
+157,Construction & Solutions,SOUTH,Unlinked,31-60 days,0,0,0,155,2026-11-20
+158,Construction & Solutions,SOUTH,Unlinked,61-90 days,0,0,0,18,2026-11-20
+159,Construction & Solutions,SOUTH,Unlinked,90+ days,0,0,0,126,2026-11-20
+160,Construction & Solutions,WEST,Linked,0-7 days,306,143,57,25,2026-11-20
+161,Construction & Solutions,WEST,Linked,8-30 days,0,0,0,68,2026-11-20
+162,Construction & Solutions,WEST,Linked,31-60 days,0,0,0,106,2026-11-20
+163,Construction & Solutions,WEST,Linked,61-90 days,0,0,0,109,2026-11-20
+164,Construction & Solutions,WEST,Linked,90+ days,0,0,0,177,2026-11-20
+165,Construction & Solutions,WEST,Unlinked,0-7 days,0,0,0,40,2026-11-20
+166,Construction & Solutions,WEST,Unlinked,8-30 days,0,0,0,162,2026-11-20
+167,Construction & Solutions,WEST,Unlinked,31-60 days,0,0,0,25,2026-11-20
+168,Construction & Solutions,WEST,Unlinked,61-90 days,0,0,0,56,2026-11-20
+169,Construction & Solutions,WEST,Unlinked,90+ days,0,0,0,147,2026-11-20
+170,Construction & Solutions,EXPORT,Linked,0-7 days,478,128,53,87,2026-11-20
+171,Construction & Solutions,EXPORT,Linked,8-30 days,0,0,0,61,2026-11-20
+172,Construction & Solutions,EXPORT,Linked,31-60 days,0,0,0,158,2026-11-20
+173,Construction & Solutions,EXPORT,Linked,61-90 days,0,0,0,177,2026-11-20
+174,Construction & Solutions,EXPORT,Linked,90+ days,0,0,0,16,2026-11-20
+175,Construction & Solutions,EXPORT,Unlinked,0-7 days,0,0,0,18,2026-11-20
+176,Construction & Solutions,EXPORT,Unlinked,8-30 days,0,0,0,161,2026-11-20
+177,Construction & Solutions,EXPORT,Unlinked,31-60 days,0,0,0,91,2026-11-20
+178,Construction & Solutions,EXPORT,Unlinked,61-90 days,0,0,0,21,2026-11-20
+179,Construction & Solutions,EXPORT,Unlinked,90+ days,0,0,0,48,2026-11-20
+180,Engineering & Packaging - Tubes,AP,Linked,0-7 days,775,112,51,16,2026-11-20
+181,Engineering & Packaging - Tubes,AP,Linked,8-30 days,0,0,0,125,2026-11-20
+182,Engineering & Packaging - Tubes,AP,Linked,31-60 days,0,0,0,138,2026-11-20
+183,Engineering & Packaging - Tubes,AP,Linked,61-90 days,0,0,0,69,2026-11-20
+184,Engineering & Packaging - Tubes,AP,Linked,90+ days,0,0,0,58,2026-11-20
+185,Engineering & Packaging - Tubes,AP,Unlinked,0-7 days,0,0,0,130,2026-11-20
+186,Engineering & Packaging - Tubes,AP,Unlinked,8-30 days,0,0,0,86,2026-11-20
+187,Engineering & Packaging - Tubes,AP,Unlinked,31-60 days,0,0,0,82,2026-11-20
+188,Engineering & Packaging - Tubes,AP,Unlinked,61-90 days,0,0,0,163,2026-11-20
+189,Engineering & Packaging - Tubes,AP,Unlinked,90+ days,0,0,0,38,2026-11-20
+190,Engineering & Packaging - Tubes,EAST,Linked,0-7 days,774,400,43,110,2026-11-20
+191,Engineering & Packaging - Tubes,EAST,Linked,8-30 days,0,0,0,66,2026-11-20
+192,Engineering & Packaging - Tubes,EAST,Linked,31-60 days,0,0,0,167,2026-11-20
+193,Engineering & Packaging - Tubes,EAST,Linked,61-90 days,0,0,0,179,2026-11-20
+194,Engineering & Packaging - Tubes,EAST,Linked,90+ days,0,0,0,75,2026-11-20
+195,Engineering & Packaging - Tubes,EAST,Unlinked,0-7 days,0,0,0,139,2026-11-20
+196,Engineering & Packaging - Tubes,EAST,Unlinked,8-30 days,0,0,0,83,2026-11-20
+197,Engineering & Packaging - Tubes,EAST,Unlinked,31-60 days,0,0,0,102,2026-11-20
+198,Engineering & Packaging - Tubes,EAST,Unlinked,61-90 days,0,0,0,146,2026-11-20
+199,Engineering & Packaging - Tubes,EAST,Unlinked,90+ days,0,0,0,61,2026-11-20
+200,Engineering & Packaging - Tubes,NORTH,Linked,0-7 days,108,361,7,175,2026-11-20
+201,Engineering & Packaging - Tubes,NORTH,Linked,8-30 days,0,0,0,103,2026-11-20
+202,Engineering & Packaging - Tubes,NORTH,Linked,31-60 days,0,0,0,61,2026-11-20
+203,Engineering & Packaging - Tubes,NORTH,Linked,61-90 days,0,0,0,141,2026-11-20
+204,Engineering & Packaging - Tubes,NORTH,Linked,90+ days,0,0,0,122,2026-11-20
+205,Engineering & Packaging - Tubes,NORTH,Unlinked,0-7 days,0,0,0,51,2026-11-20
+206,Engineering & Packaging - Tubes,NORTH,Unlinked,8-30 days,0,0,0,141,2026-11-20
+207,Engineering & Packaging - Tubes,NORTH,Unlinked,31-60 days,0,0,0,162,2026-11-20
+208,Engineering & Packaging - Tubes,NORTH,Unlinked,61-90 days,0,0,0,157,2026-11-20
+209,Engineering & Packaging - Tubes,NORTH,Unlinked,90+ days,0,0,0,169,2026-11-20
+210,Engineering & Packaging - Tubes,SOUTH,Linked,0-7 days,626,671,49,28,2026-11-20
+211,Engineering & Packaging - Tubes,SOUTH,Linked,8-30 days,0,0,0,43,2026-11-20
+212,Engineering & Packaging - Tubes,SOUTH,Linked,31-60 days,0,0,0,19,2026-11-20
+213,Engineering & Packaging - Tubes,SOUTH,Linked,61-90 days,0,0,0,109,2026-11-20
+214,Engineering & Packaging - Tubes,SOUTH,Linked,90+ days,0,0,0,55,2026-11-20
+215,Engineering & Packaging - Tubes,SOUTH,Unlinked,0-7 days,0,0,0,112,2026-11-20
+216,Engineering & Packaging - Tubes,SOUTH,Unlinked,8-30 days,0,0,0,80,2026-11-20
+217,Engineering & Packaging - Tubes,SOUTH,Unlinked,31-60 days,0,0,0,140,2026-11-20
+218,Engineering & Packaging - Tubes,SOUTH,Unlinked,61-90 days,0,0,0,88,2026-11-20
+219,Engineering & Packaging - Tubes,SOUTH,Unlinked,90+ days,0,0,0,176,2026-11-20
+220,Engineering & Packaging - Tubes,WEST,Linked,0-7 days,429,288,34,152,2026-11-20
+221,Engineering & Packaging - Tubes,WEST,Linked,8-30 days,0,0,0,28,2026-11-20
+222,Engineering & Packaging - Tubes,WEST,Linked,31-60 days,0,0,0,25,2026-11-20
+223,Engineering & Packaging - Tubes,WEST,Linked,61-90 days,0,0,0,119,2026-11-20
+224,Engineering & Packaging - Tubes,WEST,Linked,90+ days,0,0,0,180,2026-11-20
+225,Engineering & Packaging - Tubes,WEST,Unlinked,0-7 days,0,0,0,138,2026-11-20
+226,Engineering & Packaging - Tubes,WEST,Unlinked,8-30 days,0,0,0,106,2026-11-20
+227,Engineering & Packaging - Tubes,WEST,Unlinked,31-60 days,0,0,0,48,2026-11-20
+228,Engineering & Packaging - Tubes,WEST,Unlinked,61-90 days,0,0,0,85,2026-11-20
+229,Engineering & Packaging - Tubes,WEST,Unlinked,90+ days,0,0,0,77,2026-11-20
+230,Engineering & Packaging - Tubes,EXPORT,Linked,0-7 days,142,256,33,141,2026-11-20
+231,Engineering & Packaging - Tubes,EXPORT,Linked,8-30 days,0,0,0,114,2026-11-20
+232,Engineering & Packaging - Tubes,EXPORT,Linked,31-60 days,0,0,0,172,2026-11-20
+233,Engineering & Packaging - Tubes,EXPORT,Linked,61-90 days,0,0,0,86,2026-11-20
+234,Engineering & Packaging - Tubes,EXPORT,Linked,90+ days,0,0,0,126,2026-11-20
+235,Engineering & Packaging - Tubes,EXPORT,Unlinked,0-7 days,0,0,0,80,2026-11-20
+236,Engineering & Packaging - Tubes,EXPORT,Unlinked,8-30 days,0,0,0,72,2026-11-20
+237,Engineering & Packaging - Tubes,EXPORT,Unlinked,31-60 days,0,0,0,36,2026-11-20
+238,Engineering & Packaging - Tubes,EXPORT,Unlinked,61-90 days,0,0,0,172,2026-11-20
+239,Engineering & Packaging - Tubes,EXPORT,Unlinked,90+ days,0,0,0,169,2026-11-20
