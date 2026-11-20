@@ -1,0 +1,442 @@
+function FindProxyForURL(url, host) {
+            var privateIP = /^(0|10|127|192\.168|172\.1[6789]|172\.2[0-9]|172\.3[01]|169\.254|192\.88\.99)\.[0-9.]+$/;
+            var resolved_ip = dnsResolve(host);
+
+            /* Don't send non-FQDN or private IP auths to us */
+            if (isPlainHostName(host) || isInNet(resolved_ip, "192.0.2.0","255.255.255.0") || privateIP.test(resolved_ip))
+            return "DIRECT";
+
+            /* FTP goes directly */
+            if (url.substring(0,4) == "ftp:")
+            return "DIRECT";
+			
+			/* test with ZPA*/
+			if (isInNet(resolved_ip, "100.64.0.0","255.255.0.0"))
+			return "DIRECT";
+			
+if(shExpMatch(host,"*1.2.3.4*") || 
+shExpMatch(host,"*abcdefghijklabcd*")) {        return "DIRECT";    }
+			
+			if (
+shExpMatch(host, "86*")||
+shExpMatch(host, "89*")||
+shExpMatch(host, "90*")||
+shExpMatch(host, "100.97.22.*")||
+shExpMatch(host, "120*")||
+shExpMatch(host, "133*")||
+shExpMatch(host, "135*")||
+shExpMatch(host, "139.0*")||
+shExpMatch(host, "140*")||
+shExpMatch(host, "141*")||
+shExpMatch(host, "143*")||
+shExpMatch(host, "132.165.*")||
+shExpMatch(host, "132.144.*")||
+shExpMatch(host, "132.147.*")||
+shExpMatch(host, "132.145.*")||
+shExpMatch(host, "144*")||
+shExpMatch(host, "146*")||
+shExpMatch(host, "147*")||
+shExpMatch(host, "148*")||
+shExpMatch(host, "149*")||
+shExpMatch(host, "151.0*")||
+shExpMatch(host, "152*")||
+shExpMatch(host, "132.165.0.19")||
+shExpMatch(host, "132.165.0.9")||
+shExpMatch(host, "132.165.0.1")||
+shExpMatch(host, "14.143.190.106")||
+shExpMatch(host, "14.142.10.93")||
+shExpMatch(host, "136.233.42.178")||
+shExpMatch(host, "1.6.60.89")||
+shExpMatch(host, "154*")||
+shExpMatch(host, "156*")||
+shExpMatch(host, "157*")||
+shExpMatch(host, "158*")||
+shExpMatch(host, "159*")||
+shExpMatch(host, "160*")||
+shExpMatch(host, "161*")||
+shExpMatch(host, "162.0*")||
+shExpMatch(host, "163*")||
+shExpMatch(host, "169.0*")||
+shExpMatch(host, "170*")||
+shExpMatch(host, "175*")||
+shExpMatch(host, "176*")||
+shExpMatch(host, "10.*")||
+shExpMatch(host, "145.*")||
+shExpMatch(host, "51.*")||
+shExpMatch(host, "21.*")||
+shExpMatch(host, "173.0*")||
+shExpMatch(host, "131*")||
+shExpMatch(host, "103.0.*")||
+shExpMatch(host, "192.168.*")||
+shExpMatch(host, "172.16*")||
+shExpMatch(host, "200.0.0.11")||
+shExpMatch(host, "myportal.tatasteel.co.in")||
+shExpMatch(host, "*spdccm*")||
+shExpMatch(host, "*spdbpd*")||
+shExpMatch(host, "sapepnew*")||
+shExpMatch(host, "crmisprod1*")||
+shExpMatch(host, "13.71.83.134")||
+shExpMatch(host, "132.132.0.15")||
+shExpMatch(host, "103.26.99.44")||
+shExpMatch(host, "52.40.39.175")||
+shExpMatch(host, "209.195.157.30")||
+shExpMatch(host, "54.221.238.101")||
+shExpMatch(host, "122.186.245.186")||
+shExpMatch(host, "45.114.77.68")||
+shExpMatch(host, "43.242.213.180")||
+shExpMatch(host, "52.172.189.173")||
+shExpMatch(host, "100.65.98.2")|
+shExpMatch(host, "100.65.98.3")||
+shExpMatch(host, "100.65.98.6")||
+shExpMatch(host, "100.65.98.7")||
+shExpMatch(host, "100.65.98.4")||
+shExpMatch(host, "100.102.47.11")||
+shExpMatch(host, "100.102.47.8")||
+shExpMatch(host, "100.102.47.12")||
+shExpMatch(host, "100.102.47.13")||
+shExpMatch(host, "100.102.47.17")|
+shExpMatch(host, "100.102.47.16")|
+shExpMatch(host, "100.102.1.77")|
+shExpMatch(host, "100.102.1.78")|
+shExpMatch(host, "100.102.1.79")|
+shExpMatch(host, "100.102.1.80")|
+shExpMatch(host, "100.102.65.24")|
+shExpMatch(host, "15.207.225.104")||
+shExpMatch(host, "100.65.97.228")||
+shExpMatch(host, "100.102.40.230")||
+shExpMatch(host, "100.102.41.206")||
+shExpMatch(host, "100.102.41.199")||
+shExpMatch(host, "100.76.144.202")||
+shExpMatch(host, "100.76.144.148")||
+shExpMatch(host, "100.76.144.226")||
+shExpMatch(host, "100.76.144.157")||
+shExpMatch(host, "144.0.1.28")||
+shExpMatch(host, "tslsampoorna.database.mobilous.com")||
+
+shExpMatch(host, "100.81.34.51")||
+
+shExpMatch(host, "hrps*")||
+shExpMatch(host, "irmserver*")||
+shExpMatch(host, "sapgrc*")||
+shExpMatch(host, "prd.tatasteel.co.in")||
+shExpMatch(host, "*.corp.tatasteel.com")||
+shExpMatch(host, "*.corusgroup.com")||
+shExpMatch(host, "*hipopps.tatasteel.com*")||
+shExpMatch(host, "sapstg*")||
+shExpMatch(host, "jsrnotes*")||
+shExpMatch(host, "sapcrm*")||
+shExpMatch(host, "sapbiprd.tatasteel.co.in*")||
+shExpMatch(host, "*join.ta*")||
+shExpMatch(host, "e-learn.eu*")||
+shExpMatch(host, "*eu.tata*")||
+shExpMatch(host, "*nsg*")||
+shExpMatch(host, "sapepqa*")||
+shExpMatch(host, "grcdev*")||
+shExpMatch(host, "sappoqa*")||
+shExpMatch(host, "*r3dev*")||
+shExpMatch(host, "*prdrep*")||
+shExpMatch(host, "*sappi*")||
+shExpMatch(host, "*tatasteel1*")||
+shExpMatch(host, "*webdisp*")||
+shExpMatch(host, "solman*")||
+shExpMatch(host, "*wenco1*")||
+shExpMatch(host, "*symspdc*")||
+shExpMatch(host, "87*")||
+shExpMatch(host, "tsmag*")||
+shExpMatch(host, "sapbidev*")||
+shExpMatch(host, "sapbiqa*")||
+shExpMatch(host, "biprdapp1*")||
+shExpMatch(host, "*localhost*")||
+shExpMatch(host, "*ldmes02*")||
+shExpMatch(host, "*ld1level2*")||
+shExpMatch(host, "*labss*")||
+shExpMatch(host, "*epais*")||
+shExpMatch(host, "*stars*")||
+shExpMatch(host, "*crmis*")||
+shExpMatch(host, "*lpcis*")||
+shExpMatch(host, "*192.168.40.6")||
+shExpMatch(host, "eserver*")||
+shExpMatch(host, "172.23*")||
+shExpMatch(host, "*hmsapp*")||
+shExpMatch(host, "*kpofp*")||
+shExpMatch(host, "*auttfs*")||
+shExpMatch(host, "tsfs*")||
+shExpMatch(host, "pidev.tatasteel.co.in")||
+shExpMatch(host, "infoweb.tatasteel.co.in")||
+shExpMatch(host, "pcsfe.tatasteel.co.in")||
+shExpMatch(host, "sapepqa.tatasteel.co.in")||
+shExpMatch(host, "s4hdev.tatasteel.co.in")||
+shExpMatch(host, "sapfioriqa.tatasteel.co.in")||
+shExpMatch(host, "tatasteel.fmshosted.com")||
+shExpMatch(host, "ecctest.tatasteel.co.in")||
+shExpMatch(host, "tslhrportal.tatasteel.co.in")||
+shExpMatch(host, "rnr.tatasteel.co.in")||
+shExpMatch(host, "plm.tatasteel.co.in")||
+shExpMatch(host, "i3ms.orissaminerals.gov.in")||
+shExpMatch(host, "epass.odishaminerals.gov.in")||
+shExpMatch(host, "dlm.pdsodisha.gov.in")||
+shExpMatch(host, "www.odishatreasury.gov.in")||
+shExpMatch(host, "www.tdscpc.gov.in")||
+shExpMatch(host, "contents.tdscpc.gov.in")||
+shExpMatch(host, "downloads.tdscpc.gov.in")||
+shExpMatch(host, "elora.aerb.gov.in")||
+shExpMatch(host, "132.132.0.25")||
+shExpMatch(host, "hmsapps.tatasteel.co.in*")||
+shExpMatch(host, "datamonitor.tatasteelbsl.co.in")||
+shExpMatch(host, "*.wvd.microsoft.com")||
+shExpMatch(host, "*.servicebus.windows.net")||
+shExpMatch(host, "gcs.prod.monitoring.core.windows.net")||
+shExpMatch(host, "*xt.blob.core.windows.net")||
+shExpMatch(host, "*.servicebus.windows.net")||
+shExpMatch(host, "*eh.servicebus.windows.net")||
+shExpMatch(host, "production.diagnostics.monitoring.core.windows.net")||
+shExpMatch(host, "*xt.table.core.windows.net")||
+shExpMatch(host, "*xt.queue.core.windows.net")||
+shExpMatch(host, "catalogartifact.azureedge.net")||
+shExpMatch(host, "mrsglobalsteus2prod.blob.core.windows.net")||
+shExpMatch(host, "168.63.129.16")||
+shExpMatch(host, "169.254.169.254")||
+shExpMatch(host, "query.prod.cms.rt.microsoft.com")||
+shExpMatch(host, "wenco2.fms.wb.tsl")||
+shExpMatch(host, "www.msftconnecttest.com")||
+shExpMatch(host, "armmf.adobe.com")||
+shExpMatch(host, "mineralsportal.jharkhand.gov.in")||
+shExpMatch(host, "jharbhoomi.jharkhand.gov.in")||
+shExpMatch(host, "services.tsuisl.co.in")||
+shExpMatch(host, "tsuislpodev.juscoltd.com")||
+shExpMatch(host, "tsuislpoprd.juscoltd.com")||
+shExpMatch(host, "tpsolman.tinplate.co.in")||
+shExpMatch(host, "portal.jharkhandminerals.gov.in")
+)
+
+return "DIRECT";
+
+            /* Updates are directly accessible */
+            if (((localHostOrDomainIs(host, "trust.zscaler.com")) ||
+                    (localHostOrDomainIs(host, "trust.zscaler.net")) ||
+                    (localHostOrDomainIs(host, "trust.zscalerone.net")) ||
+                    (localHostOrDomainIs(host, "trust.zscalertwo.net")) ||
+                    (localHostOrDomainIs(host, "trust.zscalerthree.net")) ||
+                    (localHostOrDomainIs(host, "trust.zscalergov.net")) ||
+                    (localHostOrDomainIs(host, "corp.tatasteel.com ")) ||
+                    (localHostOrDomainIs(host, "corp.jcapcpl.com")) ||
+                     (localHostOrDomainIs(host, "rnr.tatasteel.co.in")) ||
+                     (localHostOrDomainIs(host, "tatasteel.fmshosted.com")) ||
+                     
+                     (localHostOrDomainIs(host, "webdisp.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "webappmk01.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "Webapp03.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webappsdev01.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp05.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webirdev.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp10dev.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp10.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp13.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp30dev.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp30qa.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp30.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webapp31.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webappsprd.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "Webappsdev01.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "tsgc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "Webapp12.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "jcapwebapp01.corp.jcapcpl.com")) ||
+(localHostOrDomainIs(host, "caplwebdev01.corp.jcapcpl.com")) ||
+(localHostOrDomainIs(host, "caplwebqa01.corp.jcapcpl.com")) ||
+(localHostOrDomainIs(host, "jcaptableauprd.corp.jcapcpl.com")) ||
+
+(localHostOrDomainIs(host, "webappboe.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "webappbod.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "webapp01.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "wctstrep.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "wctst.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "wcslave2.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "wcslave1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "wcmaster.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "wcdev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsmag.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslserv.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslmedia.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslent.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsleecalias.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsldreccapp3.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsldreccapp14.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsldreccapp1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsldrcrmapp1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsldrbwapp2.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsg-webapp03.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsg-webapp02.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsfs.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "traveler4.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "traveler3.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "traveler2.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "traveler.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "ssodev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "srmtrnebp.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "srmtrnccm.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "132.165.0.19")) ||
+(localHostOrDomainIs(host, "132.165.0.1")) ||
+(localHostOrDomainIs(host, "132.165.0.9")) ||
+(localHostOrDomainIs(host, "srmprd.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "srmdev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "spdccm.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "spdbpd.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "solman.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sodsol.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "dlms.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapstg1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sappoqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sappiqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sappiprd.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapfioriqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapfioridev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapepqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapepnew.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapcrmqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapcrmci.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapcrmapp1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapbowapp.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapborepo.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapboprd.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapbodev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapbiqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapbidev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp30.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp29.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp28.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp27.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp26.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp23.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp22.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp21.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp20.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp19.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp18.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "sapapp15.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "s4hdev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "rnr.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "remotewts.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "r3dev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "QCSWS.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "QCSIN.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "QCSDS.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "QCSBS.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "QCSAS.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "QCSAD.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "prod-lumira.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "prdrep.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "prd.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "plm.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pidev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsfe2.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsfe1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsfe.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsds.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "myportalqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "myportal.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "maap.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "lumiradevsso.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "infoweb.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "idocdigital.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "grcdevnew.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "grc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "forexsftp.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "fiorici.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "fespoc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "ewmqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "ewmapp2.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "enterpriseregistration.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "ecmdev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "ecctest.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsxfe1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "eccqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "eccdevapp.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "drplm.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "crmdevapp.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "biprdapp1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "assetdb1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "juscopo.juscoltd.com")) ||
+(localHostOrDomainIs(host, "lumiradev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsbe4.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "adselfserv.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "dlms.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "juscosol.juscoltd.com")) ||
+(localHostOrDomainIs(host, "juscopoprd.juscoltd.com")) ||
+(localHostOrDomainIs(host, "juscointranet.juscoltd.com")) ||
+(localHostOrDomainIs(host, "dev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "windappdev.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "windappqa.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tubcorpdv.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "ecmdevcs.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "ECMDEVARCSERV.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "*meet.tatasteel.com")) ||
+(localHostOrDomainIs(host, "bs5pidev.tatasteelbsl.co.in")) ||
+(localHostOrDomainIs(host, "bs5solman.tatasteelbsl.co.in")) ||
+(localHostOrDomainIs(host, "qah2h.axisbank.co.in")) ||
+(localHostOrDomainIs(host, "d32a6ru7mhaq0c.cloudfront.net")) ||
+(localHostOrDomainIs(host, "tslloans.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "iwiris.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "tslwebapp03.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsapiadso.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "sales.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "webapps32.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslss.tatatsteel.co.in")) ||
+(localHostOrDomainIs(host, "tsldevdataviz.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslss.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslcorpsys05_tatasteel_co_in")) ||
+(localHostOrDomainIs(host, "tslnoc.sify.net")) ||
+(localHostOrDomainIs(host, "aashiyana-dev-shard-00-00-tzmee.gcp.mongodb.net")) ||
+(localHostOrDomainIs(host, "aashiyana-dev-shard-00-01-tzmee.gcp.mongodb.net")) ||
+(localHostOrDomainIs(host, "aashiyana-dev-shard-00-02-tzmee.gcp.mongodb.net")) ||
+(localHostOrDomainIs(host, "pcsds1.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "pcsds2.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsenglbqc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslprod02.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "fiorici.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsengagqc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsninl.com")) ||
+(localHostOrDomainIs(host, "ttapodev.tsninl.com")) ||
+(localHostOrDomainIs(host, "rainbow-api.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "mba.juscoltd.com")) ||
+(localHostOrDomainIs(host, "tsengodqc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tslwebapicore.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tpulse-uat.corp.tatasteel.com")) ||
+(localHostOrDomainIs(host, "tmh.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "uat.tmh.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tsgc.tatasteel.co.in")) ||
+(localHostOrDomainIs(host, "tmh1.tatasteel.co.in")) ||
+
+(localHostOrDomainIs(host, "hmsprdapache.corp.tatasteel.com")) ||
+
+
+                    (localHostOrDomainIs(host, "trust.zscloud.net")) ) &&
+                (url.substring(0,5) == "http:" || url.substring(0,6) == "https:"))
+            return "DIRECT";
+
+    if ((dnsDomainIs(host, "nsg.tatasteel.co.in"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "ww2.cgateeu.com"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "15.207.225.104"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "115.112.219.4"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "www.cgateeu.com"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "219.65.88.14"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "44.246.249.221"))){
+       return "DIRECT";
+    }
+    if ((dnsDomainIs(host, "www.ctsconnect.in"))){
+       return "DIRECT";
+    }
+                /* Default Traffic Forwarding. Forwarding to Zen on port 9443 */
+                return "PROXY 127.0.0.1:13124";
+}
