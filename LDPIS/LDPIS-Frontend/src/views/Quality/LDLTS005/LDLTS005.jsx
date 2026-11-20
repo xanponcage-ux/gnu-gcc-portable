@@ -1240,24 +1240,28 @@ export default function LDLTS005() {
                         <LDLTS005FD
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                       {tabValue === 1 && (
                         <LDLTS005GD
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                       {tabValue === 2 && (
                         <LDLTS005ID
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                       {tabValue === 3 && (
                         <LDLTS005LD
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                     </>
@@ -1273,18 +1277,21 @@ export default function LDLTS005() {
                         <LDLTS005MD
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                       {tabValue === 5 && (
                         <LDLTS005SD
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                       {tabValue === 6 && (
                         <LDLTS005ED
                           ordId={filterData?.saleOrd?.value ?? ""}
                           itemNo={filterData?.item?.value ?? ""}
+                          selecteddate={selecteddate?.value ?? ""}
                         />
                       )}
                     </>

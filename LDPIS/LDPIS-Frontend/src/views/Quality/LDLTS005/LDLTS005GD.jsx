@@ -122,13 +122,13 @@ export default function LDLTS005GD(props) {
         setRestricted(false);
       }
       GetAuthorization().then((token) => {
-        if (props.ordId) {
-          handleDisplay(props.ordId, "");
+        if (props.ordId ) {
+          handleDisplay(props?.ordId,props?.itemNo,props?.selecteddate);
         }
       });
     }
     fetchData();
-  }, [props.ordId]);
+  }, [props?.ordId, props?.itemNo , props?.selecteddate]);
 
   const handleClearAll = () => {
     // setFilterData((prevState) => ({
@@ -206,7 +206,7 @@ export default function LDLTS005GD(props) {
 
   // Handle display data button
 
-  const handleDisplay = async (ordId, itemNo) => {
+  const handleDisplay = async (ordId, itemNo, selecteddate) => {
     if (ordId === "" || itemNo === "") {
       handleClearAll();
     }
@@ -214,6 +214,7 @@ export default function LDLTS005GD(props) {
     let data1 = {
       orderId: ordId,
       itemNo: itemNo,
+      selecteddate: selecteddate,
     };
 
     GetAuthorization().then((token) => {

@@ -88,12 +88,13 @@ export default function LDLTS005LD(props) {
       }
       GetAuthorization().then((token) => {
         if (props.ordId ) {
-          handleDisplay(props.ordId,"");
+          // handleDisplay(props.ordId,"");
+          handleDisplay(props?.ordId,props?.itemNo,props?.selecteddate);
         }
       });
     }
     fetchData();
-  }, [props.ordId]);
+  },[props?.ordId, props?.itemNo , props?.selecteddate]);
 
   const handleClearAll = () => {
     // setFilterData((prevState) => ({
@@ -137,7 +138,7 @@ export default function LDLTS005LD(props) {
   useEffect(() => {
     ldHolDetData = holDetData;
   }, [holDetData]); 
-  const handleDisplay = async (ordId, itemNo) => {
+  const handleDisplay = async (ordId, itemNo, selecteddate) => {
     if (ordId === "" || itemNo === "") {
       handleClearAll();
     }
@@ -145,6 +146,7 @@ export default function LDLTS005LD(props) {
     let data1 = {
       orderId: ordId,
       itemNo: itemNo,
+      selecteddate: selecteddate,
     };
 
     GetAuthorization().then((token) => {

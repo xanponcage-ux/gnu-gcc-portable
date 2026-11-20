@@ -1566,7 +1566,6 @@ const handleClearAll = (newToken = false) => {
       PEPP_MANUFACT : peppManufacturer ? peppManufacturer : "",
       PEPP_GRADE: PEgrade ? PEgrade : "",
       PEPP_BATCH: batch4 ? batch4 : "",
-      
       A1: A1 ? A1 : "",
       A2: A2 ? A2 : "",
       A3: A3 ? A3 : "",

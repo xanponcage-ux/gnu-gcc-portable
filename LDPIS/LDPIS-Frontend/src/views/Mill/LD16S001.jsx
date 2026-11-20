@@ -814,6 +814,7 @@ export default function TubePlanning() {
       const tableRows = response.data.map((row) => ({
         C_PRC: nxtproc2 || "",
         N_PRC: row.NEXT_PROC || nxtproc || "",
+        TBP_DIA_END_10:Number(row.TBP_DIA_END_10 || 0),
         PIPE_NO: row.TBP_BATCH_NO || "",
         ASL_NO: row.ASL_NO || "",
 
@@ -991,7 +992,7 @@ export default function TubePlanning() {
       newData.push({
         PLANT: "0780",
         BATCH_NO: pipeNo ?? null,
-        TBP_DIA_END_10: Number(row.TBP_DIA_END_10 || 0),
+        TBP_DIA_END_10: Number(rowData?.TBP_DIA_END_10 || 0),
         CD_PROC: rowData.C_PRC ?? null,
         BATCH_PROC_NO: "0",
         NEXT_PROC: rowData.N_PRC ?? null,
@@ -1381,6 +1382,7 @@ export default function TubePlanning() {
       field: "FINAL_INSP_DATE",
       headerFilter: "input",
       // width: 130,
+      visible:false
     },
     {
       title: "OLT W1",
@@ -1750,7 +1752,7 @@ export default function TubePlanning() {
                   {expanded && (
                     <MDBox px={3} py={3}>
                       <Grid container spacing={1.5}>
-                        <Grid item xs={1.5}>
+                        {/* <Grid item xs={1.5}>
                           <MDTypography
                             fontWeight="regular"
                             fontSize="small"
@@ -1776,7 +1778,7 @@ export default function TubePlanning() {
                             Curr Process
                           </MDTypography>
                           <MDInput name="nxtproc2" value={nxtproc2} disabled={true} />
-                        </Grid>
+                        </Grid> */}
 
                         <Grid item xs={1.5}>
                           <MDTypography
@@ -1799,7 +1801,7 @@ export default function TubePlanning() {
                           />
                         </Grid>
 
-                        <Grid item xs={1.5}>
+                        {/* <Grid item xs={1.5}>
                           <MDTypography
                             fontWeight="regular"
                             fontSize="small"
@@ -1819,7 +1821,7 @@ export default function TubePlanning() {
                               setTableNull();
                             }}
                           />
-                        </Grid>
+                        </Grid> */}
 
                         <Grid item xs={1.5}>
                           <MDTypography

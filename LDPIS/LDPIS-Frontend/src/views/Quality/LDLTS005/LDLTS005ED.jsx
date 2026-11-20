@@ -100,12 +100,13 @@ export default function LDLTS005ED(props) {
       }
       GetAuthorization().then((token) => {
         if (props.ordId ) {
-          handleDisplay(props.ordId,"");
+          // handleDisplay(props.ordId,"");
+          handleDisplay(props?.ordId,props?.itemNo,props?.selecteddate);
         }
       });
     }
     fetchData();
-  }, [props.ordId]);
+  }, [props?.ordId, props?.itemNo , props?.selecteddate]);
 
 useEffect(() => {
    edHolDetData = holDetData;
@@ -154,7 +155,7 @@ PRT_REPAIR_WINO    :"",
     
 };
   
-const handleDisplay = async (ordId, itemNo) => {
+const handleDisplay = async (ordId, itemNo, selecteddate) => {
     if (ordId === "" || itemNo === "") {
       handleClearAll();
     }
@@ -162,6 +163,7 @@ const handleDisplay = async (ordId, itemNo) => {
     let data1 = {
       orderId: ordId,
       itemNo: itemNo,
+      selecteddate: selecteddate,
     };
 
     GetAuthorization().then((token) => {

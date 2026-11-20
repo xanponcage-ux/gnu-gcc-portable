@@ -5,40 +5,42 @@ import { ResponceData } from "../utils";
 
 export const getOrderid = async (data: any) => {
   try {
-    // let sql = `select  LOM_ID_BATCH from V_LDP_PRODN
-    // WHERE LOM_CD_EPA='0780' and LOM_SAMPL_TAG_EC='${data?.FLAG}'
-    // --AND LOM_CD_STATUS IN (SELECT DISTINCT CD_VALUE FROM V_CODES WHERE
-    //    --CD_TYPE='TB051'
-    //   --AND CD_DESC='EDITABLE')
-    //   `
-    // ;
 
-    // let sql = `SELECT
-    //     DISTINCT
-    //     P.LOM_ID_BATCH,
-    //     Z.PSNO
-    //        FROM V_LDP_PRODN P , V_ZCOAT_LAB Z
-    //         WHERE P.LOM_ID_BATCH = Z.CHARG(+)
-    //              AND P.LOM_CD_EPA  = Z.ZCL_PLANT_CD(+)
-    //        AND P.LOM_CD_EPA = '0780'
-    //          -- AND P.LOM_SAMPL_TAG_EC = 'Y'
-    //          AND P.LOM_SAMPL_TAG_EC = '${data?.FLAG}'
-    //   `;
+      // let sql = `SELECT
+      //   DISTINCT
+      //   P.LOM_ID_BATCH,
+      //   Z.PSNO
+      //      FROM V_LDP_PRODN P , V_ZCOAT_LAB Z  , V_BARE_PDO T
+      //       WHERE P.LOM_ID_BATCH = Z.CHARG(+)
+      //            AND P.LOM_CD_EPA  = Z.ZCL_PLANT_CD(+)
+      //      AND P.LOM_CD_EPA = '0780'
+      //        AND T.TBP_SAMPLE_10 = '${data?.FLAG}'
+      //         AND T.TBP_CD_PROC = 'D'
+      //         AND P.LOM_ID_BATCH = T.TBP_BATCH_NO
+      //          --order by T.TBP_PROD_DATE desc
+      // `;
+
 
       let sql = `SELECT
-        DISTINCT
-        P.LOM_ID_BATCH,
-        Z.PSNO,
-        T.TBP_PROD_DATE
-           FROM V_LDP_PRODN P , V_ZCOAT_LAB Z  , V_BARE_PDO T
-            WHERE P.LOM_ID_BATCH = Z.CHARG(+)
-                 AND P.LOM_CD_EPA  = Z.ZCL_PLANT_CD(+)
-           AND P.LOM_CD_EPA = '0780'
-             AND T.TBP_SAMPLE_10 = '${data?.FLAG}'
-              AND T.TBP_CD_PROC = 'D'
-              AND P.LOM_ID_BATCH = T.TBP_BATCH_NO
-               order by T.TBP_PROD_DATE desc
-      `;
+    P.LOM_ID_BATCH,
+    Z.PSNO
+FROM
+    V_LDP_PRODN P
+LEFT JOIN 
+    V_ZCOAT_LAB Z ON P.LOM_ID_BATCH = Z.CHARG AND P.LOM_CD_EPA = Z.ZCL_PLANT_CD
+INNER JOIN
+    V_BARE_PDO T ON P.LOM_ID_BATCH = T.TBP_BATCH_NO
+WHERE
+    P.LOM_CD_EPA = '0780'
+    AND T.TBP_SAMPLE_10 = '${data?.FLAG}'
+    AND T.TBP_CD_PROC = 'D'
+GROUP BY
+    P.LOM_ID_BATCH,
+    Z.PSNO
+ORDER BY
+    MAX(T.TBP_PROD_DATE) DESC
+    `;
+
     console.log("sql: ", sql);
     return await query.executeQuery(sql);
   } catch (error) {
@@ -80,6 +82,10 @@ export const getOrdDetailLD = async (data: any) => {
     FROM V_ZCOAT_LAB WHERE
     CHARG = '${data?.orderId}'`;
 
+        if (data?.selecteddate && data?.selecteddate != "") {
+      sql += ` AND PRD_DATE_120 =  '${data?.selecteddate}'`;
+    }
+
     console.log("sql: ", sql);
     return await query.executeQuery(sql);
   } catch (error) {
@@ -93,6 +99,10 @@ export const getOrdDetailID = async (data: any) => {
     let sql = `SELECT *  
     FROM V_ZCOAT_LAB WHERE
     CHARG = '${data?.orderId}'`;
+
+    if (data?.selecteddate && data?.selecteddate != "") {
+      sql += ` AND PRD_DATE_120 =  '${data?.selecteddate}'`;
+    }
 
     console.log("sql: ", sql);
     return await query.executeQuery(sql);
@@ -375,6 +385,10 @@ export const getOrdDetailMD = async (data: any) => {
     FROM V_ZCOAT_LAB WHERE
     CHARG = '${data?.orderId}'`;
 
+        if (data?.selecteddate && data?.selecteddate != "") {
+      sql += ` AND PRD_DATE_120 =  '${data?.selecteddate}'`;
+    }
+
     console.log("sql: ", sql);
     return await query.executeQuery(sql);
   } catch (error) {
@@ -388,6 +402,10 @@ export const getOrdDetailSD = async (data: any) => {
     let sql = `SELECT *  
     FROM V_ZCOAT_LAB WHERE
     CHARG = '${data?.orderId}'`;
+
+        if (data?.selecteddate && data?.selecteddate != "") {
+      sql += ` AND PRD_DATE_120 =  '${data?.selecteddate}'`;
+    }
 
     // if (data?.orderId) {
     //   sql += ` AND TPS_ORDER_ID = '${data?.orderId}'`;
@@ -406,10 +424,13 @@ export const getOrdDetailSD = async (data: any) => {
 
 export const getOrdDetailGD = async (data: any) => {
   try {
-    console.log("data3: ", data);
     let sql = `SELECT *  
     FROM V_ZCOAT_LAB WHERE
     CHARG = '${data?.orderId}'`;
+
+    if (data?.selecteddate && data?.selecteddate != "") {
+      sql += ` AND PRD_DATE_120 =  '${data?.selecteddate}'`;
+    }
     
     console.log("sql: ", sql);
     return await query.executeQuery(sql);

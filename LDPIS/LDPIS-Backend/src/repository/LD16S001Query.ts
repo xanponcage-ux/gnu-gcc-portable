@@ -476,7 +476,7 @@ export const getFillData = async (data: any) => {
   try {
     let sql = `SELECT TBP_BATCH_NO,lom_sec2 TBP_PIPE_OD_10,lom_sec1 TBP_PIPE_THK_10,LOM_LENGTH TBP_PIPE_LNG_10,LOM_NO_MATNR TBP_NO_MATNR,LOM_NO_CAST TBP_HEAT_NO,
                 LOM_ID_ORDER_CUS ORDER_NO,LOM_MS_PIECE_ACTL,LOM_ID_PAR_COIL_NO, LOM_ID_ORD_ITEM_CUS ITEM,LOM_NO_CAST,LOM_WORK_CENTER, ENC_CUST_NAME CUST_NAME, LOM_PLANNED_PROC PLAN_PROC,
-               (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'D') as nxtproc from dual) NEXT_PROC,
+               (select F_GET_NEXTPROC(LOM_PLANNED_PROC, LOM_PASSED_PROC, 'H') as nxtproc from dual) NEXT_PROC,
                (select D.TBP_ASL_NO_80 FROM V_BARE_PDO D
                       where D.TBP_BATCH_NO = LOM_ID_BATCH
                         and D.TBP_CD_PROC = '8'
