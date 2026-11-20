@@ -1,0 +1,14 @@
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD16S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD16S001.jsx
+@@ -699,6 +699,11 @@
+   };
+ 
+   const bindThickData = async () => {
++    if (!String(selectedShift?.value ?? "").trim()) {
++      alertify.error("Please select Shift");
++      return;
++    }
++
+     try {
+       setLoading(true);
+       setThickTable([]);

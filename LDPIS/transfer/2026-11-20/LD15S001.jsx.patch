@@ -1,0 +1,14 @@
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD15S001.jsx
+@@ -825,6 +825,11 @@
+ 
+   
+   const bindBlastAppData = async () => {
++    if (!String(selectedShift?.value ?? "").trim()) {
++      alertify.error("Please select Shift");
++      return;
++    }
++
+     clearMessage();
+     const version = ++formVersion.current;
+     try {

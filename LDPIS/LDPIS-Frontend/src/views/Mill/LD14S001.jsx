@@ -788,6 +788,11 @@ export default function TubePlanning() {
   };
 
   const bindLPEData = async () => {
+    if (!String(selectedShift?.value ?? "").trim()) {
+      alertify.error("Please select Shift");
+      return;
+    }
+
     clearMessage();
     try {
       setLoading(true);

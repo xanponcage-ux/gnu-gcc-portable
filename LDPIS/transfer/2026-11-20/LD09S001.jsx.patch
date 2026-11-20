@@ -1,0 +1,14 @@
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD09S001.jsx
+@@ -592,6 +592,11 @@
+   };
+ 
+   const bindHydraData = async () => {
++    if (!String(selectedShift?.value ?? "").trim()) {
++      alertify.error("Please select Shift");
++      return;
++    }
++
+     try {
+       console.log("Inside Fill Data");
+       const prodStartDateInput = document.getElementById("prodStartDate").value;

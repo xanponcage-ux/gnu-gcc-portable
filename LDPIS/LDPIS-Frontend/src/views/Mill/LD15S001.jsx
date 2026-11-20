@@ -825,6 +825,11 @@ export default function TubePlanning() {
 
   
   const bindBlastAppData = async () => {
+    if (!String(selectedShift?.value ?? "").trim()) {
+      alertify.error("Please select Shift");
+      return;
+    }
+
     clearMessage();
     const version = ++formVersion.current;
     try {

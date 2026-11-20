@@ -1,0 +1,14 @@
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD14S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD14S001.jsx
+@@ -788,6 +788,11 @@
+   };
+ 
+   const bindLPEData = async () => {
++    if (!String(selectedShift?.value ?? "").trim()) {
++      alertify.error("Please select Shift");
++      return;
++    }
++
+     clearMessage();
+     try {
+       setLoading(true);

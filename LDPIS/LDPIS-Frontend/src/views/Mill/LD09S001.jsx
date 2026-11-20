@@ -592,6 +592,11 @@ export default function LDS090() {
   };
 
   const bindHydraData = async () => {
+    if (!String(selectedShift?.value ?? "").trim()) {
+      alertify.error("Please select Shift");
+      return;
+    }
+
     try {
       console.log("Inside Fill Data");
       const prodStartDateInput = document.getElementById("prodStartDate").value;

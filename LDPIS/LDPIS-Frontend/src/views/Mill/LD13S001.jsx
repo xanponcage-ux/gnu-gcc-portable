@@ -937,6 +937,11 @@ const showErrorAlert = (errorMessage) => {
   };
 
   const bindLPEData = async () => {
+    if (!String(selectedShift?.value ?? "").trim()) {
+      alertify.error("Please select Shift");
+      return;
+    }
+
   if (loading) return;
   try {
     setLoading(true);

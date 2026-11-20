@@ -1,0 +1,14 @@
+--- a/LDPIS/LDPIS-Frontend/src/views/Mill/LD10S001.jsx
++++ b/LDPIS/LDPIS-Frontend/src/views/Mill/LD10S001.jsx
+@@ -823,6 +823,11 @@
+ 
+ 
+   const bindBlastData = async () => {
++    if (!String(selectedShift?.value ?? "").trim()) {
++      alertify.error("Please select Shift");
++      return;
++    }
++
+   if (loading) return;
+   try {
+     setLoading(true);

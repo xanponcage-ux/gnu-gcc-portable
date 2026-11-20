@@ -699,6 +699,11 @@ export default function TubePlanning() {
   };
 
   const bindThickData = async () => {
+    if (!String(selectedShift?.value ?? "").trim()) {
+      alertify.error("Please select Shift");
+      return;
+    }
+
     try {
       setLoading(true);
       setThickTable([]);

@@ -1100,6 +1100,11 @@ const getFieldTestOptions = async (accessToken) => {
   };
 
   const bindThickData = async () => {
+    if (!String(selectedShift?.value ?? "").trim()) {
+      alertify.error("Please select Shift");
+      return;
+    }
+
   try {
     setLoading(true);
     setShowSaveMsgSuccess(false);
