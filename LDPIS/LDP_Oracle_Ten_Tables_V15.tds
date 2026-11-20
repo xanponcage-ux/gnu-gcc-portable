@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='utf-8'?>
+<datasource caption='LDP Oracle Ten Tables' name='federated.ldp_live_v13' version='18.1'><connection class='federated'><named-connections><named-connection caption='Oracle LDPISPRD - configure manually' name='oracle.ldp_live_v13'><connection authentication='RDBMS' class='oracle' port='1521' schema='LDPDBA' server='132.145.99.84' service='ldpisprd' username='' /></named-connection></named-connections><relation connection='oracle.ldp_live_v13' name='LDP Dashboard Query' type='text'><![CDATA[WITH BASE AS (
+SELECT
+    M.EOP_BTD BTD,
+    M.EOP_BTP BTP,
+    0 PENDING_DO, -- LOGIC TO BE PROVIDED
+    M.EOP_MILLSCH_QTY TOTAL_LNK_QTY,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_CD_STATUS IN (
+            SELECT CD_DESC
+            FROM V_CODES
+            WHERE CD_TYPE = 'TB040'
+              AND CD_DESC1 = 'FG STOCK'
+        )
+    ) TOTAL_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <> '0'
+          AND LOM_CD_STATUS IN (
+                SELECT CD_DESC
+                FROM V_CODES
+                WHERE CD_TYPE = 'TB040'
+                  AND CD_DESC1 = 'FG STOCK'
+          )
+    ) TOTAL_LINK_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <> '0'
+          AND LOM_CD_STATUS = 'WF'
+    ) TOTAL_UNLINK_STK,
+    (
+        SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+        FROM V_LDP_PRODN
+        WHERE LOM_ID_ORDER_CUS IS NOT NULL
+          AND TRIM(LOM_ID_ORDER_CUS) <> '0'
+          AND LOM_CD_STATUS = '8Q'
+    ) TOTAL_HOLD,
+    -- Modified to handle division by zero for TOTAL_HOLD_PER
+    CASE
+        WHEN (
+            SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+            FROM V_LDP_PRODN
+            WHERE LOM_CD_STATUS IN (
+                SELECT CD_DESC
+                FROM V_CODES
+                WHERE CD_TYPE = 'TB040'
+                  AND CD_DESC1 = 'FG STOCK'
+            )
+        ) = 0 THEN 0
+        ELSE ROUND( -- Rounding the entire percentage calculation to 2 decimal places
+            (
+                (
+                    SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+                    FROM V_LDP_PRODN
+                    WHERE LOM_ID_ORDER_CUS IS NOT NULL
+                      AND TRIM(LOM_ID_ORDER_CUS) <> '0'
+                      AND LOM_CD_STATUS = '8Q'
+                ) / (
+                    SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL)/1000,3),0)
+                    FROM V_LDP_PRODN
+                    WHERE LOM_CD_STATUS IN (
+                        SELECT CD_DESC
+                        FROM V_CODES
+                        WHERE CD_TYPE = 'TB040'
+                          AND CD_DESC1 = 'FG STOCK'
+                    )
+                )
+            ) * 100
+        , 2)
+    END AS TOTAL_HOLD_PER,
+    M.EOP_SIGNOF_QTY,
+    0 GRNCOMP_QTY,
+    0 GRNCOMP_PER,
+    0 ROLLING_OSP,
+    0 ROLLING_MTD,
+    0 ROLLCOMP_PER,
+    0 PRODUCTION_OSP,
+    0 PRODUCTION_MTD,
+    0 PRODUCTION_PER,
+    -- New fields for Segments
+    S.BPRTUBE_BTD,
+    S.BPRTUBE_BTP,
+    S.CETUBE_BTD,
+    S.CETUBE_BTP,
+    S.CSTUBE_BTD,
+    S.CSTUBE_BTP,
+    S.EPTUBE_BTD,
+    S.EPTUBE_BTP,
+    -- New fields for Zones
+    S.API_BTD,
+    S.API_BTP,
+    S.EAST_BTD,
+    S.EAST_BTP,
+    S.NORTH_BTD,
+    S.NORTH_BTP,
+    S.SOUTH_BTD,
+    S.SOUTH_BTP,
+    S.WEST_BTD,
+    S.WEST_BTP,
+    S.EXPORT_BTD,
+    S.EXPORT_BTP,
+    ----LOGIC NOT PROVIDED
+    ----------------Vertical---------------
+    0 VERTICAL_BP_1T53,
+    0 VERTICAL_BP_HIGHAGE,
+    0 VERTICAL_BP_PHIGHAGE,
+    0 VERTICAL_BP_GTOTAL,
+    -----
+    0 VERTICAL_CE_1T53,
+    0 VERTICAL_CE_HIGHAGE,
+    0 VERTICAL_CE_PHIGHAGE,
+    0 VERTICAL_CE_GTOTAL,
+    ------  
+    0 VERTICAL_CS_1T53,
+    0 VERTICAL_CS_HIGHAGE,
+    0 VERTICAL_CS_PHIGHAGE,
+    0 VERTICAL_CS_GTOTAL,
+    -----    
+    0 VERTICAL_EP_1T53,
+    0 VERTICAL_EP_HIGHAGE,
+    0 VERTICAL_EP_PHIGHAGE,
+    0 VERTICAL_EP_GTOTAL,
+    ------
+    0 VERTICAL_TOTAL_1T53,
+    0 VERTICAL_TOTAL_HIGHAGE,
+    0 VERTICAL_TOTAL_PHIGHAGE,
+    0 VERTICAL_TOTAL_GTOTAL,
+    ---------ZONE -------------------
+    0 ZONE_API_1T53,
+    0 ZONE_API_HIGHAGE,
+    0 ZONE_API_PHIGHAGE,
+    0 ZONE_API_GTOTAL,
+    ---------
+    0 ZONE_EAST_1T53,
+    0 ZONE_EAST_HIGHAGE,
+    0 ZONE_EAST_PHIGHAGE,
+    0 ZONE_EAST_GTOTAL,
+    -----------
+    0 ZONE_ETO_1T53,
+    0 ZONE_ETO_HIGHAGE,
+    0 ZONE_ETO_PHIGHAGE,
+    0 ZONE_ETO_GTOTAL,
+    -----------
+    0 ZONE_NORTH_1T53,
+    0 ZONE_NORTH_HIGHAGE,
+    0 ZONE_NORTH_PHIGHAGE,
+    0 ZONE_NORTH_GTOTAL,
+    ----------    
+    0 ZONE_SOUTH_1T53,
+    0 ZONE_SOUTH_HIGHAGE,
+    0 ZONE_SOUTH_PHIGHAGE,
+    0 ZONE_SOUTH_GTOTAL,
+    --------
+    0 ZONE_WEST_1T53,
+    0 ZONE_WEST_HIGHAGE,
+    0 ZONE_WEST_PHIGHAGE,
+    0 ZONE_WEST_GTOTAL,
+    ------------
+    0 ZONE_EXPORT_1T53,
+    0 ZONE_EXPORT_HIGHAGE,
+    0 ZONE_EXPORT_PHIGHAGE,
+    0 ZONE_EXPORT_GTOTAL,
+    ------------
+    0 ZONE_TOTAL_1T53,
+    0 ZONE_TOTAL_HIGHAGE,
+    0 ZONE_TOTAL_PHIGHAGE,
+    0 ZONE_TOTAL_GTOTAL,
+    ----------------UNLINKED STOCK--------------
+    0 VERT_UNLSTCK_API_1T53,
+    0 VERT_UNLSTCK_API_HIGHAGE,
+    0 VERT_UNLSTCK_API_PHIGHAGE,
+    0 VERT_UNLSTCK_API_GTOTAL,
+        ----------------
+    0 VERT_UNLSTCK_BPRS_1T53,
+    0 VERT_UNLSTCK_BPRS_HIGHAGE,
+    0 VERT_UNLSTCK_BPRS_PHIGHAGE,
+    0 VERT_UNLSTCK_BPRS_GTOTAL,
+        ----------------
+    0 VERT_UNLSTCK_CS_1T53,
+    0 VERT_UNLSTCK_CS_HIGHAGE,
+    0 VERT_UNLSTCK_CS_PHIGHAGE,
+    0 VERT_UNLSTCK_CS_GTOTAL,
+        ----------------
+    0 VERT_UNLSTCK_EXPORT_1T53,
+    0 VERT_UNLSTCK_EXPORT_HIGHAGE,
+    0 VERT_UNLSTCK_EXPORT_PHIGHAGE,
+    0 VERT_UNLSTCK_EXPORT_GTOTAL,
+            ----------------
+    0 VERT_UNLSTCK_TOTAL_1T53,
+    0 VERT_UNLSTCK_TOTAL_HIGHAGE,
+    0 VERT_UNLSTCK_TOTAL_PHIGHAGE,
+    0 VERT_UNLSTCK_TOTAL_GTOTAL,
+ -----------------------VERTICAL------------------------
+    0 VERT_BPR_SIGNOFF,
+    0 VERT_BPR_GRC,
+    0 VERT_BPR_SUMSIGNOFF,
+    0 VERT_BPR_NONSIGNOFF,
+    0 VERT_BPR_GAP,
+                ----------------
+    0 VERT_CE_SIGNOFF,
+    0 VERT_CE_GRC,
+    0 VERT_CE_SUMSIGNOFF,
+    0 VERT_CE_NONSIGNOFF,
+    0 VERT_CE_GAP,
+                    ----------------
+    0 VERT_CS_SIGNOFF,
+    0 VERT_CS_GRC,
+    0 VERT_CS_SUMSIGNOFF,
+    0 VERT_CS_NONSIGNOFF,
+    0 VERT_CS_GAP,
+                    ----------------
+    0 VERT_EP_SIGNOFF,
+    0 VERT_EP_GRC,
+    0 VERT_EP_SUMSIGNOFF,
+    0 VERT_EP_NONSIGNOFF,
+    0 VERT_EP_GAP,
+                    ----------------
+    0 VERT_TOTAL_SIGNOFF,
+    0 VERT_TOTAL_GRC,
+    0 VERT_TOTAL_SUMSIGNOFF,
+    0 VERT_TOTAL_NONSIGNOFF,
+    0 VERT_TOTAL_GAP,
+----------------ZONE----------------
+    0 ZONE_API_SIGNOFF,
+    0 ZONE_API_GRC,
+    0 ZONE_API_SUMSIGNOFF,
+    0 ZONE_API_NONSIGNOFF,
+    0 ZONE_API_GAP,
+    -------------------------
+    0 ZONE_EAST_SIGNOFF,
+    0 ZONE_EAST_GRC,
+    0 ZONE_EAST_SUMSIGNOFF,
+    0 ZONE_EAST_NONSIGNOFF,
+    0 ZONE_EAST_GAP,
+        -------------------------
+    0 ZONE_NORTH_SIGNOFF,
+    0 ZONE_NORTH_GRC,
+    0 ZONE_NORTH_SUMSIGNOFF,
+    0 ZONE_NORTH_NONSIGNOFF,
+    0 ZONE_NORTH_GAP,
+        -------------------------
+    0 ZONE_SOUTH_SIGNOFF,
+    0 ZONE_SOUTH_GRC,
+    0 ZONE_SOUTH_SUMSIGNOFF,
+    0 ZONE_SOUTH_NONSIGNOFF,
+    0 ZONE_SOUTH_GAP,
+        -------------------------
+    0 ZONE_WEST_SIGNOFF,
+    0 ZONE_WEST_GRC,
+    0 ZONE_WEST_SUMSIGNOFF,
+    0 ZONE_WEST_NONSIGNOFF,
+    0 ZONE_WEST_GAP,
+        -------------------------
+    0 ZONE_GTOTAL_SIGNOFF,
+    0 ZONE_GTOTAL_GRC,
+    0 ZONE_GTOTAL_SUMSIGNOFF,
+    0 ZONE_GTOTAL_NONSIGNOFF,
+    0 ZONE_GTOTAL_GAP
+    ----LOGIC NOT PROVIDED
+FROM
+(
+    SELECT
+        SUM(NVL(EOP_BTD,0)) EOP_BTD,
+        SUM(NVL(EOP_BTP,0)) EOP_BTP,
+        SUM(NVL(EOP_MILLSCH_QTY,0)) EOP_MILLSCH_QTY,
+        SUM(NVL(EOP_SIGNOF_QTY,0)) EOP_SIGNOF_QTY
+    FROM V_LDP_ORDER_PROG,
+         V_END_CUST_ORD_EPA
+    WHERE EOP_CD_EPA = ENC_CD_EPA
+      AND EOP_ID_ORDER = ENC_ID_ORDER
+      AND EOP_NO_ITEM = ENC_NO_ITEM
+      AND ENC_DT_ORD_CREATE >= SYSDATE - 365
+      AND ENC_ST_ORDER = 'A'
+      AND EOP_CD_EPA = '0780'
+) M
+CROSS JOIN
+(
+    SELECT
+        -- Segment-based sums
+        SUM(CASE WHEN EOP_SEGEMENT = 'Branded Products & Retail' THEN NVL(EOP_BTD,0) ELSE 0 END) AS BPRTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Branded Products & Retail' THEN NVL(EOP_BTP,0) ELSE 0 END) AS BPRTUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Commercial & Exports' THEN NVL(EOP_BTD,0) ELSE 0 END) AS CETUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Commercial & Exports' THEN NVL(EOP_BTP,0) ELSE 0 END) AS CETUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Construction and Solution' THEN NVL(EOP_BTD,0) ELSE 0 END) AS CSTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Construction and Solution' THEN NVL(EOP_BTP,0) ELSE 0 END) AS CSTUBE_BTP,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Engineering & Packaging - Tubes' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EPTUBE_BTD,
+        SUM(CASE WHEN EOP_SEGEMENT = 'Engineering & Packaging - Tubes' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EPTUBE_BTP,
+        -- Zone-based sums
+        SUM(CASE WHEN EOP_ZONE = 'API' THEN NVL(EOP_BTD,0) ELSE 0 END) AS API_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'API' THEN NVL(EOP_BTP,0) ELSE 0 END) AS API_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'East' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EAST_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'East' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EAST_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'North' THEN NVL(EOP_BTD,0) ELSE 0 END) AS NORTH_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'North' THEN NVL(EOP_BTP,0) ELSE 0 END) AS NORTH_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'South' THEN NVL(EOP_BTD,0) ELSE 0 END) AS SOUTH_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'South' THEN NVL(EOP_BTP,0) ELSE 0 END) AS SOUTH_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'West' THEN NVL(EOP_BTD,0) ELSE 0 END) AS WEST_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'West' THEN NVL(EOP_BTP,0) ELSE 0 END) AS WEST_BTP,
+        SUM(CASE WHEN EOP_ZONE = 'Export' THEN NVL(EOP_BTD,0) ELSE 0 END) AS EXPORT_BTD,
+        SUM(CASE WHEN EOP_ZONE = 'Export' THEN NVL(EOP_BTP,0) ELSE 0 END) AS EXPORT_BTP
+    FROM V_LDP_ORDER_PROG
+) S
+)
+SELECT 'Combined Order Table-Vertical' "Table Key", 1 "Display Order", 'Branded Products & Retail' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.BPRTUBE_BTD,0) "BOP", NVL(B.BPRTUBE_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Vertical' "Table Key", 2 "Display Order", 'Commercial & Exports' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.CETUBE_BTD,0) "BOP", NVL(B.CETUBE_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Vertical' "Table Key", 3 "Display Order", 'Construction and Solution' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.CSTUBE_BTD,0) "BOP", NVL(B.CSTUBE_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Vertical' "Table Key", 4 "Display Order", 'Engineering & Packaging - Tubes' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.EPTUBE_BTD,0) "BOP", NVL(B.EPTUBE_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Zone' "Table Key", 1 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'API' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.API_BTD,0) "BOP", NVL(B.API_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Zone' "Table Key", 2 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EAST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.EAST_BTD,0) "BOP", NVL(B.EAST_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+
+UNION ALL
+SELECT 'Combined Order Table-Zone' "Table Key", 3 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'NORTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.NORTH_BTD,0) "BOP", NVL(B.NORTH_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Zone' "Table Key", 4 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'SOUTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.SOUTH_BTD,0) "BOP", NVL(B.SOUTH_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Zone' "Table Key", 5 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'WEST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.WEST_BTD,0) "BOP", NVL(B.WEST_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Combined Order Table-Zone' "Table Key", 6 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EXPORT' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", NVL(B.EXPORT_BTD,0) "BOP", NVL(B.EXPORT_BTP,0) "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Vertical' "Table Key", 1 "Display Order", 'Branded Products & Retail' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.VERTICAL_BP_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.VERTICAL_BP_HIGHAGE,0) "High Age", NVL(B.VERTICAL_BP_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Vertical' "Table Key", 2 "Display Order", 'Commercial & Exports' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.VERTICAL_CE_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.VERTICAL_CE_HIGHAGE,0) "High Age", NVL(B.VERTICAL_CE_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Vertical' "Table Key", 3 "Display Order", 'Construction and Solution' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.VERTICAL_CS_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.VERTICAL_CS_HIGHAGE,0) "High Age", NVL(B.VERTICAL_CS_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Vertical' "Table Key", 4 "Display Order", 'Engineering & Packaging - Tubes' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.VERTICAL_EP_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.VERTICAL_EP_HIGHAGE,0) "High Age", NVL(B.VERTICAL_EP_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Zone' "Table Key", 1 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'API' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.ZONE_API_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.ZONE_API_HIGHAGE,0) "High Age", NVL(B.ZONE_API_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Zone' "Table Key", 2 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EAST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.ZONE_EAST_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.ZONE_EAST_HIGHAGE,0) "High Age", NVL(B.ZONE_EAST_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+
+UNION ALL
+SELECT 'Stock Table - Zone' "Table Key", 3 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'NORTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.ZONE_NORTH_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.ZONE_NORTH_HIGHAGE,0) "High Age", NVL(B.ZONE_NORTH_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Zone' "Table Key", 4 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'SOUTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.ZONE_SOUTH_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.ZONE_SOUTH_HIGHAGE,0) "High Age", NVL(B.ZONE_SOUTH_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Zone' "Table Key", 5 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'WEST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.ZONE_WEST_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.ZONE_WEST_HIGHAGE,0) "High Age", NVL(B.ZONE_WEST_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Zone' "Table Key", 6 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EXPORT' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.ZONE_EXPORT_GTOTAL,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", NVL(B.ZONE_EXPORT_HIGHAGE,0) "High Age", NVL(B.ZONE_EXPORT_PHIGHAGE,0) "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Type' "Table Key", 1 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", 'Linked' "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.TOTAL_LINK_STK,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Type' "Table Key", 2 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", 'Unlinked' "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", NVL(B.TOTAL_UNLINK_STK,0) "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Age' "Table Key", 1 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", '0-7 days' "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Age' "Table Key", 2 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", '8-30 days' "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Age' "Table Key", 3 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", '31-60 days' "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Age' "Table Key", 4 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", '61-90 days' "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'Stock Table - Age' "Table Key", 5 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", '90+ days' "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Vertical' "Table Key", 1 "Display Order", 'Branded Products & Retail' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_BPR_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_BPR_GRC,0) "GRN Complete", NVL(B.VERT_BPR_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_BPR_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Vertical' "Table Key", 2 "Display Order", 'Commercial & Exports' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_CE_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_CE_GRC,0) "GRN Complete", NVL(B.VERT_CE_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_CE_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Vertical' "Table Key", 3 "Display Order", 'Construction and Solution' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_CS_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_CS_GRC,0) "GRN Complete", NVL(B.VERT_CS_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_CS_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Vertical' "Table Key", 4 "Display Order", 'Engineering & Packaging - Tubes' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_EP_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_EP_GRC,0) "GRN Complete", NVL(B.VERT_EP_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_EP_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Zone' "Table Key", 1 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'API' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_API_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_API_GRC,0) "GRN Complete", NVL(B.ZONE_API_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_API_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Zone' "Table Key", 2 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EAST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_EAST_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_EAST_GRC,0) "GRN Complete", NVL(B.ZONE_EAST_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_EAST_GAP,0) "Gap" FROM BASE B
+
+UNION ALL
+SELECT 'BOP Table - Zone' "Table Key", 3 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'NORTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_NORTH_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_NORTH_GRC,0) "GRN Complete", NVL(B.ZONE_NORTH_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_NORTH_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Zone' "Table Key", 4 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'SOUTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_SOUTH_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_SOUTH_GRC,0) "GRN Complete", NVL(B.ZONE_SOUTH_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_SOUTH_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Zone' "Table Key", 5 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'WEST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_WEST_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_WEST_GRC,0) "GRN Complete", NVL(B.ZONE_WEST_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_WEST_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOP Table - Zone' "Table Key", 6 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EXPORT' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Vertical' "Table Key", 1 "Display Order", 'Branded Products & Retail' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_BPR_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_BPR_GRC,0) "GRN Complete", NVL(B.VERT_BPR_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_BPR_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Vertical' "Table Key", 2 "Display Order", 'Commercial & Exports' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_CE_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_CE_GRC,0) "GRN Complete", NVL(B.VERT_CE_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_CE_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Vertical' "Table Key", 3 "Display Order", 'Construction and Solution' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_CS_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_CS_GRC,0) "GRN Complete", NVL(B.VERT_CS_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_CS_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Vertical' "Table Key", 4 "Display Order", 'Engineering & Packaging - Tubes' "Vertical", CAST(NULL AS VARCHAR2(120)) "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.VERT_EP_SIGNOFF,0) "Signoff Qty", NVL(B.VERT_EP_GRC,0) "GRN Complete", NVL(B.VERT_EP_NONSIGNOFF,0) "Non Signoff", NVL(B.VERT_EP_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Zone' "Table Key", 1 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'API' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_API_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_API_GRC,0) "GRN Complete", NVL(B.ZONE_API_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_API_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Zone' "Table Key", 2 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EAST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_EAST_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_EAST_GRC,0) "GRN Complete", NVL(B.ZONE_EAST_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_EAST_GAP,0) "Gap" FROM BASE B
+
+UNION ALL
+SELECT 'BOF Table - Zone' "Table Key", 3 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'NORTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_NORTH_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_NORTH_GRC,0) "GRN Complete", NVL(B.ZONE_NORTH_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_NORTH_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Zone' "Table Key", 4 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'SOUTH' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_SOUTH_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_SOUTH_GRC,0) "GRN Complete", NVL(B.ZONE_SOUTH_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_SOUTH_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Zone' "Table Key", 5 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'WEST' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", NVL(B.ZONE_WEST_SIGNOFF,0) "Signoff Qty", NVL(B.ZONE_WEST_GRC,0) "GRN Complete", NVL(B.ZONE_WEST_NONSIGNOFF,0) "Non Signoff", NVL(B.ZONE_WEST_GAP,0) "Gap" FROM BASE B
+UNION ALL
+SELECT 'BOF Table - Zone' "Table Key", 6 "Display Order", CAST(NULL AS VARCHAR2(120)) "Vertical", 'EXPORT' "Zone", CAST(NULL AS VARCHAR2(120)) "Stock Type", CAST(NULL AS VARCHAR2(120)) "Age Bucket", 0 "BOP", 0 "BOF", 0 "Pending DO", 0 "Stock Qty", 0 "Linked Stock", 0 "Unlinked Stock", 0 "Hold MT", 0 "High Age", 0 "Potential High Age", 0 "Signoff Qty", 0 "GRN Complete", 0 "Non Signoff", 0 "Gap" FROM BASE B]]></relation><metadata-records><metadata-record class='column'><remote-name>Table Key</remote-name><remote-type>129</remote-type><local-name>[Table Key]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>string</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Display Order</remote-name><remote-type>129</remote-type><local-name>[Display Order]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>integer</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Vertical</remote-name><remote-type>129</remote-type><local-name>[Vertical]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>string</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Zone</remote-name><remote-type>129</remote-type><local-name>[Zone]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>string</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Stock Type</remote-name><remote-type>129</remote-type><local-name>[Stock Type]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>string</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Age Bucket</remote-name><remote-type>129</remote-type><local-name>[Age Bucket]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>string</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>BOP</remote-name><remote-type>5</remote-type><local-name>[BOP]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>BOF</remote-name><remote-type>5</remote-type><local-name>[BOF]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Pending DO</remote-name><remote-type>5</remote-type><local-name>[Pending DO]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Stock Qty</remote-name><remote-type>5</remote-type><local-name>[Stock Qty]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Linked Stock</remote-name><remote-type>5</remote-type><local-name>[Linked Stock]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Unlinked Stock</remote-name><remote-type>5</remote-type><local-name>[Unlinked Stock]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Hold MT</remote-name><remote-type>5</remote-type><local-name>[Hold MT]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>High Age</remote-name><remote-type>5</remote-type><local-name>[High Age]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Potential High Age</remote-name><remote-type>5</remote-type><local-name>[Potential High Age]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Signoff Qty</remote-name><remote-type>5</remote-type><local-name>[Signoff Qty]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>GRN Complete</remote-name><remote-type>5</remote-type><local-name>[GRN Complete]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Non Signoff</remote-name><remote-type>5</remote-type><local-name>[Non Signoff]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record><metadata-record class='column'><remote-name>Gap</remote-name><remote-type>5</remote-type><local-name>[Gap]</local-name><parent-name>[LDP Dashboard Query]</parent-name><local-type>real</local-type><object-id>[LDP Dashboard Query]</object-id></metadata-record></metadata-records></connection><aliases enabled='yes' /><column datatype='string' name='[Table Key]' role='dimension' type='nominal' /><column datatype='integer' name='[Display Order]' role='measure' type='quantitative' /><column datatype='string' name='[Vertical]' role='dimension' type='nominal' /><column datatype='string' name='[Zone]' role='dimension' type='nominal' /><column datatype='string' name='[Stock Type]' role='dimension' type='nominal' /><column datatype='string' name='[Age Bucket]' role='dimension' type='nominal' /><column datatype='real' name='[BOP]' role='measure' type='quantitative' /><column datatype='real' name='[BOF]' role='measure' type='quantitative' /><column datatype='real' name='[Pending DO]' role='measure' type='quantitative' /><column datatype='real' name='[Stock Qty]' role='measure' type='quantitative' /><column datatype='real' name='[Linked Stock]' role='measure' type='quantitative' /><column datatype='real' name='[Unlinked Stock]' role='measure' type='quantitative' /><column datatype='real' name='[Hold MT]' role='measure' type='quantitative' /><column datatype='real' name='[High Age]' role='measure' type='quantitative' /><column datatype='real' name='[Potential High Age]' role='measure' type='quantitative' /><column datatype='real' name='[Signoff Qty]' role='measure' type='quantitative' /><column datatype='real' name='[GRN Complete]' role='measure' type='quantitative' /><column datatype='real' name='[Non Signoff]' role='measure' type='quantitative' /><column datatype='real' name='[Gap]' role='measure' type='quantitative' /></datasource>
