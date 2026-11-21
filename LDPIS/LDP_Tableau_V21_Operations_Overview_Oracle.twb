@@ -835,15 +835,15 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
                 <alias key='3' value='Signoff Qty' />
                 <alias key='4' value='1 To 53' />
                 <alias key='5' value='B2P' />
-                <alias key='6' value='Grn Compliance' />
+                <alias key='6' value='Grn&#10;Compliance' />
                 <alias key='7' value='High Age' />
                 <alias key='8' value='Pending Do' />
                 <alias key='9' value='GRN Compliance (%)' />
-                <alias key='10' value='SIGNOFF GRN' />
-                <alias key='11' value='Potential High Age' />
+                <alias key='10' value='SIGNOFF&#10;GRN' />
+                <alias key='11' value='Potential&#10;High Age' />
                 <alias key='12' value='Total Linked Stock' />
                 <alias key='13' value='Rolling Osp' />
-                <alias key='14' value='NON SIGNOFF GRN' />
+                <alias key='14' value='NON&#10;SIGNOFF&#10;GRN' />
                 <alias key='15' value='Grand Total' />
                 <alias key='16' value='Total Unlink Stock' />
                 <alias key='17' value='Rolling MTD' />
@@ -862,13 +862,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
             <column datatype='integer' name='[Vertical]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END' />
               <aliases>
-                <alias key='1' value='Branded Products &amp; Retail' />
+                <alias key='1' value='Branded Products&#10;&amp; Retail' />
                 <alias key='2' value='API' />
-                <alias key='3' value='Commercial &amp; Exports' />
+                <alias key='3' value='Commercial&#10;&amp; Exports' />
                 <alias key='4' value='BPRS' />
-                <alias key='5' value='Construction and Solution' />
+                <alias key='5' value='Construction&#10;and Solution' />
                 <alias key='6' value='C&amp;S' />
-                <alias key='7' value='Engineering &amp; Packaging - Tubes' />
+                <alias key='7' value='Engineering &amp;&#10;Packaging - Tubes' />
                 <alias key='8' value='EXPORT' />
                 <alias key='9' value='Grand Total' />
               </aliases>
@@ -888,11 +888,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
         </view>
         <style>
           <style-rule element='cell'>
+            <format attr='height' value='36' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Metric:ok]' value='86' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='240' />
             <format attr='text-align' value='center' />
           </style-rule>
           <style-rule element='header'>
+            <format attr='wrap' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='on' />
             <format attr='height' field='[federated.ldp_live_v13].[none:Metric:ok]' value='52' />
             <format attr='background-color' value='#edf2f3' />
             <format attr='text-align' value='center' />
@@ -1162,13 +1164,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
             <column datatype='integer' name='[Vertical]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END' />
               <aliases>
-                <alias key='1' value='Branded Products &amp; Retail' />
+                <alias key='1' value='Branded Products&#10;&amp; Retail' />
                 <alias key='2' value='API' />
-                <alias key='3' value='Commercial &amp; Exports' />
+                <alias key='3' value='Commercial&#10;&amp; Exports' />
                 <alias key='4' value='BPRS' />
-                <alias key='5' value='Construction and Solution' />
+                <alias key='5' value='Construction&#10;and Solution' />
                 <alias key='6' value='C&amp;S' />
-                <alias key='7' value='Engineering &amp; Packaging - Tubes' />
+                <alias key='7' value='Engineering &amp;&#10;Packaging - Tubes' />
                 <alias key='8' value='EXPORT' />
                 <alias key='9' value='Grand Total' />
               </aliases>
@@ -1188,11 +1190,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
         </view>
         <style>
           <style-rule element='cell'>
+            <format attr='height' value='36' />
             <format attr='text-align' value='center' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Metric:ok]' value='171' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='240' />
           </style-rule>
           <style-rule element='header'>
+            <format attr='wrap' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='on' />
             <format attr='background-color' value='#edf2f3' />
             <format attr='text-align' value='center' />
             <format attr='font-size' value='9' />
@@ -1427,15 +1431,15 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
                 <alias key='3' value='Signoff Qty' />
                 <alias key='4' value='1 To 53' />
                 <alias key='5' value='B2P' />
-                <alias key='6' value='Grn Compliance' />
+                <alias key='6' value='Grn&#10;Compliance' />
                 <alias key='7' value='High Age' />
                 <alias key='8' value='Pending Do' />
                 <alias key='9' value='GRN Compliance (%)' />
-                <alias key='10' value='SIGNOFF GRN' />
-                <alias key='11' value='Potential High Age' />
+                <alias key='10' value='SIGNOFF&#10;GRN' />
+                <alias key='11' value='Potential&#10;High Age' />
                 <alias key='12' value='Total Linked Stock' />
                 <alias key='13' value='Rolling Osp' />
-                <alias key='14' value='NON SIGNOFF GRN' />
+                <alias key='14' value='NON&#10;SIGNOFF&#10;GRN' />
                 <alias key='15' value='Grand Total' />
                 <alias key='16' value='Total Unlink Stock' />
                 <alias key='17' value='Rolling MTD' />
@@ -1454,13 +1458,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
             <column datatype='integer' name='[Vertical]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END' />
               <aliases>
-                <alias key='1' value='Branded Products &amp; Retail' />
+                <alias key='1' value='Branded Products&#10;&amp; Retail' />
                 <alias key='2' value='API' />
-                <alias key='3' value='Commercial &amp; Exports' />
+                <alias key='3' value='Commercial&#10;&amp; Exports' />
                 <alias key='4' value='BPRS' />
-                <alias key='5' value='Construction and Solution' />
+                <alias key='5' value='Construction&#10;and Solution' />
                 <alias key='6' value='C&amp;S' />
-                <alias key='7' value='Engineering &amp; Packaging - Tubes' />
+                <alias key='7' value='Engineering &amp;&#10;Packaging - Tubes' />
                 <alias key='8' value='EXPORT' />
                 <alias key='9' value='Grand Total' />
               </aliases>
@@ -1480,11 +1484,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
         </view>
         <style>
           <style-rule element='cell'>
+            <format attr='height' value='36' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Metric:ok]' value='68' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='240' />
             <format attr='text-align' value='center' />
           </style-rule>
           <style-rule element='header'>
+            <format attr='wrap' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='on' />
             <format attr='height' field='[federated.ldp_live_v13].[none:Metric:ok]' value='64' />
             <format attr='background-color' value='#edf2f3' />
             <format attr='text-align' value='center' />
@@ -1531,15 +1537,15 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
                 <alias key='3' value='Signoff Qty' />
                 <alias key='4' value='1 To 53' />
                 <alias key='5' value='B2P' />
-                <alias key='6' value='Grn Compliance' />
+                <alias key='6' value='Grn&#10;Compliance' />
                 <alias key='7' value='High Age' />
                 <alias key='8' value='Pending Do' />
                 <alias key='9' value='GRN Compliance (%)' />
-                <alias key='10' value='SIGNOFF GRN' />
-                <alias key='11' value='Potential High Age' />
+                <alias key='10' value='SIGNOFF&#10;GRN' />
+                <alias key='11' value='Potential&#10;High Age' />
                 <alias key='12' value='Total Linked Stock' />
                 <alias key='13' value='Rolling Osp' />
-                <alias key='14' value='NON SIGNOFF GRN' />
+                <alias key='14' value='NON&#10;SIGNOFF&#10;GRN' />
                 <alias key='15' value='Grand Total' />
                 <alias key='16' value='Total Unlink Stock' />
                 <alias key='17' value='Rolling MTD' />
@@ -1719,15 +1725,15 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
                 <alias key='3' value='Signoff Qty' />
                 <alias key='4' value='1 To 53' />
                 <alias key='5' value='B2P' />
-                <alias key='6' value='Grn Compliance' />
+                <alias key='6' value='Grn&#10;Compliance' />
                 <alias key='7' value='High Age' />
                 <alias key='8' value='Pending Do' />
                 <alias key='9' value='GRN Compliance (%)' />
-                <alias key='10' value='SIGNOFF GRN' />
-                <alias key='11' value='Potential High Age' />
+                <alias key='10' value='SIGNOFF&#10;GRN' />
+                <alias key='11' value='Potential&#10;High Age' />
                 <alias key='12' value='Total Linked Stock' />
                 <alias key='13' value='Rolling Osp' />
-                <alias key='14' value='NON SIGNOFF GRN' />
+                <alias key='14' value='NON&#10;SIGNOFF&#10;GRN' />
                 <alias key='15' value='Grand Total' />
                 <alias key='16' value='Total Unlink Stock' />
                 <alias key='17' value='Rolling MTD' />
@@ -1746,13 +1752,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
             <column datatype='integer' name='[Vertical]' role='dimension' type='ordinal'>
               <calculation class='tableau' formula='CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END' />
               <aliases>
-                <alias key='1' value='Branded Products &amp; Retail' />
+                <alias key='1' value='Branded Products&#10;&amp; Retail' />
                 <alias key='2' value='API' />
-                <alias key='3' value='Commercial &amp; Exports' />
+                <alias key='3' value='Commercial&#10;&amp; Exports' />
                 <alias key='4' value='BPRS' />
-                <alias key='5' value='Construction and Solution' />
+                <alias key='5' value='Construction&#10;and Solution' />
                 <alias key='6' value='C&amp;S' />
-                <alias key='7' value='Engineering &amp; Packaging - Tubes' />
+                <alias key='7' value='Engineering &amp;&#10;Packaging - Tubes' />
                 <alias key='8' value='EXPORT' />
                 <alias key='9' value='Grand Total' />
               </aliases>
@@ -1772,11 +1778,13 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
         </view>
         <style>
           <style-rule element='cell'>
+            <format attr='height' value='36' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Metric:ok]' value='86' />
             <format attr='width' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='240' />
             <format attr='text-align' value='center' />
           </style-rule>
           <style-rule element='header'>
+            <format attr='wrap' field='[federated.ldp_live_v13].[none:Vertical:ok]' value='on' />
             <format attr='height' field='[federated.ldp_live_v13].[none:Metric:ok]' value='44' />
             <format attr='background-color' value='#edf2f3' />
             <format attr='text-align' value='center' />
@@ -2130,7 +2138,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </slices>
           <aggregation value='true' />
         </view>
-        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='16'/></style-rule></style>
+        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='11'/></style-rule></style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -2198,7 +2206,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </slices>
           <aggregation value='true' />
         </view>
-        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='16'/></style-rule></style>
+        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='11'/></style-rule></style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -2266,7 +2274,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </slices>
           <aggregation value='true' />
         </view>
-        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='16'/></style-rule></style>
+        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='11'/></style-rule></style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -2334,7 +2342,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </slices>
           <aggregation value='true' />
         </view>
-        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='16'/></style-rule></style>
+        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='11'/></style-rule></style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -2402,7 +2410,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </slices>
           <aggregation value='true' />
         </view>
-        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='16'/></style-rule></style>
+        <style><style-rule element='cell'><format attr='text-align' value='center'/><format attr='font-size' value='11'/></style-rule></style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -3116,16 +3124,16 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
 <zone id='9216' x='778' y='15868' w='16000' h='3636' name='Order KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9219' x='16944' y='13719' w='16000' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Linked stock</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
 <zone id='9220' x='16944' y='15868' w='16000' h='3636' name='Order KPI 4' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9223' x='33833' y='7603' w='6333' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Total stock</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
-<zone id='9224' x='33833' y='9752' w='6333' h='3966' name='Stock KPI 1' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9227' x='40278' y='7603' w='6333' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Linked</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
-<zone id='9228' x='40278' y='9752' w='6333' h='3966' name='Stock KPI 2' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9231' x='46722' y='7603' w='6333' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Unlinked</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
-<zone id='9232' x='46722' y='9752' w='6333' h='3966' name='Stock KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9235' x='53167' y='7603' w='6333' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Hold (MT)</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
-<zone id='9236' x='53167' y='9752' w='6333' h='3966' name='Stock KPI 4' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9239' x='59611' y='7603' w='6333' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Hold (%)</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
-<zone id='9240' x='59611' y='9752' w='6333' h='3966' name='Stock KPI 5' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9223' x='33833' y='7603' w='7950' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Total stock</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
+<zone id='9224' x='33833' y='9752' w='7950' h='3966' name='Stock KPI 1' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9227' x='41894' y='7603' w='7600' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Linked</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
+<zone id='9228' x='41894' y='9752' w='7600' h='3966' name='Stock KPI 2' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9231' x='49605' y='7603' w='5500' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Unlinked</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
+<zone id='9232' x='49605' y='9752' w='5500' h='3966' name='Stock KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9235' x='55216' y='7603' w='5500' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Hold (MT)</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
+<zone id='9236' x='55216' y='9752' w='5500' h='3966' name='Stock KPI 4' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9239' x='60827' y='7603' w='5115' h='2148' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Hold (%)</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
+<zone id='9240' x='60827' y='9752' w='5115' h='3966' name='Stock KPI 5' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9243' x='33833' y='13967' w='32222' h='2066' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Stock mix   •   Linked (teal)   /   Unlinked (grey)</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
 <zone id='9244' x='33833' y='16033' w='32222' h='3801' name='Stock composition' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9245' x='66889' y='7603' w='10666' h='1983' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Signoff</run></formatted-text><zone-style><format attr='background-color' value='#cbe5df'/></zone-style></zone>
@@ -3133,22 +3141,22 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
 <zone id='9249' x='72333' y='9752' w='5222' h='3223' name='Signoff KPI 1' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9252' x='66889' y='13058' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>GRN</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
 <zone id='9253' x='72333' y='13058' w='5222' h='3223' name='Signoff KPI 2' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9256' x='66889' y='16364' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>Compliance (%)</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
-<zone id='9257' x='72333' y='16364' w='5222' h='3223' name='Signoff KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9256' x='66889' y='16364' w='6444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>Compliance&#10;(%)</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
+<zone id='9257' x='73333' y='16364' w='4222' h='3223' name='Signoff KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9258' x='77667' y='7603' w='10666' h='1983' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Rolling</run></formatted-text><zone-style><format attr='background-color' value='#cbe5df'/></zone-style></zone>
 <zone id='9261' x='77667' y='9752' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>OSP</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
 <zone id='9262' x='83111' y='9752' w='5222' h='3223' name='Rolling KPI 1' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9265' x='77667' y='13058' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>MTD</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
 <zone id='9266' x='83111' y='13058' w='5222' h='3223' name='Rolling KPI 2' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9269' x='77667' y='16364' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>Compliance (%)</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
-<zone id='9270' x='83111' y='16364' w='5222' h='3223' name='Rolling KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9269' x='77667' y='16364' w='6444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>Compliance&#10;(%)</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
+<zone id='9270' x='84111' y='16364' w='4222' h='3223' name='Rolling KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9271' x='88444' y='7603' w='10666' h='1983' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Production</run></formatted-text><zone-style><format attr='background-color' value='#cbe5df'/></zone-style></zone>
 <zone id='9274' x='88444' y='9752' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>OSP</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
 <zone id='9275' x='93889' y='9752' w='5222' h='3223' name='Production KPI 1' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9278' x='88444' y='13058' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>MTD</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
 <zone id='9279' x='93889' y='13058' w='5222' h='3223' name='Production KPI 2' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
-<zone id='9282' x='88444' y='16364' w='5444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>Compliance (%)</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
-<zone id='9283' x='93889' y='16364' w='5222' h='3223' name='Production KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
+<zone id='9282' x='88444' y='16364' w='6444' h='3223' type-v2='text'><formatted-text><run bold='true' fontcolor='#19364e' fontsize='9'>Compliance&#10;(%)</run></formatted-text><zone-style><format attr='background-color' value='#f4f7f7'/></zone-style></zone>
+<zone id='9283' x='94889' y='16364' w='4222' h='3223' name='Production KPI 3' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9284' x='778' y='20744' w='32222' h='2479' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Orders by vertical</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
 <zone id='9285' x='778' y='23306' w='32222' h='21570' name='Orders by vertical' show-title='false'><zone-style><format attr='border-color' value='#d3dddf'/><format attr='border-style' value='solid'/><format attr='border-width' value='1'/></zone-style></zone>
 <zone id='9286' x='778' y='45868' w='32222' h='2479' type-v2='text'><formatted-text><run bold='true' fontcolor='#17354f' fontsize='12'>Orders by zone</run></formatted-text><zone-style><format attr='background-color' value='#eaf0f1'/></zone-style></zone>
@@ -3591,6 +3599,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </strip>
         </edge>
       </cards>
+      <viewpoint><zoom type='entire-view' /></viewpoint>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009222}' />
     </window>
 <window class='worksheet' name='Stock KPI 2'>
@@ -3614,6 +3623,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </strip>
         </edge>
       </cards>
+      <viewpoint><zoom type='entire-view' /></viewpoint>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009226}' />
     </window>
 <window class='worksheet' name='Stock KPI 3'>
@@ -3637,6 +3647,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </strip>
         </edge>
       </cards>
+      <viewpoint><zoom type='entire-view' /></viewpoint>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009230}' />
     </window>
 <window class='worksheet' name='Stock KPI 4'>
@@ -3660,6 +3671,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </strip>
         </edge>
       </cards>
+      <viewpoint><zoom type='entire-view' /></viewpoint>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009234}' />
     </window>
 <window class='worksheet' name='Stock KPI 5'>
@@ -3683,6 +3695,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK / 
           </strip>
         </edge>
       </cards>
+      <viewpoint><zoom type='entire-view' /></viewpoint>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009238}' />
     </window>
 <window class='worksheet' name='Stock composition'>
