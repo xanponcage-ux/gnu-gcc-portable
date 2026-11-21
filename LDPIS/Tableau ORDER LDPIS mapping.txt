@@ -295,6 +295,13 @@ WEST
     NON SIGNOFF GRN     -> ZONE_WEST_NONSIGNOFF
     GAP                 -> ZONE_WEST_GAP
 
+EXPORT
+    Signoff Qty         -> ZONE_EXPORT_SIGNOFF
+    Grn Compliance      -> ZONE_EXPORT_GRC
+    SIGNOFF GRN         -> ZONE_EXPORT_SUMSIGNOFF
+    NON SIGNOFF GRN     -> ZONE_EXPORT_NONSIGNOFF
+    GAP                 -> ZONE_EXPORT_GAP
+
 Grand Total
     Signoff Qty         -> ZONE_GTOTAL_SIGNOFF
     Grn Compliance      -> ZONE_GTOTAL_GRC
