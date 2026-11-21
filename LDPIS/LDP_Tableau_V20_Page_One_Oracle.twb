@@ -829,8 +829,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="1"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="1"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -908,8 +911,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="2"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="2"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -987,8 +993,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="3"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="3"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1082,8 +1091,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="4"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="4"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1177,8 +1189,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="5"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="5"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1273,8 +1288,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="6"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="6"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1368,8 +1386,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="7"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="7"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1464,8 +1485,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="8"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="8"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1560,8 +1584,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="9"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="9"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
@@ -1655,8 +1682,11 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column-instance column="[Value]" derivation="Sum" name="[sum:Value:qk]" pivot="key" type="quantitative"/>
           </datasource-dependencies>
           <filter class="categorical" column="[federated.ldp_live_v13].[none:Table Number:ok]">
-            <groupfilter function="member" level="[federated.ldp_live_v13].[none:Table Number:ok]" member="10"/>
+            <groupfilter function="member" level="[none:Table Number:ok]" member="10"/>
           </filter>
+          <slices>
+            <column>[federated.ldp_live_v13].[none:Table Number:ok]</column>
+          </slices>
           <aggregation value="true"/>
         </view>
         <style>
