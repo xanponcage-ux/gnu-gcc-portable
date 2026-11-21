@@ -20,6 +20,14 @@ def validate(path):
         return [f"XML syntax: {exc}"]
     if root.tag != "workbook":
         errors.append("Root must be workbook")
+    # Tableau Desktop 2022.4 rejects these even in well-formed XML.
+    for selector, message in (
+        (".//column/aliases[@enabled]", "enabled is invalid on column aliases"),
+        (".//format[@attr='font-color']", "font-color is invalid on format"),
+        (".//formatted-text/run[@alignment]", "alignment is invalid on text runs"),
+    ):
+        for element in root.findall(selector):
+            errors.append(f"Line {element.sourceline}: {message}")
     sheets = {w.get("name") for w in root.findall("./worksheets/worksheet")}
     datasources = {d.get("name") for d in root.findall("./datasources/datasource")}
     dashboards = root.findall("./dashboards/dashboard")
