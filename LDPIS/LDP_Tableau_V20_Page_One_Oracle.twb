@@ -728,7 +728,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
       <column datatype="real" name="[Value]" role="measure" type="quantitative" default-format="n#,##0.##"/>
       <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
         <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-        <aliases enabled="yes">
+        <aliases>
           <alias key="1" value="B2D"/>
           <alias key="2" value="Total Stock"/>
           <alias key="3" value="Signoff Qty"/>
@@ -757,7 +757,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
       </column>
       <column datatype="integer" name="[Vertical]" role="dimension" type="ordinal">
         <calculation class="tableau" formula="CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END"/>
-        <aliases enabled="yes">
+        <aliases>
           <alias key="1" value="Branded Products &amp; Retail"/>
           <alias key="2" value="API"/>
           <alias key="3" value="Commercial &amp; Exports"/>
@@ -771,7 +771,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
       </column>
       <column datatype="integer" name="[Zone]" role="dimension" type="ordinal">
         <calculation class="tableau" formula="CASE [Table Number] WHEN 5 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END WHEN 7 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 3 WHEN 4 THEN 4 WHEN 5 THEN 5 WHEN 6 THEN 6 WHEN 7 THEN 7 WHEN 8 THEN 8 END WHEN 10 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END END"/>
-        <aliases enabled="yes">
+        <aliases>
           <alias key="1" value="API"/>
           <alias key="2" value="EAST"/>
           <alias key="3" value="ETO"/>
@@ -795,7 +795,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -835,7 +835,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="146" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
           </style-rule>
@@ -875,7 +874,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -915,7 +914,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="117" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
           </style-rule>
@@ -955,7 +953,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -995,7 +993,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="65" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
           </style-rule>
@@ -1035,7 +1032,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Vertical]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="Branded Products &amp; Retail"/>
                 <alias key="2" value="API"/>
                 <alias key="3" value="Commercial &amp; Exports"/>
@@ -1050,7 +1047,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1091,7 +1088,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="171" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Vertical:ok]"/>
@@ -1132,7 +1128,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Zone]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 5 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END WHEN 7 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 3 WHEN 4 THEN 4 WHEN 5 THEN 5 WHEN 6 THEN 6 WHEN 7 THEN 7 WHEN 8 THEN 8 END WHEN 10 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="API"/>
                 <alias key="2" value="EAST"/>
                 <alias key="3" value="ETO"/>
@@ -1146,7 +1142,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1187,7 +1183,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="171" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Zone:ok]"/>
@@ -1228,7 +1223,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Vertical]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="Branded Products &amp; Retail"/>
                 <alias key="2" value="API"/>
                 <alias key="3" value="Commercial &amp; Exports"/>
@@ -1243,7 +1238,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1284,7 +1279,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="86" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Vertical:ok]"/>
@@ -1325,7 +1319,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Zone]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 5 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END WHEN 7 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 3 WHEN 4 THEN 4 WHEN 5 THEN 5 WHEN 6 THEN 6 WHEN 7 THEN 7 WHEN 8 THEN 8 END WHEN 10 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="API"/>
                 <alias key="2" value="EAST"/>
                 <alias key="3" value="ETO"/>
@@ -1339,7 +1333,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1380,7 +1374,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="86" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Zone:ok]"/>
@@ -1421,7 +1414,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Vertical]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="Branded Products &amp; Retail"/>
                 <alias key="2" value="API"/>
                 <alias key="3" value="Commercial &amp; Exports"/>
@@ -1436,7 +1429,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1477,7 +1470,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="86" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Vertical:ok]"/>
@@ -1518,7 +1510,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Vertical]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 4 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 6 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END WHEN 8 THEN CASE [Row Number] WHEN 1 THEN 2 WHEN 2 THEN 4 WHEN 3 THEN 6 WHEN 4 THEN 8 WHEN 5 THEN 9 END WHEN 9 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 3 WHEN 3 THEN 5 WHEN 4 THEN 7 WHEN 5 THEN 9 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="Branded Products &amp; Retail"/>
                 <alias key="2" value="API"/>
                 <alias key="3" value="Commercial &amp; Exports"/>
@@ -1533,7 +1525,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1574,7 +1566,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="68" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Vertical:ok]"/>
@@ -1615,7 +1606,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Row Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Zone]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 5 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END WHEN 7 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 3 WHEN 4 THEN 4 WHEN 5 THEN 5 WHEN 6 THEN 6 WHEN 7 THEN 7 WHEN 8 THEN 8 END WHEN 10 THEN CASE [Row Number] WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 4 WHEN 4 THEN 5 WHEN 5 THEN 6 WHEN 6 THEN 7 WHEN 7 THEN 8 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="API"/>
                 <alias key="2" value="EAST"/>
                 <alias key="3" value="ETO"/>
@@ -1629,7 +1620,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
             <column datatype="integer" name="[Column Number]" role="dimension" type="ordinal"/>
             <column datatype="integer" name="[Metric]" role="dimension" type="ordinal">
               <calculation class="tableau" formula="CASE [Table Number] WHEN 1 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 WHEN 3 THEN 8 WHEN 4 THEN 12 END WHEN 2 THEN CASE [Column Number] WHEN 1 THEN 2 WHEN 2 THEN 12 WHEN 3 THEN 16 WHEN 4 THEN 19 WHEN 5 THEN 21 END WHEN 3 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 9 WHEN 4 THEN 13 WHEN 5 THEN 17 WHEN 6 THEN 20 WHEN 7 THEN 22 WHEN 8 THEN 23 WHEN 9 THEN 24 END WHEN 4 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 5 THEN CASE [Column Number] WHEN 1 THEN 1 WHEN 2 THEN 5 END WHEN 6 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 7 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 8 THEN CASE [Column Number] WHEN 1 THEN 4 WHEN 2 THEN 7 WHEN 3 THEN 11 WHEN 4 THEN 15 END WHEN 9 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END WHEN 10 THEN CASE [Column Number] WHEN 1 THEN 3 WHEN 2 THEN 6 WHEN 3 THEN 10 WHEN 4 THEN 14 WHEN 5 THEN 18 END END"/>
-              <aliases enabled="yes">
+              <aliases>
                 <alias key="1" value="B2D"/>
                 <alias key="2" value="Total Stock"/>
                 <alias key="3" value="Signoff Qty"/>
@@ -1670,7 +1661,6 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         </view>
         <style>
           <style-rule element="cell">
-            <format attr="font-color" value="#0077cc"/>
             <format attr="text-align" value="center"/>
             <format attr="width" value="68" field="[federated.ldp_live_v13].[none:Metric:ok]"/>
             <format attr="width" value="240" field="[federated.ldp_live_v13].[none:Zone:ok]"/>
@@ -1710,7 +1700,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
         <zone h="100000" id="8000" type-v2="layout-basic" w="100000" x="0" y="0">
           <zone id="8100" x="778" y="1157" w="98444" h="3140" type-v2="text">
             <formatted-text>
-              <run alignment="center" fontsize="20" bold="true">LDP Summary Dashboard</run>
+              <run fontsize="20" bold="true">LDP Summary Dashboard</run>
             </formatted-text>
             <zone-style>
               <format attr="background-color" value="#e5e5e5"/>
@@ -1718,7 +1708,7 @@ SELECT 10 "Table Number", 7 "Row Number", 5 "Column Number", ZONE_GTOTAL_GAP "Va
           </zone>
           <zone id="8111" x="33778" y="72893" w="32444" h="2314" type-v2="text">
             <formatted-text>
-              <run alignment="center" fontsize="12" bold="true">UNLINKED STOCK</run>
+              <run fontsize="12" bold="true">UNLINKED STOCK</run>
             </formatted-text>
             <zone-style>
               <format attr="background-color" value="#f4ecda"/>
