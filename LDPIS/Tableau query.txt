@@ -1,15 +1,16 @@
+
 ​SELECT
     ABS(M.EOP_BTD) AS BTD,
     ABS(M.EOP_BTR) AS BTR,
     ABS(PENDINGDO.PENDING_DO) AS PENDING_DO,
-    ABS(NVL(M.TOTAL_LNK_QTY,0)) AS TOTAL_LNK_QTY,
-    ABS(P.TOTAL_STK_CALC) AS TOTAL_STK_CALC,
+    ABS(NVL(M.EOP_FG_QTY,0)) AS TOTAL_LNK_QTY,
+    ABS(M.EOP_FG_QTY) AS TOTAL_STK_CALC,
     ABS(P.TOTAL_LINK_STK_CALC) AS TOTAL_LINK_STK_CALC,
     ABS((P.TOTAL_STK_CALC - P.TOTAL_LINK_STK_CALC)) AS TOTAL_UNLINK_STK_CALC,
     ABS(P.TOTAL_HOLD_CALC) AS TOTAL_HOLD_CALC,
     CASE
-        WHEN P.TOTAL_STK_CALC = 0 THEN 0
-        ELSE ROUND( (P.TOTAL_HOLD_CALC / P.TOTAL_STK_CALC) * 100 , 0)
+        WHEN M.EOP_FG_QTY = 0 THEN 0
+        ELSE ROUND( (P.TOTAL_HOLD_CALC / M.EOP_FG_QTY) * 100 , 0)
     END AS TOTAL_HOLD_PER,
     ABS(M.EOP_SIGNOF_QTY) AS EOP_SIGNOF_QTY,
     ABS(M.GRNCOMP_QTY) AS GRNCOMP_QTY,
@@ -244,7 +245,7 @@
     ABS(MTD_4_SOUTH_Q.MTD_4_SOUTH) AS MTD_4_SOUTH,
     ABS(MTD_4_WEST.MTD_4_WEST) AS  MTD_4_WEST, -- Renamed to avoid ambiguity
     ABS(MTD_4_CS_Q.MTD_4_CS) AS MTD_4_CS,
-    ABS(MTD_4_BPR_Q.MTD_4_BPR) AS MTD_4_BPR, 
+    ABS(MTD_4_BPR_Q.MTD_4_BPR) AS MTD_4_BPR,
     ABS(MTD_4_ENP_Q.MTD_4_ENP) AS MTD_4_ENP,
     ABS(MTD_4_CE_Q.MTD_4_CE) AS MTD_4_CE,
     -- GAP---- VALUES
@@ -253,7 +254,7 @@
     ABS((OSP_BPR_Q.OSP_BPR_VAL- MTD_4_BPR_Q.MTD_4_BPR)) OSP_BPR_VAL,
     ABS((OSP_CE_Q.OSP_CE_VAL - MTD_4_CE_Q.MTD_4_CE)) OSP_CE_VAL,
     ABS((OSP_API_Q.OSP_API_VAL - MTD_4_API_Q.MTD_4_API)) OSP_API_VAL,
-    ABS((OSP_NORTH_Q.OSP_NORTH_VAL - MTD_4_NORTH_Q.MTD_4_NORTH)) OSP_NORTH_VAL, 
+    ABS((OSP_NORTH_Q.OSP_NORTH_VAL - MTD_4_NORTH_Q.MTD_4_NORTH)) OSP_NORTH_VAL,
     ABS((OSP_SOUTH_Q.OSP_SOUTH_VAL- MTD_4_SOUTH_Q.MTD_4_SOUTH)) OSP_SOUTH_VAL,
     ABS((OSP_WEST_Q.OSP_WEST_VAL - MTD_4_WEST.MTD_4_WEST)) OSP_WEST_VAL,
     ABS((OSP_EXPORT_Q.OSP_EXPORT_VAL - MTD_4_EXPORT_Q.MTD_4_EXPORT)) OSP_EXPORT_VAL,
@@ -274,6 +275,7 @@ FROM
     SELECT
         ROUND(SUM(NVL(EOP_BTD,0)),0) EOP_BTD,
         ROUND(SUM(NVL(EOP_BTR,0)),0) EOP_BTR,
+        ROUND(SUM(NVL(EOP_FG_QTY,0)),0) EOP_FG_QTY,
          MAX(
 (
     SELECT NVL(ROUND(SUM(LOM_MS_GROSS_CAL/1000),0),0)
@@ -311,13 +313,22 @@ FROM
       AND ENC_DT_ORD_CREATE > SYSDATE - 365
       AND ENC_ST_ORDER = 'A'
       AND EOP_CD_EPA = '0780'
-      -- MILL FILTER START
---      AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-      -- MILL FILTER END
+      -- Optional FILTER START
+      AND (--MILL
+            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
+         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
+         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
+      )
+      AND (:SEGEMENT IS NULL OR ENC_SEGMENT = :SEGEMENT)--SEGMENT
+      AND (:CUSTNAME IS NULL OR ENC_CUST_NAME = :CUSTNAME) --CUSTOMER NAME
+      AND (:IND_FRT IS NULL OR ENC_FRT_IND = :IND_FRT)   --IND_FRT
+      AND (:ZONES IS NULL OR ENC_ZONE = :ZONES)    --ZONES
+      AND (:IND IS NULL OR (          --- SO/DO
+            (:IND = 'OPEN' AND ENC_BILING_BLOCK IS NULL AND ENC_DELV_BLOCK IS NULL)
+            OR
+            (:IND = 'BLOCKED' AND (ENC_BILING_BLOCK IS NULL OR ENC_DELV_BLOCK IS NULL))
+        ))
+      -- Optional FILTER END
 ) M
 CROSS JOIN
 (
@@ -350,9 +361,15 @@ CROSS JOIN
 (
     -- Aggregations from V_LDP_PRODN
     SELECT
-        NVL(ROUND(SUM(CASE WHEN LP.LOM_CD_STATUS IN ('WB','WE','WI','WF') THEN LP.LOM_MS_GROSS_CAL ELSE 0 END)/1000,0),0) AS TOTAL_STK_CALC,
-        NVL(ROUND(SUM(CASE WHEN LP.LOM_ID_ORDER_CUS IS NOT NULL AND TRIM(LP.LOM_ID_ORDER_CUS) <> '0' AND LP.LOM_CD_STATUS IN ('WB','WE','WI','WF') THEN LP.LOM_MS_GROSS_CAL ELSE 0 END)/1000,0),0) AS TOTAL_LINK_STK_CALC,
-        NVL(ROUND(SUM(CASE WHEN LP.LOM_ID_ORDER_CUS IS NOT NULL AND TRIM(LP.LOM_ID_ORDER_CUS) <> '0' AND LP.LOM_CD_STATUS = '8Q' THEN LP.LOM_MS_GROSS_CAL ELSE 0 END)/1000,0),0) AS TOTAL_HOLD_CALC
+        NVL(ROUND(SUM(CASE WHEN LP.LOM_CD_STATUS IN (SELECT DISTINCT  CD_DESC
+            FROM v_codes
+            WHERE cd_type = 'TB040'
+            AND CD_DESC1 IN ('FG STOCK')) THEN LP.LOM_MS_GROSS_CAL ELSE 0 END)/1000,0),0) AS TOTAL_STK_CALC,
+        NVL(ROUND(SUM(CASE WHEN LP.LOM_ID_ORDER_CUS IS NOT NULL AND TRIM(LP.LOM_ID_ORDER_CUS) <> '0' AND LP.LOM_CD_STATUS IN (SELECT CD_DESC
+            FROM v_codes
+            WHERE cd_type = 'TB040'
+            AND CD_DESC1 IN ('FG STOCK')) THEN LP.LOM_MS_GROSS_CAL ELSE 0 END)/1000,0),0) AS TOTAL_LINK_STK_CALC,
+        NVL(ROUND(SUM(CASE WHEN  LP.LOM_CD_STATUS = '8Q' THEN LP.LOM_MS_GROSS_CAL ELSE 0 END)/1000,0),0) AS TOTAL_HOLD_CALC
     FROM V_LDP_PRODN LP
 ) P
 CROSS JOIN
@@ -428,17 +445,14 @@ CROSS JOIN
         WHERE ENC_DT_ORD_CREATE > (SYSDATE -365)
     AND (ENC_ID_ORDER,ENC_NO_ITEM) IN (
       SELECT DISTINCT LOM_ID_ORDER_CUS,LOM_ID_ORD_ITEM_CUS FROM V_LDP_PRODN
-    WHERE LOM_CD_STATUS IN (
-    'WB','WE','WI'
+    WHERE LOM_CD_STATUS NOT IN ('WF')
+    AND LOM_CD_STATUS IN (
+    SELECT CD_DESC
+            FROM v_codes
+            WHERE cd_type = 'TB040'
+            AND CD_DESC1 IN ('FG STOCK')
     )
 )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 )O
 CROSS JOIN
 (
@@ -479,13 +493,6 @@ CROSS JOIN
           AND lp.LOM_CD_STATUS = 'WF'
     ) UNLK_STK_Q ON e.ENC_ID_ORDER = UNLK_STK_Q.TBP_ID_ORDER_NO
                              AND e.ENC_NO_ITEM = UNLK_STK_Q.TBP_ITEM_NO
-    -- MILL FILTER START
---   WHERE (
---           (:MILL_VALUE = 1 AND (e.ENC_ODIA,e.ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---        OR (:MILL_VALUE = 2 AND (e.ENC_ODIA,e.ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---        OR (:MILL_VALUE IS NULL AND (e.ENC_ODIA,e.ENC_IDIA) NOT IN (('-1','-1')))
---     )
-    -- MILL FILTER END
 ) U
 CROSS JOIN
 (
@@ -660,13 +667,6 @@ CROSS JOIN
         EPA.ENC_ST_ORDER = 'A'
         AND EPA.ENC_DT_ORD_CREATE > SYSDATE - 365
         AND EPA.ENC_CD_EPA = '0780'
-        -- MILL FILTER START - Consistent with other subqueries
---        AND (
---                (:MILL_VALUE = 1 AND (EPA.ENC_ODIA,EPA.ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---             OR (:MILL_VALUE = 2 AND (EPA.ENC_ODIA,EPA.ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---             OR (:MILL_VALUE IS NULL AND (EPA.ENC_ODIA,EPA.ENC_IDIA) NOT IN (('-1','-1')))
---          )
-        -- MILL FILTER END
 ) FG
 CROSS JOIN
 (
@@ -708,14 +708,6 @@ CROSS JOIN
         EPA.ENC_ST_ORDER = 'A'
         AND EPA.ENC_DT_ORD_CREATE > SYSDATE - 365
         AND EPA.ENC_CD_EPA = '0780'
-        -- MILL FILTER START - Consistent with other subqueries
---        AND (
---                (:MILL_VALUE = 1 AND (EPA.ENC_ODIA,EPA.ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---             OR (:MILL_VALUE = 2 AND (EPA.ENC_ODIA,EPA.ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---             OR (:MILL_VALUE IS NULL AND (EPA.ENC_ODIA,EPA.ENC_IDIA) NOT IN (('-1','-1')))
---          )
-        -- MILL FILTER END
-         -- SUM OF DO ;
 )PDO
 CROSS JOIN
 (
@@ -996,13 +988,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_ZONE = 'API'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_API_Q
 CROSS JOIN
 (
@@ -1015,13 +1000,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_ZONE = 'Export'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_EXPORT_Q
 CROSS JOIN
 (
@@ -1034,13 +1012,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_ZONE = 'West'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_WEST_Q
 CROSS JOIN
 (
@@ -1053,13 +1024,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_ZONE = 'East'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_EAST_Q
 CROSS JOIN
 (
@@ -1072,13 +1036,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_ZONE = 'North'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_NORTH_Q
 CROSS JOIN
 (
@@ -1091,13 +1048,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_ZONE = 'South'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_SOUTH_Q
 CROSS JOIN
 (
@@ -1110,13 +1060,6 @@ CROSS JOIN
         ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_SEGMENT = 'Construction and Solution'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_CS_Q
 CROSS JOIN
 (
@@ -1129,13 +1072,6 @@ CROSS JOIN
         and ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_SEGMENT IN ( 'Branded Products & Retail')
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_BPR_Q
 CROSS JOIN
 (
@@ -1148,13 +1084,6 @@ CROSS JOIN
         and ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_SEGMENT = 'Engineering & Packaging - Tubes'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_ENP_Q
 CROSS JOIN
 (
@@ -1167,11 +1096,4 @@ CROSS JOIN
         and ENC_DT_ORD_CREATE > (SYSDATE - 365)
         AND ENC_SEGMENT = 'Commercial & Exports'
     )
-    -- MILL FILTER START
---    AND (
---            (:MILL_VALUE = 1 AND (ENC_ODIA,ENC_IDIA) IN (('273.1','0'), ('273','0'), ('323.9','0'), ('355.6','0'), ('355.5','0'), ('406.4','0'), ('457','0'), ('457.2','0'), ('508','0'), ('558.8','0'), ('559','0'), ('610','0'), ('200','200'), ('250','250'), ('300','300'), ('400','400'), ('250','150'), ('300','200'), ('400','200')))
---         OR (:MILL_VALUE = 2 AND (ENC_ODIA,ENC_IDIA) IN (('72','72'), ('80','80'), ('91.5','91.5'), ('90','90'), ('100','100'), ('132','132'), ('150','150'), ('200','100'), ('150','110'), ('88.9','0'), ('114.3','0'), ('127','0'), ('139.7','0'), ('165.1','0'), ('165.2','0'), ('168.3','0'), ('219.1','0')))
---         OR (:MILL_VALUE IS NULL AND (ENC_ODIA,ENC_IDIA) NOT IN (('-1','-1')))
---      )
-    -- MILL FILTER END
 ) PENDING_DO_CE_Q
