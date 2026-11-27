@@ -5334,7 +5334,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
     </datasource>
   </datasources>
   <worksheets>
-    <worksheet name='FG stock by freight indicator'>
+    <worksheet lock-updates='true' name='FG stock by freight indicator'>
       <table>
         <view>
           <datasources>
@@ -5411,7 +5411,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{55F90129-1CE5-4251-B029-0FE52D2AEFC8}' />
     </worksheet>
-    <worksheet name='Linked stock by vertical'>
+    <worksheet lock-updates='true' name='Linked stock by vertical'>
       <table>
         <view>
           <datasources>
@@ -5518,7 +5518,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{5561D1EB-FF8A-4648-8233-99678F8208DE}' />
     </worksheet>
-    <worksheet name='Linked stock by zone'>
+    <worksheet lock-updates='true' name='Linked stock by zone'>
       <table>
         <view>
           <datasources>
@@ -5622,7 +5622,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{5A1F3585-5410-4241-801E-CF021C27540B}' />
     </worksheet>
-    <worksheet name='OSP and MTD by vertical'>
+    <worksheet lock-updates='true' name='OSP and MTD by vertical'>
       <table>
         <view>
           <datasources>
@@ -5698,7 +5698,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{0B9C6351-F5D3-46DE-A42C-049965F86A60}' />
     </worksheet>
-    <worksheet name='OSP and MTD by zone'>
+    <worksheet lock-updates='true' name='OSP and MTD by zone'>
       <table>
         <view>
           <datasources>
@@ -5774,7 +5774,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{26EC0774-EF23-489E-840A-99056D81E077}' />
     </worksheet>
-    <worksheet name='OSP and MTD summary'>
+    <worksheet lock-updates='true' name='OSP and MTD summary'>
       <table>
         <view>
           <datasources>
@@ -5845,7 +5845,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{4110378E-BABD-4EFF-9229-2291B6945286}' />
     </worksheet>
-    <worksheet name='Order KPI 1'>
+    <worksheet lock-updates='true' name='Order KPI 1'>
       <table>
         <view>
           <datasources>
@@ -5893,7 +5893,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009205}' />
     </worksheet>
-    <worksheet name='Order KPI 2'>
+    <worksheet lock-updates='true' name='Order KPI 2'>
       <table>
         <view>
           <datasources>
@@ -5941,7 +5941,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009209}' />
     </worksheet>
-    <worksheet name='Order KPI 3'>
+    <worksheet lock-updates='true' name='Order KPI 3'>
       <table>
         <view>
           <datasources>
@@ -5989,7 +5989,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009213}' />
     </worksheet>
-    <worksheet name='Order KPI 4'>
+    <worksheet lock-updates='true' name='Order KPI 4'>
       <table>
         <view>
           <datasources>
@@ -6128,7 +6128,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{586B9074-82A9-45A2-BF64-C2C6D75FAF9F}' />
     </worksheet>
-    <worksheet name='Orders by vertical'>
+    <worksheet lock-updates='true' name='Orders by vertical'>
       <table>
         <view>
           <datasources>
@@ -6229,7 +6229,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{DB0EF7BD-99B8-4AB4-B244-F5FF0CC55B4F}' />
     </worksheet>
-    <worksheet name='Orders by zone'>
+    <worksheet lock-updates='true' name='Orders by zone'>
       <table>
         <view>
           <datasources>
@@ -6327,7 +6327,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{70EF5C04-D3DE-436B-89BE-6DE23AA9AF70}' />
     </worksheet>
-    <worksheet name='Production KPI 1'>
+    <worksheet lock-updates='true' name='Production KPI 1'>
       <table>
         <view>
           <datasources>
@@ -6375,7 +6375,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009272}' />
     </worksheet>
-    <worksheet name='Production KPI 2'>
+    <worksheet lock-updates='true' name='Production KPI 2'>
       <table>
         <view>
           <datasources>
@@ -6423,7 +6423,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009276}' />
     </worksheet>
-    <worksheet name='Production KPI 3'>
+    <worksheet lock-updates='true' name='Production KPI 3'>
       <table>
         <view>
           <datasources>
@@ -6471,7 +6471,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009280}' />
     </worksheet>
-    <worksheet name='Rolling KPI 1'>
+    <worksheet lock-updates='true' name='Rolling KPI 1'>
       <table>
         <view>
           <datasources>
@@ -6519,7 +6519,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009259}' />
     </worksheet>
-    <worksheet name='Rolling KPI 2'>
+    <worksheet lock-updates='true' name='Rolling KPI 2'>
       <table>
         <view>
           <datasources>
@@ -6567,7 +6567,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009263}' />
     </worksheet>
-    <worksheet name='Rolling KPI 3'>
+    <worksheet lock-updates='true' name='Rolling KPI 3'>
       <table>
         <view>
           <datasources>
@@ -6615,7 +6615,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009267}' />
     </worksheet>
-    <worksheet name='SO block vs DO by freight indicator'>
+    <worksheet lock-updates='true' name='SO block vs DO by freight indicator'>
       <table>
         <view>
           <datasources>
@@ -6692,7 +6692,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{834FDC57-DCC4-49BB-AE36-E6B4C3C01374}' />
     </worksheet>
-    <worksheet name='Signoff KPI 1'>
+    <worksheet lock-updates='true' name='Signoff KPI 1'>
       <table>
         <view>
           <datasources>
@@ -6740,7 +6740,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009246}' />
     </worksheet>
-    <worksheet name='Signoff KPI 2'>
+    <worksheet lock-updates='true' name='Signoff KPI 2'>
       <table>
         <view>
           <datasources>
@@ -6788,7 +6788,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009250}' />
     </worksheet>
-    <worksheet name='Signoff KPI 3'>
+    <worksheet lock-updates='true' name='Signoff KPI 3'>
       <table>
         <view>
           <datasources>
@@ -6931,7 +6931,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{65B32ACF-F90E-44E3-8702-9E7B6E82B6AE}' />
     </worksheet>
-    <worksheet name='Signoff by vertical'>
+    <worksheet lock-updates='true' name='Signoff by vertical'>
       <table>
         <view>
           <datasources>
@@ -7033,7 +7033,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{C16FF48A-1F9B-4EEF-8A50-07F7DD586A76}' />
     </worksheet>
-    <worksheet name='Signoff by zone'>
+    <worksheet lock-updates='true' name='Signoff by zone'>
       <table>
         <view>
           <datasources>
@@ -7136,7 +7136,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{CD71BCC5-7BB0-4BE9-9095-FE6A9325C20C}' />
     </worksheet>
-    <worksheet name='Stock KPI 1'>
+    <worksheet lock-updates='true' name='Stock KPI 1'>
       <table>
         <view>
           <datasources>
@@ -7184,7 +7184,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009221}' />
     </worksheet>
-    <worksheet name='Stock KPI 2'>
+    <worksheet lock-updates='true' name='Stock KPI 2'>
       <table>
         <view>
           <datasources>
@@ -7232,7 +7232,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009225}' />
     </worksheet>
-    <worksheet name='Stock KPI 3'>
+    <worksheet lock-updates='true' name='Stock KPI 3'>
       <table>
         <view>
           <datasources>
@@ -7280,7 +7280,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009229}' />
     </worksheet>
-    <worksheet name='Stock KPI 4'>
+    <worksheet lock-updates='true' name='Stock KPI 4'>
       <table>
         <view>
           <datasources>
@@ -7328,7 +7328,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009233}' />
     </worksheet>
-    <worksheet name='Stock KPI 5'>
+    <worksheet lock-updates='true' name='Stock KPI 5'>
       <table>
         <view>
           <datasources>
@@ -7376,7 +7376,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{AC123456-1300-4000-9000-000000009237}' />
     </worksheet>
-    <worksheet name='Stock composition'>
+    <worksheet lock-updates='true' name='Stock composition'>
       <table>
         <view>
           <datasources>
@@ -7548,7 +7548,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       </table>
       <simple-id uuid='{E053B008-9E30-4067-92B9-9356B4DCD618}' />
     </worksheet>
-    <worksheet name='Unlinked stock by vertical'>
+    <worksheet lock-updates='true' name='Unlinked stock by vertical'>
       <table>
         <view>
           <datasources>
@@ -7652,7 +7652,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
     </worksheet>
   </worksheets>
   <dashboards>
-    <dashboard name='LDP Summary Dashboard'>
+    <dashboard lock-updates='true' name='LDP Summary Dashboard'>
       <style />
       <size maxheight='1520' maxwidth='2400' minheight='1520' minwidth='2400' sizing-mode='fixed' />
       <zones>
@@ -8308,7 +8308,7 @@ SELECT 11 "Table Number", 1 "Row Number", 2 "Column Number", TOTAL_UNLINK_STK_CA
       <simple-id uuid='{DAFCD955-1DBB-417E-917B-000000008008}' />
     </dashboard>
   </dashboards>
-  <windows pres-mode='true' source-height='44'>
+  <windows source-height='44'>
     <window class='worksheet' name='Order summary'>
       <cards>
         <edge name='left'>
